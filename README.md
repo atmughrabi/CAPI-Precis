@@ -1,11 +1,11 @@
 [![Build Status](https://travis-ci.com/atmughrabi/CAPIPrecis.svg?token=L3reAtGHdEVVPvzcVqQ6&branch=master)](https://travis-ci.com/atmughrabi/CAPIPrecis)
-[<p align="center"><img src="./02_slides/fig/logo3.png" width="650" ></p>]
+<p align="center"><img src="./02_slides/fig/logo3.png" width="650" ></p>
 
 #  Coherent Accelerator Processor Interface (CAPI) Abstract Layer
 
 ## Overview 
 
-[<p align="center"><img src="./02_slides/fig/theme.png" width="650" ></p>]
+<p align="center"><img src="./02_slides/fig/theme.png" width="650" ></p>
 
 CAPI-Precis is an abstraction layer (AFU Control) that simplifies communication and buffering with the Power Service Layer (PSL). While each control unit handling different aspects of communication with the PSL, it simplifies the interface for sending and receving memory transactions, and preserves the fine-grain random or sequentail memory access pattern. Furthermore our layer differentiate its self from other CAPI frameworks, by keeping the PSL cache support.
 
@@ -192,4 +192,4 @@ CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-scr
 * *`Makefile`* - Global makefile
 
 Report bugs to <atmughra@ncsu.edu>
-[<p align="right"> <img src="./02_slides/fig/logo1.png" width="200" ></p>]
+<p align="right"> <img src="./02_slides/fig/logo1.png" width="200" ></p>
