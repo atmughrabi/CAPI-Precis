@@ -1,0 +1,17 @@
+00_bench/obj
+00_bench/bin
+00_bench/build
+
+nohup.out
+.qsys_edit
+
+01_capi_integration/capi_common/sim/modelsim.ini
+01_capi_integration/capi_common/sim/transcript
+01_capi_integration/capi_common/sim/vish_stacktrace.vstf
+01_capi_integration/capi_common/sim/vsim.wlf
+01_capi_integration/capi_common/sim/work
+01_capi_integration/capi_common/sim/debug.log
+01_capi_integration/capi_common/sim/gmon.out
+01_capi_integration/capi_common/server/debug.log
+01_capi_integration/capi_common/server/gmon.out
+
