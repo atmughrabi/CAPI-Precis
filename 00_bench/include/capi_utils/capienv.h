@@ -51,7 +51,7 @@ struct __attribute__((__packed__)) WED
     __u32 size_recive;              // 4-Bytes
     __u32 size3;                    // 4-Bytes
     void *array_send;               // 8-Bytes
-    void *array_recive;             // 8-Bytes
+    void *array_receive;             // 8-Bytes
     void *pointer1;                 // 8-Bytes
     void *pointer2;                 // 8-Bytes
     void *pointer3;                 // 8-Bytes

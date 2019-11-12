@@ -36,6 +36,20 @@ export TEST_DIR		  	= tests
 #contains the main for the graph processing framework
 export MAIN_DIR		  	= main
 
+#########################################################
+#       		 RUN  ARGUMENTS    						#
+#########################################################
+
+export NUM_THREADS  = 8
+
+#4GB
+export SIZE = 1073741824
+
+#1GB
+# export SIZE = 268435456
+
+export ARGS = -n $(NUM_THREADS) -s $(SIZE)
+
 ##############################################
 # CAPI FPGA  GRAPH AFU PERFORMANCE CONFIG    #
 ##############################################

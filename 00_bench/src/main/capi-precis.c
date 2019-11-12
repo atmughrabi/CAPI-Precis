@@ -9,8 +9,8 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : capi-precis.c
 // Create : 2019-07-29 16:52:00
-// Revise : 2019-11-10 13:29:16
-// Editor : ab
+// Revise : 2019-11-12 18:30:07
+// Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 #include <ctype.h>
 #include <stdio.h>
@@ -19,24 +19,85 @@
 #include <argp.h>
 #include <stdbool.h>
 #include <omp.h>
+#include <assert.h>
 
 #include "myMalloc.h"
 #include "mt19937.h"
 #include "timer.h"
 
-#include <assert.h>
+#include "config.h"
+#include "algorithm.h"
 
 int numThreads;
 mt19937state *mt19937var;
+
+const char *argp_program_version =
+    "CAPIPrecis 1.0";
+const char *argp_program_bug_address =
+    "<atmughra@ncsu.edu>";
+/* Program documentation. */
+static char doc[] =
+    "CAPIPrecis is an open source CAPI enabled FPGA processing framework, it is designed to abstract the PSL layer for a faster development cycle";
+
+/* A description of the arguments we accept. */
+static char args_doc[] = "-s <size> -n [num threads]";
+
+/* The options we understand. */
+static struct argp_option options[] =
+{
+    {
+        "num-threads",       'n', "[DEFAULT:MAX]",      0,
+        "\nDefault:max number of threads the system has"
+    },
+    {
+        "size",         's', "SIZE:512",      0,
+        "\nSize of array to be sent and copied back "
+    },
+    { 0 }
+};
+
+
+
+/* Parse a single option. */
+static error_t
+parse_opt (int key, char *arg, struct argp_state *state)
+{
+    /* Get the input argument from argp_parse, which we
+       know is a pointer to our arguments structure. */
+    struct Arguments *arguments = state->input;
+
+    switch (key)
+    {
+    case 's':
+        arguments->size = atoi(arg);
+        break;
+    case 'n':
+        arguments->numThreads = atoi(arg);
+        break;
+    default:
+        return ARGP_ERR_UNKNOWN;
+    }
+    return 0;
+}
+
+
+static struct argp argp = { options, parse_opt, args_doc, doc };
+
 
 
 int
 main (int argc, char **argv)
 {
 
-   
-    struct Timer *timer = (struct Timer *) my_malloc(sizeof(struct Timer));
+    struct Arguments arguments;
 
+    arguments.numThreads = omp_get_max_threads();
+    arguments.size = 512;
+
+     argp_parse (&argp, argc, argv, 0, 0, &arguments);
+
+    struct Timer *timer = (struct Timer *) my_malloc(sizeof(struct Timer));
+    numThreads = arguments.numThreads;
     mt19937var = (mt19937state *) my_malloc(sizeof(mt19937state));
     initializeMersenneState (mt19937var, 27491095);
 
@@ -48,7 +109,54 @@ main (int argc, char **argv)
     printf(" -----------------------------------------------------\n");
 
 
-  
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Allocating Data Arrays (SIZE)", arguments.size);
+    printf(" -----------------------------------------------------\n");
+
+    struct DataArrays *dataArrays = newDataArrays(&arguments);
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Populating Data Arrays (Seed)", 27491095);
+    printf(" -----------------------------------------------------\n");
+
+    initializeDataArrays(dataArrays);
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Copy data (SIZE)", arguments.size);
+    printf(" -----------------------------------------------------\n");
+
+    Start(timer);
+    copyDataArrays(dataArrays);
+    Stop(timer);
+    printf("| %-22s | %-27.20lf| \n","Time (Seconds)", Seconds(timer));
+       
+    double bandwidth_GB = (double)((double)(dataArrays->size)/(double)(1024*1024*256))/Seconds(timer);  //GB/s
+    double bandwidth_MB = (double)((double)(dataArrays->size)/(double)(1024*256))/Seconds(timer); //MB/s
+
+    printf("| %-22s | %-27.20lf| \n","BandWidth MB/s", bandwidth_MB);
+    printf("| %-22s | %-27.20lf| \n","BandWidth GB/s", bandwidth_GB);
+
+    __u32 missmatch = 0;
+    missmatch = compareDataArrays(dataArrays);
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Data Missmatched (#)", missmatch);
+    printf(" -----------------------------------------------------\n");
+
+       if(missmatch != 0)
+    {
+        printf("FAIL\n");
+    }  else
+    {
+        printf("PASS\n");
+    }
+
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Freeing Data Arrays (SIZE)", arguments.size);
+    printf(" -----------------------------------------------------\n");
+
+    freeDataArrays(dataArrays);
     free(timer);
     exit (0);
 }

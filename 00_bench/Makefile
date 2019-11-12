@@ -39,6 +39,17 @@ MAIN_DIR		  	?= main
 ##################################################
 ##################################################
 
+#########################################################
+#       		 RUN  ARGUMENTS    						#
+#########################################################
+
+NUM_THREADS  	?= 4
+
+SIZE ?= 256
+
+ARGS ?= -n $(NUM_THREADS) -s $(SIZE)
+
+
 ##############################################
 # CAPI FPGA  GRAPH AFU PERFORMANCE CONFIG    #
 ##############################################
@@ -274,15 +285,15 @@ run: run-openmp
 
 .PHONY: run-openmp
 run-openmp: graph-openmp
-	./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp 
+	./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 .PHONY: debug-openmp
 debug-openmp: graph-openmp	
-	gdb -ex=r --args ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp
+	gdb -ex=r --args ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 .PHONY: debug-memory-openmp
 debug-memory-openmp: graph-openmp	
-	valgrind --leak-check=full --show-leak-kinds=all ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp
+	valgrind --leak-check=full --show-leak-kinds=all ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 .PHONY: test-verbose
 test-verbose:
@@ -312,10 +323,10 @@ debug-memory-test-openmp: test-openmp
 # cache performance
 .PHONY: cachegrind-perf-openmp
 cachegrind-perf-openmp: graph-openmp
-	valgrind --tool=cachegrind ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp
+	valgrind --tool=cachegrind ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 .PHONY: cache-perf
 cache-perf-openmp: graph-openmp
-	sudo perf record -d ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp
+	sudo perf record -d ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 ##################################################
 ##################################################
@@ -330,28 +341,28 @@ run-capi-sim: CAPI_FLAGS = -DSIM $(CAPI_AFU_CONFIG)
 run-capi-sim: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-sim: graph-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi 
+	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-sim-verbose
 run-capi-sim-verbose: CAPI_FLAGS = -DSIM -DVERBOSE $(CAPI_AFU_CONFIG)
 run-capi-sim-verbose: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim-verbose: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-sim-verbose: graph-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi 
+	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga
 run-capi-fpga: CAPI_FLAGS = 
 run-capi-fpga: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-fpga: graph-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi 
+	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga-verbose
 run-capi-fpga-verbose: CAPI_FLAGS = -DVERBOSE 
 run-capi-fpga-verbose: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga-verbose: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-fpga-verbose: graph-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi 
+	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 
 .PHONY: run-test-capi
@@ -359,7 +370,7 @@ run-test-capi: CAPI_FLAGS = -DSIM $(CAPI_AFU_CONFIG)
 run-test-capi: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-test-capi: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-test-capi: test-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-capi
+	./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-capi 
 
 .PHONY: run-vsim
 run-vsim: build-libdpi
