@@ -9,8 +9,8 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : test_afu.c
 // Create : 2019-09-28 15:19:20
-// Revise : 2019-11-11 13:54:58
-// Editor : ab
+// Revise : 2019-11-12 19:48:21
+// Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
 #include <string.h>
@@ -29,9 +29,14 @@
 #include "myMalloc.h"
 #include "mt19937.h"
 #include "timer.h"
+#include "config.h"
+
 
 #include "libcxl.h"
 #include "capienv.h"
+#include "algorithm.h"
+
+
 
 int numThreads;
 mt19937state *mt19937var;
@@ -42,10 +47,13 @@ main (int argc, char **argv)
 {
 
     struct cxl_afu_h *afu;
-  
+    struct Arguments arguments;
+
+    arguments.numThreads = 4;
+    arguments.size = 256;
+
     struct Timer *timer = (struct Timer *) my_malloc(sizeof(struct Timer));
-
-
+    numThreads = arguments.numThreads;
     mt19937var = (mt19937state *) my_malloc(sizeof(mt19937state));
     initializeMersenneState (mt19937var, 27491095);
 
@@ -53,54 +61,48 @@ main (int argc, char **argv)
     omp_set_num_threads(numThreads);
 
 
-
-
     printf("*-----------------------------------------------------*\n");
     printf("| %-20s %-30u | \n", "Number of Threads :", numThreads);
     printf(" -----------------------------------------------------\n");
 
 
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Allocating Data Arrays (SIZE)", arguments.size);
+    printf(" -----------------------------------------------------\n");
 
+    struct DataArrays *dataArrays = newDataArrays(&arguments);
 
-    // ********************************************************************************************
-    // ***************                      DataStructure                            **************
-    // ********************************************************************************************
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Populating Data Arrays (Seed)", 27491095);
+    printf(" -----------------------------------------------------\n");
 
-    // (struct GraphCSR *)graph
+    initializeDataArrays(dataArrays);
 
     // ********************************************************************************************
     // ***************                  MAP CSR DataStructure                        **************
     // ********************************************************************************************
 
-    wedGraphCSR = mapToWED();
-
-    wedGraphCSR->auxiliary1 = divclause;
-    wedGraphCSR->auxiliary2 = prnext;
-    wedGraphCSR->afu_config = 3; // config to use cache
-    wedGraphCSR->afu_config = 0; // config to don't use cache
-
+    struct WEDStruct *wed = mapDataArraysToWED(dataArrays);
 
     // ********************************************************************************************
     // ***************                  CSR DataStructure                            **************
     // ********************************************************************************************
 
-    printWED(wedGraphCSR);
-    printWEDPointers(wedGraphCSR);
+    printWEDPointers(wed);
 
     // ********************************************************************************************
     // ***************                 Setup AFU                                     **************
     // ********************************************************************************************
 
-    setupAFU(&afu, wedGraphCSR);
+    setupAFU(&afu, wed);
     
-
     struct AFUStatus afu_status;
     afu_status.algo_status = 0;
     afu_status.num_cu = 8; // non zero CU triggers the AFU to work
     afu_status.error = 0;
     afu_status.afu_status = 0;
     afu_status.algo_running = 0;
-    afu_status.algo_stop = wedGraphCSR->num_vertices;
+    afu_status.algo_stop = wed->size_send;
 
     waitJOBRunning(&afu, &afu_status);
 
@@ -110,22 +112,54 @@ main (int argc, char **argv)
     printf("Start AFU\n");
     startAFU(&afu, &afu_status);
    
-    
     // ********************************************************************************************
     // ***************                 WAIT AFU                                     **************
     // ********************************************************************************************
-    printf("Waiting for completion by AFU\n");
-    waitAFU(&afu, &afu_status);
 
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Copy data (SIZE)", arguments.size);
+    printf(" -----------------------------------------------------\n");
+
+   
+
+    printf("Waiting for completion by AFU\n");
+    Start(timer);
+    waitAFU(&afu, &afu_status);
+    Stop(timer);
     printMMIO_error(afu_status.error);
 
-    printf("count: %lu\n", (((afu_status.algo_status) << 32) >> 32));
-    printf("sum: %lu\n", ((afu_status.algo_status) >> 32));
+    printf("count_read: %lu\n", (((afu_status.algo_status) << 32) >> 32));
+    printf("count_write: %lu\n", ((afu_status.algo_status) >> 32));
 
-     for (__u32 i = 0; i < ((struct GraphCSR *)graph)->num_vertices; ++i)
+  
+    printf("| %-22s | %-27.20lf| \n","Time (Seconds)", Seconds(timer));
+       
+    double bandwidth_GB = (double)((double)(dataArrays->size)/(double)(1024*1024*256))/Seconds(timer);  //GB/s
+    double bandwidth_MB = (double)((double)(dataArrays->size)/(double)(1024*256))/Seconds(timer); //MB/s
+
+    printf("| %-22s | %-27.20lf| \n","BandWidth MB/s", bandwidth_MB);
+    printf("| %-22s | %-27.20lf| \n","BandWidth GB/s", bandwidth_GB);
+
+    __u32 missmatch = 0;
+    missmatch = compareDataArrays(dataArrays);
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Data Missmatched (#)", missmatch);
+    printf(" -----------------------------------------------------\n");
+
+       if(missmatch != 0)
     {
-        printf("prnext[%u] = %u \n", i,prnext[i]);
+        printf("FAIL\n");
+    }  else
+    {
+        printf("PASS\n");
     }
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s %-20u | \n", "Freeing Data Arrays (SIZE)", arguments.size);
+    printf(" -----------------------------------------------------\n");
+
+
 
     // ********************************************************************************************
     // ***************                 Releasing AFU                                     **************
@@ -134,6 +168,7 @@ main (int argc, char **argv)
     printf("Releasing AFU\n");
     releaseAFU(&afu);
 
+    freeDataArrays(dataArrays);
     free(timer);
     exit (0);
 }

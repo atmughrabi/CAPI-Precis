@@ -7,8 +7,8 @@
   APP               ?= capi-precis
 
 # test name needs to match the file name test/test_accel-graph.c
-#   APP_TEST          = test_accel-graph
-  APP_TEST          ?= test_capi-precis
+  APP_TEST          = test_afu
+#   APP_TEST          ?= test_capi-precis
 
 
 # dirs Root app 

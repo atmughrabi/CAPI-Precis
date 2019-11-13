@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : capi-precis.c
 // Create : 2019-07-29 16:52:00
-// Revise : 2019-11-12 18:30:07
+// Revise : 2019-11-12 18:34:03
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 #include <ctype.h>
@@ -140,7 +140,7 @@ main (int argc, char **argv)
     missmatch = compareDataArrays(dataArrays);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20u | \n", "Data Missmatched (#)", missmatch);
+    printf("| %-30s | %-20u | \n", "Data Missmatched (#)", missmatch);
     printf(" -----------------------------------------------------\n");
 
        if(missmatch != 0)
@@ -150,7 +150,6 @@ main (int argc, char **argv)
     {
         printf("PASS\n");
     }
-
 
     printf("*-----------------------------------------------------*\n");
     printf("| %-30s %-20u | \n", "Freeing Data Arrays (SIZE)", arguments.size);

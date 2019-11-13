@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : capienv.c
 // Create : 2019-10-09 19:20:39
-// Revise : 2019-11-08 08:41:53
+// Revise : 2019-11-12 19:10:59
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
@@ -18,15 +18,16 @@
 #include <stdlib.h>
 
 #include "myMalloc.h"
-#include "graphCSR.h"
 #include "libcxl.h"
 #include "capienv.h"
+
+#include "algorithm.h"
 
 // ********************************************************************************************
 // ***************                  AFU General 	                             **************
 // ********************************************************************************************
 
-int setupAFUGraphCSR(struct cxl_afu_h **afu, struct WEDGraphCSR *wedGraphCSR){
+int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed){
 
     (*afu) = cxl_afu_open_dev(DEVICE_1);
     if(!afu)
@@ -35,7 +36,7 @@ int setupAFUGraphCSR(struct cxl_afu_h **afu, struct WEDGraphCSR *wedGraphCSR){
         return 1;
     }
 
-    cxl_afu_attach((*afu), (__u64)wedGraphCSR);
+    cxl_afu_attach((*afu), (__u64)wed);
     int base_address = cxl_mmio_map ((*afu), CXL_MMIO_BIG_ENDIAN);
 
     if (base_address < 0)
@@ -88,8 +89,8 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
         cxl_mmio_read64((*afu), ALGO_STATUS, &(afu_status->algo_status));
         cxl_mmio_write64((*afu), ALGO_STATUS_ACK, afu_status->algo_status);
 
-        printf("Vertices: %lu \n",(((afu_status->algo_status) << 32) >> 32) );
-        printf("Edges: %lu\n", ((afu_status->algo_status) >> 32));
+        printf("count_read: %lu \n",(((afu_status->algo_status) << 32) >> 32) );
+        printf("count_write: %lu\n", ((afu_status->algo_status) >> 32));
 #endif
 
         cxl_mmio_read64((*afu), ALGO_STATUS_DONE, &(afu_status->algo_status_done));
@@ -191,40 +192,16 @@ void releaseAFU(struct cxl_afu_h **afu)
 // ***************                  CSR DataStructure                            **************
 // ********************************************************************************************
 
-struct  WEDGraphCSR *mapGraphCSRToWED(struct GraphCSR *graph)
+struct  WEDStruct *mapDataArraysToWED(struct DataArrays *dataArrays)
 {
 
-    struct WEDGraphCSR *wed = my_malloc(sizeof(struct WEDGraphCSR));
+    struct WEDStruct *wed = my_malloc(sizeof(struct WEDStruct));
 
-    wed->num_edges    = graph->num_edges;
-    wed->num_vertices = graph->num_vertices;
-#if WEIGHTED
-    wed->max_weight   = graph->max_weight;
-#else
-    wed->max_weight   = 0;
-#endif
+    wed->size_send    = dataArrays->size;
+    wed->size_recive  = dataArrays->size;
 
-    wed->vertex_out_degree  = graph->vertices->out_degree;
-    wed->vertex_in_degree   = graph->vertices->in_degree;
-    wed->vertex_edges_idx   = graph->vertices->edges_idx;
-
-    wed->edges_array_src    = graph->sorted_edges_array->edges_array_src;
-    wed->edges_array_dest   = graph->sorted_edges_array->edges_array_dest;
-#if WEIGHTED
-    wed->edges_array_weight = graph->sorted_edges_array->edges_array_weight;
-#endif
-
-#if DIRECTED
-    wed->inverse_vertex_out_degree  = graph->inverse_vertices->out_degree;
-    wed->inverse_vertex_in_degree   = graph->inverse_vertices->in_degree;
-    wed->inverse_vertex_edges_idx   = graph->inverse_vertices->edges_idx;
-
-    wed->inverse_edges_array_src    = graph->inverse_sorted_edges_array->edges_array_src;
-    wed->inverse_edges_array_dest   = graph->inverse_sorted_edges_array->edges_array_dest;
-#if WEIGHTED
-    wed->inverse_edges_array_weight = graph->inverse_sorted_edges_array->edges_array_weight;
-#endif
-#endif
+    wed->array_send     = dataArrays->array_send;
+    wed->array_receive  = dataArrays->array_send;
 
 
     wed->afu_config = AFU_CONFIG;
@@ -233,40 +210,18 @@ struct  WEDGraphCSR *mapGraphCSRToWED(struct GraphCSR *graph)
 }
 
 
-void printWEDGraphCSRPointers(struct  WEDGraphCSR *wed)
+void printWEDPointers(struct  WEDStruct *wed)
 {
 
-    printf("[WEDGraphCSR structure\n");
+    printf("[WEDStruct structure\n");
     printf("  wed: %p\n", wed);
-    printf("  wed->num_edges: %u\n", wed->num_edges);
-    printf("  wed->num_vertices: %u\n", wed->num_vertices);
-#if WEIGHTED
-    printf("  wed->max_weight: %u\n", wed->max_weight);
-#endif
-    printf("  wed->vertex_in_degree: %p\n", wed->vertex_in_degree);
-    printf("  wed->vertex_out_degree: %p\n", wed->vertex_out_degree);
-    printf("  wed->vertex_edges_idx: %p\n", wed->vertex_edges_idx);
 
-    printf("  wed->edges_array_src: %p\n", wed->edges_array_src);
-    printf("  wed->edges_array_dest: %p\n", wed->edges_array_dest);
-#if WEIGHTED
-    printf("  wed->edges_array_weight: %p\n", wed->edges_array_weight);
-#endif
+    printf("  wed->size_send: %u\n", wed->size_send);
+    printf("  wed->size_recive: %u\n", wed->size_recive);
 
-#if DIRECTED
-    printf("  wed->inverse_vertex_in_degree: %p\n", wed->inverse_vertex_in_degree);
-    printf("  wed->inverse_vertex_out_degree: %p\n", wed->inverse_vertex_out_degree);
-    printf("  wed->inverse_vertex_edges_idx: %p\n", wed->inverse_vertex_edges_idx);
-
-    printf("  wed->inverse_edges_array_src: %p\n", wed->inverse_edges_array_src);
-    printf("  wed->inverse_edges_array_dest: %p\n", wed->inverse_edges_array_dest);
-#if WEIGHTED
-    printf("  wed->inverse_edges_array_weight: %p\n", wed->inverse_edges_array_weight);
-#endif
-#endif
-
-    printf("  wed->auxiliary1: %p\n", wed->auxiliary1);
-    printf("  wed->auxiliary2: %p\n", wed->auxiliary2);
+    printf("  wed->array_send: %p\n", wed->array_send);
+    printf("  wed->array_receive: %p\n", wed->array_receive);
+  
     printf("  wed->afu_config: %p\n", &(wed->afu_config));
 
 }
