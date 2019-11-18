@@ -77,7 +77,7 @@ package AFU_PKG;
 
   typedef struct packed {
     cu_id_t                              cu_id           ; // Compute unit id generating the command for now we support four
-    vertex_struct_type                   vertex_struct   ;
+    array_struct_type                    array_struct    ;
     command_type                         cmd_type        ; // The compute unit from the AFU SIDE will send the command type Rd/Wr/Prefetch
     logic [0:CACHELINE_INT_COUNTER_BITS] real_size       ;
     logic [0:CACHELINE_INT_COUNTER_BITS] cacheline_offest;

@@ -136,7 +136,7 @@ module wed_control (
       end // WED_WAITING_FOR_REQUEST
       WED_DONE_REQ : begin
         wed_request_out.valid <= 1'b1;
-        wed_request_out.wed   <= map_GraphCSR_to_WED(wed_cacheline128);
+        wed_request_out.wed   <= map_DataArrays_to_WED(wed_cacheline128);
       end // WED_WAITING_FOR_REQUEST
     endcase // next_state
   end // always_ff @(posedge clock)

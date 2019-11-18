@@ -50,16 +50,9 @@ proc r  {} {
   echo "Compiling RTL WED_control"
   vlog -quiet ../../accelerator/rtl/wed_control.sv
 
-  echo "Compiling RTL CU control PAGERANK"
-  vlog -quiet ../../accelerator/cu/cu_cacheline_stream.sv
-  vlog -quiet ../../accelerator/cu/cu_sum_kernel_control.sv
-  vlog -quiet ../../accelerator/cu/cu_edge_data_write_control.sv
-  vlog -quiet ../../accelerator/cu/cu_edge_data_read_control.sv
-  vlog -quiet ../../accelerator/cu/cu_edge_data_control.sv
-  vlog -quiet ../../accelerator/cu/cu_edge_job_control.sv
-  vlog -quiet ../../accelerator/cu/cu_vertex_job_control.sv
-  vlog -quiet ../../accelerator/cu/cu_vertex_pagerank.sv
-  vlog -quiet ../../accelerator/cu/cu_graph_algorithm_control.sv
+  echo "Compiling RTL CU control "
+  vlog -quiet ../../accelerator/cu/cu_data_read_engine_control.sv
+  vlog -quiet ../../accelerator/cu/cu_data_write_engine_control.sv
   vlog -quiet ../../accelerator/cu/cu_control.sv
 
  

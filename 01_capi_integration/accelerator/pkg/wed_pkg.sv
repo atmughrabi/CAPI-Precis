@@ -27,24 +27,25 @@ package WED_PKG;
     } wed_state;
 
     typedef struct packed{
-        logic [0:31] num_edges                 ; // 4-Bytes
-        logic [0:31] num_vertices              ; // 4-Bytes
-        logic [0:31] max_weight                ; // 4-Bytes
-        logic [0:63] vertex_out_degree         ; // 8-Bytes
-        logic [0:63] vertex_in_degree          ; // 8-Bytes
-        logic [0:63] vertex_edges_idx          ; // 8-Bytes
-        logic [0:63] edges_array_weight        ; // 8-Bytes
-        logic [0:63] edges_array_src           ; // 8-Bytes
-        logic [0:63] edges_array_dest          ; // 8-Bytes
-        logic [0:63] inverse_vertex_out_degree ; // 8-Bytes
-        logic [0:63] inverse_vertex_in_degree  ; // 8-Bytes
-        logic [0:63] inverse_vertex_edges_idx  ; // 8-Bytes
-        logic [0:63] inverse_edges_array_weight; // 8-Bytes
-        logic [0:63] inverse_edges_array_src   ; // 8-Bytes
-        logic [0:63] inverse_edges_array_dest  ; // 8-Bytes
-        logic [0:63] auxiliary1                ; // 8-Bytes
-        logic [0:63] auxiliary2                ; // 8-Bytes
-        logic [0:31] afu_config                ; // 4-Bytes
+        logic [0:31] size_send    ; // 4-Bytes
+        logic [0:31] size_recive  ; // 4-Bytes
+        logic [0:31] size3        ; // 4-Bytes
+        logic [0:63] array_send   ; // 8-Bytes
+        logic [0:63] array_receive; // 8-Bytes
+        logic [0:63] pointer1     ; // 8-Bytes
+        logic [0:63] pointer2     ; // 8-Bytes
+        logic [0:63] pointer3     ; // 8-Bytes
+        logic [0:63] pointer4     ; // 8-Bytes
+        logic [0:63] pointer5     ; // 8-Bytes
+        logic [0:63] pointer6     ; // 8-Bytes
+        logic [0:63] pointer7     ; // 8-Bytes
+        logic [0:63] pointer8     ; // 8-Bytes
+        logic [0:63] pointer9     ; // 8-Bytes
+        logic [0:63] pointer10    ; // 8-Bytes
+        logic [0:63] pointer11    ; // 8-Bytes
+        logic [0:63] pointer12    ; // 8-Bytes
+
+        logic [0:31] afu_config   ; // 4-Bytes
     } WED_request;// 108-bytes used from 128-Bytes WED
 
     typedef struct packed{
@@ -54,33 +55,33 @@ package WED_PKG;
     } WEDInterface;
 
 
-    function WED_request map_GraphCSR_to_WED(logic [0:(CACHELINE_SIZE_BITS-1)] in);
+    function WED_request map_DataArrays_to_WED(logic [0:(CACHELINE_SIZE_BITS-1)] in);
 
         WED_request wed;
 
-        wed.num_edges                  = swap_endianness_word(in[0:31]);               // 4-Bytes
-        wed.num_vertices               = swap_endianness_word(in[32:63]);              // 4-Bytes
-        wed.max_weight                 = swap_endianness_word(in[64:95]);              // 4-Bytes
+        wed.size_send               = swap_endianness_word(in[0:31]);               // 4-Bytes
+        wed.size_recive             = swap_endianness_word(in[32:63]);              // 4-Bytes
+        wed.size3                   = swap_endianness_word(in[64:95]);              // 4-Bytes
 
-        wed.vertex_out_degree          = swap_endianness_double_word(in[96:159]);      // 8-Bytes
-        wed.vertex_in_degree           = swap_endianness_double_word(in[160:223]);     // 8-Bytes
-        wed.vertex_edges_idx           = swap_endianness_double_word(in[224:287]);     // 8-Bytes
-        wed.edges_array_weight         = swap_endianness_double_word(in[288:351]);     // 8-Bytes
-        wed.edges_array_src            = swap_endianness_double_word(in[352:415]);     // 8-Bytes
-        wed.edges_array_dest           = swap_endianness_double_word(in[416:479]);     // 8-Bytes
-        wed.inverse_vertex_out_degree  = swap_endianness_double_word(in[480:543]);     // 8-Bytes
-        wed.inverse_vertex_in_degree   = swap_endianness_double_word(in[544:607]);     // 8-Bytes
-        wed.inverse_vertex_edges_idx   = swap_endianness_double_word(in[608:671]);     // 8-Bytes
-        wed.inverse_edges_array_weight = swap_endianness_double_word(in[672:735]);     // 8-Bytes
-        wed.inverse_edges_array_src    = swap_endianness_double_word(in[736:799]);     // 8-Bytes
-        wed.inverse_edges_array_dest   = swap_endianness_double_word(in[800:863]);     // 8-Bytes
-        wed.auxiliary1                 = swap_endianness_double_word(in[864:927]);     // 8-Bytes
-        wed.auxiliary2                 = swap_endianness_double_word(in[928:991]);     // 8-Bytes
-        wed.afu_config                 = swap_endianness_word(in[992:1023]);           // 4-Bytes
+        wed.array_send              = swap_endianness_double_word(in[96:159]);      // 8-Bytes
+        wed.array_receive           = swap_endianness_double_word(in[160:223]);     // 8-Bytes
+        wed.pointer1                = swap_endianness_double_word(in[224:287]);     // 8-Bytes
+        wed.pointer2                = swap_endianness_double_word(in[288:351]);     // 8-Bytes
+        wed.pointer3                = swap_endianness_double_word(in[352:415]);     // 8-Bytes
+        wed.pointer4                = swap_endianness_double_word(in[416:479]);     // 8-Bytes
+        wed.pointer5                = swap_endianness_double_word(in[480:543]);     // 8-Bytes
+        wed.pointer6                = swap_endianness_double_word(in[544:607]);     // 8-Bytes
+        wed.pointer7                = swap_endianness_double_word(in[608:671]);     // 8-Bytes
+        wed.pointer8                = swap_endianness_double_word(in[672:735]);     // 8-Bytes
+        wed.pointer9                = swap_endianness_double_word(in[736:799]);     // 8-Bytes
+        wed.pointer10               = swap_endianness_double_word(in[800:863]);     // 8-Bytes
+        wed.pointer11               = swap_endianness_double_word(in[864:927]);     // 8-Bytes
+        wed.pointer12               = swap_endianness_double_word(in[928:991]);     // 8-Bytes
+        wed.afu_config              = swap_endianness_word(in[992:1023]);           // 4-Bytes
 
         return wed;
 
-    endfunction : map_GraphCSR_to_WED
+    endfunction : map_DataArrays_to_WED
 
     function trans_order_behavior_t map_CABT (logic [0:2] cabt_in);
 

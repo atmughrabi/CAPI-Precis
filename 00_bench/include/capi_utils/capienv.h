@@ -82,10 +82,10 @@ struct __attribute__((__packed__)) WEDStruct
  #define PREF   0b011
  #define SPEC   0b111
 
- #define READ_CL_S    0b1 // bit 31
+ #define READ_CL_S    0b1 
  #define READ_CL_NA   0b0
  #define WRITE_MS     0b1
- #define WRITE_NA     0b0 // bit 30
+ #define WRITE_NA     0b0 
 
 // cu_read_engine_control            5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [27:31] [4] [3] [0:2]
 // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [22:26] [9] [8] [5:7]

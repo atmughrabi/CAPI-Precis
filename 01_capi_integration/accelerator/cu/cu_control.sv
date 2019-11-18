@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-09-26 15:18:39
-// Revise : 2019-11-07 19:49:13
+// Revise : 2019-11-18 17:02:32
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -124,8 +124,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 //Done signal
 ////////////////////////////////////////////////////////////////////////////a
 
-	assign done_graph_algorithm = wed_request_in_latched.valid && (wed_request_in_latched.wed.num_vertices == (vertex_job_counter_filtered_latched+vertex_job_counter_done_latched)) &&
-		(wed_request_in_latched.wed.num_edges == edge_job_counter_done_latched);
+	assign done_graph_algorithm = wed_request_in_latched.valid;
 
 	assign cu_ready = (|algorithm_requests_latched);
 
@@ -148,28 +147,22 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	// drive outputs
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			write_command_out                   <= 0;
-			write_data_0_out                    <= 0;
-			write_data_1_out                    <= 0;
-			read_command_out                    <= 0;
-			algorithm_status                    <= 0;
-			vertex_job_counter_filtered_latched <= 0;
-			vertex_job_counter_done_latched     <= 0;
-			edge_job_counter_done_latched       <= 0;
-			algorithm_running                   <= 0;
-			algorithm_done                      <= 0;
+			write_command_out <= 0;
+			write_data_0_out  <= 0;
+			write_data_1_out  <= 0;
+			read_command_out  <= 0;
+			algorithm_status  <= 0;
+			algorithm_running <= 0;
+			algorithm_done    <= 0;
 		end else begin
 			if(enabled)begin
-				write_command_out                   <= write_command_out_latched;
-				write_data_0_out                    <= write_data_0_out_latched;
-				write_data_1_out                    <= write_data_1_out_latched;
-				read_command_out                    <= read_command_out_latched;
-				algorithm_status                    <= algorithm_status_latched;
-				algorithm_done                      <= done_graph_algorithm;
-				vertex_job_counter_filtered_latched <= vertex_job_counter_filtered;
-				vertex_job_counter_done_latched     <= vertex_job_counter_done;
-				edge_job_counter_done_latched       <= edge_job_counter_done;
-				algorithm_running                   <= cu_ready;
+				write_command_out <= write_command_out_latched;
+				write_data_0_out  <= write_data_0_out_latched;
+				write_data_1_out  <= write_data_1_out_latched;
+				read_command_out  <= read_command_out_latched;
+				algorithm_status  <= algorithm_status_latched;
+				algorithm_done    <= done_graph_algorithm;
+				algorithm_running <= cu_ready;
 			end
 		end
 	end
@@ -203,10 +196,10 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 ////////////////////////////////////////////////////////////////////////////
 
 	assign requests[0] = ~read_command_vertex_buffer_status.empty && ~read_buffer_status.alfull && ~burst_command_buffer_states_cu.alfull;
-	assign requests[1] = ~read_command_graph_algorithm_buffer_status.empty && ~read_buffer_status.alfull && ~burst_command_buffer_states_cu.alfull;
+	assign requests[1] = 0;
 
 	assign command_buffer_in[0] = read_command_vertex_buffer;
-	assign command_buffer_in[1] = read_command_graph_algorithm_buffer;
+	assign command_buffer_in[1] = 0
 
 ////////////////////////////////////////////////////////////////////////////
 //Buffer arbitration logic
@@ -300,52 +293,47 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	end
 
 ////////////////////////////////////////////////////////////////////////////
-//cu_vertex_control - vertex job queue
+//READ Engine
 ////////////////////////////////////////////////////////////////////////////
 
-	cu_vertex_job_control cu_vertex_job_control_instant (
-		.clock                      (clock                            ),
-		.rstn                       (rstn                             ),
-		.enabled_in                 (enabled                          ),
-		.algorithm_requests         (algorithm_requests_latched       ),
-		.wed_request_in             (wed_request_in_latched           ),
-		.read_response_in           (read_response_vertex_job         ),
-		.read_data_0_in             (read_data_0_vertex_job           ),
-		.read_data_1_in             (read_data_1_vertex_job           ),
-		.read_buffer_status         (read_command_vertex_buffer_status),
-		.vertex_request             (vertex_job_request               ),
-		.read_command_out           (read_command_out_vertex          ),
-		.vertex_buffer_status       (vertex_buffer_status             ),
-		.vertex                     (vertex_job                       ),
-		.vertex_job_counter_filtered(vertex_job_counter_filtered      )
+	cu_data_read_engine_control cu_data_read_engine_control_instant (
+		.clock                     (clock                     ),
+		.rstn                      (rstn                      ),
+		.enabled_in                (enabled_in                ),
+		.wed_request_in            (wed_request_in            ),
+		.read_response_in          (read_response_in          ),
+		.read_data_0_in            (read_data_0_in            ),
+		.read_data_1_in            (read_data_1_in            ),
+		.read_command_buffer_status(read_command_buffer_status),
+		.read_data_buffer_status   (read_data_buffer_status   ),
+		.read_command_out          (read_command_out          ),
+		.read_data_0_out           (read_data_0_out           ),
+		.read_data_1_out           (read_data_1_out           ),
+		.read_job_counter_done     (read_job_counter_done     )
 	);
 
+
+
 ////////////////////////////////////////////////////////////////////////////
-//graph algorithm control - graph algorithm CU - edge processing
+//WRITE Engine
 ////////////////////////////////////////////////////////////////////////////
 
-	cu_graph_algorithm_control #(.NUM_VERTEX_CU(NUM_VERTEX_CU_GLOBAL)) cu_graph_algorithm_control_instant (
-		.clock                  (clock                                     ),
-		.rstn                   (rstn                                      ),
-		.enabled_in             (enabled                                   ),
-		.algorithm_requests     (algorithm_requests_latched                ),
-		.wed_request_in         (wed_request_in_latched                    ),
-		.read_response_in       (read_response_graph_algorithm             ),
-		.write_response_in      (write_response_in_latched                 ),
-		.read_data_0_in         (read_data_0_graph_algorithm               ),
-		.read_data_1_in         (read_data_1_graph_algorithm               ),
-		.read_buffer_status     (read_command_graph_algorithm_buffer_status),
-		.read_command_out       (read_command_graph_algorithm              ),
-		.write_buffer_status    (write_command_buffer_states_cu            ),
-		.write_command_out      (write_command_cu                          ),
-		.write_data_0_out       (write_data_0_cu                           ),
-		.write_data_1_out       (write_data_1_cu                           ),
-		.vertex_buffer_status   (vertex_buffer_status                      ),
-		.vertex_job             (vertex_job                                ),
-		.vertex_job_request     (vertex_job_request                        ),
-		.vertex_job_counter_done(vertex_job_counter_done                   ),
-		.edge_job_counter_done  (edge_job_counter_done                     )
+	cu_data_write_engine_control cu_data_write_engine_control_instant (
+		.clock                      (clock                      ),
+		.rstn                       (rstn                       ),
+		.enabled_in                 (enabled_in                 ),
+		.wed_request_in             (wed_request_in             ),
+		.write_response_in          (write_response_in          ),
+		.write_data_0_in            (write_data_0_in            ),
+		.write_data_1_in            (write_data_1_in            ),
+		.write_command_buffer_status(write_command_buffer_status),
+		.write_data_buffer_status   (write_data_buffer_status   ),
+		.write_command_out          (write_command_out          ),
+		.write_data_0_out           (write_data_0_out           ),
+		.write_data_1_out           (write_data_1_out           ),
+		.write_job_counter_done     (write_job_counter_done     )
 	);
+
 
 ////////////////////////////////////////////////////////////////////////////
 //cu_vertex_control command buffer
