@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_pkg.sv
 // Create : 2019-09-26 15:20:09
-// Revise : 2019-11-18 16:18:56
+// Revise : 2019-11-18 17:06:03
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -18,6 +18,7 @@ package CU_PKG;
 	import GLOBALS_PKG::*;
 
 	typedef enum int unsigned{
+		STRUCT_INVALID,
 		READ_DATA,
 		WRITE_DATA
 	} array_struct_type;

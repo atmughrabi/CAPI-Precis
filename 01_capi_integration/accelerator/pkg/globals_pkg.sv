@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-11-08 07:28:25
+// Revise : 2019-11-18 17:05:01
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -102,7 +102,7 @@ package GLOBALS_PKG;
 	parameter [0:63] ADDRESS_DATA_WRITE_MOD_MASK   = {{57{1'b0}},{7{1'b1}}};
 
 	parameter CACHELINE_ARRAY_NUM        = (CACHELINE_SIZE >> $clog2(ARRAY_SIZE))                                                                 ; // number of  in one cacheline                                                                ; // number of edges in one cacheline
-	parameter CACHELINE_INT_COUNTER_BITS = $clog2((VERTEX_SIZE_BITS < CACHELINE_SIZE_BITS_HF) ? (2 * CACHELINE_SIZE_BITS_HF)/VERTEX_SIZE_BITS : 2);
+	parameter CACHELINE_INT_COUNTER_BITS = $clog2((ARRAY_SIZE_BITS < CACHELINE_SIZE_BITS_HF) ? (2 * CACHELINE_SIZE_BITS_HF)/ARRAY_SIZE_BITS : 2);
 
 ////////////////////////////////////////////////////////////////////////////
 //  AFU/CU-Control CU IDs any compute unite that generate command must have an ID

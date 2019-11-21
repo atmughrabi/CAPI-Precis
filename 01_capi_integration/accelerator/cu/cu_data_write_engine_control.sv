@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_write_engine_control.sv
 // Create : 2019-11-18 16:55:32
-// Revise : 2019-11-18 17:00:55
+// Revise : 2019-11-21 16:46:22
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -27,7 +27,6 @@ module cu_data_write_engine_control (
 	input  ReadWriteDataLine             write_data_0_in            ,
 	input  ReadWriteDataLine             write_data_1_in            ,
 	input  BufferStatus                  write_command_buffer_status,
-	input  BufferStatus                  write_data_buffer_status   ,
 	output CommandBufferLine             write_command_out          ,
 	output ReadWriteDataLine             write_data_0_out           ,
 	output ReadWriteDataLine             write_data_1_out           ,

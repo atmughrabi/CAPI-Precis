@@ -98,7 +98,7 @@ module wed_control (
 
         command_out.cmd.cu_id         <= INVALID_ID;
         command_out.cmd.cmd_type      <= CMD_INVALID;
-        command_out.cmd.vertex_struct <= STRUCT_INVALID;
+        command_out.cmd.array_struct  <= STRUCT_INVALID;
         command_out.cmd.tag           <= 0;
 
 
@@ -118,7 +118,7 @@ module wed_control (
 
         command_out.cmd.cu_id            <= WED_ID;
         command_out.cmd.cmd_type         <= CMD_WED;
-        command_out.cmd.vertex_struct    <= STRUCT_INVALID;
+        command_out.cmd.array_struct     <= STRUCT_INVALID;
         command_out.cmd.real_size        <= 32;
         command_out.cmd.cacheline_offest <= 0;
         command_out.cmd.tag              <= 0;

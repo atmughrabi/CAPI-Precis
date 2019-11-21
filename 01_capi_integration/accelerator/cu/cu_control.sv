@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-09-26 15:18:39
-// Revise : 2019-11-18 17:02:32
+// Revise : 2019-11-21 16:46:08
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -42,72 +42,33 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	// vertex control variables
 
-
-	BufferStatus    vertex_buffer_status;
-	VertexInterface vertex_job          ;
-	logic           vertex_job_request  ;
-
 	//output latched
 	CommandBufferLine write_command_out_latched;
 	ReadWriteDataLine write_data_0_out_latched ;
 	ReadWriteDataLine write_data_1_out_latched ;
 	CommandBufferLine read_command_out_latched ;
 
-	CommandBufferLine read_command_out_vertex          ;
-	CommandBufferLine read_command_vertex_buffer       ;
-	BufferStatus      read_command_vertex_buffer_status;
-
-	CommandBufferLine read_command_graph_algorithm              ;
-	CommandBufferLine read_command_graph_algorithm_buffer       ;
-	BufferStatus      read_command_graph_algorithm_buffer_status;
-
 	//input lateched
-	WEDInterface       wed_request_in_latched       ;
-	ResponseBufferLine read_response_in_latched     ;
-	ResponseBufferLine read_response_vertex_job     ;
-	ResponseBufferLine read_response_graph_algorithm;
+	WEDInterface       wed_request_in_latched  ;
+	ResponseBufferLine read_response_in_latched;
 
-	ResponseBufferLine write_response_in_latched  ;
-	ReadWriteDataLine  read_data_0_in_latched     ;
-	ReadWriteDataLine  read_data_1_in_latched     ;
-	ReadWriteDataLine  read_data_0_vertex_job     ;
-	ReadWriteDataLine  read_data_1_vertex_job     ;
-	ReadWriteDataLine  read_data_0_graph_algorithm;
-	ReadWriteDataLine  read_data_1_graph_algorithm;
+	ResponseBufferLine write_response_in_latched;
+	ReadWriteDataLine  read_data_0_in_latched   ;
+	ReadWriteDataLine  read_data_1_in_latched   ;
+	ReadWriteDataLine  read_data_0_out          ;
+	ReadWriteDataLine  read_data_1_out          ;
+	ReadWriteDataLine  write_data_0_in          ;
+	ReadWriteDataLine  write_data_1_in          ;
 
-	CommandBufferLine                    command_arbiter_out;
-	logic             [NUM_REQUESTS-1:0] requests           ;
-	logic             [NUM_REQUESTS-1:0] ready              ;
-	CommandBufferLine [NUM_REQUESTS-1:0] command_buffer_in  ;
+	logic [                 0:63] algorithm_status_latched  ;
+	logic [                 0:63] algorithm_requests_latched;
+	logic                         done_graph_algorithm      ;
+	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done    ;
+	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done     ;
 
-	logic [0:63] algorithm_status_latched  ;
-	logic [0:63] algorithm_requests_latched;
-	logic        done_graph_algorithm      ;
-
-
-	logic [0:(VERTEX_SIZE_BITS-1)] vertex_job_counter_filtered;
-	logic [0:(VERTEX_SIZE_BITS-1)] vertex_job_counter_done    ;
-	logic [  0:(EDGE_SIZE_BITS-1)] edge_job_counter_done      ;
-
-	logic [0:(VERTEX_SIZE_BITS-1)] vertex_job_counter_filtered_latched;
-	logic [0:(VERTEX_SIZE_BITS-1)] vertex_job_counter_done_latched    ;
-	logic [  0:(EDGE_SIZE_BITS-1)] edge_job_counter_done_latched      ;
-
-	CommandBufferLine write_command_cu              ;
-	BufferStatus      write_command_buffer_states_cu;
-
-	BufferStatus      write_data_0_buffer_states_cu;
-	BufferStatus      write_data_1_buffer_states_cu;
-	ReadWriteDataLine write_data_0_cu              ;
-	ReadWriteDataLine write_data_1_cu              ;
-	logic             ready_write_command_cu       ;
-
-	logic enabled;
-
-	BufferStatus      burst_command_buffer_states_cu;
-	logic             burst_command_buffer_pop      ;
-	CommandBufferLine burst_command_buffer_out      ;
-	logic             cu_ready                      ;
+	logic             enabled                 ;
+	CommandBufferLine burst_command_buffer_out;
+	logic             cu_ready                ;
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
@@ -133,13 +94,13 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 		if(wed_request_in_latched.valid)begin
 			// if(done_graph_algorithm)begin
-			algorithm_status_latched = {edge_job_counter_done,(vertex_job_counter_filtered+vertex_job_counter_done)};
+			algorithm_status_latched = {write_job_counter_done,read_job_counter_done};
 			// end
 		end
 	end
 
 ////////////////////////////////////////////////////////////////////////////
-//Drive input output
+//Drive output
 ////////////////////////////////////////////////////////////////////////////
 
 	assign read_command_out_latched = burst_command_buffer_out;
@@ -167,7 +128,10 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		end
 	end
 
-	// drive inputs
+////////////////////////////////////////////////////////////////////////////
+//Drive input
+////////////////////////////////////////////////////////////////////////////
+
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
 			wed_request_in_latched     <= 0;
@@ -191,283 +155,46 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		end
 	end
 
-////////////////////////////////////////////////////////////////////////////
-//read command request logic - output
-////////////////////////////////////////////////////////////////////////////
-
-	assign requests[0] = ~read_command_vertex_buffer_status.empty && ~read_buffer_status.alfull && ~burst_command_buffer_states_cu.alfull;
-	assign requests[1] = 0;
-
-	assign command_buffer_in[0] = read_command_vertex_buffer;
-	assign command_buffer_in[1] = 0
-
-////////////////////////////////////////////////////////////////////////////
-//Buffer arbitration logic
-////////////////////////////////////////////////////////////////////////////
-
-	command_buffer_arbiter #(.NUM_REQUESTS(NUM_REQUESTS)) read_command_buffer_arbiter_instant (
-		.clock              (clock              ),
-		.rstn               (rstn               ),
-		.enabled_in         (enabled            ),
-		.requests           (requests           ),
-		.command_buffer_in  (command_buffer_in  ),
-		.command_arbiter_out(command_arbiter_out),
-		.ready              (ready              )
-	);
-
-////////////////////////////////////////////////////////////////////////////
-//read response arbitration logic - input
-////////////////////////////////////////////////////////////////////////////
-
-	always_ff @(posedge clock or negedge rstn) begin
-		if(~rstn) begin
-			read_response_vertex_job      <= 0;
-			read_response_graph_algorithm <= 0;
-		end else begin
-			if(enabled && read_response_in_latched.valid) begin
-				case (read_response_in_latched.cmd.cu_id)
-					VERTEX_CONTROL_ID : begin
-						read_response_vertex_job      <= read_response_in_latched;
-						read_response_graph_algorithm <= 0;
-					end
-					default : begin
-						read_response_graph_algorithm <= read_response_in_latched;
-						read_response_vertex_job      <= 0;
-					end
-				endcase
-			end else begin
-				read_response_vertex_job      <= 0;
-				read_response_graph_algorithm <= 0;
-			end
-		end
-	end
-
-////////////////////////////////////////////////////////////////////////////
-//read data request logic - input
-////////////////////////////////////////////////////////////////////////////
-
-	always_ff @(posedge clock or negedge rstn) begin
-		if(~rstn) begin
-			read_data_0_vertex_job      <= 0;
-			read_data_0_graph_algorithm <= 0;
-		end else begin
-			if(enabled && read_data_0_in_latched.valid) begin
-				case (read_data_0_in_latched.cmd.cu_id)
-					VERTEX_CONTROL_ID : begin
-						read_data_0_vertex_job      <= read_data_0_in_latched;
-						read_data_0_graph_algorithm <= 0;
-					end
-					default : begin
-						read_data_0_graph_algorithm <= read_data_0_in_latched;
-						read_data_0_vertex_job      <= 0;
-					end
-				endcase
-			end else begin
-				read_data_0_vertex_job      <= 0;
-				read_data_0_graph_algorithm <= 0;
-			end
-		end
-	end
-
-	always_ff @(posedge clock or negedge rstn) begin
-		if(~rstn) begin
-			read_data_1_vertex_job      <= 0;
-			read_data_1_graph_algorithm <= 0;
-		end else begin
-			if(enabled && read_data_1_in_latched.valid) begin
-				case (read_data_1_in_latched.cmd.cu_id)
-					VERTEX_CONTROL_ID : begin
-						read_data_1_vertex_job      <= read_data_1_in_latched;
-						read_data_1_graph_algorithm <= 0;
-					end
-					default : begin
-						read_data_1_graph_algorithm <= read_data_1_in_latched;
-						read_data_1_vertex_job      <= 0;
-					end
-				endcase
-			end else begin
-				read_data_1_vertex_job      <= 0;
-				read_data_1_graph_algorithm <= 0;
-			end
-		end
-	end
 
 ////////////////////////////////////////////////////////////////////////////
 //READ Engine
 ////////////////////////////////////////////////////////////////////////////
 
 	cu_data_read_engine_control cu_data_read_engine_control_instant (
-		.clock                     (clock                     ),
-		.rstn                      (rstn                      ),
-		.enabled_in                (enabled_in                ),
-		.wed_request_in            (wed_request_in            ),
-		.read_response_in          (read_response_in          ),
-		.read_data_0_in            (read_data_0_in            ),
-		.read_data_1_in            (read_data_1_in            ),
-		.read_command_buffer_status(read_command_buffer_status),
-		.read_data_buffer_status   (read_data_buffer_status   ),
-		.read_command_out          (read_command_out          ),
-		.read_data_0_out           (read_data_0_out           ),
-		.read_data_1_out           (read_data_1_out           ),
-		.read_job_counter_done     (read_job_counter_done     )
+		.clock                     (clock                   ),
+		.rstn                      (rstn                    ),
+		.enabled_in                (enabled                 ),
+		.wed_request_in            (wed_request_in_latched  ),
+		.read_response_in          (read_response_in_latched),
+		.read_data_0_in            (read_data_0_in_latched  ),
+		.read_data_1_in            (read_data_1_in_latched  ),
+		.read_command_buffer_status(read_buffer_status      ),
+		.read_command_out          (read_command_out        ),
+		.read_data_0_out           (read_data_0_out         ),
+		.read_data_1_out           (read_data_1_out         ),
+		.read_job_counter_done     (read_job_counter_done   )
 	);
-
-
 
 ////////////////////////////////////////////////////////////////////////////
 //WRITE Engine
 ////////////////////////////////////////////////////////////////////////////
 
+	assign write_data_0_in = read_data_0_out;
+	assign write_data_1_in = read_data_1_out;
+
 	cu_data_write_engine_control cu_data_write_engine_control_instant (
-		.clock                      (clock                      ),
-		.rstn                       (rstn                       ),
-		.enabled_in                 (enabled_in                 ),
-		.wed_request_in             (wed_request_in             ),
-		.write_response_in          (write_response_in          ),
-		.write_data_0_in            (write_data_0_in            ),
-		.write_data_1_in            (write_data_1_in            ),
-		.write_command_buffer_status(write_command_buffer_status),
-		.write_data_buffer_status   (write_data_buffer_status   ),
-		.write_command_out          (write_command_out          ),
-		.write_data_0_out           (write_data_0_out           ),
-		.write_data_1_out           (write_data_1_out           ),
-		.write_job_counter_done     (write_job_counter_done     )
-	);
-
-
-////////////////////////////////////////////////////////////////////////////
-//cu_vertex_control command buffer
-////////////////////////////////////////////////////////////////////////////
-
-	fifo #(
-		.WIDTH($bits(CommandBufferLine)),
-		.DEPTH(READ_CMD_BUFFER_SIZE    )
-	) read_command_job_vertex_buffer_fifo_instant (
-		.clock   (clock                                   ),
-		.rstn    (rstn                                    ),
-		
-		.push    (read_command_out_vertex.valid           ),
-		.data_in (read_command_out_vertex                 ),
-		.full    (read_command_vertex_buffer_status.full  ),
-		.alFull  (read_command_vertex_buffer_status.alfull),
-		
-		.pop     (ready[0]                                ),
-		.valid   (read_command_vertex_buffer_status.valid ),
-		.data_out(read_command_vertex_buffer              ),
-		.empty   (read_command_vertex_buffer_status.empty )
-	);
-
-////////////////////////////////////////////////////////////////////////////
-//cu_vertex_control command buffer
-////////////////////////////////////////////////////////////////////////////
-
-	fifo #(
-		.WIDTH($bits(CommandBufferLine)),
-		.DEPTH(READ_CMD_BUFFER_SIZE    )
-	) read_command_graph_algorithm_buffer_fifo_instant (
-		.clock   (clock                                            ),
-		.rstn    (rstn                                             ),
-		
-		.push    (read_command_graph_algorithm.valid               ),
-		.data_in (read_command_graph_algorithm                     ),
-		.full    (read_command_graph_algorithm_buffer_status.full  ),
-		.alFull  (read_command_graph_algorithm_buffer_status.alfull),
-		
-		.pop     (ready[1]                                         ),
-		.valid   (read_command_graph_algorithm_buffer_status.valid ),
-		.data_out(read_command_graph_algorithm_buffer              ),
-		.empty   (read_command_graph_algorithm_buffer_status.empty )
-	);
-
-////////////////////////////////////////////////////////////////////////////
-//Burst Buffer Read Commands
-////////////////////////////////////////////////////////////////////////////
-
-	assign burst_command_buffer_pop = ~burst_command_buffer_states_cu.empty && ~read_buffer_status.alfull;
-
-	fifo #(
-		.WIDTH   ($bits(CommandBufferLine)),
-		.DEPTH   (16                      ),
-		.HEADROOM(8                       )
-	) burst_command_buffer_fifo_instant (
-		.clock   (clock                                ),
-		.rstn    (rstn                                 ),
-		
-		.push    (command_arbiter_out.valid            ),
-		.data_in (command_arbiter_out                  ),
-		.full    (burst_command_buffer_states_cu.full  ),
-		.alFull  (burst_command_buffer_states_cu.alfull),
-		
-		.pop     (burst_command_buffer_pop             ),
-		.valid   (burst_command_buffer_states_cu.valid ),
-		.data_out(burst_command_buffer_out             ),
-		.empty   (burst_command_buffer_states_cu.empty )
-	);
-
-	////////////////////////////////////////////////////////////////////////////
-	// write command CU Buffers
-	////////////////////////////////////////////////////////////////////////////
-
-	assign ready_write_command_cu = ~write_command_buffer_states_cu.empty && ~write_buffer_status.alfull &&
-		~write_data_0_buffer_states_cu.empty && ~write_data_1_buffer_states_cu.empty;
-
-	fifo #(
-		.WIDTH($bits(CommandBufferLine)),
-		.DEPTH(WRITE_CMD_BUFFER_SIZE   )
-	) write_command_graph_algorithm_buffer_fifo_instant (
-		.clock   (clock                                ),
-		.rstn    (rstn                                 ),
-		
-		.push    (write_command_cu.valid               ),
-		.data_in (write_command_cu                     ),
-		.full    (write_command_buffer_states_cu.full  ),
-		.alFull  (write_command_buffer_states_cu.alfull),
-		
-		.pop     (ready_write_command_cu               ),
-		.valid   (write_command_buffer_states_cu.valid ),
-		.data_out(write_command_out_latched            ),
-		.empty   (write_command_buffer_states_cu.empty )
-	);
-
-
-	////////////////////////////////////////////////////////////////////////////
-	// write command CU DATA Buffers
-	////////////////////////////////////////////////////////////////////////////
-
-	fifo #(
-		.WIDTH($bits(ReadWriteDataLine)),
-		.DEPTH(WRITE_CMD_BUFFER_SIZE   )
-	) write_data_graph_algorithm_0_buffer_fifo_instant (
-		.clock   (clock                               ),
-		.rstn    (rstn                                ),
-		
-		.push    (write_data_0_cu.valid               ),
-		.data_in (write_data_0_cu                     ),
-		.full    (write_data_0_buffer_states_cu.full  ),
-		.alFull  (write_data_0_buffer_states_cu.alfull),
-		
-		.pop     (ready_write_command_cu              ),
-		.valid   (write_data_0_buffer_states_cu.valid ),
-		.data_out(write_data_0_out_latched            ),
-		.empty   (write_data_0_buffer_states_cu.empty )
-	);
-
-	fifo #(
-		.WIDTH($bits(ReadWriteDataLine)),
-		.DEPTH(WRITE_CMD_BUFFER_SIZE   )
-	) write_data_graph_algorithm_1_buffer_fifo_instant (
-		.clock   (clock                               ),
-		.rstn    (rstn                                ),
-		
-		.push    (write_data_1_cu.valid               ),
-		.data_in (write_data_1_cu                     ),
-		.full    (write_data_1_buffer_states_cu.full  ),
-		.alFull  (write_data_1_buffer_states_cu.alfull),
-		
-		.pop     (ready_write_command_cu              ),
-		.valid   (write_data_1_buffer_states_cu.valid ),
-		.data_out(write_data_1_out_latched            ),
-		.empty   (write_data_1_buffer_states_cu.empty )
+		.clock                      (clock                    ),
+		.rstn                       (rstn                     ),
+		.enabled_in                 (enabled                  ),
+		.wed_request_in             (wed_request_in_latched   ),
+		.write_response_in          (write_response_in_latched),
+		.write_data_0_in            (write_data_0_in          ),
+		.write_data_1_in            (write_data_1_in          ),
+		.write_command_buffer_status(write_buffer_status      ),
+		.write_command_out          (write_command_out_latched),
+		.write_data_0_out           (write_data_0_out_latched ),
+		.write_data_1_out           (write_data_1_out_latched ),
+		.write_job_counter_done     (write_job_counter_done   )
 	);
 
 
