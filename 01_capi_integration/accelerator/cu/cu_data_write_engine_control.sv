@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_write_engine_control.sv
 // Create : 2019-11-18 16:55:32
-// Revise : 2019-11-21 17:58:44
+// Revise : 2019-11-25 00:49:44
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -37,5 +37,8 @@ module cu_data_write_engine_control (
 	assign write_data_0_out       = 0;
 	assign write_data_1_out       = 0;
 	assign write_job_counter_done = 0;
+
+
+	
 
 endmodule

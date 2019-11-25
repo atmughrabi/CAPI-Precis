@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_read_engine_control.sv
 // Create : 2019-11-18 16:39:26
-// Revise : 2019-11-24 17:09:00
+// Revise : 2019-11-25 00:43:18
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ module cu_data_read_engine_control (
 				read_command_out      <= read_command_out_latched;
 				read_job_counter_done <= read_job_counter_done_latched;
 				read_data_0_out       <= read_data_0_in_latched;
-				read_data_1_out       <= read_data_0_in_latched;
+				read_data_1_out       <= read_data_1_in_latched;
 			end
 		end
 	end
@@ -127,10 +127,10 @@ module cu_data_read_engine_control (
 			next_offest              <= 0;
 		end
 		else begin
-			if(~wed_request_in_latched.valid)
+			if(~wed_request_in_latched.valid && enabled)
 				wed_request_in_latched <= wed_request_in;
 
-			if (wed_request_in_latched.valid && ~read_command_buffer_status.alfull && (|wed_request_in_latched.wed.size_send)) begin
+			if (wed_request_in_latched.valid && ~read_command_buffer_status.alfull && (|wed_request_in_latched.wed.size_send) && enabled) begin
 
 				if(wed_request_in_latched.wed.size_send >= CACHELINE_ARRAY_NUM)begin
 					wed_request_in_latched.wed.size_send   <= wed_request_in_latched.wed.size_send - CACHELINE_ARRAY_NUM;
@@ -144,7 +144,7 @@ module cu_data_read_engine_control (
 				read_command_out_latched.cmd.cu_id            <= DATA_READ_CONTROL_ID;
 				read_command_out_latched.cmd.cmd_type         <= CMD_READ;
 				read_command_out_latched.cmd.cacheline_offest <= 0;
-
+				read_command_out_latched.cmd.address_offest   <= next_offest;
 
 				read_command_out_latched.cmd.abt <= map_CABT(wed_request_in_latched.wed.afu_config[0:2]);
 				read_command_out_latched.abt     <= map_CABT(wed_request_in_latched.wed.afu_config[0:2]);

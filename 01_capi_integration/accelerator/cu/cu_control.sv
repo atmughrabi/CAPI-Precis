@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-09-26 15:18:39
-// Revise : 2019-11-24 23:42:12
+// Revise : 2019-11-25 00:37:13
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -66,8 +66,9 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done    ;
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done     ;
 
-	logic enabled ;
-	logic cu_ready;
+	logic enabled         ;
+	logic enabled_instants;
+	logic cu_ready        ;
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
@@ -77,6 +78,15 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			enabled <= 0;
 		end else begin
 			enabled <= enabled_in;
+		end
+	end
+
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			enabled_instants <= 0;
+		end else begin
+			enabled_instants <= enabled && cu_ready;
 		end
 	end
 
@@ -158,7 +168,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	cu_data_read_engine_control cu_data_read_engine_control_instant (
 		.clock                     (clock                   ),
 		.rstn                      (rstn                    ),
-		.enabled_in                (enabled                 ),
+		.enabled_in                (enabled_instants        ),
 		.wed_request_in            (wed_request_in_latched  ),
 		.read_response_in          (read_response_in_latched),
 		.read_data_0_in            (read_data_0_in_latched  ),
@@ -180,7 +190,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	cu_data_write_engine_control cu_data_write_engine_control_instant (
 		.clock                      (clock                    ),
 		.rstn                       (rstn                     ),
-		.enabled_in                 (enabled                  ),
+		.enabled_in                 (enabled_instants         ),
 		.wed_request_in             (wed_request_in_latched   ),
 		.write_response_in          (write_response_in_latched),
 		.write_data_0_in            (write_data_0_in          ),
