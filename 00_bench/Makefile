@@ -366,7 +366,7 @@ run-capi-fpga-verbose: graph-capi
 
 
 .PHONY: run-test-capi
-run-test-capi: CAPI_FLAGS = -DSIM $(CAPI_AFU_CONFIG)
+run-test-capi: CAPI_FLAGS = -DSIM $(CAPI_AFU_CONFIG) -DVERBOSE 
 run-test-capi: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-test-capi: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-test-capi: test-capi

@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : capienv.c
 // Create : 2019-10-09 19:20:39
-// Revise : 2019-11-12 19:10:59
+// Revise : 2019-11-24 23:45:37
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
@@ -95,7 +95,7 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 
         cxl_mmio_read64((*afu), ALGO_STATUS_DONE, &(afu_status->algo_status_done));
         cxl_mmio_write64((*afu), ALGO_STATUS_DONE_ACK, afu_status->algo_status_done);
-
+        
         if((((afu_status->algo_status_done) << 32) >> 32) >= (afu_status->algo_stop))
             break;
     }

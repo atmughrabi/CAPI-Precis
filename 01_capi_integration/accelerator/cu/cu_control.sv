@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-09-26 15:18:39
-// Revise : 2019-11-21 16:46:08
+// Revise : 2019-11-24 23:42:12
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -62,13 +62,12 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	logic [                 0:63] algorithm_status_latched  ;
 	logic [                 0:63] algorithm_requests_latched;
-	logic                         done_graph_algorithm      ;
+	logic                         done_algorithm            ;
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done    ;
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done     ;
 
-	logic             enabled                 ;
-	CommandBufferLine burst_command_buffer_out;
-	logic             cu_ready                ;
+	logic enabled ;
+	logic cu_ready;
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
@@ -85,17 +84,14 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 //Done signal
 ////////////////////////////////////////////////////////////////////////////a
 
-	assign done_graph_algorithm = wed_request_in_latched.valid;
+	assign done_algorithm = wed_request_in_latched.valid && (wed_request_in_latched.wed.size_send == read_job_counter_done);
 
 	assign cu_ready = (|algorithm_requests_latched);
 
 	always_comb begin
 		algorithm_status_latched = 0;
-
 		if(wed_request_in_latched.valid)begin
-			// if(done_graph_algorithm)begin
 			algorithm_status_latched = {write_job_counter_done,read_job_counter_done};
-			// end
 		end
 	end
 
@@ -103,7 +99,6 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 //Drive output
 ////////////////////////////////////////////////////////////////////////////
 
-	assign read_command_out_latched = burst_command_buffer_out;
 
 	// drive outputs
 	always_ff @(posedge clock or negedge rstn) begin
@@ -122,7 +117,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				write_data_1_out  <= write_data_1_out_latched;
 				read_command_out  <= read_command_out_latched;
 				algorithm_status  <= algorithm_status_latched;
-				algorithm_done    <= done_graph_algorithm;
+				algorithm_done    <= done_algorithm;
 				algorithm_running <= cu_ready;
 			end
 		end
@@ -169,7 +164,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		.read_data_0_in            (read_data_0_in_latched  ),
 		.read_data_1_in            (read_data_1_in_latched  ),
 		.read_command_buffer_status(read_buffer_status      ),
-		.read_command_out          (read_command_out        ),
+		.read_command_out          (read_command_out_latched),
 		.read_data_0_out           (read_data_0_out         ),
 		.read_data_1_out           (read_data_1_out         ),
 		.read_job_counter_done     (read_job_counter_done   )

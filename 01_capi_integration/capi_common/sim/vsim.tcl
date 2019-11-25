@@ -7,9 +7,7 @@ proc r  {} {
   echo "Compiling libs"
   
   # compile packages
- 
   echo "Compiling Packages"
-
   vlog -quiet ../../accelerator/pkg/globals_pkg.sv
   vlog -quiet ../../accelerator/pkg/capi_pkg.sv
   vlog -quiet ../../accelerator/pkg/wed_pkg.sv
