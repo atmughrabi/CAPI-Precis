@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : algorithm.c
 // Create : 2019-09-28 14:41:30
-// Revise : 2019-11-25 18:59:19
+// Revise : 2019-11-25 19:15:03
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ __u32 compareDataArrays(struct DataArrays *dataArrays){
     {
     	
         if(dataArrays->array_receive[i] != dataArrays->array_send[i]){
-        	printf("%u == %u\n",dataArrays->array_receive[i], dataArrays->array_send[i] );
+        	printf("%u != %u\n",dataArrays->array_receive[i], dataArrays->array_send[i] );
         	missmatch ++;
         }
     }

@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_write_engine_control.sv
 // Create : 2019-11-18 16:55:32
-// Revise : 2019-11-25 18:38:55
+// Revise : 2019-11-25 21:36:32
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ import CAPI_PKG::*;
 import WED_PKG::*;
 import AFU_PKG::*;
 import CU_PKG::*;
+import CREDIT_PKG::*;
 
 module cu_data_write_engine_control (
 	input  logic                         clock                      , // Clock
@@ -164,7 +165,6 @@ module cu_data_write_engine_control (
 					write_command_out_latched.command <= WRITE_NA;
 				end
 
-
 			end else begin
 				write_command_out_latched <= 0;
 				write_data_0_out_latched  <= 0;
@@ -182,7 +182,9 @@ module cu_data_write_engine_control (
 
 	fifo #(
 		.WIDTH($bits(ReadWriteDataLine)),
-		.DEPTH(WRITE_DATA_BUFFER_SIZE  )
+		.DEPTH(WRITE_DATA_BUFFER_SIZE + READ_CMD_BUFFER_SIZE ),
+		.HEADROOM (READ_CMD_BUFFER_SIZE + CREDITS_TOTAL)
+
 	) cu_write_data_0_buffer_fifo_instant (
 		.clock   (clock                               ),
 		.rstn    (rstn                                ),
@@ -201,7 +203,9 @@ module cu_data_write_engine_control (
 
 	fifo #(
 		.WIDTH($bits(ReadWriteDataLine)),
-		.DEPTH(WRITE_DATA_BUFFER_SIZE  )
+		.DEPTH(WRITE_DATA_BUFFER_SIZE + READ_CMD_BUFFER_SIZE),
+		.HEADROOM (READ_CMD_BUFFER_SIZE + CREDITS_TOTAL)
+
 	) cu_write_data_1_buffer_fifo_instant (
 		.clock   (clock                               ),
 		.rstn    (rstn                                ),

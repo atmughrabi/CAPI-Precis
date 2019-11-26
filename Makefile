@@ -41,9 +41,10 @@ export MAIN_DIR		  	= main
 #########################################################
 
 export NUM_THREADS  = 8
-
+LHS=256
+RHS=1
 #test
-export SIZE = 256
+export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
 #4GB
 # export SIZE = 1073741824
@@ -56,11 +57,24 @@ export ARGS = -n $(NUM_THREADS) -s $(SIZE)
 ##############################################
 # CAPI FPGA  GRAPH AFU PERFORMANCE CONFIG    #
 ##############################################
-# // cu_read_engine_control            5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [27:31] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [22:26] [9] [8] [5:7]
+
+# // cu_read_engine_control            5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 00000 00000 00000 00000 00000 00000 00
 export AFU_CONFIG_STRICT_1=0x00000000  
+
+# // cu_read_engine_control            5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 10000 10000 00000 00000 00000 00000 00
+# export AFU_CONFIG_STRICT_1=0x84000000
+
+# // cu_read_engine_control            5-bits PREF | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11000 11000 00000 00000 00000 00000 00
+# export AFU_CONFIG_STRICT_1=0xC6000000
 
  
 export AFU_CONFIG_GENERIC=$(AFU_CONFIG_STRICT_1)

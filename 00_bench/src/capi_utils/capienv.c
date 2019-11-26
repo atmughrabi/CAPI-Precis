@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : capienv.c
 // Create : 2019-10-09 19:20:39
-// Revise : 2019-11-25 18:44:16
+// Revise : 2019-11-25 19:13:58
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
@@ -204,7 +204,7 @@ struct  WEDStruct *mapDataArraysToWED(struct DataArrays *dataArrays)
     wed->size_recive  = dataArrays->size;
 
     wed->array_send     = dataArrays->array_send;
-    wed->array_receive  = dataArrays->array_send;
+    wed->array_receive  = dataArrays->array_receive;
 
 
     wed->afu_config = AFU_CONFIG;
