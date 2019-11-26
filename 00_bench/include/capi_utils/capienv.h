@@ -95,6 +95,7 @@ struct __attribute__((__packed__)) WEDStruct
  #ifndef AFU_CONFIG
     #define AFU_CONFIG AFU_CONFIG_STRICT_1
  #endif
+
 struct WEDStruct *mapDataArraysToWED(struct DataArrays *dataArrays);
 void printWEDPointers(struct  WEDStruct *wed);
 

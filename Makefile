@@ -49,6 +49,9 @@ export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 #4GB
 # export SIZE = 1073741824
 
+#16 GB
+# export SIZE = 4294967295
+
 #1GB
 # export SIZE = 268435456
 
@@ -62,19 +65,37 @@ export ARGS = -n $(NUM_THREADS) -s $(SIZE)
 # // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 00000 00000 00000 00000 00000 00000 00
-export AFU_CONFIG_STRICT_1=0x00000000  
+export AFU_CONFIG_STRICT_1=0b00000000000000000000000000000000
 
 # // cu_read_engine_control            5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 10000 10000 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0x84000000
+# export AFU_CONFIG_STRICT_1=0b10000100000000000000000000000000
 
 # // cu_read_engine_control            5-bits PREF | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11000 11000 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0xC6000000
+# export AFU_CONFIG_STRICT_1=0b11000110000000000000000000000000
+
+# // cu_read_engine_control            5-bits STRICT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 00010 00001 00000 00000 00000 00000 00
+# export AFU_CONFIG_STRICT_1=0b00010000010000000000000000000000
+
+# // cu_read_engine_control            5-bits ABORT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 10010 10001 00000 00000 00000 00000 00
+# export AFU_CONFIG_STRICT_1=0b10010100010000000000000000000000
+
+# // cu_read_engine_control            5-bits PREF | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11010 11001 00000 00000 00000 00000 00
+# export AFU_CONFIG_STRICT_1=0b11010110010000000000000000000000
 
  
 export AFU_CONFIG_GENERIC=$(AFU_CONFIG_STRICT_1)
