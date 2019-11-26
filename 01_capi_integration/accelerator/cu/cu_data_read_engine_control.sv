@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_read_engine_control.sv
 // Create : 2019-11-18 16:39:26
-// Revise : 2019-11-25 00:43:18
+// Revise : 2019-11-25 18:30:12
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -19,17 +19,18 @@ import AFU_PKG::*;
 import CU_PKG::*;
 
 module cu_data_read_engine_control (
-	input  logic                         clock                     , // Clock
-	input  logic                         rstn                      ,
-	input  logic                         enabled_in                ,
-	input  WEDInterface                  wed_request_in            ,
-	input  ResponseBufferLine            read_response_in          ,
-	input  ReadWriteDataLine             read_data_0_in            ,
-	input  ReadWriteDataLine             read_data_1_in            ,
-	input  BufferStatus                  read_command_buffer_status,
-	output CommandBufferLine             read_command_out          ,
-	output ReadWriteDataLine             read_data_0_out           ,
-	output ReadWriteDataLine             read_data_1_out           ,
+	input  logic                         clock                      , // Clock
+	input  logic                         rstn                       ,
+	input  logic                         enabled_in                 ,
+	input  WEDInterface                  wed_request_in             ,
+	input  ResponseBufferLine            read_response_in           ,
+	input  ReadWriteDataLine             read_data_0_in             ,
+	input  ReadWriteDataLine             read_data_1_in             ,
+	input  BufferStatus                  read_command_buffer_status ,
+	input  BufferStatus                  read_data_out_buffer_status,
+	output CommandBufferLine             read_command_out           ,
+	output ReadWriteDataLine             read_data_0_out            ,
+	output ReadWriteDataLine             read_data_1_out            ,
 	output logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done
 );
 
@@ -130,7 +131,7 @@ module cu_data_read_engine_control (
 			if(~wed_request_in_latched.valid && enabled)
 				wed_request_in_latched <= wed_request_in;
 
-			if (wed_request_in_latched.valid && ~read_command_buffer_status.alfull && (|wed_request_in_latched.wed.size_send) && enabled) begin
+			if (wed_request_in_latched.valid && ~read_command_buffer_status.alfull && ~read_data_out_buffer_status.alfull && (|wed_request_in_latched.wed.size_send) && enabled) begin
 
 				if(wed_request_in_latched.wed.size_send >= CACHELINE_ARRAY_NUM)begin
 					wed_request_in_latched.wed.size_send   <= wed_request_in_latched.wed.size_send - CACHELINE_ARRAY_NUM;

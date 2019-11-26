@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-09-26 15:18:39
-// Revise : 2019-11-25 00:37:13
+// Revise : 2019-11-25 18:46:23
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -52,13 +52,14 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	WEDInterface       wed_request_in_latched  ;
 	ResponseBufferLine read_response_in_latched;
 
-	ResponseBufferLine write_response_in_latched;
-	ReadWriteDataLine  read_data_0_in_latched   ;
-	ReadWriteDataLine  read_data_1_in_latched   ;
-	ReadWriteDataLine  read_data_0_out          ;
-	ReadWriteDataLine  read_data_1_out          ;
-	ReadWriteDataLine  write_data_0_in          ;
-	ReadWriteDataLine  write_data_1_in          ;
+	ResponseBufferLine write_response_in_latched  ;
+	ReadWriteDataLine  read_data_0_in_latched     ;
+	ReadWriteDataLine  read_data_1_in_latched     ;
+	ReadWriteDataLine  read_data_0_out            ;
+	ReadWriteDataLine  read_data_1_out            ;
+	ReadWriteDataLine  write_data_0_in            ;
+	ReadWriteDataLine  write_data_1_in            ;
+	BufferStatus       write_data_in_buffer_status;
 
 	logic [                 0:63] algorithm_status_latched  ;
 	logic [                 0:63] algorithm_requests_latched;
@@ -94,7 +95,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 //Done signal
 ////////////////////////////////////////////////////////////////////////////a
 
-	assign done_algorithm = wed_request_in_latched.valid && (wed_request_in_latched.wed.size_send == read_job_counter_done);
+	assign done_algorithm = wed_request_in_latched.valid && (wed_request_in_latched.wed.size_send == read_job_counter_done) && (wed_request_in_latched.wed.size_recive == write_job_counter_done);
 
 	assign cu_ready = (|algorithm_requests_latched);
 
@@ -166,40 +167,45 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 ////////////////////////////////////////////////////////////////////////////
 
 	cu_data_read_engine_control cu_data_read_engine_control_instant (
-		.clock                     (clock                   ),
-		.rstn                      (rstn                    ),
-		.enabled_in                (enabled_instants        ),
-		.wed_request_in            (wed_request_in_latched  ),
-		.read_response_in          (read_response_in_latched),
-		.read_data_0_in            (read_data_0_in_latched  ),
-		.read_data_1_in            (read_data_1_in_latched  ),
-		.read_command_buffer_status(read_buffer_status      ),
-		.read_command_out          (read_command_out_latched),
-		.read_data_0_out           (read_data_0_out         ),
-		.read_data_1_out           (read_data_1_out         ),
-		.read_job_counter_done     (read_job_counter_done   )
+		.clock                      (clock                      ),
+		.rstn                       (rstn                       ),
+		.enabled_in                 (enabled_instants           ),
+		.wed_request_in             (wed_request_in_latched     ),
+		.read_response_in           (read_response_in_latched   ),
+		.read_data_0_in             (read_data_0_in_latched     ),
+		.read_data_1_in             (read_data_1_in_latched     ),
+		.read_command_buffer_status (read_buffer_status         ),
+		.read_data_out_buffer_status(write_data_in_buffer_status),
+		.read_command_out           (read_command_out_latched   ),
+		.read_data_0_out            (read_data_0_out            ),
+		.read_data_1_out            (read_data_1_out            ),
+		.read_job_counter_done      (read_job_counter_done      )
 	);
 
 ////////////////////////////////////////////////////////////////////////////
 //WRITE Engine
 ////////////////////////////////////////////////////////////////////////////
 
-	assign write_data_0_in = read_data_0_out;
+	always_ff @(posedge clock) begin
+		 write_data_0_in <= read_data_0_out;
+	end
+
 	assign write_data_1_in = read_data_1_out;
 
 	cu_data_write_engine_control cu_data_write_engine_control_instant (
-		.clock                      (clock                    ),
-		.rstn                       (rstn                     ),
-		.enabled_in                 (enabled_instants         ),
-		.wed_request_in             (wed_request_in_latched   ),
-		.write_response_in          (write_response_in_latched),
-		.write_data_0_in            (write_data_0_in          ),
-		.write_data_1_in            (write_data_1_in          ),
-		.write_command_buffer_status(write_buffer_status      ),
-		.write_command_out          (write_command_out_latched),
-		.write_data_0_out           (write_data_0_out_latched ),
-		.write_data_1_out           (write_data_1_out_latched ),
-		.write_job_counter_done     (write_job_counter_done   )
+		.clock                      (clock                      ),
+		.rstn                       (rstn                       ),
+		.enabled_in                 (enabled_instants           ),
+		.wed_request_in             (wed_request_in_latched     ),
+		.write_response_in          (write_response_in_latched  ),
+		.write_data_0_in            (write_data_0_in            ),
+		.write_data_1_in            (write_data_1_in            ),
+		.write_command_buffer_status(write_buffer_status        ),
+		.write_data_in_buffer_status(write_data_in_buffer_status),
+		.write_command_out          (write_command_out_latched  ),
+		.write_data_0_out           (write_data_0_out_latched   ),
+		.write_data_1_out           (write_data_1_out_latched   ),
+		.write_job_counter_done     (write_job_counter_done     )
 	);
 
 

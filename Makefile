@@ -42,8 +42,11 @@ export MAIN_DIR		  	= main
 
 export NUM_THREADS  = 8
 
+#test
+export SIZE = 256
+
 #4GB
-export SIZE = 1073741824
+# export SIZE = 1073741824
 
 #1GB
 # export SIZE = 268435456

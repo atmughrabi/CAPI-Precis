@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : algorithm.c
 // Create : 2019-09-28 14:41:30
-// Revise : 2019-11-12 18:54:51
+// Revise : 2019-11-25 18:59:19
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
@@ -73,11 +73,14 @@ __u32 compareDataArrays(struct DataArrays *dataArrays){
 	__u32 missmatch = 0;
 	__u32 i;
 
-	#pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
+	// #pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
     for(i = 0; i < dataArrays->size; i++)
     {
-        if(dataArrays->array_receive[i] != dataArrays->array_send[i])
+    	
+        if(dataArrays->array_receive[i] != dataArrays->array_send[i]){
+        	printf("%u == %u\n",dataArrays->array_receive[i], dataArrays->array_send[i] );
         	missmatch ++;
+        }
     }
 
     return missmatch;
@@ -85,12 +88,51 @@ __u32 compareDataArrays(struct DataArrays *dataArrays){
 
 void copyDataArrays(struct DataArrays *dataArrays){
 
-	__u32 i;
+	struct cxl_afu_h *afu;
 
-	#pragma omp parallel for
-    for(i = 0; i < dataArrays->size; i++)
-    {
-        dataArrays->array_receive[i] = dataArrays->array_send[i];
-    }
+	// ********************************************************************************************
+    // ***************                  MAP CSR DataStructure                        **************
+    // ********************************************************************************************
+
+    struct WEDStruct *wed = mapDataArraysToWED(dataArrays);
+
+    // ********************************************************************************************
+    // ***************                  CSR DataStructure                            **************
+    // ********************************************************************************************
+
+    printWEDPointers(wed);
+
+    // ********************************************************************************************
+    // ***************                 Setup AFU                                     **************
+    // ********************************************************************************************
+
+    setupAFU(&afu, wed);
+    
+    struct AFUStatus afu_status;
+    afu_status.algo_status = 0;
+    afu_status.num_cu = numThreads; // non zero CU triggers the AFU to work
+    afu_status.error = 0;
+    afu_status.afu_status = 0;
+    afu_status.algo_running = 0;
+    afu_status.algo_stop = wed->size_send;
+
+    waitJOBRunning(&afu, &afu_status);
+
+    // ********************************************************************************************
+    // ***************                 START AFU                                     **************
+    // ********************************************************************************************
+
+    startAFU(&afu, &afu_status);
+
+    // ********************************************************************************************
+    // ***************                 WAIT AFU                                     **************
+    // ********************************************************************************************
+ 
+    waitAFU(&afu, &afu_status);
+
+    printMMIO_error(afu_status.error);
+
+    releaseAFU(&afu);
+    free(wed);
 
 }
