@@ -1,6 +1,7 @@
 *.chg
 *.qsf
 *.qpf
+*.qdf
 db
 quartus_output
 *.log
