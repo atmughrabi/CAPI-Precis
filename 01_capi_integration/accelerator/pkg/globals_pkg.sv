@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-11-18 17:05:01
+// Revise : 2019-11-27 22:24:04
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -30,11 +30,12 @@ package GLOBALS_PKG;
 ////////////////////////////////////////////////////////////////////////////
 //   CU-Control/AFU-Control CAPI Globals
 ////////////////////////////////////////////////////////////////////////////
-
+	parameter PAGE_SIZE              = 65536                  ; // Pagesize default  is 64KB
+	parameter PAGE_SIZE_BITS         = (PAGE_SIZE * 8)        ;
 	parameter CACHELINE_SIZE         = 128                    ; // cacheline is 128bytes
-	parameter CACHELINE_SIZE_BITS    = (CACHELINE_SIZE * 8)   ; // cacheline is 128bytes
-	parameter CACHELINE_SIZE_HF      = (CACHELINE_SIZE >> 1)  ; // cacheline is 128bytes
-	parameter CACHELINE_SIZE_BITS_HF = (CACHELINE_SIZE_HF * 8); // cacheline is 128bytes
+	parameter CACHELINE_SIZE_BITS    = (CACHELINE_SIZE * 8)   ;
+	parameter CACHELINE_SIZE_HF      = (CACHELINE_SIZE >> 1)  ; // cacheline is 64bytes
+	parameter CACHELINE_SIZE_BITS_HF = (CACHELINE_SIZE_HF * 8);
 
 	parameter WORD             = 4              ;
 	parameter WORD_BITS        = WORD * 8       ;
@@ -101,7 +102,7 @@ package GLOBALS_PKG;
 	parameter [0:63] ADDRESS_DATA_WRITE_ALIGN_MASK = {{57{1'b1}},{7{1'b0}}};
 	parameter [0:63] ADDRESS_DATA_WRITE_MOD_MASK   = {{57{1'b0}},{7{1'b1}}};
 
-	parameter CACHELINE_ARRAY_NUM        = (CACHELINE_SIZE >> $clog2(ARRAY_SIZE))                                                                 ; // number of  in one cacheline                                                                ; // number of edges in one cacheline
+	parameter CACHELINE_ARRAY_NUM        = (CACHELINE_SIZE >> $clog2(ARRAY_SIZE))                                                               ; // number of  in one cacheline                                                                ; // number of edges in one cacheline
 	parameter CACHELINE_INT_COUNTER_BITS = $clog2((ARRAY_SIZE_BITS < CACHELINE_SIZE_BITS_HF) ? (2 * CACHELINE_SIZE_BITS_HF)/ARRAY_SIZE_BITS : 2);
 
 ////////////////////////////////////////////////////////////////////////////
@@ -121,5 +122,5 @@ package GLOBALS_PKG;
 
 
 	typedef logic [0:(CU_ID_RANGE-1)] cu_id_t;
-	
+
 endpackage

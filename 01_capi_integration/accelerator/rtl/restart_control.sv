@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : restart_control.sv
 // Create : 2019-11-05 08:05:09
-// Revise : 2019-11-07 13:11:39
+// Revise : 2019-11-27 18:18:06
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -197,8 +197,11 @@ module restart_control (
 	//Restart State Machine
 	////////////////////////////////////////////////////////////////////////////
 
-	assign restart_command_flag = response.valid && (response.response == PAGED || response.response == AERROR || response.response == DERROR) && (response_tag_id_in.abt == STRICT || response_tag_id_in.abt == PAGE);
+	// assign restart_command_flag = response.valid && (response.response == PAGED || response.response == AERROR || response.response == DERROR) && (response_tag_id_in.abt == STRICT || response_tag_id_in.abt == PAGE);
 	// assign restart_command_flag = (response.response == PAGED);
+	assign restart_command_flag = response.valid && (response.response == PAGED || response.response == AERROR || response.response == DERROR) && (response_tag_id_in.abt == STRICT || response_tag_id_in.abt == PAGE || response_tag_id_in.abt == SPEC || response_tag_id_in.abt == PREF);
+
+
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn)

@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_read_engine_control.sv
 // Create : 2019-11-18 16:39:26
-// Revise : 2019-11-25 18:30:12
+// Revise : 2019-11-27 22:19:23
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -46,6 +46,7 @@ module cu_data_read_engine_control (
 
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done_latched;
 	logic                         enabled                      ;
+	logic                         enabled_cmd                  ;
 	logic [                 0:63] next_offest                  ;
 
 
@@ -59,6 +60,16 @@ module cu_data_read_engine_control (
 			enabled <= 0;
 		end else begin
 			enabled <= enabled_in;
+		end
+	end
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			enabled_cmd <= 0;
+		end else begin
+			if(enabled)begin
+				enabled_cmd <= enabled;
+			end
 		end
 	end
 
@@ -128,42 +139,54 @@ module cu_data_read_engine_control (
 			next_offest              <= 0;
 		end
 		else begin
-			if(~wed_request_in_latched.valid && enabled)
+			if(~wed_request_in_latched.valid && enabled_cmd)
 				wed_request_in_latched <= wed_request_in;
 
-			if (wed_request_in_latched.valid && ~read_command_buffer_status.alfull && ~read_data_out_buffer_status.alfull && (|wed_request_in_latched.wed.size_send) && enabled) begin
+			if (wed_request_in_latched.valid && ~read_command_buffer_status.alfull && ~read_data_out_buffer_status.alfull && (|wed_request_in_latched.wed.size_send) && enabled_cmd) begin
 
 				if(wed_request_in_latched.wed.size_send >= CACHELINE_ARRAY_NUM)begin
 					wed_request_in_latched.wed.size_send   <= wed_request_in_latched.wed.size_send - CACHELINE_ARRAY_NUM;
 					read_command_out_latched.cmd.real_size <= CACHELINE_ARRAY_NUM;
-				end
-				else if (wed_request_in_latched.wed.size_send < CACHELINE_ARRAY_NUM) begin
+
+					if (wed_request_in_latched.wed.afu_config[3]) begin
+						read_command_out_latched.command <= READ_CL_S;
+						read_command_out_latched.size    <= 12'h080;
+					end else begin
+						read_command_out_latched.size    <= cmd_size_calculate(wed_request_in_latched.wed.size_send);
+						read_command_out_latched.command <= READ_CL_NA;
+					end
+
+				end else if (wed_request_in_latched.wed.size_send < CACHELINE_ARRAY_NUM) begin
 					wed_request_in_latched.wed.size_send   <= 0;
 					read_command_out_latched.cmd.real_size <= wed_request_in_latched.wed.size_send;
+
+					if (wed_request_in_latched.wed.afu_config[3]) begin
+						read_command_out_latched.command <= READ_CL_S;
+						read_command_out_latched.size    <= 12'h080;
+					end else begin
+						read_command_out_latched.size    <= cmd_size_calculate(wed_request_in_latched.wed.size_send);
+						read_command_out_latched.command <= READ_PNA;
+					end
+
 				end
 
 				read_command_out_latched.cmd.cu_id            <= DATA_READ_CONTROL_ID;
 				read_command_out_latched.cmd.cmd_type         <= CMD_READ;
 				read_command_out_latched.cmd.cacheline_offest <= 0;
 				read_command_out_latched.cmd.address_offest   <= next_offest;
+				read_command_out_latched.cmd.array_struct     <= READ_DATA;
 
 				read_command_out_latched.cmd.abt <= map_CABT(wed_request_in_latched.wed.afu_config[0:2]);
 				read_command_out_latched.abt     <= map_CABT(wed_request_in_latched.wed.afu_config[0:2]);
 
-				if (wed_request_in_latched.wed.afu_config[3]) begin
-					read_command_out_latched.command <= READ_CL_S;
-				end else begin
-					read_command_out_latched.command <= READ_CL_NA;
-				end
+
 
 				read_command_out_latched.valid <= 1'b1;
 
 				read_command_out_latched.address <= wed_request_in_latched.wed.array_send + next_offest;
-				read_command_out_latched.size    <= cmd_size_calculate(wed_request_in_latched.wed.size_send);
-
-				read_command_out_latched.cmd.array_struct <= READ_DATA;
 
 				next_offest <= next_offest + CACHELINE_SIZE;
+				
 			end else begin
 				read_command_out_latched <= 0;
 			end
