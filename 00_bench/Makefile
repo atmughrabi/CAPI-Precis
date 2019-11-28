@@ -351,14 +351,14 @@ run-capi-sim-verbose: graph-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga
-run-capi-fpga: CAPI_FLAGS = 
+run-capi-fpga: CAPI_FLAGS = $(CAPI_AFU_CONFIG)
 run-capi-fpga: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-fpga: graph-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga-verbose
-run-capi-fpga-verbose: CAPI_FLAGS = -DVERBOSE 
+run-capi-fpga-verbose: CAPI_FLAGS = -DVERBOSE $(CAPI_AFU_CONFIG)
 run-capi-fpga-verbose: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga-verbose: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-fpga-verbose: graph-capi

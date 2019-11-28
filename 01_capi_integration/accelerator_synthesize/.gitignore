@@ -1,0 +1,17 @@
+*.chg
+*.qsf
+*.qpf
+db
+quartus_output
+*.log
+*.txt
+incremental_db
+*.rpt
+*.summary
+*.smsg
+*.pin
+*.sof
+reconfig_mif
+*.jdi
+*.rbf
+hc_output
