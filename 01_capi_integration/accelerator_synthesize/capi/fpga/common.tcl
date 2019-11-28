@@ -38,7 +38,7 @@ set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
 set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
 set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name FIT_ONLY_ONE_ATTEMPT ON
-set_global_assignment -name ENABLE_BENEFICIAL_SKEW_OPTIMIZATION OFF
+set_global_assignment -name ENABLE_BENEFICIAL_SKEW_OPTIMIZATION ON
 
 set_global_assignment -name SAVE_DISK_SPACE OFF
 set_global_assignment -name FLOW_DISABLE_ASSEMBLER ON
@@ -59,10 +59,10 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 
 set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
-set_global_assignment -name SEED 3
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT NORMAL
+set_global_assignment -name SEED 30
 
 set_global_assignment -name PARTITION_NETLIST_TYPE POST_FIT -section_id "psl_accel:a0"
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT -section_id "psl_accel:a0"
