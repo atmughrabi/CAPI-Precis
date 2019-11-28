@@ -2,6 +2,7 @@
 *.qsf
 *.qpf
 *.qdf
+*.sld
 db
 quartus_output
 *.log

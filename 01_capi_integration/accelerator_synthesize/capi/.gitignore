@@ -1,6 +1,0 @@
-.waf*
-build
-.lock*
-*.pyc
-*.*~
-
