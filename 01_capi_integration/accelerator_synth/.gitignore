@@ -17,4 +17,5 @@ reconfig_mif
 *.jdi
 *.rbf
 *.qws
+*.done
 hc_output

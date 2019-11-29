@@ -55,7 +55,7 @@ default:rbf
 all: rbf smart.log $(PROJECT).asm.rpt $(PROJECT).sta.rpt
 
 clean:
-	rm -rf *~ ./tcl/*~ *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db *.summary *.qpf *.qsf incremental_db *.smsg *.done *~ *.txt *.qxp *.bsf *.qarlog *.cmp *.v *.rbf nohup.out *.log hc_output reconfig_mif *.jdi *.qdf *.sld
+	rm -rf *~ ./tcl/*~ *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db *.summary *.qpf *.qsf incremental_db *.smsg *.done *~ *.txt *.qxp *.bsf *.qarlog *.cmp *.v *.rbf nohup.out *.log hc_output reconfig_mif *.jdi *.qdf *.sld *.qws
 
 map: smart.log $(PROJECT).map.rpt
 fit: smart.log $(PROJECT).fit.rpt
