@@ -110,8 +110,8 @@ ARCHITECTURE = $(shell uname -p) # store the output of the command in a variable
 PSLSE_DIR         = ../01_capi_integration/pslse
 LIBCXL_DIR        = ../01_capi_integration/libcxl
 CAPI_UTILS_DIR    = ../01_capi_integration/capi-utils
-CAPI_ACCEL		  = ../01_capi_integration/accelerator
-CAPI_COMMON		  = ../01_capi_integration/capi_common
+CAPI_ACCEL		  = ../01_capi_integration/accelerator_rtl
+CAPI_COMMON		  = ../01_capi_integration/accelerator_sim
 
 CAPI_SIM		  = $(CAPI_COMMON)/sim
 CAPI_SERVER		  = $(CAPI_COMMON)/server

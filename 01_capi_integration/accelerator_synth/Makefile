@@ -26,9 +26,13 @@
 
 PART=5SGXMA7H2F35C2
 PROJECT ?= capi-precis
-SOURCE_FILES =  $(wildcard ../accelerator/rtl/$(PROJECT)/*.vhdl) $(wildcard ../accelerator/rtl/$(PROJECT)/*.vhd) $(wildcard ../accelerator/rtl/$(PROJECT)/*.v) $(wildcard ../accelerator/rtl/$(PROJECT)/*.sv) \
-				$(wildcard ../accelerator/cu/$(PROJECT)/*.vhdl) $(wildcard ../accelerator/cu/$(PROJECT)/*.vhd) $(wildcard ../accelerator/cu/$(PROJECT)/*.v) $(wildcard ../accelerator/cu/$(PROJECT)/*.sv) \
-				$(wildcard ../accelerator/pkg/$(PROJECT)/*.vhdl) $(wildcard ../accelerator/pkg/$(PROJECT)/*.vhd) $(wildcard ../accelerator/pkg/$(PROJECT)/*.v) $(wildcard ../accelerator/pkg/$(PROJECT)/*.sv)
+VERION_GIT = $(shell python ./capi/scripts/version.py)
+ACCEL_RTL_DIR = accelerator_rtl
+ACCEL_BIN_DIR = accelerator_bin
+SOURCE_FILES =  $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.sv)	\
+				$(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.sv)	\
+				$(wildcard ../$(ACCEL_RTL_DIR)/cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu/*.sv)
+				
 	
 
 export LM_LICENSE_FILE := $(LM_LICENSE_FILE):$(shell pwd)/psl_fpga/psl/psl_A000_license.dat
@@ -51,7 +55,7 @@ default:rbf
 all: rbf smart.log $(PROJECT).asm.rpt $(PROJECT).sta.rpt
 
 clean:
-	rm -rf *~ ./tcl/*~ *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db *.summary *.qpf *.qsf incremental_db *.smsg *.done *~ *.txt *.qxp *.bsf *.qarlog *.cmp *.v *.rbf nohup.out *.log hc_output reconfig_mif *.jdi *.qdf
+	rm -rf *~ ./tcl/*~ *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db *.summary *.qpf *.qsf incremental_db *.smsg *.done *~ *.txt *.qxp *.bsf *.qarlog *.cmp *.v *.rbf nohup.out *.log hc_output reconfig_mif *.jdi *.qdf *.sld
 
 map: smart.log $(PROJECT).map.rpt
 fit: smart.log $(PROJECT).fit.rpt
@@ -94,7 +98,9 @@ $(PROJECT).sta.rpt: sta.chg $(PROJECT).fit.rpt
 	quartus_sta --64bit $(STA_ARGS) $(PROJECT)
 
 $(PROJECT).rbf: $(PROJECT).asm.rpt $(PROJECT).sta.rpt
-	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf
+	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT).rbf 
+
 
 smart.log: $(ASSIGNMENT_FILES)
 	quartus_sh --64bit --determine_smart_action $(PROJECT) > smart.log

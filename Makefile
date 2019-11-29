@@ -131,14 +131,16 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_STRICT_1)
 
 APP_DIR           		= .
 MAKE_DIR     		 	= 00_bench
+MAKE_DIR_SYNTH     		= 01_capi_integration/accelerator_synth
+
 MAKE_NUM_THREADS  		= $(shell grep -c ^processor /proc/cpuinfo)
 MAKE_ARGS 				= -w -C $(APP_DIR)/$(MAKE_DIR) -j$(MAKE_NUM_THREADS)
-
+MAKE_ARGS_SYNTH 		= -w -C $(APP_DIR)/$(MAKE_DIR_SYNTH) -j$(MAKE_NUM_THREADS)
 ##################################################
 ##################################################
 
 ##############################################
-#         ACCEL GRAPH TOP LEVEL RULES        #
+#         		ACCEL TOP LEVEL RULES        #
 ##############################################
 
 .PHONY: help
@@ -198,15 +200,14 @@ cache-perf-openmp:
 clean: 
 	$(MAKE) clean $(MAKE_ARGS)
 
-.PHONY: clean-obj
-clean-obj: 
-	$(MAKE) clean-obj $(MAKE_ARGS)
+.PHONY: clean-all
+clean-all: clean clean-sim clean-synth
 
 ##################################################
 ##################################################
 
 ##############################################
-#      ACCEL GRAPH CAPI TOP LEVEL RULES      #
+#      		ACCEL CAPI TOP LEVEL RULES      #
 ##############################################
 
 .PHONY: run-capi-sim
@@ -244,5 +245,47 @@ build-pslse:
 .PHONY: clean-sim
 clean-sim:
 	 $(MAKE) clean-sim $(MAKE_ARGS)
+##################################################
+##################################################
+
+##############################################
+#      		ACCEL SYNTHESIZE LEVEL RULES     #
+##############################################
+
+.PHONY: run-capi-synth
+run-capi-synth:
+	 $(MAKE) all $(MAKE_ARGS_SYNTH)
+
+.PHONY: map
+map:
+	 $(MAKE) map $(MAKE_ARGS_SYNTH)
+
+.PHONY: fit
+fit:
+	 $(MAKE) fit $(MAKE_ARGS_SYNTH)
+
+.PHONY: asm
+asm:
+	 $(MAKE) asm $(MAKE_ARGS_SYNTH)
+
+.PHONY: sta
+sta:
+	 $(MAKE) sta $(MAKE_ARGS_SYNTH)
+
+.PHONY: qxp
+qxp:
+	 $(MAKE) qxp $(MAKE_ARGS_SYNTH)
+
+.PHONY: rbf
+rbf:
+	 $(MAKE) rbf $(MAKE_ARGS_SYNTH)
+
+.PHONY: smart
+smart:
+	 $(MAKE) smart $(MAKE_ARGS_SYNTH)
+
+.PHONY: clean-synth
+clean-synth:
+	 $(MAKE) clean $(MAKE_ARGS_SYNTH)
 ##################################################
 ##################################################

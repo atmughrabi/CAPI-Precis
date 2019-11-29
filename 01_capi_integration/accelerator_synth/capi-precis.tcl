@@ -18,7 +18,7 @@ source $LIBCAPI/fpga/build_version.tcl
 #     set_global_assignment -name SYSTEMVERILOG_FILE $filename
 # }
 
-foreach filename [glob ../accelerator/rtl/*.sv] {
+foreach filename [glob ../accelerator_rtl/afu/*.sv] {
     set_global_assignment -name SYSTEMVERILOG_FILE $filename
 }
 
@@ -30,7 +30,7 @@ foreach filename [glob ../accelerator/rtl/*.sv] {
 #     set_global_assignment -name SYSTEMVERILOG_FILE $filename
 # }
 
-foreach filename [glob ../accelerator/pkg/*.sv] {
+foreach filename [glob ../accelerator_rtl/pkg/*.sv] {
     set_global_assignment -name SYSTEMVERILOG_FILE $filename
 }
 
@@ -42,6 +42,6 @@ foreach filename [glob ../accelerator/pkg/*.sv] {
 #     set_global_assignment -name SYSTEMVERILOG_FILE $filename
 # }
 
-foreach filename [glob ../accelerator/cu/*.sv] {
+foreach filename [glob ../accelerator_rtl/cu/*.sv] {
     set_global_assignment -name SYSTEMVERILOG_FILE $filename
 }

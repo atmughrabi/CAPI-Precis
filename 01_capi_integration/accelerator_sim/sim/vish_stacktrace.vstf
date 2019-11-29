@@ -1,0 +1,88 @@
+# Current time Thu Sep 19 10:07:04 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# Current time Sat Oct 26 09:25:33 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0xf7fd2b29: '<unknown (@0xf7fd2b29)>'
+# 1    0x0854b8f4: 'Tcl_DoOneEvent + 0xf4' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 2    0x083f2b8f: 'Tk_MainLoop + 0x1f' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 3    0x083fb4a4: 'Tk_MainEx + 0x374' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 4    0x081fee66: 'vish_inner_loop + 0x116' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 5    0x080e6029: 'main + 0x989' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 6    0xf7aa8fb4: '<unknown (@0xf7aa8fb4)>'
+# End of Stack Trace
+
+# Current time Mon Oct 28 11:10:30 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0xf7fd2b29: '<unknown (@0xf7fd2b29)>'
+# Current time Mon Oct 28 13:45:32 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0xf7fd2b29: '<unknown (@0xf7fd2b29)>'
+# 1    0x0854b8f4: 'Tcl_DoOneEvent + 0xf4' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 2    0x083f2b8f: 'Tk_MainLoop + 0x1f' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 3    0x083fb4a4: 'Tk_MainEx + 0x374' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 4    0x081fee66: 'vish_inner_loop + 0x116' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 5    0x080e6029: 'main + 0x989' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 6    0xf7aa8fb4: '<unknown (@0xf7aa8fb4)>'
+# End of Stack Trace
+
+# Current time Tue Nov  5 01:56:00 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0xf7fd2b49: '<unknown (@0xf7fd2b49)>'
+# 1    0x0854b8f4: 'Tcl_DoOneEvent + 0xf4' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 2    0x083f2b8f: 'Tk_MainLoop + 0x1f' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 3    0x083fb4a4: 'Tk_MainEx + 0x374' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 4    0x081fee66: 'vish_inner_loop + 0x116' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 5    0x080e6029: 'main + 0x989' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 6    0xf7aa8fb4: '<unknown (@0xf7aa8fb4)>'
+# End of Stack Trace
+
+# Current time Tue Nov  5 19:59:47 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0x08572d0a: '<unknown (@0x8572d0a)>'
+# 1    0x08572ed2: 'Tcl_ConvertCountedElement + 0x22' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 2    0x08572f1e: 'Tcl_ConvertElement + 0x2e' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 3    0x0855f050: 'Tcl_AppendElement + 0xf0' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 4    0x0843df0d: '<unknown (@0x843df0d)>'
+# 5    0x084cc41d: '<unknown (@0x84cc41d)>'
+# 6    0x0851503a: '<unknown (@0x851503a)>'
+# 7    0x0855ca25: 'TclObjInterpProcCore + 0x115' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 8    0x0855cfc2: 'TclObjInterpProc + 0x62' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 9    0x084cc41d: '<unknown (@0x84cc41d)>'
+# 10   0x0851503a: '<unknown (@0x851503a)>'
+# 11   0x0851d9dc: '<unknown (@0x851d9dc)>'
+# 12   0x084ce59c: 'TclEvalObjEx + 0x6c' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 13   0x084cea36: 'Tcl_EvalObjEx + 0x36' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 14   0xf7200eac: 'Itcl_EvalMemberCode + 0x3cc' in '/home/ab/intelFPGA/18.1/modelsim_ase/bin/../linux/itcl3.4/libitcl3.4.so'
+# 15   0x0a78406b: '<unknown (@0xa78406b)>'
+# 16   0x0a1f2e6b: '<unknown (@0xa1f2e6b)>'
+# 17   0x624f776a: '<unknown (@0x624f776a)>'
