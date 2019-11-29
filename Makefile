@@ -284,6 +284,18 @@ rbf:
 smart:
 	 $(MAKE) smart $(MAKE_ARGS_SYNTH)
 
+.PHONY: program
+program:
+	 $(MAKE) program $(MAKE_ARGS_SYNTH)
+
+.PHONY: timing
+timing:
+	 $(MAKE) timing $(MAKE_ARGS_SYNTH)
+
+.PHONY: stats
+stats:
+	 $(MAKE) stats $(MAKE_ARGS_SYNTH)
+
 .PHONY: clean-synth
 clean-synth:
 	 $(MAKE) clean $(MAKE_ARGS_SYNTH)

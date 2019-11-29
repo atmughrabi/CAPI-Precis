@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-11-07 13:10:04
+// Revise : 2019-11-28 20:06:54
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -526,46 +526,6 @@ module afu_control #(
 		.empty   (burst_command_buffer_states_afu.empty )
 	);
 
-
-	// always_ff @(posedge clock or negedge rstn) begin
-	// 		if(~rstn) begin
-	// 			request_pulse <= 0;
-	// 		end else begin
-	// 			request_pulse <= request_pulse + 1;
-	// 		end
-	// end
-
-	// always_ff @(posedge clock or negedge rstn) begin
-	// 	if(~rstn) begin
-	// 		burst_command_buffer_touch    <= 0;
-	// 		burst_command_buffer_touch_S2 <= 0;
-	// 		burst_command_buffer_exec     <= 0;
-	// 		burst_command_buffer_exec_S2  <= 0;
-	// 		burst_command_buffer_exec_S3  <= 0;
-	// 		command_issue_register        <= 0;
-	// 	end else begin
-	// 		if(enabled) begin
-	// 			burst_command_buffer_touch              <= burst_command_buffer_out;
-	// 			burst_command_buffer_touch.command      <= TOUCH_I;
-	// 			burst_command_buffer_touch.size         <= 12'h080;
-	// 			burst_command_buffer_touch.address      <= (burst_command_buffer_out.address & ADDRESS_EDGE_ALIGN_MASK);
-	// 			burst_command_buffer_touch.cmd.cu_id    <= PREFETCH_CONTROL_ID;
-	// 			burst_command_buffer_touch.cmd.cmd_type <= CMD_PREFETCH;
-	// 			burst_command_buffer_touch_S2 <= burst_command_buffer_touch;
-
-	// 			burst_command_buffer_exec    <= burst_command_buffer_out;
-	// 			burst_command_buffer_exec_S2 <= burst_command_buffer_exec;
-	// 			burst_command_buffer_exec_S3 <= burst_command_buffer_exec_S2;
-
-	// 			if(burst_command_buffer_touch_S2.valid)
-	// 				command_issue_register <= burst_command_buffer_touch_S2;
-	// 			else if(burst_command_buffer_exec_S3.valid)
-	// 				command_issue_register <= burst_command_buffer_exec_S3;
-	// 			else
-	// 				command_issue_register <= 0;
-	// 		end
-	// 	end
-	// end
 
 ////////////////////////////////////////////////////////////////////////////
 //Buffer Read Commands
