@@ -140,3 +140,6 @@ timing: $(PROJECT).sta.rpt
 
 stats:
 	altera_stats.py $(PROJECT)
+
+gui: $(ASSIGNMENT_FILES)
+	quartus $(PROJECT).qpf 

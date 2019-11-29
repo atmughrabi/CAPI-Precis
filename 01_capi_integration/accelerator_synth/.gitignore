@@ -16,4 +16,5 @@ incremental_db
 reconfig_mif
 *.jdi
 *.rbf
+*.qws
 hc_output

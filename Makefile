@@ -256,6 +256,10 @@ clean-sim:
 run-capi-synth:
 	 $(MAKE) all $(MAKE_ARGS_SYNTH)
 
+.PHONY: run-capi-gui
+run-capi-gui:
+	 $(MAKE) gui $(MAKE_ARGS_SYNTH)
+
 .PHONY: map
 map:
 	 $(MAKE) map $(MAKE_ARGS_SYNTH)
