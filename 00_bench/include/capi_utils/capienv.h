@@ -8,7 +8,7 @@
 #include "algorithm.h"
 
 // ********************************************************************************************
-// ***************                  MMIO General 	                             **************
+// ***************                  MMIO General                                 **************
 // ********************************************************************************************
 
 
@@ -18,13 +18,30 @@
 #define ALGO_RUNNING            0x3FFFFD8
 
 #define ALGO_STATUS             0x3FFFFF8             // 0x3fffff8 >> 2 = 0xfffffe
-#define ALGO_STATUS_ACK         0x3FFFFD0             
+#define ALGO_STATUS_ACK         0x3FFFFD0
 
 #define ERROR_REG               0x3FFFFE8
 #define ERROR_REG_ACK           0x3FFFFC8
 
 #define  ALGO_STATUS_DONE       0x3FFFFC0
 #define  ALGO_STATUS_DONE_ACK   0x3FFFFB8
+
+
+// ********************************************************************************************
+// ***************                  MMIO Stats                                   **************
+// ********************************************************************************************
+
+#define  DONE_COUNT_REG              0x3FFFFB0
+#define  DONE_RESTART_COUNT_REG      0x3FFFFA8
+#define  PAGED_COUNT_REG             0x3FFFFA0
+#define  FLUSHED_COUNT_REG           0x3FFFF98
+#define  AERROR_COUNT_REG            0x3FFFF90
+#define  DERROR_COUNT_REG            0x3FFFF88
+#define  FAILED_COUNT_REG            0x3FFFF80
+#define  FAULT_COUNT_REG             0x3FFFF78
+#define  NRES_COUNT_REG              0x3FFFF70
+#define  NLOCK_COUNT_REG             0x3FFFF68
+
 
 #ifdef  SIM
 #define DEVICE_1              "/dev/cxl/afu0.0d"
@@ -42,6 +59,21 @@ struct AFUStatus
     uint64_t afu_status;
     uint64_t algo_running;
     uint64_t algo_status_done;
+};
+
+
+struct CmdResponseStats
+{
+    uint64_t DONE_count        ;
+    uint64_t DONE_RESTART_count;
+    uint64_t PAGED_count       ;
+    uint64_t FLUSHED_count     ;
+    uint64_t AERROR_count      ;
+    uint64_t DERROR_count      ;
+    uint64_t FAILED_count      ;
+    uint64_t FAULT_count       ;
+    uint64_t NRES_count        ;
+    uint64_t NLOCK_count       ;
 };
 
 // ********************************************************************************************
@@ -75,32 +107,32 @@ struct __attribute__((__packed__)) WEDStruct
 // ********************************************************************************************
 // ***************                        afu_config BIT-MAPPING                 **************
 // ********************************************************************************************
- 
- #define STRICT 0b000
- #define ABORT  0b001
- #define PAGE   0b010
- #define PREF   0b011
- #define SPEC   0b111
 
- #define READ_CL_S    0b1 
- #define READ_CL_NA   0b0
- #define WRITE_MS     0b1
- #define WRITE_NA     0b0 
+#define STRICT 0b000
+#define ABORT  0b001
+#define PAGE   0b010
+#define PREF   0b011
+#define SPEC   0b111
+
+#define READ_CL_S    0b1
+#define READ_CL_NA   0b0
+#define WRITE_MS     0b1
+#define WRITE_NA     0b0
 
 // cu_read_engine_control            5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [27:31] [4] [3] [0:2]
 // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [22:26] [9] [8] [5:7]
 
- #define AFU_CONFIG_STRICT_1  0x00000000  // 0b 00000 00000 00000 00000 00000 00000 00
- 
- #ifndef AFU_CONFIG
-    #define AFU_CONFIG AFU_CONFIG_STRICT_1
- #endif
+#define AFU_CONFIG_STRICT_1  0x00000000  // 0b 00000 00000 00000 00000 00000 00000 00
+
+#ifndef AFU_CONFIG
+#define AFU_CONFIG AFU_CONFIG_STRICT_1
+#endif
 
 struct WEDStruct *mapDataArraysToWED(struct DataArrays *dataArrays);
 void printWEDPointers(struct  WEDStruct *wed);
 
 // ********************************************************************************************
-// ***************                  MMIO General 	                             **************
+// ***************                  MMIO General                                 **************
 // ********************************************************************************************
 
 void printMMIO_error( uint64_t error );
@@ -113,6 +145,8 @@ int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed);
 void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status);
 void waitJOBRunning(struct cxl_afu_h **afu, struct AFUStatus *afu_status);
 void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status);
+void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdResponseStats);
+void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats);
 void releaseAFU(struct cxl_afu_h **afu);
 
 

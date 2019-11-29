@@ -14,22 +14,24 @@
 
 import GLOBALS_PKG::*;
 import CAPI_PKG::*;
+import AFU_PKG::*;
 
 module mmio (
-  input  logic               clock                      ,
-  input  logic               rstn                       ,
-  input  logic [0:63]        report_errors              ,
-  input  logic [0:63]        algorithm_status           ,
-  input  logic [0:63]        algorithm_status_done      ,
-  input  logic [0:63]        algorithm_running          ,
-  input  logic [0:63]        afu_status                 ,
-  output logic [0:63]        algorithm_requests         ,
-  input  MMIOInterfaceInput  mmio_in                    ,
-  output MMIOInterfaceOutput mmio_out                   ,
-  output logic [ 0:1]        mmio_errors                ,
-  output logic               report_errors_ack          , // each register has an ack
-  output logic               report_algorithm_status_ack, // each register has an ack
-  output logic               reset_mmio
+  input  logic                      clock                      ,
+  input  logic                      rstn                       ,
+  input  logic [0:63]               report_errors              ,
+  input  logic [0:63]               algorithm_status           ,
+  input  logic [0:63]               algorithm_status_done      ,
+  input  logic [0:63]               algorithm_running          ,
+  input  logic [0:63]               afu_status                 ,
+  input  ResponseStatistcsInterface response_statistics        ,
+  output logic [0:63]               algorithm_requests         ,
+  input  MMIOInterfaceInput         mmio_in                    ,
+  output MMIOInterfaceOutput        mmio_out                   ,
+  output logic [ 0:1]               mmio_errors                ,
+  output logic                      report_errors_ack          , // each register has an ack
+  output logic                      report_algorithm_status_ack, // each register has an ack
+  output logic                      reset_mmio
 );
 
   AFUDescriptor afu_desc  ;
@@ -78,6 +80,7 @@ module mmio (
   logic              mmio_in_latched_valid        ;
   MMIOInterfaceInput mmio_in_latched              ;
 
+  ResponseStatistcsInterface response_statistics_out_latched;
   // Set our AFU Descriptor values refer to page
   assign afu_desc.num_ints_per_process     = 16'h0000;
   assign afu_desc.num_of_processes         = 16'h0001;
@@ -115,6 +118,7 @@ module mmio (
       algorithm_status_done_latched <= 0;
       afu_status_latched            <= 0;
       algorithm_running_latched     <= 0;
+      response_statistics_out_latched <= 0;
 
     end else  begin
 
@@ -123,6 +127,7 @@ module mmio (
       algorithm_status_latched      <= algorithm_status;
       afu_status_latched            <= afu_status;
       algorithm_running_latched     <= algorithm_running;
+      response_statistics_out_latched <= response_statistics;
 
     end
   end
@@ -251,6 +256,36 @@ module mmio (
           end
           ALGO_RUNNING : begin
             data_out <= algorithm_running_latched;
+          end
+          DONE_RESTART_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.DONE_RESTART_count;
+          end
+          DONE_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.DONE_count;
+          end
+          FLUSHED_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.FLUSHED_count;
+          end
+          PAGED_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.PAGED_count;
+          end
+          AERROR_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.AERROR_count;
+          end
+          DERROR_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.DERROR_count;
+          end
+          FAILED_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.FAILED_count;
+          end
+          FAULT_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.FAULT_count;
+          end
+          NRES_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.NRES_count;
+          end
+          NLOCK_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.NLOCK_count;
           end
           default : begin
             data_out <= data_out;

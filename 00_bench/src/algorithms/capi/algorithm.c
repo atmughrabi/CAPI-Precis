@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : algorithm.c
 // Create : 2019-09-28 14:41:30
-// Revise : 2019-11-25 19:15:03
+// Revise : 2019-11-29 09:58:55
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ __u32 compareDataArrays(struct DataArrays *dataArrays){
 	__u32 missmatch = 0;
 	__u32 i;
 
-	// #pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
+	#pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
     for(i = 0; i < dataArrays->size; i++)
     {
     	
@@ -95,12 +95,6 @@ void copyDataArrays(struct DataArrays *dataArrays){
     // ********************************************************************************************
 
     struct WEDStruct *wed = mapDataArraysToWED(dataArrays);
-
-    // ********************************************************************************************
-    // ***************                  CSR DataStructure                            **************
-    // ********************************************************************************************
-
-    printWEDPointers(wed);
 
     // ********************************************************************************************
     // ***************                 Setup AFU                                     **************

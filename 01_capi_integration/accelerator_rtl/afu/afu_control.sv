@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-11-29 00:02:42
+// Revise : 2019-11-29 09:25:48
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -47,6 +47,7 @@ module afu_control #(
 	output BufferInterfaceOutput         buffer_out              ,
 	output CommandInterfaceOutput        command_out             ,
 	output CommandBufferStatusInterface  command_buffer_status   ,
+	output ResponseStatistcsInterface    response_statistics     ,
 	output ResponseBufferStatusInterface response_buffer_status  ,
 	output DataBufferStatusInterface     read_data_buffer_status ,
 	output DataBufferStatusInterface     wed_data_buffer_status  ,
@@ -60,10 +61,12 @@ module afu_control #(
 ////////////////////////////////////////////////////////////////////////////
 
 	CommandInterfaceInput command_in_latched               ;
-	ResponseInterface     response_latched                 ;
+	ResponseInterface     response_filtered_done_latched   ;
 	ResponseInterface     response_tagged                  ;
 	ResponseInterface     response_tagged_latched          ;
-	ResponseInterface     response_filtered                ;
+	ResponseInterface     response_filtered_done           ;
+	ResponseInterface     response_filtered_stats          ;
+	ResponseInterface     response_filtered_stats_latched  ;
 	ResponseInterface     response_filtered_restart        ;
 	ResponseInterface     response_filtered_restart_latched;
 
@@ -132,16 +135,30 @@ module afu_control #(
 
 	logic command_write_valid;
 
-	ResponseBufferLine restart_response_out;
-	CommandBufferLine  restart_command_out ;
-	logic              restart_pending     ;
-	logic              ready_restart_issue ;
+	ResponseStatistcsInterface response_statistics_out;
+	ResponseBufferLine         restart_response_out   ;
+	CommandBufferLine          restart_command_out    ;
+	logic                      restart_pending        ;
+	logic                      ready_restart_issue    ;
 
 	genvar i;
 
 	CommandBufferLine command_issue_register;
 
 	ResponseControlInterfaceOut response_control_out_latched_S[0:RSP_DELAY-1];
+
+////////////////////////////////////////////////////////////////////////////
+//drive output response stats
+////////////////////////////////////////////////////////////////////////////
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			response_statistics <= 0;
+		end else begin
+			response_statistics <= response_statistics_out;
+		end
+	end
+
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
@@ -160,38 +177,54 @@ module afu_control #(
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			response_filtered         <= 0;
+			response_filtered_done    <= 0;
 			response_filtered_restart <= 0;
 			response_tagged           <= 0;
+			response_filtered_stats   <= 0;
 		end else begin
 			if(enabled && response.valid) begin
 				case (response.response)
 					DONE,NLOCK,NRES,FAILED: begin
-						response_filtered         <= response;
+						response_filtered_done    <= response;
 						response_filtered_restart <= 0;
 						response_tagged           <= response;
 					end
 					AERROR,DERROR,PAGED,FAULT,FLUSHED: begin
-						response_filtered         <= 0;
+						response_filtered_done    <= 0;
 						response_filtered_restart <= response;
 						response_tagged           <= response;
 						response_tagged.valid     <= 0;
 					end
 					default : begin
-						response_filtered         <= response;
+						response_filtered_done    <= response;
 						response_filtered_restart <= 0;
 						response_tagged           <= response;
 					end
 				endcase
+
+				response_filtered_stats <= response;
+
 			end else begin
-				response_filtered         <= 0;
+				response_filtered_done    <= 0;
 				response_filtered_restart <= 0;
 				response_tagged           <= 0;
+				response_filtered_stats   <= 0;
 			end
 		end
 	end
 
+////////////////////////////////////////////////////////////////////////////
+//capture response statistics
+////////////////////////////////////////////////////////////////////////////
 
+	response_statistics_control response_statistics_control_instant (
+		.clock                  (clock                          ),
+		.rstn                   (rstn                           ),
+		.enabled_in             (enabled_in                     ),
+		.response               (response_filtered_stats_latched),
+		.response_tag_id_in     (response_tag_id                ),
+		.response_statistics_out(response_statistics_out        )
+	);
 
 ////////////////////////////////////////////////////////////////////////////
 //latch the inputs from the PSL
@@ -199,7 +232,8 @@ module afu_control #(
 
 	always_ff @(posedge clock) begin
 		command_in_latched                <= command_in;
-		response_latched                  <= response_filtered;
+		response_filtered_stats_latched   <= response_filtered_stats;
+		response_filtered_done_latched    <= response_filtered_done;
 		response_filtered_restart_latched <= response_filtered_restart;
 		response_tagged_latched           <= response_tagged;
 
@@ -377,13 +411,13 @@ module afu_control #(
 
 
 	response_control response_control_instant (
-		.clock               (clock                        ),
-		.rstn                (rstn                         ),
-		.enabled_in          (enabled                      ),
-		.response            (response_latched             ),
-		.response_tag_id_in  (response_tag_id              ),
-		.response_error      (command_response_error       ),
-		.response_control_out(response_control_out_internal)
+		.clock               (clock                         ),
+		.rstn                (rstn                          ),
+		.enabled_in          (enabled                       ),
+		.response            (response_filtered_done_latched),
+		.response_tag_id_in  (response_tag_id               ),
+		.response_error      (command_response_error        ),
+		.response_control_out(response_control_out_internal )
 	);
 
 	always_ff @(posedge clock or negedge rstn) begin
@@ -451,7 +485,7 @@ module afu_control #(
 		command_write_valid = 0;
 		if(command_buffer_out.valid)begin
 			if(command_buffer_out.cmd.cmd_type == CMD_WRITE)
-				command_write_valid = 1; 
+				command_write_valid = 1;
 			else
 				command_write_valid = 0;
 		end

@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : done_control.sv
 // Create : 2019-09-26 15:21:03
-// Revise : 2019-11-08 07:27:33
+// Revise : 2019-11-29 10:23:16
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -16,25 +16,28 @@ import GLOBALS_PKG::*;
 import AFU_PKG::*;
 
 module done_control (
-	input  logic        clock                      , // Clock
-	input  logic        rstn                       ,
-	input  logic        soft_rstn                  ,
-	input  logic        enabled_in                 ,
-	input  logic [0:63] algorithm_status           ,
-	input  logic        algorithm_done             ,
-	input  logic        report_algorithm_status_ack,
-	output logic        reset_done                 ,
-	output logic [0:63] report_algorithm_status
+	input  logic                      clock                      , // Clock
+	input  logic                      rstn                       ,
+	input  logic                      soft_rstn                  ,
+	input  logic                      enabled_in                 ,
+	input  logic [0:63]               algorithm_status           ,
+	input  ResponseStatistcsInterface response_statistics        ,
+	input  logic                      algorithm_done             ,
+	input  logic                      report_algorithm_status_ack,
+	output logic                      reset_done                 ,
+	output logic [0:63]               report_algorithm_status    ,
+	output ResponseStatistcsInterface report_response_statistics
 );
 
 
-	done_state   current_state, next_state;
-	logic        done_flag                      ;
-	logic        enabled                        ;
-	logic [0:63] report_algorithm_status_latched;
-	logic        prev_soft_rstn                 ;
-	logic        next_soft_rstn                 ;
-	logic        done_soft_rstn                 ;
+	done_state                 current_state, next_state;
+	logic                      done_flag                         ;
+	logic                      enabled                           ;
+	logic [0:63]               report_algorithm_status_latched   ;
+	logic                      prev_soft_rstn                    ;
+	logic                      next_soft_rstn                    ;
+	logic                      done_soft_rstn                    ;
+	ResponseStatistcsInterface report_response_statistics_latched;
 
 	assign done_flag = algorithm_done;
 
@@ -115,14 +118,18 @@ module done_control (
 	always_ff @(posedge clock) begin
 		case (current_state)
 			DONE_RESET : begin
-				report_algorithm_status         <= 64'b0;
-				report_algorithm_status_latched <= 64'b0;
-				reset_done                      <= 1'b1;
+				report_algorithm_status            <= 64'b0;
+				report_algorithm_status_latched    <= 64'b0;
+				report_response_statistics_latched <= 0;
+				report_response_statistics         <= 0;
+				reset_done                         <= 1'b1;
 			end
 			DONE_IDLE : begin
-				report_algorithm_status         <= 64'b0;
-				report_algorithm_status_latched <= algorithm_status;
-				reset_done                      <= 1'b1;
+				report_algorithm_status            <= 64'b0;
+				report_response_statistics         <= 0;
+				report_algorithm_status_latched    <= algorithm_status;
+				report_response_statistics_latched <= response_statistics;
+				reset_done                         <= 1'b1;
 			end
 			DONE_RESET_REQ : begin
 				reset_done <= 1'b0;
@@ -131,7 +138,8 @@ module done_control (
 				reset_done <= 1'b1;
 			end
 			DONE_MMIO_REQ : begin
-				report_algorithm_status <= report_algorithm_status_latched;
+				report_algorithm_status    <= report_algorithm_status_latched;
+				report_response_statistics <= report_response_statistics_latched;
 			end
 
 		endcase

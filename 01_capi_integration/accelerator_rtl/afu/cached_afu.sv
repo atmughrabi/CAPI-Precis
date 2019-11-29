@@ -75,13 +75,14 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
   ResponseBufferLine wed_response_out  ;
 
 
-  WEDInterface      wed              ; // work element descriptor -> addresses and other into
-  CommandBufferLine wed_command_out  ; // command for populatin WED
-  logic             enabled          ;
-  ResponseInterface response_latched ;
-  logic [0:63]      afu_status       ;
-  logic [0:63]      algorithm_running;
-
+  WEDInterface               wed                ; // work element descriptor -> addresses and other into
+  CommandBufferLine          wed_command_out    ; // command for populatin WED
+  logic                      enabled            ;
+  ResponseInterface          response_latched   ;
+  logic [0:63]               afu_status         ;
+  logic [0:63]               algorithm_running  ;
+  ResponseStatistcsInterface response_statistics;
+  ResponseStatistcsInterface report_response_statistics;
 
   always_ff @(posedge clock) begin
     combined_reset_afu <= reset_afu & reset_afu_soft;
@@ -137,10 +138,12 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .soft_rstn                  (reset_afu_soft             ),
     .enabled_in                 (enabled                    ),
     .algorithm_status           (algorithm_status           ),
+    .response_statistics        (response_statistics        ),
     .algorithm_done             (algorithm_done             ),
     .report_algorithm_status_ack(report_algorithm_status_ack),
     .reset_done                 (reset_done                 ),
-    .report_algorithm_status    (report_algorithm_status    )
+    .report_algorithm_status    (report_algorithm_status    ),
+    .report_response_statistics (report_response_statistics )
   );
 
 ////////////////////////////////////////////////////////////////////////////
@@ -206,6 +209,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .buffer_out              (buffer_out              ),
     .command_out             (command_out             ),
     .command_buffer_status   (command_buffer_status   ),
+    .response_statistics     (response_statistics     ),
     .response_buffer_status  (response_buffer_status  ),
     .read_data_buffer_status (read_data_buffer_status ),
     .wed_data_buffer_status  (wed_data_buffer_status  ),
@@ -252,6 +256,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .algorithm_status_done      (report_algorithm_status    ),
     .algorithm_running          (algorithm_running          ),
     .afu_status                 (afu_status                 ),
+    .response_statistics        (report_response_statistics ),
     .algorithm_requests         (algorithm_requests         ),
     .mmio_in                    (mmio_in                    ),
     .mmio_out                   (mmio_out                   ),

@@ -263,7 +263,7 @@ clean-sim:
 	@rm -f $(CAPI_SIM)/vsim_stacktrace.vstf
 	@rm -f $(CAPI_SIM)/vsim.wlf
 	@rm -rf $(CAPI_SIM)/work
-	@rm -f $(CAPI_SIM)/debug.log
+	@rm -f $(CAPI_SERVER)/debug.log
 	@rm -f $(CAPI_SIM)/gmon.out	 
 	@cd $(PSLSE_DIR)/afu_driver/src && make clean
 	@cd $(PSLSE_DIR)/libcxl && make clean

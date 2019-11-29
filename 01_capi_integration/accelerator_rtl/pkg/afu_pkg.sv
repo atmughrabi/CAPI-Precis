@@ -152,6 +152,19 @@ package AFU_PKG;
     BufferStatus restart_buffer;
   } ResponseBufferStatusInterface;
 
+  typedef struct packed {
+    logic [0:63] DONE_count        ;
+    logic [0:63] DONE_RESTART_count;
+    logic [0:63] PAGED_count       ;
+    logic [0:63] FLUSHED_count     ;
+    logic [0:63] AERROR_count      ;
+    logic [0:63] DERROR_count      ;
+    logic [0:63] FAILED_count      ;
+    logic [0:63] FAULT_count       ;
+    logic [0:63] NRES_count        ;
+    logic [0:63] NLOCK_count       ;
+  } ResponseStatistcsInterface;
+
 ////////////////////////////////////////////////////////////////////////////
 //Data Control
 ////////////////////////////////////////////////////////////////////////////
@@ -187,6 +200,7 @@ package AFU_PKG;
     BufferStatus buffer_0;
     BufferStatus buffer_1;
   } DataBufferStatusInterface;
+
 
   // Deal with not "done" responses. Not ever expecting most response codes,
   // so afu should signal error if these occur. Never asked for reservation or

@@ -30,6 +30,7 @@ proc r  {} {
 
   echo "Compiling RTL AFU Control"
   vlog -quiet ../../accelerator_rtl/afu/credit_control.sv
+  vlog -quiet ../../accelerator_rtl/afu/response_statistics_control.sv
   vlog -quiet ../../accelerator_rtl/afu/response_control.sv
   vlog -quiet ../../accelerator_rtl/afu/restart_control.sv
   vlog -quiet ../../accelerator_rtl/afu/command_control.sv
