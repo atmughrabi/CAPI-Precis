@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-11-28 20:06:54
+// Revise : 2019-11-29 00:02:42
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -451,7 +451,7 @@ module afu_control #(
 		command_write_valid = 0;
 		if(command_buffer_out.valid)begin
 			if(command_buffer_out.cmd.cmd_type == CMD_WRITE)
-				command_write_valid = 1;
+				command_write_valid = 1; 
 			else
 				command_write_valid = 0;
 		end
