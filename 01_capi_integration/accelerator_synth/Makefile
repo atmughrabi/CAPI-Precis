@@ -27,6 +27,7 @@
 PART=5SGXMA7H2F35C2
 PROJECT ?= capi-precis
 VERION_GIT = $(shell python ./capi/scripts/version.py)
+TIME_STAMP = $(shell date +%Y_%m_%d_%H_%M_%S)
 ACCEL_RTL_DIR = accelerator_rtl
 ACCEL_BIN_DIR = accelerator_bin
 SOURCE_FILES =  $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.sv)	\
@@ -99,7 +100,7 @@ $(PROJECT).sta.rpt: sta.chg $(PROJECT).fit.rpt
 
 $(PROJECT).rbf: $(PROJECT).asm.rpt $(PROJECT).sta.rpt
 	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
-	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT).rbf 
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT)_$(TIME_STAMP).rbf 
 
 
 smart.log: $(ASSIGNMENT_FILES)
@@ -137,6 +138,10 @@ program: $(PROJECT).sof
 	quartus_pgm -c "USB-Blaster on cgy1-flash.pmc-sierra.internal" -m jtag -o S\;EPM2210 -o P\;$<
 
 timing: $(PROJECT).sta.rpt
+
+gen-rbf:
+	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT)_$(TIME_STAMP).rbf 
 
 stats:
 	altera_stats.py $(PROJECT)

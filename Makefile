@@ -39,7 +39,7 @@ export MAIN_DIR		  	= main
 
 export NUM_THREADS  = 8
 LHS=256
-RHS=32
+RHS=256
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
@@ -296,6 +296,10 @@ timing:
 .PHONY: stats
 stats:
 	 $(MAKE) stats $(MAKE_ARGS_SYNTH)
+
+.PHONY: gen-rbf
+gen-rbf:
+	 $(MAKE) gen-rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY: clean-synth
 clean-synth:

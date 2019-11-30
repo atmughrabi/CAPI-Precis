@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : algorithm.c
 // Create : 2019-09-28 14:41:30
-// Revise : 2019-11-29 09:58:55
+// Revise : 2019-11-29 11:24:00
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
@@ -73,12 +73,12 @@ __u32 compareDataArrays(struct DataArrays *dataArrays){
 	__u32 missmatch = 0;
 	__u32 i;
 
-	#pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
+	// #pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
     for(i = 0; i < dataArrays->size; i++)
     {
     	
         if(dataArrays->array_receive[i] != dataArrays->array_send[i]){
-        	printf("%u != %u\n",dataArrays->array_receive[i], dataArrays->array_send[i] );
+        	printf("[%u] %u != %u\n",i , dataArrays->array_receive[i], dataArrays->array_send[i] );
         	missmatch ++;
         }
     }
