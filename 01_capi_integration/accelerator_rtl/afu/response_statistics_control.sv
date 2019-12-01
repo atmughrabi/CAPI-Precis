@@ -92,6 +92,8 @@ module response_statistics_control (
             DONE : begin
               if(response_tag_id_in.cmd_type == CMD_RESTART)
                 response_statistics_out_latched.DONE_RESTART_count <= response_statistics_out_latched.DONE_RESTART_count + 1;
+              else if (response_tag_id_in.cmd_type == CMD_PREFETCH)
+                response_statistics_out_latched.DONE_PREFETCH_count <= response_statistics_out_latched.DONE_PREFETCH_count + 1;
               else
                 response_statistics_out_latched.DONE_count <= response_statistics_out_latched.DONE_count + 1;
             end

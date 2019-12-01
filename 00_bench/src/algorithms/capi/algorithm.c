@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : algorithm.c
 // Create : 2019-09-28 14:41:30
-// Revise : 2019-11-29 11:24:00
+// Revise : 2019-12-01 03:35:58
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
@@ -75,10 +75,9 @@ __u32 compareDataArrays(struct DataArrays *dataArrays){
 
 	// #pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
     for(i = 0; i < dataArrays->size; i++)
-    {
-    	
+    {	
         if(dataArrays->array_receive[i] != dataArrays->array_send[i]){
-        	printf("[%u] %u != %u\n",i , dataArrays->array_receive[i], dataArrays->array_send[i] );
+        	// printf("[%u] %u != %u\n",i , dataArrays->array_receive[i], dataArrays->array_send[i] );
         	missmatch ++;
         }
     }
@@ -102,12 +101,8 @@ void copyDataArrays(struct DataArrays *dataArrays){
 
     setupAFU(&afu, wed);
     
-    struct AFUStatus afu_status;
-    afu_status.algo_status = 0;
+    struct AFUStatus afu_status = {0};
     afu_status.num_cu = numThreads; // non zero CU triggers the AFU to work
-    afu_status.error = 0;
-    afu_status.afu_status = 0;
-    afu_status.algo_running = 0;
     afu_status.algo_stop = wed->size_send;
 
     waitJOBRunning(&afu, &afu_status);

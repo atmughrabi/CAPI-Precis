@@ -42,9 +42,9 @@ SEED:13
 RESPONSE_PERCENT:1,100
 
 # Percentage chance of PSL responding with PAGED for any command response.
-PAGED_PERCENT:40,80
+#PAGED_PERCENT:40,80
 #PAGED_PERCENT:1,100
-#PAGED_PERCENT:0,0
+PAGED_PERCENT:0,0
 
 # Percentage chance of PSL reordering the execution of commands.
 REORDER_PERCENT:1,100

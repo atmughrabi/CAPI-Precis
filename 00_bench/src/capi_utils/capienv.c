@@ -9,7 +9,7 @@
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
 // File   : capienv.c
 // Create : 2019-10-09 19:20:39
-// Revise : 2019-11-29 11:41:21
+// Revise : 2019-12-01 00:12:59
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
         cxl_mmio_write64((*afu), ERROR_REG_ACK, afu_status->error);
 
         cxl_mmio_read64((*afu), ALGO_STATUS_DONE, &(afu_status->algo_status_done));
-        
+
         // if((((afu_status->algo_status_done) << 32) >> 32) >= (afu_status->algo_stop))
         //     break;
 
@@ -120,6 +120,7 @@ void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdRe
 
     cxl_mmio_read64((*afu), DONE_COUNT_REG, &(cmdResponseStats->DONE_count));
     cxl_mmio_read64((*afu), DONE_RESTART_COUNT_REG, &(cmdResponseStats->DONE_RESTART_count));
+    cxl_mmio_read64((*afu), DONE_PREFETCH_COUNT_REG, &(cmdResponseStats->DONE_PREFETCH_count));
     cxl_mmio_read64((*afu), PAGED_COUNT_REG, &(cmdResponseStats->PAGED_count));
     cxl_mmio_read64((*afu), FLUSHED_COUNT_REG, &(cmdResponseStats->FLUSHED_count));
     cxl_mmio_read64((*afu), AERROR_COUNT_REG, &(cmdResponseStats->AERROR_count));
@@ -138,15 +139,16 @@ void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
     printf("| %-15s %-18s %-15s | \n", " ", "Responses Stats", " ");
     printf(" -----------------------------------------------------\n");
 
-    printf("DONE_count        : %lu\n", cmdResponseStats->DONE_count);
-    printf("DONE_RESTART_count: %lu\n", cmdResponseStats->DONE_RESTART_count);
-    printf("PAGED_count       : %lu\n", cmdResponseStats->PAGED_count);
-    printf("FLUSHED_count     : %lu\n", cmdResponseStats->FLUSHED_count);
-    printf("AERROR_count      : %lu\n", cmdResponseStats->AERROR_count);
-    printf("DERROR_count      : %lu\n", cmdResponseStats->DERROR_count);
-    printf("FAILED_count      : %lu\n", cmdResponseStats->FAILED_count);
-    printf("NRES_count        : %lu\n", cmdResponseStats->NRES_count);
-    printf("NLOCK_count       : %lu\n", cmdResponseStats->NLOCK_count);
+    printf("DONE_count         : %lu\n", cmdResponseStats->DONE_count);
+    printf("DONE_RESTART_count : %lu\n", cmdResponseStats->DONE_RESTART_count);
+    printf("DONE_PREFETCH_count: %lu\n", cmdResponseStats->DONE_PREFETCH_count);
+    printf("PAGED_count        : %lu\n", cmdResponseStats->PAGED_count);
+    printf("FLUSHED_count      : %lu\n", cmdResponseStats->FLUSHED_count);
+    printf("AERROR_count       : %lu\n", cmdResponseStats->AERROR_count);
+    printf("DERROR_count       : %lu\n", cmdResponseStats->DERROR_count);
+    printf("FAILED_count       : %lu\n", cmdResponseStats->FAILED_count);
+    printf("NRES_count         : %lu\n", cmdResponseStats->NRES_count);
+    printf("NLOCK_count        : %lu\n", cmdResponseStats->NLOCK_count);
 
 }
 

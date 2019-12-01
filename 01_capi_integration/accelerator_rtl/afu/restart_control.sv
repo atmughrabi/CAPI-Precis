@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : restart_control.sv
 // Create : 2019-11-05 08:05:09
-// Revise : 2019-11-29 10:42:00
+// Revise : 2019-12-01 03:49:56
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -29,6 +29,7 @@ module restart_control (
 	input  ResponseInterface  response_in            ,
 	input  CommandTagLine     response_tag_id_in     ,
 	input  logic [0:7]        credits_in             ,
+	input  logic [0:7]        total_credits          ,
 	output logic              ready_restart_issue    ,
 	output CommandBufferLine  restart_command_out    ,
 	output logic              restart_command_flushed,
@@ -37,7 +38,7 @@ module restart_control (
 
 	ResponseInterface response                    ;
 	logic             enabled                     ;
-	logic [0:7]       credits_total               ;
+	logic [0:7]       total_credit_count          ;
 	logic [0:7]       outstanding_restart_commands;
 	CommandBufferLine command_outstanding_data_in ;
 	CommandBufferLine command_outstanding_data_out;
@@ -168,12 +169,12 @@ module restart_control (
 
 	always @(posedge clock or negedge rstn) begin
 		if (~rstn) begin
-			credits_total <= 0;
+			total_credit_count <= 0;
 		end else begin
 			if(enabled)begin
-				credits_total <= credits_in;
+				total_credit_count <= credits_in;
 			end else begin
-				credits_total <= 0;
+				total_credit_count <= 0;
 			end
 		end
 	end
@@ -189,7 +190,7 @@ module restart_control (
 			if(enabled)begin
 				restart_command_flag_latched <= restart_command_flag;
 			end else
-				restart_command_flag_latched <= 0;
+			restart_command_flag_latched <= 0;
 		end
 	end
 
@@ -245,7 +246,7 @@ module restart_control (
 					next_state = RESTART_RESP_WAIT;
 			end
 			RESTART_SEND_CMD_FLUSHED : begin
-				if(restart_command_buffer_status_internal.empty && (credits_total == CREDITS_TOTAL))begin
+				if(restart_command_buffer_status_internal.empty && (total_credit_count == total_credits))begin
 					if(restart_command_flag)
 						next_state = RESTART_INIT;
 					else

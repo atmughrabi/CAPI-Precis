@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-11-29 09:28:49
+// Revise : 2019-12-01 03:23:01
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -80,16 +80,18 @@ package GLOBALS_PKG;
 	parameter ALGO_STATUS_DONE     = 26'h 3FFFFC0 >> 2;
 	parameter ALGO_STATUS_DONE_ACK = 26'h 3FFFFB8 >> 2;
 
-	parameter DONE_COUNT_REG         = 26'h 3FFFFB0 >> 2;
-	parameter DONE_RESTART_COUNT_REG = 26'h 3FFFFA8 >> 2;
-	parameter PAGED_COUNT_REG        = 26'h 3FFFFA0 >> 2;
-	parameter FLUSHED_COUNT_REG      = 26'h 3FFFF98 >> 2;
-	parameter AERROR_COUNT_REG       = 26'h 3FFFF90 >> 2;
-	parameter DERROR_COUNT_REG       = 26'h 3FFFF88 >> 2;
-	parameter FAILED_COUNT_REG       = 26'h 3FFFF80 >> 2;
-	parameter FAULT_COUNT_REG        = 26'h 3FFFF78 >> 2;
-	parameter NRES_COUNT_REG         = 26'h 3FFFF70 >> 2;
-	parameter NLOCK_COUNT_REG        = 26'h 3FFFF68 >> 2;
+	parameter DONE_COUNT_REG          = 26'h 3FFFFB0 >> 2;
+	parameter DONE_RESTART_COUNT_REG  = 26'h 3FFFFA8 >> 2;
+	parameter DONE_PREFETCH_COUNT_REG = 26'h 3FFFF60 >> 2;
+
+	parameter PAGED_COUNT_REG   = 26'h 3FFFFA0 >> 2;
+	parameter FLUSHED_COUNT_REG = 26'h 3FFFF98 >> 2;
+	parameter AERROR_COUNT_REG  = 26'h 3FFFF90 >> 2;
+	parameter DERROR_COUNT_REG  = 26'h 3FFFF88 >> 2;
+	parameter FAILED_COUNT_REG  = 26'h 3FFFF80 >> 2;
+	parameter FAULT_COUNT_REG   = 26'h 3FFFF78 >> 2;
+	parameter NRES_COUNT_REG    = 26'h 3FFFF70 >> 2;
+	parameter NLOCK_COUNT_REG   = 26'h 3FFFF68 >> 2;
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -106,6 +108,7 @@ package GLOBALS_PKG;
 	parameter DATA_SIZE_WRITE      = 8                  ; // edge data size is n bytes
 	parameter DATA_SIZE_WRITE_BITS = DATA_SIZE_WRITE * 8; // edge data size is n*8 Bits
 
+// aligenment to cacheline 128-BYTES
 	parameter [0:63] ADDRESS_ARRAY_ALIGN_MASK = {{57{1'b1}},{7{1'b0}}};
 	parameter [0:63] ADDRESS_ARRAY_MOD_MASK   = {{57{1'b0}},{7{1'b1}}};
 
@@ -117,6 +120,8 @@ package GLOBALS_PKG;
 
 	parameter CACHELINE_ARRAY_NUM        = (CACHELINE_SIZE >> $clog2(ARRAY_SIZE))                                                               ; // number of  in one cacheline                                                                ; // number of edges in one cacheline
 	parameter CACHELINE_INT_COUNTER_BITS = $clog2((ARRAY_SIZE_BITS < CACHELINE_SIZE_BITS_HF) ? (2 * CACHELINE_SIZE_BITS_HF)/ARRAY_SIZE_BITS : 2);
+
+
 
 ////////////////////////////////////////////////////////////////////////////
 //  AFU/CU-Control CU IDs any compute unite that generate command must have an ID

@@ -153,16 +153,17 @@ package AFU_PKG;
   } ResponseBufferStatusInterface;
 
   typedef struct packed {
-    logic [0:63] DONE_count        ;
-    logic [0:63] DONE_RESTART_count;
-    logic [0:63] PAGED_count       ;
-    logic [0:63] FLUSHED_count     ;
-    logic [0:63] AERROR_count      ;
-    logic [0:63] DERROR_count      ;
-    logic [0:63] FAILED_count      ;
-    logic [0:63] FAULT_count       ;
-    logic [0:63] NRES_count        ;
-    logic [0:63] NLOCK_count       ;
+    logic [0:63] DONE_count         ;
+    logic [0:63] DONE_RESTART_count ;
+    logic [0:63] DONE_PREFETCH_count;
+    logic [0:63] PAGED_count        ;
+    logic [0:63] FLUSHED_count      ;
+    logic [0:63] AERROR_count       ;
+    logic [0:63] DERROR_count       ;
+    logic [0:63] FAILED_count       ;
+    logic [0:63] FAULT_count        ;
+    logic [0:63] NRES_count         ;
+    logic [0:63] NLOCK_count        ;
   } ResponseStatistcsInterface;
 
 ////////////////////////////////////////////////////////////////////////////

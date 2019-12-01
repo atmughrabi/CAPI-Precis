@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_write_engine_control.sv
 // Create : 2019-11-18 16:55:32
-// Revise : 2019-11-25 21:36:32
+// Revise : 2019-12-01 03:51:12
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -136,11 +136,6 @@ module cu_data_write_engine_control (
 			if (write_data_0_out_buffer.valid && write_data_1_out_buffer.valid && enabled) begin
 				write_command_out_latched.valid <= write_data_0_out_buffer.valid;
 
-				if(wed_request_in_latched.wed.afu_config[30])
-					write_command_out_latched.command <= WRITE_MS;
-				else
-					write_command_out_latched.command <= WRITE_NA;
-
 				write_command_out_latched.address <= wed_request_in_latched.wed.array_receive + write_data_0_out_buffer.cmd.address_offest;
 				write_command_out_latched.size    <= cmd_size_calculate(write_data_0_out_buffer.cmd.real_size);
 				write_command_out_latched.cmd     <= cmd;
@@ -182,7 +177,7 @@ module cu_data_write_engine_control (
 
 	fifo #(
 		.WIDTH($bits(ReadWriteDataLine)),
-		.DEPTH(WRITE_DATA_BUFFER_SIZE + READ_CMD_BUFFER_SIZE ),
+		.DEPTH(WRITE_DATA_BUFFER_SIZE + READ_CMD_BUFFER_SIZE),
 		.HEADROOM (READ_CMD_BUFFER_SIZE + CREDITS_TOTAL)
 
 	) cu_write_data_0_buffer_fifo_instant (

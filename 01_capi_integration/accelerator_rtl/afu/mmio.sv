@@ -260,6 +260,9 @@ module mmio (
           DONE_RESTART_COUNT_REG : begin
             data_out <= response_statistics_out_latched.DONE_RESTART_count;
           end
+          DONE_PREFETCH_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.DONE_PREFETCH_count;
+          end
           DONE_COUNT_REG : begin
             data_out <= response_statistics_out_latched.DONE_count;
           end

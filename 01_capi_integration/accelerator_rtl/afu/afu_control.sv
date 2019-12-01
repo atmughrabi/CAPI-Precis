@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-11-29 09:25:48
+// Revise : 2019-12-01 03:49:39
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -146,6 +146,10 @@ module afu_control #(
 	CommandBufferLine command_issue_register;
 
 	ResponseControlInterfaceOut response_control_out_latched_S[0:RSP_DELAY-1];
+
+	logic [0:7] total_credits;
+	logic [0:7] read_credits ;
+	logic [0:7] write_credits;
 
 ////////////////////////////////////////////////////////////////////////////
 //drive output response stats
@@ -323,6 +327,7 @@ module afu_control #(
 		.response_in            (response_filtered_restart_latched),
 		.response_tag_id_in     (response_tag_id                  ),
 		.credits_in             (credits.credits                  ),
+		.total_credits          (total_credits                    ),
 		.ready_restart_issue    (ready_restart_issue              ),
 		.restart_command_out    (restart_command_out              ),
 		.restart_command_flushed(restart_command_flushed          ),
@@ -381,19 +386,31 @@ module afu_control #(
 //Credit Tracking Logic
 ////////////////////////////////////////////////////////////////////////////
 
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			total_credits <= 0;
+			read_credits  <= 0;
+			write_credits <= 0;
+		end else begin
+			total_credits <= command_in_latched.room;
+			read_credits  <= (command_in_latched.room >> 1);
+			write_credits <= (command_in_latched.room >> 1);
+		end
+	end
+
 	credit_control credits_total_control_instant (
-		.clock     (clock                                                                                                                                ),
-		.rstn      (rstn                                                                                                                                 ),
-		.enabled_in(enabled                                                                                                                              ),
-		.credit_in ({command_buffer_out.valid,response_control_out.response.valid,response_control_out.response.response_credits,command_in_latched.room}),
-		.credit_out(credits                                                                                                                              )
+		.clock     (clock                                                                                                                      ),
+		.rstn      (rstn                                                                                                                       ),
+		.enabled_in(enabled                                                                                                                    ),
+		.credit_in ({command_buffer_out.valid,response_control_out.response.valid,response_control_out.response.response_credits,total_credits}),
+		.credit_out(credits                                                                                                                    )
 	);
 
 	credit_control credits_read_control_instant (
 		.clock     (clock                                                                                                                         ),
 		.rstn      (rstn                                                                                                                          ),
 		.enabled_in(enabled                                                                                                                       ),
-		.credit_in ({read_command_buffer_out.valid,response_control_out.read_response,response_control_out.response.response_credits,CREDITS_READ}),
+		.credit_in ({read_command_buffer_out.valid,response_control_out.read_response,response_control_out.response.response_credits,read_credits}),
 		.credit_out(credits_read                                                                                                                  )
 	);
 
@@ -401,7 +418,7 @@ module afu_control #(
 		.clock     (clock                                                                                                                            ),
 		.rstn      (rstn                                                                                                                             ),
 		.enabled_in(enabled                                                                                                                          ),
-		.credit_in ({write_command_buffer_out.valid,response_control_out.write_response,response_control_out.response.response_credits,CREDITS_WRITE}),
+		.credit_in ({write_command_buffer_out.valid,response_control_out.write_response,response_control_out.response.response_credits,write_credits}),
 		.credit_out(credits_write                                                                                                                    )
 	);
 
@@ -543,7 +560,7 @@ module afu_control #(
 	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (|credits.credits) && ~restart_pending;
 	fifo #(
 		.WIDTH   ($bits(CommandBufferLine)),
-		.DEPTH   (16                      ),
+		.DEPTH   (32                      ),
 		.HEADROOM(8                       )
 	) burst_command_buffer_afu_fifo_instant (
 		.clock   (clock                                 ),
