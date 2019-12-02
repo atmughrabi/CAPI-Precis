@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_write_engine_control.sv
 // Create : 2019-11-18 16:55:32
-// Revise : 2019-12-01 03:51:12
+// Revise : 2019-12-01 07:16:12
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 

@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-12-01 03:23:01
+// Revise : 2019-12-01 07:15:55
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 

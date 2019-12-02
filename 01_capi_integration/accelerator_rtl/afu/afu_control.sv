@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-12-01 03:49:39
+// Revise : 2019-12-01 06:53:46
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -61,10 +61,11 @@ module afu_control #(
 ////////////////////////////////////////////////////////////////////////////
 
 	CommandInterfaceInput command_in_latched               ;
-	ResponseInterface     response_filtered_done_latched   ;
+
 	ResponseInterface     response_tagged                  ;
 	ResponseInterface     response_tagged_latched          ;
 	ResponseInterface     response_filtered_done           ;
+	ResponseInterface     response_filtered_done_latched   ;
 	ResponseInterface     response_filtered_stats          ;
 	ResponseInterface     response_filtered_stats_latched  ;
 	ResponseInterface     response_filtered_restart        ;
@@ -236,6 +237,7 @@ module afu_control #(
 
 	always_ff @(posedge clock) begin
 		command_in_latched                <= command_in;
+
 		response_filtered_stats_latched   <= response_filtered_stats;
 		response_filtered_done_latched    <= response_filtered_done;
 		response_filtered_restart_latched <= response_filtered_restart;
@@ -560,7 +562,7 @@ module afu_control #(
 	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (|credits.credits) && ~restart_pending;
 	fifo #(
 		.WIDTH   ($bits(CommandBufferLine)),
-		.DEPTH   (32                      ),
+		.DEPTH   (16                      ),
 		.HEADROOM(8                       )
 	) burst_command_buffer_afu_fifo_instant (
 		.clock   (clock                                 ),

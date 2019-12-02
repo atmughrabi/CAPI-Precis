@@ -96,10 +96,11 @@ module wed_control (
         command_out.size    <= 12'h000;
         command_out.abt     <= STRICT;
 
-        command_out.cmd.cu_id         <= INVALID_ID;
-        command_out.cmd.cmd_type      <= CMD_INVALID;
-        command_out.cmd.array_struct  <= STRUCT_INVALID;
-        command_out.cmd.tag           <= 0;
+        command_out.cmd.cu_id          <= INVALID_ID;
+        command_out.cmd.cmd_type       <= CMD_INVALID;
+        command_out.cmd.array_struct   <= STRUCT_INVALID;
+        command_out.cmd.tag            <= 0;
+        command_out.cmd.address_offest <= 0;
 
 
         wed_cacheline128        <= 1024'h0;
@@ -121,6 +122,7 @@ module wed_control (
         command_out.cmd.array_struct     <= STRUCT_INVALID;
         command_out.cmd.real_size        <= 32;
         command_out.cmd.cacheline_offest <= 0;
+        command_out.cmd.address_offest   <= 0;
         command_out.cmd.tag              <= 0;
 
         wed_request_out.address <= wed_address;

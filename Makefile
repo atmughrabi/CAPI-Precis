@@ -39,7 +39,7 @@ export MAIN_DIR		  	= main
 
 export NUM_THREADS  = 8
 LHS=256 
-RHS=256
+RHS=512
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 

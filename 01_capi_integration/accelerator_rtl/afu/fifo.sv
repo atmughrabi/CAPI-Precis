@@ -14,9 +14,9 @@
 
 module fifo #(
     parameter WIDTH     = 32,
-    parameter DEPTH     = 16,
+    parameter DEPTH     = 32,
     parameter ADDR_BITS = $clog2(DEPTH),
-    parameter HEADROOM  = ((DEPTH > 4)?8:3)
+    parameter HEADROOM  = ((DEPTH > 4)?16:3)
 ) (
     input logic clock,
     input logic rstn,
