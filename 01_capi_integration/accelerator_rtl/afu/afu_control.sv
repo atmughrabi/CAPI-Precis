@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-12-01 06:53:46
+// Revise : 2019-12-05 09:18:58
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -60,16 +60,16 @@ module afu_control #(
 //latch the inputs from the PSL
 ////////////////////////////////////////////////////////////////////////////
 
-	CommandInterfaceInput command_in_latched               ;
+	CommandInterfaceInput command_in_latched;
 
-	ResponseInterface     response_tagged                  ;
-	ResponseInterface     response_tagged_latched          ;
-	ResponseInterface     response_filtered_done           ;
-	ResponseInterface     response_filtered_done_latched   ;
-	ResponseInterface     response_filtered_stats          ;
-	ResponseInterface     response_filtered_stats_latched  ;
-	ResponseInterface     response_filtered_restart        ;
-	ResponseInterface     response_filtered_restart_latched;
+	ResponseInterface response_tagged                  ;
+	ResponseInterface response_tagged_latched          ;
+	ResponseInterface response_filtered_done           ;
+	ResponseInterface response_filtered_done_latched   ;
+	ResponseInterface response_filtered_stats          ;
+	ResponseInterface response_filtered_stats_latched  ;
+	ResponseInterface response_filtered_restart        ;
+	ResponseInterface response_filtered_restart_latched;
 
 
 	ReadDataControlInterface  read_buffer_in ;
@@ -81,6 +81,11 @@ module afu_control #(
 
 	ReadWriteDataLine write_data_0;
 	ReadWriteDataLine write_data_1;
+
+	ReadWriteDataLine cu_write_data_0;
+	ReadWriteDataLine cu_write_data_1;
+
+
 
 	CommandBufferLine read_command_buffer_out   ;
 	CommandBufferLine write_command_buffer_out  ;
@@ -127,11 +132,12 @@ module afu_control #(
 
 	logic enabled;
 
-	BufferStatus      burst_command_buffer_states_afu;
-	logic             burst_command_buffer_pop       ;
-	CommandBufferLine burst_command_buffer_out       ;
-	CommandBufferLine command_buffer_out             ;
-	CommandBufferLine command_buffer_out_bypass      ;
+	DataBufferStatusInterface burst_write_data_buffer_status ;
+	BufferStatus              burst_command_buffer_states_afu;
+	logic                     burst_command_buffer_pop       ;
+	CommandBufferLine         burst_command_buffer_out       ;
+	CommandBufferLine         command_buffer_out             ;
+	CommandBufferLine         command_buffer_out_bypass      ;
 
 
 	logic command_write_valid;
@@ -236,7 +242,7 @@ module afu_control #(
 ////////////////////////////////////////////////////////////////////////////
 
 	always_ff @(posedge clock) begin
-		command_in_latched                <= command_in;
+		command_in_latched <= command_in;
 
 		response_filtered_stats_latched   <= response_filtered_stats;
 		response_filtered_done_latched    <= response_filtered_done;
@@ -561,9 +567,8 @@ module afu_control #(
 	// assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (|credits.credits) && ~(|request_pulse);
 	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (|credits.credits) && ~restart_pending;
 	fifo #(
-		.WIDTH   ($bits(CommandBufferLine)),
-		.DEPTH   (16                      ),
-		.HEADROOM(8                       )
+		.WIDTH($bits(CommandBufferLine)),
+		.DEPTH(BURST_CMD_BUFFER_SIZE   )
 	) burst_command_buffer_afu_fifo_instant (
 		.clock   (clock                                 ),
 		.rstn    (rstn                                  ),
@@ -866,14 +871,14 @@ module afu_control #(
 		.clock   (clock                                   ),
 		.rstn    (rstn                                    ),
 		
-		.push    (write_command_in.valid                  ),
+		.push    (write_data_0_in.valid                   ),
 		.data_in (write_data_0_in                         ),
 		.full    (write_data_buffer_status.buffer_0.full  ),
 		.alFull  (write_data_buffer_status.buffer_0.alfull),
 		
-		.pop     (command_write_valid                     ),
+		.pop     (ready[2]                                ),
 		.valid   (write_data_buffer_status.buffer_0.valid ),
-		.data_out(write_data_0                            ),
+		.data_out(cu_write_data_0                         ),
 		.empty   (write_data_buffer_status.buffer_0.empty )
 	);
 
@@ -885,15 +890,56 @@ module afu_control #(
 		.clock   (clock                                   ),
 		.rstn    (rstn                                    ),
 		
-		.push    (write_command_in.valid                  ),
+		.push    (write_data_1_in.valid                   ),
 		.data_in (write_data_1_in                         ),
 		.full    (write_data_buffer_status.buffer_1.full  ),
 		.alFull  (write_data_buffer_status.buffer_1.alfull),
 		
-		.pop     (command_write_valid                     ),
+		.pop     (ready[2]                                ),
 		.valid   (write_data_buffer_status.buffer_1.valid ),
-		.data_out(write_data_1                            ),
+		.data_out(cu_write_data_1                         ),
 		.empty   (write_data_buffer_status.buffer_1.empty )
+	);
+
+////////////////////////////////////////////////////////////////////////////
+//Burst Buffers CU Write DATA
+////////////////////////////////////////////////////////////////////////////
+
+	fifo #(
+		.WIDTH($bits(ReadWriteDataLine)),
+		.DEPTH(BURST_CMD_BUFFER_SIZE   )
+	) burst_write_data_0_buffer_fifo_instant (
+		.clock   (clock                                         ),
+		.rstn    (rstn                                          ),
+		
+		.push    (cu_write_data_0.valid                         ),
+		.data_in (cu_write_data_0                               ),
+		.full    (burst_write_data_buffer_status.buffer_0.full  ),
+		.alFull  (burst_write_data_buffer_status.buffer_0.alfull),
+		
+		.pop     (command_write_valid                           ),
+		.valid   (burst_write_data_buffer_status.buffer_0.valid ),
+		.data_out(write_data_0                                  ),
+		.empty   (burst_write_data_buffer_status.buffer_0.empty )
+	);
+
+
+	fifo #(
+		.WIDTH($bits(ReadWriteDataLine)),
+		.DEPTH(BURST_CMD_BUFFER_SIZE   )
+	) burst_write_data_1_buffer_fifo_instant (
+		.clock   (clock                                         ),
+		.rstn    (rstn                                          ),
+		
+		.push    (cu_write_data_1.valid                         ),
+		.data_in (cu_write_data_1                               ),
+		.full    (burst_write_data_buffer_status.buffer_1.full  ),
+		.alFull  (burst_write_data_buffer_status.buffer_1.alfull),
+		
+		.pop     (command_write_valid                           ),
+		.valid   (burst_write_data_buffer_status.buffer_1.valid ),
+		.data_out(write_data_1                                  ),
+		.empty   (burst_write_data_buffer_status.buffer_1.empty )
 	);
 
 endmodule

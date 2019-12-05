@@ -86,3 +86,84 @@
 # 15   0x0a78406b: '<unknown (@0xa78406b)>'
 # 16   0x0a1f2e6b: '<unknown (@0xa1f2e6b)>'
 # 17   0x624f776a: '<unknown (@0x624f776a)>'
+# Current time Mon Dec  2 22:10:30 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0xf7fd2b29: '<unknown (@0xf7fd2b29)>'
+# 1    0x0854b8f4: 'Tcl_DoOneEvent + 0xf4' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 2    0x083f2b8f: 'Tk_MainLoop + 0x1f' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 3    0x083fb4a4: 'Tk_MainEx + 0x374' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 4    0x081fee66: 'vish_inner_loop + 0x116' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 5    0x080e6029: 'main + 0x989' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 6    0xf7aa8fb4: '<unknown (@0xf7aa8fb4)>'
+# End of Stack Trace
+
+# Current time Wed Dec  4 00:12:03 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0xf7fd2b49: '<unknown (@0xf7fd2b49)>'
+# 1    0x0854b8f4: 'Tcl_DoOneEvent + 0xf4' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 2    0x085111be: '<unknown (@0x85111be)>'
+# 3    0x084cc41d: '<unknown (@0x84cc41d)>'
+# 4    0x0851503a: '<unknown (@0x851503a)>'
+# 5    0x0855ca25: 'TclObjInterpProcCore + 0x115' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 6    0x0855cfc2: 'TclObjInterpProc + 0x62' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 7    0x084cc41d: '<unknown (@0x84cc41d)>'
+# 8    0x084cded6: '<unknown (@0x84cded6)>'
+# 9    0x084ce4c5: 'Tcl_EvalEx + 0x35' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 10   0x084ce92c: 'TclEvalObjEx + 0x3fc' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 11   0x084d5992: '<unknown (@0x84d5992)>'
+# 12   0x084cc41d: '<unknown (@0x84cc41d)>'
+# 13   0x0851503a: '<unknown (@0x851503a)>'
+# 14   0x0855ca25: 'TclObjInterpProcCore + 0x115' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 15   0x0855cfc2: 'TclObjInterpProc + 0x62' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 16   0x08542c14: '<unknown (@0x8542c14)>'
+# 17   0x084cc41d: '<unknown (@0x84cc41d)>'
+# 18   0x0851503a: '<unknown (@0x851503a)>'
+# 19   0x0855ca25: 'TclObjInterpProcCore + 0x115' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 20   0x0855cfc2: 'TclObjInterpProc + 0x62' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 21   0x084cc41d: '<unknown (@0x84cc41d)>'
+# 22   0x0851503a: '<unknown (@0x851503a)>'
+# 23   0x0851d9dc: '<unknown (@0x851d9dc)>'
+# 24   0x084ce59c: 'TclEvalObjEx + 0x6c' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 25   0x084cea36: 'Tcl_EvalObjEx + 0x36' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 26   0x084cc41d: '<unknown (@0x84cc41d)>'
+# 27   0x0851503a: '<unknown (@0x851503a)>'
+# 28   0x0855ca25: 'TclObjInterpProcCore + 0x115' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 29   0x0855cfc2: 'TclObjInterpProc + 0x62' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 30   0x084cc41d: '<unknown (@0x84cc41d)>'
+# 31   0x0851503a: '<unknown (@0x851503a)>'
+# 32   0x0855ca25: 'TclObjInterpProcCore + 0x115' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 33   0x0855cfc2: 'TclObjInterpProc + 0x62' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 34   0x084cc41d: '<unknown (@0x84cc41d)>'
+# 35   0x0851503a: '<unknown (@0x851503a)>'
+# 36   0x0855ca25: 'TclObjInterpProcCore + 0x115' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 37   0x0855cfc2: 'TclObjInterpProc + 0x62' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 38   0x084cc41d: '<unknown (@0x84cc41d)>'
+# 39   0x0851503a: '<unknown (@0x851503a)>'
+# 40   0x0855ca25: 'TclObjInterpProcCore + 0x115' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 41   0x0855cfc2: 'TclObjInterpProc + 0x62' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 42   0x084cc41d: '<unknown (@0x84cc41d)>'
+# 43   0x084cded6: '<unknown (@0x84cded6)>'
+# 44   0x084ce4c5: 'Tcl_EvalEx + 0x35' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 45   0x084ce92c: 'TclEvalObjEx + 0x3fc' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 46   0x084d5992: '<unknown (@0x84d5992)>'
+# 47   0x084cc41d: '<unknown (@0x84cc41d)>'
+# 48   0x0851503a: '<unknown (@0x851503a)>'
+# 49   0x0851d9dc: '<unknown (@0x851d9dc)>'
+# 50   0x084ce59c: 'TclEvalObjEx + 0x6c' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 51   0x084cea36: 'Tcl_EvalObjEx + 0x36' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 52   0xf7200eac: 'Itcl_EvalMemberCode + 0x3cc' in '/home/ab/intelFPGA/18.1/modelsim_ase/bin/../linux/itcl3.4/libitcl3.4.so'
+# 53   0x09d73d3b: '<unknown (@0x9d73d3b)>'
+# 54   0x09d6d1ab: '<unknown (@0x9d6d1ab)>'
+# 55   0xfffffffb: '<unknown (@0xfffffffb)>'
+# End of Stack Trace
+

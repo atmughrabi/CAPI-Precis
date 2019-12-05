@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_write_engine_control.sv
 // Create : 2019-11-18 16:55:32
-// Revise : 2019-12-01 07:16:12
+// Revise : 2019-12-05 09:30:03
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -117,10 +117,10 @@ module cu_data_write_engine_control (
 
 	always_comb begin
 		cmd                  = 0;
-		cmd.array_struct    = WRITE_DATA;
+		cmd.array_struct     = WRITE_DATA;
 		cmd.cacheline_offest = write_data_0_out_buffer.cmd.cacheline_offest;
 		cmd.address_offest   = write_data_0_out_buffer.cmd.address_offest;
-		cmd.real_size   	 = write_data_0_out_buffer.cmd.real_size;
+		cmd.real_size        = write_data_0_out_buffer.cmd.real_size;
 		cmd.cu_id            = DATA_WRITE_CONTROL_ID;
 		cmd.cmd_type         = CMD_WRITE;
 		cmd.abt              = STRICT;
@@ -176,10 +176,9 @@ module cu_data_write_engine_control (
 	assign write_data_buffer_pop = ~write_command_buffer_status.alfull && ~write_data_in_1_buffer_status.empty && ~write_data_in_0_buffer_status.empty;
 
 	fifo #(
-		.WIDTH($bits(ReadWriteDataLine)),
-		.DEPTH(WRITE_DATA_BUFFER_SIZE + READ_CMD_BUFFER_SIZE),
-		.HEADROOM (READ_CMD_BUFFER_SIZE + CREDITS_TOTAL)
-
+		.WIDTH   ($bits(ReadWriteDataLine)    ),
+		.DEPTH   (WRITE_ENGINE_BUFFER_SIZE    ),
+		.HEADROOM(WRITE_ENGINE_BUFFER_HEADROOM)
 	) cu_write_data_0_buffer_fifo_instant (
 		.clock   (clock                               ),
 		.rstn    (rstn                                ),
@@ -197,10 +196,9 @@ module cu_data_write_engine_control (
 
 
 	fifo #(
-		.WIDTH($bits(ReadWriteDataLine)),
-		.DEPTH(WRITE_DATA_BUFFER_SIZE + READ_CMD_BUFFER_SIZE),
-		.HEADROOM (READ_CMD_BUFFER_SIZE + CREDITS_TOTAL)
-
+		.WIDTH   ($bits(ReadWriteDataLine)    ),
+		.DEPTH   (WRITE_ENGINE_BUFFER_SIZE    ),
+		.HEADROOM(WRITE_ENGINE_BUFFER_HEADROOM)
 	) cu_write_data_1_buffer_fifo_instant (
 		.clock   (clock                               ),
 		.rstn    (rstn                                ),

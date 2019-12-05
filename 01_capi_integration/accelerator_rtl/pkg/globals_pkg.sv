@@ -8,11 +8,17 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-12-01 07:15:55
+// Revise : 2019-12-05 09:31:58
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
 package GLOBALS_PKG;
+
+
+	parameter CREDITS_READ  = 32                          ;
+	parameter CREDITS_WRITE = 32                          ;
+	parameter CREDITS_TOTAL = CREDITS_READ + CREDITS_WRITE; // MUST be 64 credits max
+
 
 ////////////////////////////////////////////////////////////////////////////
 // CU-Control CU Globals
@@ -43,26 +49,35 @@ package GLOBALS_PKG;
 	parameter WORD_DOUBLE_BITS = WORD_DOUBLE * 8;
 
 ////////////////////////////////////////////////////////////////////////////
-// AFU-Control Command Tags generation (Buffer size)
+// AFU-Control (Buffer sizes)
 ////////////////////////////////////////////////////////////////////////////
 
 	parameter TAG_COUNT   = 256  ;
 	parameter INVALID_TAG = 8'h00;
 
-	parameter READ_CMD_BUFFER_SIZE    = 256;
-	parameter WRITE_CMD_BUFFER_SIZE   = 256;
-	parameter RESTART_CMD_BUFFER_SIZE = 4  ;
-	parameter WED_CMD_BUFFER_SIZE     = 4  ;
+	parameter BURST_CMD_BUFFER_SIZE = 32; // size of command burst for PSL leave as is
 
-	parameter READ_RSP_BUFFER_SIZE    = 256;
-	parameter WRITE_RSP_BUFFER_SIZE   = 256;
-	parameter RESTART_RSP_BUFFER_SIZE = 4  ;
-	parameter WED_RSP_BUFFER_SIZE     = 4  ;
+	parameter READ_CMD_BUFFER_SIZE    = 32;
+	parameter WRITE_CMD_BUFFER_SIZE   = 32;
+	parameter RESTART_CMD_BUFFER_SIZE = 4 ;
+	parameter WED_CMD_BUFFER_SIZE     = 4 ;
 
-	parameter READ_DATA_BUFFER_SIZE    = 256;
-	parameter WRITE_DATA_BUFFER_SIZE   = 256;
-	parameter RESTART_DATA_BUFFER_SIZE = 4  ;
-	parameter WED_DATA_BUFFER_SIZE     = 4  ;
+	parameter READ_RSP_BUFFER_SIZE    = 32;
+	parameter WRITE_RSP_BUFFER_SIZE   = 32;
+	parameter RESTART_RSP_BUFFER_SIZE = 4 ;
+	parameter WED_RSP_BUFFER_SIZE     = 4 ;
+
+	parameter READ_DATA_BUFFER_SIZE    = 32;
+	parameter WRITE_DATA_BUFFER_SIZE   = 32;
+	parameter RESTART_DATA_BUFFER_SIZE = 4 ;
+	parameter WED_DATA_BUFFER_SIZE     = 4 ;
+
+////////////////////////////////////////////////////////////////////////////
+// CU-Control  (Buffer size)
+////////////////////////////////////////////////////////////////////////////
+
+	parameter WRITE_ENGINE_BUFFER_HEADROOM = READ_CMD_BUFFER_SIZE + BURST_CMD_BUFFER_SIZE + CREDITS_READ;
+	parameter WRITE_ENGINE_BUFFER_SIZE     = 2 ** ($clog2(WRITE_ENGINE_BUFFER_HEADROOM) + 1)            ;
 
 ////////////////////////////////////////////////////////////////////////////
 // AFU-Control MMIO Registers Mapping on AFU and HOSt
