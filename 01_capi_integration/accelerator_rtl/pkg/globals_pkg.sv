@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-12-05 09:31:58
+// Revise : 2019-12-05 10:20:33
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -57,18 +57,18 @@ package GLOBALS_PKG;
 
 	parameter BURST_CMD_BUFFER_SIZE = 32; // size of command burst for PSL leave as is
 
-	parameter READ_CMD_BUFFER_SIZE    = 32;
-	parameter WRITE_CMD_BUFFER_SIZE   = 32;
+	parameter READ_CMD_BUFFER_SIZE    = 128;
+	parameter WRITE_CMD_BUFFER_SIZE   = 128;
 	parameter RESTART_CMD_BUFFER_SIZE = 4 ;
 	parameter WED_CMD_BUFFER_SIZE     = 4 ;
 
-	parameter READ_RSP_BUFFER_SIZE    = 32;
-	parameter WRITE_RSP_BUFFER_SIZE   = 32;
+	parameter READ_RSP_BUFFER_SIZE    = 128;
+	parameter WRITE_RSP_BUFFER_SIZE   = 128;
 	parameter RESTART_RSP_BUFFER_SIZE = 4 ;
 	parameter WED_RSP_BUFFER_SIZE     = 4 ;
 
-	parameter READ_DATA_BUFFER_SIZE    = 32;
-	parameter WRITE_DATA_BUFFER_SIZE   = 32;
+	parameter READ_DATA_BUFFER_SIZE    = 128;
+	parameter WRITE_DATA_BUFFER_SIZE   = 128;
 	parameter RESTART_DATA_BUFFER_SIZE = 4 ;
 	parameter WED_DATA_BUFFER_SIZE     = 4 ;
 
