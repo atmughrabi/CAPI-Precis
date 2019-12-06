@@ -54,8 +54,9 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
   logic reset_done                 ;
   logic report_algorithm_status_ack;
 
-  CommandBufferLine read_command_out ;
-  CommandBufferLine write_command_out;
+  CommandBufferLine read_command_out    ;
+  CommandBufferLine prefetch_command_out;
+  CommandBufferLine write_command_out   ;
 
   ReadWriteDataLine wed_data_0_out  ;
   ReadWriteDataLine wed_data_1_out  ;
@@ -70,9 +71,10 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
   DataBufferStatusInterface     wed_data_buffer_status  ;
   DataBufferStatusInterface     write_data_buffer_status;
 
-  ResponseBufferLine read_response_out ;
-  ResponseBufferLine write_response_out;
-  ResponseBufferLine wed_response_out  ;
+  ResponseBufferLine read_response_out    ;
+  ResponseBufferLine prefetch_response_out;
+  ResponseBufferLine write_response_out   ;
+  ResponseBufferLine wed_response_out     ;
 
 
   WEDInterface               wed                       ; // work element descriptor -> addresses and other into
@@ -189,6 +191,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .clock                   (clock                   ),
     .rstn                    (combined_reset_afu      ),
     .enabled_in              (enabled                 ),
+    .prefetch_command_in     (prefetch_command_out    ),
     .read_command_in         (read_command_out        ),
     .write_command_in        (write_command_out       ),
     .wed_command_in          (wed_command_out         ),
@@ -202,6 +205,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .read_data_0_out         (read_data_0_out         ),
     .read_data_1_out         (read_data_1_out         ),
     .read_response_out       (read_response_out       ),
+    .prefetch_response_out   (prefetch_response_out   ),
     .write_response_out      (write_response_out      ),
     .wed_response_out        (wed_response_out        ),
     .command_response_error  (command_response_error  ),
@@ -223,26 +227,28 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 
 
   cu_control cu_control_instant (
-    .clock              (clock                             ),
-    .rstn               (combined_reset_afu                ),
-    .enabled_in         (enabled                           ),
-    .wed_request_in     (wed                               ),
-    .read_response_in   (read_response_out                 ),
-    .write_response_in  (write_response_out                ),
-    .read_data_0_in     (read_data_0_out                   ),
-    .read_data_1_in     (read_data_1_out                   ),
-    .read_buffer_status (command_buffer_status.read_buffer ),
-    .algorithm_status   (algorithm_status                  ),
-    .algorithm_done     (algorithm_done                    ),
-    .algorithm_running  (algorithm_running                 ),
-    .algorithm_requests (algorithm_requests                ),
-    .read_command_out   (read_command_out                  ),
-    .write_buffer_status(command_buffer_status.write_buffer),
-    .write_command_out  (write_command_out                 ),
-    .write_data_0_out   (write_data_0_out                  ),
-    .write_data_1_out   (write_data_1_out                  )
+    .clock                 (clock                                ),
+    .rstn                  (combined_reset_afu                   ),
+    .enabled_in            (enabled                              ),
+    .wed_request_in        (wed                                  ),
+    .read_response_in      (read_response_out                    ),
+    .prefetch_response_in  (prefetch_response_out                ),
+    .write_response_in     (write_response_out                   ),
+    .read_data_0_in        (read_data_0_out                      ),
+    .read_data_1_in        (read_data_1_out                      ),
+    .read_buffer_status    (command_buffer_status.read_buffer    ),
+    .prefetch_buffer_status(command_buffer_status.prefetch_buffer),
+    .write_buffer_status   (command_buffer_status.write_buffer   ),
+    .algorithm_requests    (algorithm_requests                   ),
+    .algorithm_status      (algorithm_status                     ),
+    .algorithm_done        (algorithm_done                       ),
+    .algorithm_running     (algorithm_running                    ),
+    .read_command_out      (read_command_out                     ),
+    .prefetch_command_out  (prefetch_command_out                 ),
+    .write_command_out     (write_command_out                    ),
+    .write_data_0_out      (write_data_0_out                     ),
+    .write_data_1_out      (write_data_1_out                     )
   );
-
 
 
 ////////////////////////////////////////////////////////////////////////////

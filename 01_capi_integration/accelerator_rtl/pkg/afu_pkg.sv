@@ -139,18 +139,20 @@ package AFU_PKG;
   } ResponseBufferLine;
 
   typedef struct packed {
-    logic              read_response   ;
-    logic              write_response  ;
-    logic              wed_response    ;
-    logic              restart_response;
-    ResponseBufferLine response        ;
+    logic              read_response    ;
+    logic              prefetch_response;
+    logic              write_response   ;
+    logic              wed_response     ;
+    logic              restart_response ;
+    ResponseBufferLine response         ;
   } ResponseControlInterfaceOut;
 
   typedef struct packed {
-    BufferStatus wed_buffer    ;
-    BufferStatus write_buffer  ;
-    BufferStatus read_buffer   ;
-    BufferStatus restart_buffer;
+    BufferStatus wed_buffer     ;
+    BufferStatus write_buffer   ;
+    BufferStatus read_buffer    ;
+    BufferStatus restart_buffer ;
+    BufferStatus prefetch_buffer;
   } ResponseBufferStatusInterface;
 
   typedef struct packed {
