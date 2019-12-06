@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-12-05 23:51:49
+// Revise : 2019-12-06 06:36:22
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -400,9 +400,9 @@ module afu_control #(
 			read_credits  <= 0;
 			write_credits <= 0;
 		end else begin
-			total_credits <= command_in_latched.room;
-			read_credits  <= (command_in_latched.room >> 1);
-			write_credits <= (command_in_latched.room >> 1);
+			total_credits <= (command_in_latched.room >> 0);
+			read_credits  <= (total_credits >> 0);
+			write_credits <= (total_credits >> 0);
 		end
 	end
 
@@ -565,7 +565,7 @@ module afu_control #(
 
 	// logic request_pulse                            ;
 	// assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (|credits.credits) && ~(|request_pulse);
-	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (|credits.credits) && ~restart_pending;
+	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (credits.credits>1) && ~restart_pending;
 	fifo #(
 		.WIDTH($bits(CommandBufferLine)),
 		.DEPTH(BURST_CMD_BUFFER_SIZE   )
