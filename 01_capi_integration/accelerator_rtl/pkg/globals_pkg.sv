@@ -8,11 +8,11 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-12-05 10:20:33
+// Revise : 2019-12-05 23:51:50
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
-package GLOBALS_PKG;
+package GLOBALS_AFU_PKG;
 
 
 	parameter CREDITS_READ  = 32                          ;
@@ -108,6 +108,7 @@ package GLOBALS_PKG;
 	parameter NRES_COUNT_REG    = 26'h 3FFFF70 >> 2;
 	parameter NLOCK_COUNT_REG   = 26'h 3FFFF68 >> 2;
 
+	parameter CYCLE_COUNT_REG   = 26'h 3FFFF58 >> 2;
 
 ////////////////////////////////////////////////////////////////////////////
 // CU-Control CU Globals

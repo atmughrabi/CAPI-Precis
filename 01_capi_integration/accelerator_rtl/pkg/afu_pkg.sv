@@ -14,7 +14,7 @@
 
 package AFU_PKG;
 
-  import GLOBALS_PKG::*;
+  import GLOBALS_AFU_PKG::*;
   import CAPI_PKG::*;
   import CU_PKG::*;
 
@@ -164,6 +164,7 @@ package AFU_PKG;
     logic [0:63] FAULT_count        ;
     logic [0:63] NRES_count         ;
     logic [0:63] NLOCK_count        ;
+    logic [0:63] CYCLE_count        ;
   } ResponseStatistcsInterface;
 
 ////////////////////////////////////////////////////////////////////////////

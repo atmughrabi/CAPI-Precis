@@ -8,12 +8,12 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : restart_control.sv
 // Create : 2019-11-05 08:05:09
-// Revise : 2019-12-01 03:49:56
+// Revise : 2019-12-06 03:59:01
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
 
-import GLOBALS_PKG::*;
+import GLOBALS_AFU_PKG::*;
 import CAPI_PKG::*;
 import CREDIT_PKG::*;
 import AFU_PKG::*;
@@ -60,11 +60,10 @@ module restart_control (
 
 	restart_state current_state, next_state;
 
-	logic is_restart_cmd;
-	logic is_restart_rsp;
+	logic is_restart_cmd      ;
+	logic is_restart_rsp_done ;
+	logic is_restart_rsp_flush;
 
-	assign is_restart_cmd = (restart_command_out.valid && restart_command_out.cmd.cmd_type == CMD_RESTART);
-	assign is_restart_rsp = (restart_response_in.valid || (command_outstanding_rd_S2 && command_outstanding_data_out.cmd.cmd_type == CMD_RESTART && command_outstanding_data_out.cmd.cu_id == RESTART_ID));
 
 	////////////////////////////////////////////////////////////////////////////
 	//enable logic
@@ -97,18 +96,35 @@ module restart_control (
 	//keep in check outstanding restart commands send;
 	////////////////////////////////////////////////////////////////////////////
 
+	assign is_restart_cmd       = (restart_command_out.valid && restart_command_out.cmd.cmd_type == CMD_RESTART);
+	assign is_restart_rsp_done  = (restart_response_in.valid);
+	assign is_restart_rsp_flush = (command_outstanding_rd_S2 && command_outstanding_data_out.cmd.cmd_type == CMD_RESTART && command_outstanding_data_out.cmd.cu_id == RESTART_ID);
+
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
 			outstanding_restart_commands <= 0;
 		end else begin
-			if(is_restart_cmd && ~is_restart_rsp)
+
+			if(is_restart_cmd && ~is_restart_rsp_done && ~is_restart_rsp_flush)
 				outstanding_restart_commands <= outstanding_restart_commands + 1;
-			else if(~is_restart_cmd && is_restart_rsp)
+			else if(is_restart_cmd && is_restart_rsp_done && ~is_restart_rsp_flush)
+				outstanding_restart_commands <= outstanding_restart_commands;
+			else if(is_restart_cmd && ~is_restart_rsp_done && is_restart_rsp_flush)
+				outstanding_restart_commands <= outstanding_restart_commands;
+			else if(is_restart_cmd && is_restart_rsp_done && is_restart_rsp_flush)
 				outstanding_restart_commands <= outstanding_restart_commands - 1;
-			else if(is_restart_cmd && is_restart_rsp)
+
+			else if(~is_restart_cmd && is_restart_rsp_done && is_restart_rsp_flush)
+				outstanding_restart_commands <= outstanding_restart_commands - 2;
+			else if(~is_restart_cmd && ~is_restart_rsp_done && is_restart_rsp_flush)
+				outstanding_restart_commands <= outstanding_restart_commands - 1;
+			else if(~is_restart_cmd && is_restart_rsp_done && ~is_restart_rsp_flush)
+				outstanding_restart_commands <= outstanding_restart_commands - 1;
+			else if(~is_restart_cmd && ~is_restart_rsp_done && ~is_restart_rsp_flush)
 				outstanding_restart_commands <= outstanding_restart_commands;
 			else
 				outstanding_restart_commands <= outstanding_restart_commands ;
+
 		end
 	end
 
@@ -198,9 +214,9 @@ module restart_control (
 	//Restart State Machine
 	////////////////////////////////////////////////////////////////////////////
 
-	assign restart_command_flag = response.valid && (response.response == PAGED || response.response == AERROR || response.response == DERROR) && (response_tag_id_in.abt == STRICT || response_tag_id_in.abt == PAGE);
+	// assign restart_command_flag = response.valid && (response.response == PAGED || response.response == AERROR || response.response == DERROR) && (response_tag_id_in.abt == STRICT || response_tag_id_in.abt == PAGE);
 	// assign restart_command_flag = (response.response == PAGED);
-	// assign restart_command_flag = response.valid && (response.response == PAGED || response.response == AERROR || response.response == DERROR) && (response_tag_id_in.abt == STRICT || response_tag_id_in.abt == PAGE || response_tag_id_in.abt == SPEC || response_tag_id_in.abt == PREF);
+	assign restart_command_flag = response.valid && (response.response == PAGED || response.response == AERROR || response.response == DERROR) && (response_tag_id_in.abt == STRICT || response_tag_id_in.abt == PAGE || response_tag_id_in.abt == SPEC || response_tag_id_in.abt == PREF);
 
 
 
@@ -232,7 +248,9 @@ module restart_control (
 					next_state = RESTART_SEND_CMD_FLUSHED;
 			end
 			RESTART_SEND_CMD : begin
-				if(restart_command_flag)
+				if (restart_command_flag_latched)
+					next_state = RESTART_SEND_CMD;
+				else if(restart_command_flag)
 					next_state = RESTART_INIT;
 				else
 					next_state = RESTART_RESP_WAIT;
@@ -291,9 +309,10 @@ module restart_control (
 				restart_command_send <= 0;
 
 				if(restart_command_buffer_out.valid) begin
-					restart_command_out     <= restart_command_buffer_out;
-					restart_command_out.abt <= STRICT;
-					restart_command_flushed <= restart_command_buffer_out.valid;
+					restart_command_out         <= restart_command_buffer_out;
+					restart_command_out.abt     <= STRICT;
+					restart_command_out.cmd.abt <= STRICT;
+					restart_command_flushed     <= restart_command_buffer_out.valid;
 				end else begin
 					restart_command_out     <= 0;
 					restart_command_flushed <= 0;
@@ -304,6 +323,7 @@ module restart_control (
 				restart_command_out              <= command_outstanding_data_out;
 				restart_command_out.command      <= RESTART;
 				restart_command_out.abt          <= STRICT;
+				restart_command_out.cmd.abt      <= STRICT;
 				restart_command_out.cmd.cmd_type <= CMD_RESTART;
 				restart_command_out.cmd.cu_id    <= RESTART_ID;
 				restart_command_flushed          <= 0;

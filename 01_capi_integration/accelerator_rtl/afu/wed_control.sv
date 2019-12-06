@@ -12,7 +12,7 @@
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
 
-import GLOBALS_PKG::*;
+import GLOBALS_AFU_PKG::*;
 import CAPI_PKG::*;
 import WED_PKG::*;
 import AFU_PKG::*;
@@ -101,7 +101,7 @@ module wed_control (
         command_out.cmd.array_struct   <= STRUCT_INVALID;
         command_out.cmd.tag            <= 0;
         command_out.cmd.address_offest <= 0;
-
+        command_out.cmd.abt            <= STRICT;
 
         wed_cacheline128        <= 1024'h0;
         wed_request_out.wed     <= 512'h0;
@@ -124,6 +124,7 @@ module wed_control (
         command_out.cmd.cacheline_offest <= 0;
         command_out.cmd.address_offest   <= 0;
         command_out.cmd.tag              <= 0;
+        command_out.cmd.abt              <= STRICT;
 
         wed_request_out.address <= wed_address;
       end // WED_REQ

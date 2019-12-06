@@ -14,7 +14,7 @@
 
 package WED_PKG;
 
-    import GLOBALS_PKG::*;
+    import GLOBALS_AFU_PKG::*;
     import CAPI_PKG::*;
 
     typedef enum int unsigned {

@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------
 
 
-import GLOBALS_PKG::*;
+import GLOBALS_AFU_PKG::*;
 import CAPI_PKG::*;
 import CREDIT_PKG::*;
 import AFU_PKG::*;

@@ -8,11 +8,11 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-12-05 09:18:58
+// Revise : 2019-12-05 23:51:49
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
-import GLOBALS_PKG::*;
+import GLOBALS_AFU_PKG::*;
 import CAPI_PKG::*;
 import CREDIT_PKG::*;
 import AFU_PKG::*;

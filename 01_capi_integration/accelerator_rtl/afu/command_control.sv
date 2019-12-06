@@ -12,7 +12,7 @@
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
 
-import GLOBALS_PKG::*;
+import GLOBALS_AFU_PKG::*;
 import CAPI_PKG::*;
 import AFU_PKG::*;
 

@@ -33,7 +33,7 @@
 
 
 // ********************************************************************************************
-// ***************                  Command Response Stats                       **************
+// ***************                  AFU  Stats                                   **************
 // ********************************************************************************************
 
 #define  DONE_COUNT_REG              0x3FFFFB0
@@ -48,6 +48,7 @@
 #define  NRES_COUNT_REG              0x3FFFF70
 #define  NLOCK_COUNT_REG             0x3FFFF68
 
+#define  CYCLE_COUNT_REG             0x3FFFF58
 
 #ifdef  SIM
 #define DEVICE_1              "/dev/cxl/afu0.0d"
@@ -81,6 +82,7 @@ struct CmdResponseStats
     uint64_t FAULT_count       ;
     uint64_t NRES_count        ;
     uint64_t NLOCK_count       ;
+    uint64_t CYCLE_count       ;
 };
 
 // ********************************************************************************************

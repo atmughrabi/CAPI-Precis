@@ -129,11 +129,17 @@ void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdRe
     cxl_mmio_read64((*afu), FAULT_COUNT_REG, &(cmdResponseStats->FAULT_count));
     cxl_mmio_read64((*afu), NRES_COUNT_REG, &(cmdResponseStats->NRES_count));
     cxl_mmio_read64((*afu), NLOCK_COUNT_REG, &(cmdResponseStats->NLOCK_count));
+    cxl_mmio_read64((*afu), CYCLE_COUNT_REG, &(cmdResponseStats->CYCLE_count));
 
 }
 
 void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
 {
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-15s %-18s %-15s | \n", " ", "AFU Stats", " ");
+    printf(" -----------------------------------------------------\n");
+
+    printf("CYCLE_count        : %lu\n", cmdResponseStats->CYCLE_count);
 
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s | \n", " ", "Responses Stats", " ");

@@ -14,7 +14,7 @@
 
 package CAPI_PKG;
 
-  import GLOBALS_PKG::*;
+  import GLOBALS_AFU_PKG::*;
 
   typedef enum logic [0:7] {
     RESET = 8'h80,

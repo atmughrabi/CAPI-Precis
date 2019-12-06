@@ -8,11 +8,11 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : done_control.sv
 // Create : 2019-09-26 15:21:03
-// Revise : 2019-11-29 10:23:16
+// Revise : 2019-12-05 23:51:49
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
-import GLOBALS_PKG::*;
+import GLOBALS_AFU_PKG::*;
 import AFU_PKG::*;
 
 module done_control (

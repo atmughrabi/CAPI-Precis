@@ -126,6 +126,8 @@ module response_statistics_control (
             end
           endcase
         end
+
+        response_statistics_out_latched.CYCLE_count <= response_statistics_out_latched.CYCLE_count + 1;
       end
     end
   end

@@ -12,7 +12,7 @@
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
 
-import GLOBALS_PKG::*;
+import GLOBALS_AFU_PKG::*;
 import CAPI_PKG::*;
 import AFU_PKG::*;
 
@@ -289,6 +289,9 @@ module mmio (
           end
           NLOCK_COUNT_REG : begin
             data_out <= response_statistics_out_latched.NLOCK_count;
+          end
+          CYCLE_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.CYCLE_count;
           end
           default : begin
             data_out <= data_out;
