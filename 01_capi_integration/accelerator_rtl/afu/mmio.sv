@@ -293,6 +293,12 @@ module mmio (
           CYCLE_COUNT_REG : begin
             data_out <= response_statistics_out_latched.CYCLE_count;
           end
+          DONE_READ_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.DONE_READ_count;
+          end
+          DONE_WRITE_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.DONE_WRITE_count;
+          end
           default : begin
             data_out <= data_out;
             // report_errors_ack_latched           <= 1'b0;

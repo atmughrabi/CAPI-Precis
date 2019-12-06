@@ -165,6 +165,8 @@ package AFU_PKG;
     logic [0:63] NRES_count         ;
     logic [0:63] NLOCK_count        ;
     logic [0:63] CYCLE_count        ;
+    logic [0:63] DONE_READ_count    ;
+    logic [0:63] DONE_WRITE_count   ;
   } ResponseStatistcsInterface;
 
 ////////////////////////////////////////////////////////////////////////////

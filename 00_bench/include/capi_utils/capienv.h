@@ -49,6 +49,9 @@
 #define  NLOCK_COUNT_REG             0x3FFFF68
 
 #define  CYCLE_COUNT_REG             0x3FFFF58
+#define  DONE_READ_COUNT_REG         0x3FFFF50
+#define  DONE_WRITE_COUNT_REG        0x3FFFF48
+
 
 #ifdef  SIM
 #define DEVICE_1              "/dev/cxl/afu0.0d"
@@ -74,6 +77,8 @@ struct CmdResponseStats
     uint64_t DONE_count        ;
     uint64_t DONE_RESTART_count;
     uint64_t DONE_PREFETCH_count;
+    uint64_t DONE_READ_count   ;
+    uint64_t DONE_WRITE_count  ;
     uint64_t PAGED_count       ;
     uint64_t FLUSHED_count     ;
     uint64_t AERROR_count      ;

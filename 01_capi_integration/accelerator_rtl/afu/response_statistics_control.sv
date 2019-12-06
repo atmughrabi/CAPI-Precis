@@ -90,12 +90,18 @@ module response_statistics_control (
         if(response_latched.valid) begin
           case(response_latched.response)
             DONE : begin
+              
               if(response_tag_id_in.cmd_type == CMD_RESTART)
                 response_statistics_out_latched.DONE_RESTART_count <= response_statistics_out_latched.DONE_RESTART_count + 1;
               else if (response_tag_id_in.cmd_type == CMD_PREFETCH)
                 response_statistics_out_latched.DONE_PREFETCH_count <= response_statistics_out_latched.DONE_PREFETCH_count + 1;
-              else
-                response_statistics_out_latched.DONE_count <= response_statistics_out_latched.DONE_count + 1;
+              else if (response_tag_id_in.cmd_type == CMD_READ)
+                response_statistics_out_latched.DONE_READ_count <= response_statistics_out_latched.DONE_READ_count + 1;
+              else if (response_tag_id_in.cmd_type == CMD_WRITE)
+                response_statistics_out_latched.DONE_WRITE_count <= response_statistics_out_latched.DONE_WRITE_count + 1;
+
+              response_statistics_out_latched.DONE_count <= response_statistics_out_latched.DONE_count + 1;
+
             end
             FLUSHED : begin
               response_statistics_out_latched.FLUSHED_count <= response_statistics_out_latched.FLUSHED_count + 1;
