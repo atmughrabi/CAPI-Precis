@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-12-06 06:36:22
+// Revise : 2019-12-06 07:56:58
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -26,6 +26,7 @@ module afu_control #(
 	input  logic                         clock                   , // Clock
 	input  logic                         rstn                    ,
 	input  logic                         enabled_in              ,
+	input  CommandBufferLine             prefetch_command_in     ,
 	input  CommandBufferLine             read_command_in         ,
 	input  CommandBufferLine             write_command_in        ,
 	input  CommandBufferLine             wed_command_in          ,

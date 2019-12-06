@@ -119,10 +119,11 @@ package AFU_PKG;
   } CommandBufferArbiterInterfaceIn;
 
   typedef struct packed {
-    BufferStatus wed_buffer    ;
-    BufferStatus write_buffer  ;
-    BufferStatus read_buffer   ;
-    BufferStatus restart_buffer;
+    BufferStatus wed_buffer     ;
+    BufferStatus write_buffer   ;
+    BufferStatus read_buffer    ;
+    BufferStatus restart_buffer ;
+    BufferStatus prefetch_buffer;
   } CommandBufferStatusInterface;
 
 

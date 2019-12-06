@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-09-26 15:18:39
-// Revise : 2019-12-05 23:51:49
+// Revise : 2019-12-06 07:59:25
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -29,10 +29,12 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	input  ReadWriteDataLine  read_data_0_in     ,
 	input  ReadWriteDataLine  read_data_1_in     ,
 	input  BufferStatus       read_buffer_status ,
+	input  BufferStatus       prefetch_buffer_status ,
 	output logic [0:63]       algorithm_status   ,
 	output logic              algorithm_done     ,
 	output logic [0:63]       algorithm_running  ,
 	input  logic [0:63]       algorithm_requests ,
+	output CommandBufferLine  prefetch_command_out   ,
 	output CommandBufferLine  read_command_out   ,
 	input  BufferStatus       write_buffer_status,
 	output CommandBufferLine  write_command_out  ,
@@ -70,6 +72,9 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	logic enabled         ;
 	logic enabled_instants;
 	logic cu_ready        ;
+
+
+	assign prefetch_command_out = 0;
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
