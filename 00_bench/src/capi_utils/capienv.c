@@ -130,8 +130,8 @@ void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdRe
     cxl_mmio_read64((*afu), NRES_COUNT_REG, &(cmdResponseStats->NRES_count));
     cxl_mmio_read64((*afu), NLOCK_COUNT_REG, &(cmdResponseStats->NLOCK_count));
     cxl_mmio_read64((*afu), CYCLE_COUNT_REG, &(cmdResponseStats->CYCLE_count));
-    // cxl_mmio_read64((*afu), DONE_READ_COUNT_REG, &(cmdResponseStats->DONE_READ_count));
-    // cxl_mmio_read64((*afu), DONE_WRITE_COUNT_REG, &(cmdResponseStats->DONE_WRITE_count));
+    cxl_mmio_read64((*afu), DONE_READ_COUNT_REG, &(cmdResponseStats->DONE_READ_count));
+    cxl_mmio_read64((*afu), DONE_WRITE_COUNT_REG, &(cmdResponseStats->DONE_WRITE_count));
 
 }
 
@@ -148,8 +148,8 @@ void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
     printf(" -----------------------------------------------------\n");
 
     printf("DONE_count         : %lu\n", cmdResponseStats->DONE_count);
-    // printf("DONE_READ_count    : %lu\n", cmdResponseStats->DONE_READ_count);
-    // printf("DONE_WRITE_count   : %lu\n", cmdResponseStats->DONE_WRITE_count);
+    printf("DONE_READ_count    : %lu\n", cmdResponseStats->DONE_READ_count);
+    printf("DONE_WRITE_count   : %lu\n", cmdResponseStats->DONE_WRITE_count);
     printf("DONE_RESTART_count : %lu\n", cmdResponseStats->DONE_RESTART_count);
     printf("DONE_PREFETCH_count: %lu\n\n", cmdResponseStats->DONE_PREFETCH_count);
   
