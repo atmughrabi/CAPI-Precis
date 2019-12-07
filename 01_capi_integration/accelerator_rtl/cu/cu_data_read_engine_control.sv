@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_read_engine_control.sv
 // Create : 2019-11-18 16:39:26
-// Revise : 2019-12-06 22:26:25
+// Revise : 2019-12-07 04:48:38
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -67,9 +67,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 		if(~rstn) begin
 			enabled_cmd <= 0;
 		end else begin
-			if(enabled)begin
-				enabled_cmd <= enabled;
-			end
+			enabled_cmd <= enabled;
 		end
 	end
 

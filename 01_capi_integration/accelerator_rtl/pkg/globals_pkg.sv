@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-12-07 01:23:01
+// Revise : 2019-12-07 03:18:15
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -136,7 +136,7 @@ package GLOBALS_AFU_PKG;
 // CU-Control CU Globals
 ////////////////////////////////////////////////////////////////////////////
 
-// ACCEL-GRAPH Sturctue sizes
+//  Sturctue sizes
 ////////////////////////////////////////////////////////////////////////////
 
 	parameter ARRAY_SIZE           = 4                  ; // array size is n bytes
@@ -159,7 +159,8 @@ package GLOBALS_AFU_PKG;
 	parameter CACHELINE_ARRAY_NUM        = (CACHELINE_SIZE >> $clog2(ARRAY_SIZE))                                                               ; // number of  in one cacheline                                                                ; // number of edges in one cacheline
 	parameter CACHELINE_INT_COUNTER_BITS = $clog2((ARRAY_SIZE_BITS < CACHELINE_SIZE_BITS_HF) ? (2 * CACHELINE_SIZE_BITS_HF)/ARRAY_SIZE_BITS : 2);
 
-
+	parameter PAGE_ARRAY_NUM        = (PAGE_SIZE >> $clog2(ARRAY_SIZE))                                                               ; // number of  in one cacheline                                                                ; // number of edges in one cacheline
+	
 
 ////////////////////////////////////////////////////////////////////////////
 //  AFU-Control CU IDs any compute unite that generate command must have an ID

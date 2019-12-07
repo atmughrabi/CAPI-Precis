@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_prefetch_stream_engine_control.sv
 // Create : 2019-12-06 12:11:16
-// Revise : 2019-12-06 23:02:15
+// Revise : 2019-12-07 05:33:42
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -25,6 +25,7 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 	input  logic                         enabled_in                    ,
 	input  logic [                 0:63] base_address                  ,
 	input  logic [                 0:63] total_size                    ,
+	input  logic                         total_size_valid              ,
 	input  logic [                 0:63] offset_size                   ,
 	input  command_type                  cu_command_type               ,
 	input  afu_command_t                 transaction_type              ,
@@ -43,6 +44,7 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 	ResponseBufferLine     prefetch_response_in_latched;
 	logic [0:63]           base_address_latched        ;
 	logic [0:63]           total_size_latched          ;
+	logic                  total_size_valid_latched    ;
 	logic [0:63]           offset_size_latched         ;
 	afu_command_t          transaction_type_latched    ;
 	command_type           cu_commmand_type_latched    ;
@@ -71,9 +73,7 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 		if(~rstn) begin
 			enabled_cmd <= 0;
 		end else begin
-			if(enabled)begin
-				enabled_cmd <= enabled;
-			end
+			enabled_cmd <= enabled;
 		end
 	end
 
@@ -88,10 +88,8 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 			prefetch_command_out      <= 0;
 			prefetch_job_counter_done <= 0;
 		end else begin
-			if(enabled)begin
-				prefetch_command_out      <= prefetch_command_out_latched;
-				prefetch_job_counter_done <= prefetch_job_counter_done_latched;
-			end
+			prefetch_command_out      <= prefetch_command_out_latched;
+			prefetch_job_counter_done <= prefetch_job_counter_done_latched;
 		end
 	end
 
@@ -103,20 +101,20 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 		if(~rstn) begin
 			prefetch_response_in_latched <= 0;
 			base_address_latched         <= 0;
-			total_size_latched           <= 0;
-			offset_size_latched          <= 0;
-			cu_commmand_type_latched     <= CMD_INVALID;
-			commmand_abt_latched         <= STRICT;
-			transaction_type_latched     <= TOUCH_I;
+
+			offset_size_latched      <= 0;
+			cu_commmand_type_latched <= CMD_INVALID;
+			commmand_abt_latched     <= STRICT;
+			transaction_type_latched <= TOUCH_I;
 		end else begin
 			if(enabled)begin
 				prefetch_response_in_latched <= prefetch_response_in;
 				base_address_latched         <= base_address;
-				total_size_latched           <= total_size;
-				offset_size_latched          <= offset_size;
-				cu_commmand_type_latched     <= cu_command_type;
-				commmand_abt_latched         <= commmand_abt;
-				transaction_type_latched     <= transaction_type;
+
+				offset_size_latched      <= offset_size;
+				cu_commmand_type_latched <= cu_command_type;
+				commmand_abt_latched     <= commmand_abt;
+				transaction_type_latched <= transaction_type;
 			end
 		end
 	end
@@ -144,16 +142,30 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 		if(~rstn) begin
 			prefetch_command_out_latched <= 0;
 			next_offest                  <= 0;
+			total_size_latched           <= 0;
+			total_size_valid_latched     <= 0;
 		end
 		else begin
 
-			if (~prefetch_command_buffer_status.alfull && (|total_size_latched) && enabled_cmd) begin
+			if(~total_size_valid_latched && enabled_cmd) begin
 
-				if(total_size_latched >= CACHELINE_ARRAY_NUM)begin
-					total_size_latched                         <= total_size_latched - CACHELINE_ARRAY_NUM;
-					prefetch_command_out_latched.cmd.real_size <= CACHELINE_ARRAY_NUM;
+				if(total_size >= PAGE_ARRAY_NUM)begin
+					total_size_latched <= total_size - PAGE_ARRAY_NUM;
+					next_offest <= next_offest + offset_size_latched;
+				end else if (total_size < PAGE_ARRAY_NUM) begin
+					total_size_latched <= 0;
+					next_offest <= next_offest + offset_size_latched;
+				end
 
-				end else if (total_size_latched < CACHELINE_ARRAY_NUM) begin
+				total_size_valid_latched <= total_size_valid;
+			end
+
+			if (total_size_valid_latched && ~prefetch_command_buffer_status.alfull && (|total_size_latched) && enabled_cmd) begin
+
+				if(total_size_latched >= PAGE_ARRAY_NUM)begin
+					total_size_latched                         <= total_size_latched - PAGE_ARRAY_NUM;
+					prefetch_command_out_latched.cmd.real_size <= PAGE_ARRAY_NUM;
+				end else if (total_size_latched < PAGE_ARRAY_NUM) begin
 					total_size_latched                         <= 0;
 					prefetch_command_out_latched.cmd.real_size <= total_size_latched;
 				end

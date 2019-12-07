@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-09-26 15:18:39
-// Revise : 2019-12-06 22:15:08
+// Revise : 2019-12-07 05:32:41
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -73,13 +73,37 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done    ;
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done     ;
 
-	logic enabled         ;
-	logic enabled_instants;
-	logic cu_ready        ;
+	logic enabled               ;
+	logic enabled_instants      ;
+	logic enabled_prefetch_read ;
+	logic enabled_prefetch_write;
+	logic cu_ready              ;
 
 
-	assign prefetch_read_command_out  = 0;
-	assign prefetch_write_command_out = 0;
+	logic [                  0:8] prefetch_read_pulse              ;
+	logic [                 0:63] base_address_read                ;
+	logic [                 0:63] total_size_read                  ;
+	logic                         total_size_read_valid            ;
+	logic [                 0:63] offset_size_read                 ;
+	command_type                  cu_command_type_read             ;
+	afu_command_t                 transaction_type_read            ;
+	trans_order_behavior_t        commmand_abt_read                ;
+	ResponseBufferLine            prefetch_read_response_in_latched;
+	CommandBufferLine             prefetch_read_command_out_latched;
+	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_read_job_counter_done   ;
+
+	logic [                  0:8] prefetch_write_pulse              ;
+	logic [                 0:63] base_address_write                ;
+	logic [                 0:63] total_size_write                  ;
+	logic                         total_size_write_valid            ;
+	logic [                 0:63] offset_size_write                 ;
+	command_type                  cu_command_type_write             ;
+	afu_command_t                 transaction_type_write            ;
+	trans_order_behavior_t        commmand_abt_write                ;
+	ResponseBufferLine            prefetch_write_response_in_latched;
+	CommandBufferLine             prefetch_write_command_out_latched;
+	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_write_job_counter_done   ;
+
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
@@ -222,6 +246,171 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 //Prefetch Stream READ Engine
 ////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////
+//Drive input
+////////////////////////////////////////////////////////////////////////////
 
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			base_address_read                 <= 0;
+			total_size_read                   <= 0;
+			total_size_read_valid             <= 0;
+			offset_size_read                  <= 0;
+			cu_command_type_read              <= CMD_PREFETCH_READ;
+			transaction_type_read             <= TOUCH_I;
+			commmand_abt_read                 <= STRICT;
+			prefetch_read_response_in_latched <= 0;
+
+		end else begin
+			if(enabled)begin
+				base_address_read     <= wed_request_in_latched.wed.array_send;
+				total_size_read       <= wed_request_in_latched.wed.size_send;
+				total_size_read_valid <= wed_request_in_latched.valid;
+				offset_size_read      <= PAGE_SIZE;
+				cu_command_type_read  <= CMD_PREFETCH_READ;
+
+				if (wed_request_in_latched.wed.afu_config[3])
+					transaction_type_read <= TOUCH_S;
+				else
+					transaction_type_read <= TOUCH_I;
+
+				commmand_abt_read                 <= STRICT;
+				prefetch_read_response_in_latched <= prefetch_read_response_in;
+			end
+		end
+	end
+
+////////////////////////////////////////////////////////////////////////////
+//Drive output
+////////////////////////////////////////////////////////////////////////////
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			prefetch_read_command_out <= 0;
+		end else begin
+			if(enabled)begin
+				prefetch_read_command_out <= prefetch_read_command_out_latched;
+			end
+		end
+	end
+
+////////////////////////////////////////////////////////////////////////////
+//Drive output
+////////////////////////////////////////////////////////////////////////////
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			prefetch_read_pulse <= 9'h0FF;
+		end else begin
+			if(enabled)begin
+				prefetch_read_pulse <= prefetch_read_pulse + read_command_out_latched.valid;
+			end
+		end
+	end
+
+	assign enabled_prefetch_read = ~(|prefetch_read_pulse);
+
+	cu_prefetch_stream_engine_control #(.CU_PREFETCH_CONTROL_ID(PREFETCH_READ_CONTROL_ID)) cu_prefetch_read_stream_engine_control_instant (
+		.clock                         (clock                            ),
+		.rstn                          (rstn                             ),
+		.enabled_in                    (enabled_prefetch_read            ),
+		.base_address                  (base_address_read                ),
+		.total_size                    (total_size_read                  ),
+		.total_size_valid              (total_size_read_valid            ),
+		.offset_size                   (offset_size_read                 ),
+		.cu_command_type               (cu_command_type_read             ),
+		.transaction_type              (transaction_type_read            ),
+		.commmand_abt                  (commmand_abt_read                ),
+		.prefetch_response_in          (prefetch_read_response_in_latched),
+		.prefetch_command_buffer_status(prefetch_read_buffer_status      ),
+		.prefetch_command_out          (prefetch_read_command_out_latched),
+		.prefetch_job_counter_done     (prefetch_read_job_counter_done   )
+	);
+
+
+////////////////////////////////////////////////////////////////////////////
+//Prefetch Stream WRITE Engine
+////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////
+//Drive input
+////////////////////////////////////////////////////////////////////////////
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			base_address_write                 <= 0;
+			total_size_write                   <= 0;
+			total_size_write_valid             <= 0;
+			offset_size_write                  <= 0;
+			cu_command_type_write              <= CMD_PREFETCH_WRITE;
+			transaction_type_write             <= TOUCH_I;
+			commmand_abt_write                 <= STRICT;
+			prefetch_write_response_in_latched <= 0;
+
+		end else begin
+			if(enabled)begin
+				base_address_write     <= wed_request_in_latched.wed.array_receive;
+				total_size_write       <= wed_request_in_latched.wed.size_recive;
+				total_size_write_valid <= wed_request_in_latched.valid;
+				offset_size_write      <= PAGE_SIZE;
+				cu_command_type_write  <= CMD_PREFETCH_WRITE;
+
+				if (wed_request_in_latched.wed.afu_config[9])
+					transaction_type_write <= TOUCH_I;
+				else
+					transaction_type_write <= TOUCH_I;
+
+				commmand_abt_write                 <= STRICT;
+				prefetch_write_response_in_latched <= prefetch_write_response_in;
+			end
+		end
+	end
+
+////////////////////////////////////////////////////////////////////////////
+//Drive output
+////////////////////////////////////////////////////////////////////////////
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			prefetch_write_command_out <= 0;
+		end else begin
+			if(enabled)begin
+				prefetch_write_command_out <= prefetch_write_command_out_latched;
+			end
+		end
+	end
+
+////////////////////////////////////////////////////////////////////////////
+//Drive output
+////////////////////////////////////////////////////////////////////////////
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			prefetch_write_pulse <= 9'h0FF;
+		end else begin
+			if(enabled)begin
+				prefetch_write_pulse <= prefetch_write_pulse + write_command_out_latched.valid;
+			end
+		end
+	end
+
+	assign enabled_prefetch_write = ~(|prefetch_write_pulse);
+
+	cu_prefetch_stream_engine_control #(.CU_PREFETCH_CONTROL_ID(PREFETCH_READ_CONTROL_ID)) cu_prefetch_write_stream_engine_control_instant (
+		.clock                         (clock                             ),
+		.rstn                          (rstn                              ),
+		.enabled_in                    (enabled_prefetch_write            ),
+		.base_address                  (base_address_write                ),
+		.total_size                    (total_size_write                  ),
+		.total_size_valid              (total_size_write_valid            ),
+		.offset_size                   (offset_size_write                 ),
+		.cu_command_type               (cu_command_type_write             ),
+		.transaction_type              (transaction_type_write            ),
+		.commmand_abt                  (commmand_abt_write                ),
+		.prefetch_response_in          (prefetch_write_response_in_latched),
+		.prefetch_command_buffer_status(prefetch_write_buffer_status      ),
+		.prefetch_command_out          (prefetch_write_command_out_latched),
+		.prefetch_job_counter_done     (prefetch_write_job_counter_done   )
+	);
 
 endmodule
