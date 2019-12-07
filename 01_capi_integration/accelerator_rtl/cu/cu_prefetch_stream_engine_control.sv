@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_prefetch_stream_engine_control.sv
 // Create : 2019-12-06 12:11:16
-// Revise : 2019-12-07 05:33:42
+// Revise : 2019-12-07 06:07:26
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 	input  logic [                 0:63] total_size                    ,
 	input  logic                         total_size_valid              ,
 	input  logic [                 0:63] offset_size                   ,
+	input  logic [                 0:63] array_line_size               ,
 	input  command_type                  cu_command_type               ,
 	input  afu_command_t                 transaction_type              ,
 	input  trans_order_behavior_t        commmand_abt                  ,
@@ -149,12 +150,12 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 
 			if(~total_size_valid_latched && enabled_cmd) begin
 
-				if(total_size >= PAGE_ARRAY_NUM)begin
-					total_size_latched <= total_size - PAGE_ARRAY_NUM;
-					next_offest <= next_offest + offset_size_latched;
-				end else if (total_size < PAGE_ARRAY_NUM) begin
+				if(total_size >= (array_line_size << 1))begin
+					total_size_latched <= total_size - (array_line_size << 1);
+					next_offest        <= next_offest + (offset_size_latched<<1);
+				end else if (total_size < (array_line_size << 1)) begin
 					total_size_latched <= 0;
-					next_offest <= next_offest + offset_size_latched;
+					next_offest        <= next_offest + (offset_size_latched << 1);
 				end
 
 				total_size_valid_latched <= total_size_valid;
@@ -162,10 +163,10 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 
 			if (total_size_valid_latched && ~prefetch_command_buffer_status.alfull && (|total_size_latched) && enabled_cmd) begin
 
-				if(total_size_latched >= PAGE_ARRAY_NUM)begin
-					total_size_latched                         <= total_size_latched - PAGE_ARRAY_NUM;
-					prefetch_command_out_latched.cmd.real_size <= PAGE_ARRAY_NUM;
-				end else if (total_size_latched < PAGE_ARRAY_NUM) begin
+				if(total_size_latched >= array_line_size)begin
+					total_size_latched                         <= total_size_latched - array_line_size;
+					prefetch_command_out_latched.cmd.real_size <= array_line_size;
+				end else if (total_size_latched < array_line_size) begin
 					total_size_latched                         <= 0;
 					prefetch_command_out_latched.cmd.real_size <= total_size_latched;
 				end
