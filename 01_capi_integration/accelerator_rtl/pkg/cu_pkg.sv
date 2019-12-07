@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_pkg.sv
 // Create : 2019-09-26 15:20:09
-// Revise : 2019-12-05 23:51:49
+// Revise : 2019-12-06 22:28:51
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -20,7 +20,8 @@ package CU_PKG;
 	typedef enum int unsigned{
 		STRUCT_INVALID,
 		READ_DATA,
-		WRITE_DATA
+		WRITE_DATA,
+		PREFETCH_DATA
 	} array_struct_type;
 
 	typedef struct packed {

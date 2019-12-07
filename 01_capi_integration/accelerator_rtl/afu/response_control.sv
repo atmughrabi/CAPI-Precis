@@ -99,39 +99,64 @@ module response_control (
       if(enabled && response_in.valid) begin
         case (response_tag_id_in.cmd_type)
           CMD_READ : begin
-            response_control_out_latched.read_response     <= 1'b1;
-            response_control_out_latched.write_response    <= 1'b0;
-            response_control_out_latched.wed_response      <= 1'b0;
-            response_control_out_latched.restart_response  <= 1'b0;
-            response_control_out_latched.prefetch_response <= 1'b0;
+            response_control_out_latched.read_response  <= 1'b1;
+            response_control_out_latched.write_response <= 1'b0;
+
+            response_control_out_latched.wed_response     <= 1'b0;
+            response_control_out_latched.restart_response <= 1'b0;
+
+            response_control_out_latched.prefetch_read_response  <= 1'b0;
+            response_control_out_latched.prefetch_write_response <= 1'b0;
           end
           CMD_WRITE : begin
-            response_control_out_latched.read_response     <= 1'b0;
-            response_control_out_latched.write_response    <= 1'b1;
-            response_control_out_latched.wed_response      <= 1'b0;
-            response_control_out_latched.restart_response  <= 1'b0;
-            response_control_out_latched.prefetch_response <= 1'b0;
+            response_control_out_latched.read_response  <= 1'b0;
+            response_control_out_latched.write_response <= 1'b1;
+
+            response_control_out_latched.wed_response     <= 1'b0;
+            response_control_out_latched.restart_response <= 1'b0;
+
+            response_control_out_latched.prefetch_read_response  <= 1'b0;
+            response_control_out_latched.prefetch_write_response <= 1'b0;
           end
           CMD_WED : begin
-            response_control_out_latched.read_response     <= 1'b0;
-            response_control_out_latched.write_response    <= 1'b0;
-            response_control_out_latched.wed_response      <= 1'b1;
-            response_control_out_latched.restart_response  <= 1'b0;
-            response_control_out_latched.prefetch_response <= 1'b0;
+            response_control_out_latched.read_response  <= 1'b0;
+            response_control_out_latched.write_response <= 1'b0;
+
+            response_control_out_latched.wed_response     <= 1'b1;
+            response_control_out_latched.restart_response <= 1'b0;
+
+            response_control_out_latched.prefetch_read_response  <= 1'b0;
+            response_control_out_latched.prefetch_write_response <= 1'b0;
           end
           CMD_RESTART : begin
-            response_control_out_latched.read_response     <= 1'b0;
-            response_control_out_latched.write_response    <= 1'b0;
-            response_control_out_latched.wed_response      <= 1'b0;
-            response_control_out_latched.restart_response  <= 1'b1;
-            response_control_out_latched.prefetch_response <= 1'b0;
+            response_control_out_latched.read_response  <= 1'b0;
+            response_control_out_latched.write_response <= 1'b0;
+
+            response_control_out_latched.wed_response     <= 1'b0;
+            response_control_out_latched.restart_response <= 1'b1;
+
+            response_control_out_latched.prefetch_read_response  <= 1'b0;
+            response_control_out_latched.prefetch_write_response <= 1'b0;
           end
-          CMD_PREFETCH : begin
-            response_control_out_latched.read_response     <= 1'b0;
-            response_control_out_latched.write_response    <= 1'b0;
-            response_control_out_latched.wed_response      <= 1'b0;
-            response_control_out_latched.restart_response  <= 1'b0;
-            response_control_out_latched.prefetch_response <= 1'b1;
+          CMD_PREFETCH_READ : begin
+            response_control_out_latched.read_response  <= 1'b0;
+            response_control_out_latched.write_response <= 1'b0;
+
+            response_control_out_latched.wed_response     <= 1'b0;
+            response_control_out_latched.restart_response <= 1'b0;
+
+            response_control_out_latched.prefetch_read_response  <= 1'b1;
+            response_control_out_latched.prefetch_write_response <= 1'b0;
+          end
+          CMD_PREFETCH_WRITE : begin
+            response_control_out_latched.read_response  <= 1'b0;
+            response_control_out_latched.write_response <= 1'b0;
+
+            response_control_out_latched.wed_response     <= 1'b0;
+            response_control_out_latched.restart_response <= 1'b0;
+
+            response_control_out_latched.prefetch_read_response  <= 1'b0;
+            response_control_out_latched.prefetch_write_response <= 1'b1;
           end
           default : begin
             response_control_out_latched.read_response     <= 1'b0;

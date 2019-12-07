@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_read_engine_control.sv
 // Create : 2019-11-18 16:39:26
-// Revise : 2019-12-05 23:51:49
+// Revise : 2019-12-06 22:26:25
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ import WED_PKG::*;
 import AFU_PKG::*;
 import CU_PKG::*;
 
-module cu_data_read_engine_control (
+module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CONTROL_ID) (
 	input  logic                         clock                      , // Clock
 	input  logic                         rstn                       ,
 	input  logic                         enabled_in                 ,
@@ -170,7 +170,7 @@ module cu_data_read_engine_control (
 
 				end
 
-				read_command_out_latched.cmd.cu_id            <= DATA_READ_CONTROL_ID;
+				read_command_out_latched.cmd.cu_id            <= CU_READ_CONTROL_ID;
 				read_command_out_latched.cmd.cmd_type         <= CMD_READ;
 				read_command_out_latched.cmd.cacheline_offest <= 0;
 				read_command_out_latched.cmd.address_offest   <= next_offest;
@@ -186,7 +186,7 @@ module cu_data_read_engine_control (
 				read_command_out_latched.address <= wed_request_in_latched.wed.array_send + next_offest;
 
 				next_offest <= next_offest + CACHELINE_SIZE;
-				
+
 			end else begin
 				read_command_out_latched <= 0;
 			end

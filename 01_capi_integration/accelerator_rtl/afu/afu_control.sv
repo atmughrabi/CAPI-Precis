@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-12-06 10:27:06
+// Revise : 2019-12-06 22:05:42
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -20,39 +20,41 @@ import CU_PKG::*;
 
 
 module afu_control #(
-	parameter NUM_REQUESTS = 5,
+	parameter NUM_REQUESTS = 6,
 	parameter RSP_DELAY    = 4
 ) (
-	input  logic                         clock                   , // Clock
-	input  logic                         rstn                    ,
-	input  logic                         enabled_in              ,
-	input  CommandBufferLine             prefetch_command_in     ,
-	input  CommandBufferLine             read_command_in         ,
-	input  CommandBufferLine             write_command_in        ,
-	input  CommandBufferLine             wed_command_in          ,
-	input  CommandInterfaceInput         command_in              ,
-	input  ResponseInterface             response                ,
-	input  BufferInterfaceInput          buffer_in               ,
-	input  ReadWriteDataLine             write_data_0_in         ,
-	input  ReadWriteDataLine             write_data_1_in         ,
-	output ReadWriteDataLine             wed_data_0_out          ,
-	output ReadWriteDataLine             wed_data_1_out          ,
-	output ReadWriteDataLine             read_data_0_out         ,
-	output ReadWriteDataLine             read_data_1_out         ,
-	output ResponseBufferLine            read_response_out       ,
-	output ResponseBufferLine            prefetch_response_out   ,
-	output ResponseBufferLine            write_response_out      ,
-	output ResponseBufferLine            wed_response_out        ,
-	output logic [0:6]                   command_response_error  ,
-	output logic [0:1]                   data_read_error         ,
-	output logic                         data_write_error        ,
-	output BufferInterfaceOutput         buffer_out              ,
-	output CommandInterfaceOutput        command_out             ,
-	output CommandBufferStatusInterface  command_buffer_status   ,
-	output ResponseStatistcsInterface    response_statistics     ,
-	output ResponseBufferStatusInterface response_buffer_status  ,
-	output DataBufferStatusInterface     read_data_buffer_status ,
-	output DataBufferStatusInterface     wed_data_buffer_status  ,
+	input  logic                         clock                      , // Clock
+	input  logic                         rstn                       ,
+	input  logic                         enabled_in                 ,
+	input  CommandBufferLine             prefetch_read_command_in   ,
+	input  CommandBufferLine             prefetch_write_command_in  ,
+	input  CommandBufferLine             read_command_in            ,
+	input  CommandBufferLine             write_command_in           ,
+	input  CommandBufferLine             wed_command_in             ,
+	input  CommandInterfaceInput         command_in                 ,
+	input  ResponseInterface             response                   ,
+	input  BufferInterfaceInput          buffer_in                  ,
+	input  ReadWriteDataLine             write_data_0_in            ,
+	input  ReadWriteDataLine             write_data_1_in            ,
+	output ReadWriteDataLine             wed_data_0_out             ,
+	output ReadWriteDataLine             wed_data_1_out             ,
+	output ReadWriteDataLine             read_data_0_out            ,
+	output ReadWriteDataLine             read_data_1_out            ,
+	output ResponseBufferLine            read_response_out          ,
+	output ResponseBufferLine            prefetch_read_response_out ,
+	output ResponseBufferLine            prefetch_write_response_out,
+	output ResponseBufferLine            write_response_out         ,
+	output ResponseBufferLine            wed_response_out           ,
+	output logic [0:6]                   command_response_error     ,
+	output logic [0:1]                   data_read_error            ,
+	output logic                         data_write_error           ,
+	output BufferInterfaceOutput         buffer_out                 ,
+	output CommandInterfaceOutput        command_out                ,
+	output CommandBufferStatusInterface  command_buffer_status      ,
+	output ResponseStatistcsInterface    response_statistics        ,
+	output ResponseBufferStatusInterface response_buffer_status     ,
+	output DataBufferStatusInterface     read_data_buffer_status    ,
+	output DataBufferStatusInterface     wed_data_buffer_status     ,
 	output DataBufferStatusInterface     write_data_buffer_status
 );
 
@@ -88,22 +90,24 @@ module afu_control #(
 	ReadWriteDataLine cu_write_data_1;
 
 
-	CommandBufferLine prefetch_command_buffer_out;
-	CommandBufferLine read_command_buffer_out    ;
-	CommandBufferLine write_command_buffer_out   ;
-	CommandBufferLine wed_command_buffer_out     ;
-	CommandBufferLine restart_command_buffer_out ;
-	CommandBufferLine restart_command_in         ;
+	CommandBufferLine prefetch_read_command_buffer_out ;
+	CommandBufferLine prefetch_write_command_buffer_out;
+	CommandBufferLine read_command_buffer_out          ;
+	CommandBufferLine write_command_buffer_out         ;
+	CommandBufferLine wed_command_buffer_out           ;
+	CommandBufferLine restart_command_buffer_out       ;
+	CommandBufferLine restart_command_in               ;
 
 	assign restart_command_in = 0;
 
-	ResponseControlInterfaceOut response_control_out         ;
-	ResponseControlInterfaceOut response_control_out_internal;
-	logic                       wed_response_buffer_pop      ;
-	logic                       read_response_buffer_pop     ;
-	logic                       prefetch_response_buffer_pop ;
-	logic                       write_response_buffer_pop    ;
-	logic                       restart_response_buffer_pop  ;
+	ResponseControlInterfaceOut response_control_out              ;
+	ResponseControlInterfaceOut response_control_out_internal     ;
+	logic                       wed_response_buffer_pop           ;
+	logic                       read_response_buffer_pop          ;
+	logic                       prefetch_read_response_buffer_pop ;
+	logic                       prefetch_write_response_buffer_pop;
+	logic                       write_response_buffer_pop         ;
+	logic                       restart_response_buffer_pop       ;
 
 	DataControlInterfaceOut read_data_control_out_0   ;
 	DataControlInterfaceOut read_data_control_out_1   ;
@@ -114,10 +118,11 @@ module afu_control #(
 
 	//As long as there are commands in the FIFO set it request for bus access / if there are credits
 
-	CreditInterfaceOutput credits         ;
-	CreditInterfaceOutput credits_read    ;
-	CreditInterfaceOutput credits_prefetch;
-	CreditInterfaceOutput credits_write   ;
+	CreditInterfaceOutput credits               ;
+	CreditInterfaceOutput credits_read          ;
+	CreditInterfaceOutput credits_prefetch_read ;
+	CreditInterfaceOutput credits_prefetch_write;
+	CreditInterfaceOutput credits_write         ;
 
 	logic [0:7] write_tag          ;
 	logic [0:7] command_tag        ;
@@ -158,10 +163,11 @@ module afu_control #(
 
 	ResponseControlInterfaceOut response_control_out_latched_S[0:RSP_DELAY-1];
 
-	logic [0:7] total_credits   ;
-	logic [0:7] read_credits    ;
-	logic [0:7] write_credits   ;
-	logic [0:7] prefetch_credits;
+	logic [0:7] total_credits         ;
+	logic [0:7] read_credits          ;
+	logic [0:7] write_credits         ;
+	logic [0:7] prefetch_read_credits ;
+	logic [0:7] prefetch_write_credits;
 
 ////////////////////////////////////////////////////////////////////////////
 //drive output response stats
@@ -273,25 +279,28 @@ module afu_control #(
 //command request logic
 ////////////////////////////////////////////////////////////////////////////
 
-	assign requests[0] = ~command_buffer_status.restart_buffer.empty 	 && ~burst_command_buffer_states_afu.alfull;
-	assign requests[1] = ~command_buffer_status.wed_buffer.empty 		 && ~burst_command_buffer_states_afu.alfull;
-	assign requests[2] = ~command_buffer_status.write_buffer.empty  	 && ~burst_command_buffer_states_afu.alfull && (|credits_write.credits);
-	assign requests[3] = ~command_buffer_status.read_buffer.empty   	 && ~burst_command_buffer_states_afu.alfull && (|credits_read.credits);
-	assign requests[4] = ~command_buffer_status.prefetch_buffer.empty    && ~burst_command_buffer_states_afu.alfull && (|credits_prefetch.credits);
+
+	assign requests[PRIORITY_RESTART]        = ~command_buffer_status.restart_buffer.empty 	 && ~burst_command_buffer_states_afu.alfull;
+	assign requests[PRIORITY_WED]            = ~command_buffer_status.wed_buffer.empty 		 && ~burst_command_buffer_states_afu.alfull;
+	assign requests[PRIORITY_WRITE]          = ~command_buffer_status.write_buffer.empty  	 && ~burst_command_buffer_states_afu.alfull && (|credits_write.credits);
+	assign requests[PRIORITY_READ]           = ~command_buffer_status.read_buffer.empty   	 && ~burst_command_buffer_states_afu.alfull && (|credits_read.credits);
+	assign requests[PRIORITY_PREFTECH_WRITE] = ~command_buffer_status.prefetch_write_buffer.empty    && ~burst_command_buffer_states_afu.alfull && (|credits_prefetch.credits);
+	assign requests[PRIORITY_PREFETCH_READ]  = ~command_buffer_status.prefetch_read_buffer.empty    && ~burst_command_buffer_states_afu.alfull && (|credits_prefetch.credits);
+
 
 	assign valid_request = |requests;
 
-	assign command_buffer_in[0] = restart_command_buffer_out;
-	assign command_buffer_in[1] = wed_command_buffer_out;
-	assign command_buffer_in[2] = write_command_buffer_out;
-	assign command_buffer_in[3] = read_command_buffer_out;
-	assign command_buffer_in[4] = prefetch_command_buffer_out;
-
+	assign command_buffer_in[PRIORITY_RESTART]        = restart_command_buffer_out;
+	assign command_buffer_in[PRIORITY_WED]            = wed_command_buffer_out;
+	assign command_buffer_in[PRIORITY_WRITE]          = write_command_buffer_out;
+	assign command_buffer_in[PRIORITY_READ]           = read_command_buffer_out;
+	assign command_buffer_in[PRIORITY_PREFTECH_WRITE] = prefetch_write_command_buffer_out;
+	assign command_buffer_in[PRIORITY_PREFETCH_READ]  = prefetch_read_command_buffer_out;
 
 ////////////////////////////////////////////////////////////////////////////
 //Buffer arbitration logic
 ////////////////////////////////////////////////////////////////////////////
-	
+
 	fixed_priority_arbiter_N_input_1_ouput #(
 		.NUM_REQUESTS(NUM_REQUESTS            ),
 		.WIDTH       ($bits(CommandBufferLine))
@@ -304,7 +313,7 @@ module afu_control #(
 		.arbiter_out(command_arbiter_out),
 		.ready      (ready              )
 	);
-	
+
 	// round_robin_priority_arbiter_N_input_1_ouput #(
 	// 	.NUM_REQUESTS(NUM_REQUESTS            ),
 	// 	.WIDTH       ($bits(CommandBufferLine))
@@ -407,15 +416,17 @@ module afu_control #(
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			total_credits    <= 0;
-			read_credits     <= 0;
-			write_credits    <= 0;
-			prefetch_credits <= 0;
+			total_credits          <= 0;
+			read_credits           <= 0;
+			write_credits          <= 0;
+			prefetch_read_credits  <= 0;
+			prefetch_write_credits <= 0;
 		end else begin
-			total_credits    <= (command_in_latched.room >> 0);
-			read_credits     <= (total_credits >> 0);
-			write_credits    <= (total_credits >> 0);
-			prefetch_credits <= (total_credits >> 0);
+			total_credits          <= (command_in_latched.room >> 0);
+			read_credits           <= (total_credits >> 0);
+			write_credits          <= (total_credits >> 0);
+			prefetch_read_credits  <= (total_credits >> 0);
+			prefetch_write_credits <= (total_credits >> 0);
 		end
 	end
 
@@ -435,12 +446,20 @@ module afu_control #(
 		.credit_out(credits_read                                                                                                                  )
 	);
 
-	credit_control credits_prefetch_control_instant (
-		.clock     (clock                                                                                                                                     ),
-		.rstn      (rstn                                                                                                                                      ),
-		.enabled_in(enabled                                                                                                                                   ),
-		.credit_in ({prefetch_command_buffer_out.valid,response_control_out.prefetch_response,response_control_out.response.response_credits,prefetch_credits}),
-		.credit_out(credits_prefetch                                                                                                                          )
+	credit_control credits_prefetch_read_control_instant (
+		.clock     (clock                                                                                                                                                    ),
+		.rstn      (rstn                                                                                                                                                     ),
+		.enabled_in(enabled                                                                                                                                                  ),
+		.credit_in ({prefetch_read_command_buffer_out.valid,response_control_out.prefetch_read_response,response_control_out.response.response_credits,prefetch_read_credits}),
+		.credit_out(credits_prefetch_read                                                                                                                                    )
+	);
+
+	credit_control credits_prefetch_write_control_instant (
+		.clock     (clock                                                                                                                                                       ),
+		.rstn      (rstn                                                                                                                                                        ),
+		.enabled_in(enabled                                                                                                                                                     ),
+		.credit_in ({prefetch_write_command_buffer_out.valid,response_control_out.prefetch_write_response,response_control_out.response.response_credits,prefetch_write_credits}),
+		.credit_out(credits_prefetch_write                                                                                                                                      )
 	);
 
 	credit_control credits_write_control_instant (
@@ -607,25 +626,47 @@ module afu_control #(
 
 
 ////////////////////////////////////////////////////////////////////////////
-//Buffer Prefetch Commands
+//Buffer Prefetch READ Commands
 ////////////////////////////////////////////////////////////////////////////
 
 	fifo #(
-		.WIDTH($bits(CommandBufferLine)),
-		.DEPTH(PREFETCH_CMD_BUFFER_SIZE)
-	) preftech_command_buffer_fifo_instant (
-		.clock   (clock                                       ),
-		.rstn    (rstn                                        ),
+		.WIDTH($bits(CommandBufferLine)     ),
+		.DEPTH(PREFETCH_READ_CMD_BUFFER_SIZE)
+	) preftech_read_command_buffer_fifo_instant (
+		.clock   (clock                                            ),
+		.rstn    (rstn                                             ),
 		
-		.push    (prefetch_command_in.valid                   ),
-		.data_in (prefetch_command_in                         ),
-		.full    (command_buffer_status.prefetch_buffer.full  ),
-		.alFull  (command_buffer_status.prefetch_buffer.alfull),
+		.push    (prefetch_read_command_in.valid                   ),
+		.data_in (prefetch_read_command_in                         ),
+		.full    (command_buffer_status.prefetch_read_buffer.full  ),
+		.alFull  (command_buffer_status.prefetch_read_buffer.alfull),
 		
-		.pop     (ready[4]                                    ),
-		.valid   (command_buffer_status.prefetch_buffer.valid ),
-		.data_out(prefetch_command_buffer_out                 ),
-		.empty   (command_buffer_status.prefetch_buffer.empty )
+		.pop     (ready[PRIORITY_PREFETCH_READ]                    ),
+		.valid   (command_buffer_status.prefetch_read_buffer.valid ),
+		.data_out(prefetch_read_command_buffer_out                 ),
+		.empty   (command_buffer_status.prefetch_read_buffer.empty )
+	);
+
+////////////////////////////////////////////////////////////////////////////
+//Buffer Prefetch WRITE Commands
+////////////////////////////////////////////////////////////////////////////
+
+	fifo #(
+		.WIDTH($bits(CommandBufferLine)      ),
+		.DEPTH(PREFETCH_WRITE_CMD_BUFFER_SIZE)
+	) preftech_write_command_buffer_fifo_instant (
+		.clock   (clock                                             ),
+		.rstn    (rstn                                              ),
+		
+		.push    (prefetch_write_command_in.valid                   ),
+		.data_in (prefetch_write_command_in                         ),
+		.full    (command_buffer_status.prefetch_write_buffer.full  ),
+		.alFull  (command_buffer_status.prefetch_write_buffer.alfull),
+		
+		.pop     (ready[PRIORITY_PREFTECH_WRITE]                    ),
+		.valid   (command_buffer_status.prefetch_write_buffer.valid ),
+		.data_out(prefetch_write_command_buffer_out                 ),
+		.empty   (command_buffer_status.prefetch_write_buffer.empty )
 	);
 
 ////////////////////////////////////////////////////////////////////////////
@@ -644,7 +685,7 @@ module afu_control #(
 		.full    (command_buffer_status.read_buffer.full  ),
 		.alFull  (command_buffer_status.read_buffer.alfull),
 		
-		.pop     (ready[3]                                ),
+		.pop     (ready[PRIORITY_READ]                    ),
 		.valid   (command_buffer_status.read_buffer.valid ),
 		.data_out(read_command_buffer_out                 ),
 		.empty   (command_buffer_status.read_buffer.empty )
@@ -665,7 +706,7 @@ module afu_control #(
 		.full    (command_buffer_status.write_buffer.full  ),
 		.alFull  (command_buffer_status.write_buffer.alfull),
 		
-		.pop     (ready[2]                                 ),
+		.pop     (ready[PRIORITY_WRITE]                    ),
 		.valid   (command_buffer_status.write_buffer.valid ),
 		.data_out(write_command_buffer_out                 ),
 		.empty   (command_buffer_status.write_buffer.empty )
@@ -686,7 +727,7 @@ module afu_control #(
 		.full    (command_buffer_status.wed_buffer.full  ),
 		.alFull  (command_buffer_status.wed_buffer.alfull),
 		
-		.pop     (ready[1]                               ),
+		.pop     (ready[PRIORITY_WED]                    ),
 		.valid   (command_buffer_status.wed_buffer.valid ),
 		.data_out(wed_command_buffer_out                 ),
 		.empty   (command_buffer_status.wed_buffer.empty )
@@ -708,7 +749,7 @@ module afu_control #(
 		.full    (command_buffer_status.restart_buffer.full  ),
 		.alFull  (command_buffer_status.restart_buffer.alfull),
 		
-		.pop     (ready[0]                                   ),
+		.pop     (ready[PRIORITY_RESTART]                    ),
 		.valid   (command_buffer_status.restart_buffer.valid ),
 		.data_out(restart_command_buffer_out                 ),
 		.empty   (command_buffer_status.restart_buffer.empty )
@@ -767,27 +808,51 @@ module afu_control #(
 	);
 
 ////////////////////////////////////////////////////////////////////////////
-//Buffers Prefetch Responses
+//Buffers Prefetch READ Responses
 ////////////////////////////////////////////////////////////////////////////
 
-	assign prefetch_response_buffer_pop = ~response_buffer_status.prefetch_buffer.empty;
+	assign prefetch_read_response_buffer_pop = ~response_buffer_status.prefetch_read_buffer.empty;
 
 	fifo #(
-		.WIDTH($bits(ResponseBufferLine)),
-		.DEPTH(PREFETCH_RSP_BUFFER_SIZE )
-	) prefetch_response_buffer_fifo_instant (
-		.clock   (clock                                        ),
-		.rstn    (rstn                                         ),
+		.WIDTH($bits(ResponseBufferLine)    ),
+		.DEPTH(PREFETCH_READ_RSP_BUFFER_SIZE)
+	) prefetch_read_response_buffer_fifo_instant (
+		.clock   (clock                                             ),
+		.rstn    (rstn                                              ),
 		
-		.push    (response_control_out.prefetch_response       ),
-		.data_in (response_control_out.response                ),
-		.full    (response_buffer_status.prefetch_buffer.full  ),
-		.alFull  (response_buffer_status.prefetch_buffer.alfull),
+		.push    (response_control_out.prefetch_read_response       ),
+		.data_in (response_control_out.response                     ),
+		.full    (response_buffer_status.prefetch_read_buffer.full  ),
+		.alFull  (response_buffer_status.prefetch_read_buffer.alfull),
 		
-		.pop     (prefetch_response_buffer_pop                 ),
-		.valid   (response_buffer_status.prefetch_buffer.valid ),
-		.data_out(prefetch_response_out                        ),
-		.empty   (response_buffer_status.prefetch_buffer.empty )
+		.pop     (prefetch_read_response_buffer_pop                 ),
+		.valid   (response_buffer_status.prefetch_buffer.valid      ),
+		.data_out(prefetch_read_response_out                        ),
+		.empty   (response_buffer_status.prefetch_read_buffer.empty )
+	);
+
+////////////////////////////////////////////////////////////////////////////
+//Buffers Prefetch WRITE Responses
+////////////////////////////////////////////////////////////////////////////
+
+	assign prefetch_write_response_buffer_pop = ~response_buffer_status.prefetch_write_buffer.empty;
+
+	fifo #(
+		.WIDTH($bits(ResponseBufferLine)     ),
+		.DEPTH(PREFETCH_WRITE_RSP_BUFFER_SIZE)
+	) prefetch_write_response_buffer_fifo_instant (
+		.clock   (clock                                              ),
+		.rstn    (rstn                                               ),
+		
+		.push    (response_control_out.prefetch_write_response       ),
+		.data_in (response_control_out.response                      ),
+		.full    (response_buffer_status.prefetch_write_buffer.full  ),
+		.alFull  (response_buffer_status.prefetch_write_buffer.alfull),
+		
+		.pop     (prefetch_write_response_buffer_pop                 ),
+		.valid   (response_buffer_status.prefetch_write_buffer.valid ),
+		.data_out(prefetch_write_response_out                        ),
+		.empty   (response_buffer_status.prefetch_write_buffer.empty )
 	);
 
 ////////////////////////////////////////////////////////////////////////////
@@ -943,7 +1008,7 @@ module afu_control #(
 		.full    (write_data_buffer_status.buffer_0.full  ),
 		.alFull  (write_data_buffer_status.buffer_0.alfull),
 		
-		.pop     (ready[2]                                ),
+		.pop     (ready[PRIORITY_WRITE]                   ),
 		.valid   (write_data_buffer_status.buffer_0.valid ),
 		.data_out(cu_write_data_0                         ),
 		.empty   (write_data_buffer_status.buffer_0.empty )
@@ -962,7 +1027,7 @@ module afu_control #(
 		.full    (write_data_buffer_status.buffer_1.full  ),
 		.alFull  (write_data_buffer_status.buffer_1.alfull),
 		
-		.pop     (ready[2]                                ),
+		.pop     (ready[PRIORITY_WRITE]                   ),
 		.valid   (write_data_buffer_status.buffer_1.valid ),
 		.data_out(cu_write_data_1                         ),
 		.empty   (write_data_buffer_status.buffer_1.empty )

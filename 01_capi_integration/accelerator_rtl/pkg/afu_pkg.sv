@@ -22,7 +22,8 @@ package AFU_PKG;
     CMD_INVALID,
     CMD_READ,
     CMD_WRITE,
-    CMD_PREFETCH,
+    CMD_PREFETCH_READ,
+    CMD_PREFETCH_WRITE,
     CMD_WED,
     CMD_RESTART
   } command_type;
@@ -119,11 +120,12 @@ package AFU_PKG;
   } CommandBufferArbiterInterfaceIn;
 
   typedef struct packed {
-    BufferStatus wed_buffer     ;
-    BufferStatus write_buffer   ;
-    BufferStatus read_buffer    ;
-    BufferStatus restart_buffer ;
-    BufferStatus prefetch_buffer;
+    BufferStatus wed_buffer           ;
+    BufferStatus write_buffer         ;
+    BufferStatus read_buffer          ;
+    BufferStatus restart_buffer       ;
+    BufferStatus prefetch_read_buffer ;
+    BufferStatus prefetch_write_buffer;
   } CommandBufferStatusInterface;
 
 
@@ -139,37 +141,40 @@ package AFU_PKG;
   } ResponseBufferLine;
 
   typedef struct packed {
-    logic              read_response    ;
-    logic              prefetch_response;
-    logic              write_response   ;
-    logic              wed_response     ;
-    logic              restart_response ;
-    ResponseBufferLine response         ;
+    logic              read_response          ;
+    logic              prefetch_read_response ;
+    logic              prefetch_write_response;
+    logic              write_response         ;
+    logic              wed_response           ;
+    logic              restart_response       ;
+    ResponseBufferLine response               ;
   } ResponseControlInterfaceOut;
 
   typedef struct packed {
-    BufferStatus wed_buffer     ;
-    BufferStatus write_buffer   ;
-    BufferStatus read_buffer    ;
-    BufferStatus restart_buffer ;
-    BufferStatus prefetch_buffer;
+    BufferStatus wed_buffer           ;
+    BufferStatus write_buffer         ;
+    BufferStatus read_buffer          ;
+    BufferStatus restart_buffer       ;
+    BufferStatus prefetch_read_buffer ;
+    BufferStatus prefetch_write_buffer;
   } ResponseBufferStatusInterface;
 
   typedef struct packed {
-    logic [0:63] DONE_count         ;
-    logic [0:63] DONE_RESTART_count ;
-    logic [0:63] DONE_PREFETCH_count;
-    logic [0:63] PAGED_count        ;
-    logic [0:63] FLUSHED_count      ;
-    logic [0:63] AERROR_count       ;
-    logic [0:63] DERROR_count       ;
-    logic [0:63] FAILED_count       ;
-    logic [0:63] FAULT_count        ;
-    logic [0:63] NRES_count         ;
-    logic [0:63] NLOCK_count        ;
-    logic [0:63] CYCLE_count        ;
-    logic [0:63] DONE_READ_count    ;
-    logic [0:63] DONE_WRITE_count   ;
+    logic [0:63] DONE_count               ;
+    logic [0:63] DONE_RESTART_count       ;
+    logic [0:63] DONE_PREFETCH_READ_count ;
+    logic [0:63] DONE_PREFETCH_WRITE_count;
+    logic [0:63] PAGED_count              ;
+    logic [0:63] FLUSHED_count            ;
+    logic [0:63] AERROR_count             ;
+    logic [0:63] DERROR_count             ;
+    logic [0:63] FAILED_count             ;
+    logic [0:63] FAULT_count              ;
+    logic [0:63] NRES_count               ;
+    logic [0:63] NLOCK_count              ;
+    logic [0:63] CYCLE_count              ;
+    logic [0:63] DONE_READ_count          ;
+    logic [0:63] DONE_WRITE_count         ;
   } ResponseStatistcsInterface;
 
 ////////////////////////////////////////////////////////////////////////////

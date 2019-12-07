@@ -118,9 +118,13 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdResponseStats)
 {
 
+ 
     cxl_mmio_read64((*afu), DONE_COUNT_REG, &(cmdResponseStats->DONE_count));
     cxl_mmio_read64((*afu), DONE_RESTART_COUNT_REG, &(cmdResponseStats->DONE_RESTART_count));
-    cxl_mmio_read64((*afu), DONE_PREFETCH_COUNT_REG, &(cmdResponseStats->DONE_PREFETCH_count));
+
+    cxl_mmio_read64((*afu), DONE_PREFETCH_READ_COUNT_REG, &(cmdResponseStats->DONE_PREFETCH_READ_count));
+    cxl_mmio_read64((*afu), DONE_PREFETCH_WRITE_COUNT_REG, &(cmdResponseStats->DONE_PREFETCH_WRITE_count));
+
     cxl_mmio_read64((*afu), PAGED_COUNT_REG, &(cmdResponseStats->PAGED_count));
     cxl_mmio_read64((*afu), FLUSHED_COUNT_REG, &(cmdResponseStats->FLUSHED_count));
     cxl_mmio_read64((*afu), AERROR_COUNT_REG, &(cmdResponseStats->AERROR_count));
@@ -147,13 +151,16 @@ void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
     printf("| %-15s %-18s %-15s | \n", " ", "Responses Stats", " ");
     printf(" -----------------------------------------------------\n");
 
-    printf("DONE_count         : %lu\n", cmdResponseStats->DONE_count);
-    printf("DONE_READ_count    : %lu\n", cmdResponseStats->DONE_READ_count);
-    printf("DONE_WRITE_count   : %lu\n", cmdResponseStats->DONE_WRITE_count);
-    printf("DONE_RESTART_count : %lu\n", cmdResponseStats->DONE_RESTART_count);
-    printf("DONE_PREFETCH_count: %lu\n\n", cmdResponseStats->DONE_PREFETCH_count);
-  
-
+    printf("DONE_count               : %lu\n", cmdResponseStats->DONE_count);
+    printf(" -----------------------------------------------------\n");
+    printf("DONE_READ_count          : %lu\n", cmdResponseStats->DONE_READ_count);
+    printf("DONE_WRITE_count         : %lu\n", cmdResponseStats->DONE_WRITE_count);
+    printf(" -----------------------------------------------------\n");
+    printf("DONE_RESTART_count       : %lu\n", cmdResponseStats->DONE_RESTART_count);
+    printf(" -----------------------------------------------------\n");
+    printf("DONE_PREFETCH_READ_count : %lu\n\n", cmdResponseStats->DONE_PREFETCH_READ_count);
+    printf("DONE_PREFETCH_WRITE_count: %lu\n\n", cmdResponseStats->DONE_PREFETCH_WRITE_count);
+    printf(" -----------------------------------------------------\n");
     printf("PAGED_count        : %lu\n", cmdResponseStats->PAGED_count);
     printf("FLUSHED_count      : %lu\n", cmdResponseStats->FLUSHED_count);
     printf("AERROR_count       : %lu\n", cmdResponseStats->AERROR_count);

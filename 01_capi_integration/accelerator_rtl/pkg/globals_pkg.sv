@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-12-06 10:28:24
+// Revise : 2019-12-06 22:23:05
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -57,22 +57,37 @@ package GLOBALS_AFU_PKG;
 
 	parameter BURST_CMD_BUFFER_SIZE = 32; // size of command burst for PSL leave as is
 
-	parameter READ_CMD_BUFFER_SIZE     = 128;
-	parameter WRITE_CMD_BUFFER_SIZE    = 128;
-	parameter PREFETCH_CMD_BUFFER_SIZE = 128;
-	parameter RESTART_CMD_BUFFER_SIZE  = 4  ;
-	parameter WED_CMD_BUFFER_SIZE      = 4  ;
+	parameter READ_CMD_BUFFER_SIZE           = 128;
+	parameter WRITE_CMD_BUFFER_SIZE          = 128;
+	parameter PREFETCH_READ_CMD_BUFFER_SIZE  = 128;
+	parameter PREFETCH_WRITE_CMD_BUFFER_SIZE = 128;
+	parameter RESTART_CMD_BUFFER_SIZE        = 4  ;
+	parameter WED_CMD_BUFFER_SIZE            = 4  ;
 
-	parameter READ_RSP_BUFFER_SIZE     = 128;
-	parameter PREFETCH_RSP_BUFFER_SIZE = 128;
-	parameter WRITE_RSP_BUFFER_SIZE    = 128;
-	parameter RESTART_RSP_BUFFER_SIZE  = 4  ;
-	parameter WED_RSP_BUFFER_SIZE      = 4  ;
+	parameter READ_RSP_BUFFER_SIZE           = 128;
+	parameter PREFETCH_READ_RSP_BUFFER_SIZE  = 128;
+	parameter PREFETCH_WRITE_RSP_BUFFER_SIZE = 128;
+	parameter WRITE_RSP_BUFFER_SIZE          = 128;
+	parameter RESTART_RSP_BUFFER_SIZE        = 4  ;
+	parameter WED_RSP_BUFFER_SIZE            = 4  ;
 
 	parameter READ_DATA_BUFFER_SIZE    = 128;
 	parameter WRITE_DATA_BUFFER_SIZE   = 128;
 	parameter RESTART_DATA_BUFFER_SIZE = 4  ;
 	parameter WED_DATA_BUFFER_SIZE     = 4  ;
+
+////////////////////////////////////////////////////////////////////////////
+// AFU-Control (Buffer Priorities) for Arbitration
+////////////////////////////////////////////////////////////////////////////
+
+	parameter PRIORITY_RESTART = 0;
+	parameter PRIORITY_WED     = 1;
+
+	parameter PRIORITY_WRITE = 2;
+	parameter PRIORITY_READ  = 3;
+
+	parameter PRIORITY_PREFTECH_WRITE = 4;
+	parameter PRIORITY_PREFETCH_READ  = 5;
 
 ////////////////////////////////////////////////////////////////////////////
 // CU-Control  (Buffer size)
@@ -97,9 +112,10 @@ package GLOBALS_AFU_PKG;
 	parameter ALGO_STATUS_DONE     = 26'h 3FFFFC0 >> 2;
 	parameter ALGO_STATUS_DONE_ACK = 26'h 3FFFFB8 >> 2;
 
-	parameter DONE_COUNT_REG          = 26'h 3FFFFB0 >> 2;
-	parameter DONE_RESTART_COUNT_REG  = 26'h 3FFFFA8 >> 2;
-	parameter DONE_PREFETCH_COUNT_REG = 26'h 3FFFF60 >> 2;
+	parameter DONE_COUNT_REG                = 26'h 3FFFFB0 >> 2;
+	parameter DONE_RESTART_COUNT_REG        = 26'h 3FFFFA8 >> 2;
+	parameter DONE_PREFETCH_READ_COUNT_REG  = 26'h 3FFFF60 >> 2;
+	parameter DONE_PREFETCH_WRITE_COUNT_REG = 26'h 3FFFF40 >> 2;
 
 	parameter PAGED_COUNT_REG   = 26'h 3FFFFA0 >> 2;
 	parameter FLUSHED_COUNT_REG = 26'h 3FFFF98 >> 2;
@@ -113,6 +129,8 @@ package GLOBALS_AFU_PKG;
 	parameter CYCLE_COUNT_REG      = 26'h 3FFFF58 >> 2;
 	parameter DONE_READ_COUNT_REG  = 26'h 3FFFF50 >> 2;
 	parameter DONE_WRITE_COUNT_REG = 26'h 3FFFF48 >> 2;
+
+
 
 ////////////////////////////////////////////////////////////////////////////
 // CU-Control CU Globals
@@ -144,19 +162,25 @@ package GLOBALS_AFU_PKG;
 
 
 ////////////////////////////////////////////////////////////////////////////
-//  AFU/CU-Control CU IDs any compute unite that generate command must have an ID
+//  AFU-Control CU IDs any compute unite that generate command must have an ID
 ////////////////////////////////////////////////////////////////////////////
 
 	parameter CU_ID_RANGE = 8;
 
-	parameter INVALID_ID          = {CU_ID_RANGE{1'b0}};
-	parameter WED_ID              = {CU_ID_RANGE{1'b1}};
-	parameter RESTART_ID          = (WED_ID - 1)       ;
-	parameter PREFETCH_CONTROL_ID = (RESTART_ID - 1)   ;
+	parameter INVALID_ID = {CU_ID_RANGE{1'b0}};
+	parameter WED_ID     = {CU_ID_RANGE{1'b1}};
+	parameter RESTART_ID = (WED_ID - 1)       ;
+
+////////////////////////////////////////////////////////////////////////////
+//  CU-Control CU IDs any compute unite that generate command must have an ID
+////////////////////////////////////////////////////////////////////////////
+
+	parameter PREFETCH_READ_CONTROL_ID  = (RESTART_ID - 1)              ;
+	parameter PREFETCH_WRITE_CONTROL_ID = (PREFETCH_READ_CONTROL_ID - 1);
 
 
-	parameter DATA_READ_CONTROL_ID  = (PREFETCH_CONTROL_ID - 1) ;
-	parameter DATA_WRITE_CONTROL_ID = (DATA_READ_CONTROL_ID - 1);
+	parameter DATA_READ_CONTROL_ID  = (PREFETCH_WRITE_CONTROL_ID - 1);
+	parameter DATA_WRITE_CONTROL_ID = (DATA_READ_CONTROL_ID - 1)     ;
 
 
 	typedef logic [0:(CU_ID_RANGE-1)] cu_id_t;

@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_data_write_engine_control.sv
 // Create : 2019-11-18 16:55:32
-// Revise : 2019-12-05 23:51:49
+// Revise : 2019-12-06 22:25:38
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ import AFU_PKG::*;
 import CU_PKG::*;
 import CREDIT_PKG::*;
 
-module cu_data_write_engine_control (
+module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
 	input  logic                         clock                      , // Clock
 	input  logic                         rstn                       ,
 	input  logic                         enabled_in                 ,
@@ -121,7 +121,7 @@ module cu_data_write_engine_control (
 		cmd.cacheline_offest = write_data_0_out_buffer.cmd.cacheline_offest;
 		cmd.address_offest   = write_data_0_out_buffer.cmd.address_offest;
 		cmd.real_size        = write_data_0_out_buffer.cmd.real_size;
-		cmd.cu_id            = DATA_WRITE_CONTROL_ID;
+		cmd.cu_id            = CU_WRITE_CONTROL_ID;
 		cmd.cmd_type         = CMD_WRITE;
 		cmd.abt              = STRICT;
 	end

@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-09-26 15:18:39
-// Revise : 2019-12-06 10:30:13
+// Revise : 2019-12-06 22:15:08
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -20,26 +20,29 @@ import CU_PKG::*;
 
 
 module cu_control #(parameter NUM_REQUESTS = 2) (
-	input  logic              clock                 , // Clock
-	input  logic              rstn                  ,
-	input  logic              enabled_in            ,
-	input  WEDInterface       wed_request_in        ,
-	input  ResponseBufferLine read_response_in      ,
-	input  ResponseBufferLine prefetch_response_in  ,
-	input  ResponseBufferLine write_response_in     ,
-	input  ReadWriteDataLine  read_data_0_in        ,
-	input  ReadWriteDataLine  read_data_1_in        ,
-	input  BufferStatus       read_buffer_status    ,
-	input  BufferStatus       prefetch_buffer_status,
-	input  BufferStatus       write_buffer_status   ,
-	input  logic [0:63]       algorithm_requests    ,
-	output logic [0:63]       algorithm_status      ,
-	output logic              algorithm_done        ,
-	output logic [0:63]       algorithm_running     ,
-	output CommandBufferLine  read_command_out      ,
-	output CommandBufferLine  prefetch_command_out  ,
-	output CommandBufferLine  write_command_out     ,
-	output ReadWriteDataLine  write_data_0_out      ,
+	input  logic              clock                       , // Clock
+	input  logic              rstn                        ,
+	input  logic              enabled_in                  ,
+	input  WEDInterface       wed_request_in              ,
+	input  ResponseBufferLine read_response_in            ,
+	input  ResponseBufferLine prefetch_read_response_in   ,
+	input  ResponseBufferLine prefetch_write_response_in  ,
+	input  ResponseBufferLine write_response_in           ,
+	input  ReadWriteDataLine  read_data_0_in              ,
+	input  ReadWriteDataLine  read_data_1_in              ,
+	input  BufferStatus       read_buffer_status          ,
+	input  BufferStatus       prefetch_read_buffer_status ,
+	input  BufferStatus       prefetch_write_buffer_status,
+	input  BufferStatus       write_buffer_status         ,
+	input  logic [0:63]       algorithm_requests          ,
+	output logic [0:63]       algorithm_status            ,
+	output logic              algorithm_done              ,
+	output logic [0:63]       algorithm_running           ,
+	output CommandBufferLine  read_command_out            ,
+	output CommandBufferLine  prefetch_read_command_out   ,
+	output CommandBufferLine  prefetch_write_command_out  ,
+	output CommandBufferLine  write_command_out           ,
+	output ReadWriteDataLine  write_data_0_out            ,
 	output ReadWriteDataLine  write_data_1_out
 );
 
@@ -75,7 +78,8 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	logic cu_ready        ;
 
 
-	assign prefetch_command_out = 0;
+	assign prefetch_read_command_out  = 0;
+	assign prefetch_write_command_out = 0;
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
@@ -213,6 +217,11 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		.write_data_1_out           (write_data_1_out_latched   ),
 		.write_job_counter_done     (write_job_counter_done     )
 	);
+
+////////////////////////////////////////////////////////////////////////////
+//Prefetch Stream READ Engine
+////////////////////////////////////////////////////////////////////////////
+
 
 
 endmodule

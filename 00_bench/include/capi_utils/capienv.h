@@ -38,7 +38,10 @@
 
 #define  DONE_COUNT_REG              0x3FFFFB0
 #define  DONE_RESTART_COUNT_REG      0x3FFFFA8
-#define  DONE_PREFETCH_COUNT_REG     0x3FFFF60
+
+#define  DONE_PREFETCH_READ_COUNT_REG      0x3FFFF60
+#define  DONE_PREFETCH_WRITE_COUNT_REG     0x3FFFF40
+
 #define  PAGED_COUNT_REG             0x3FFFFA0
 #define  FLUSHED_COUNT_REG           0x3FFFF98
 #define  AERROR_COUNT_REG            0x3FFFF90
@@ -76,7 +79,8 @@ struct CmdResponseStats
 {
     uint64_t DONE_count        ;
     uint64_t DONE_RESTART_count;
-    uint64_t DONE_PREFETCH_count;
+    uint64_t DONE_PREFETCH_READ_count;
+    uint64_t DONE_PREFETCH_WRITE_count;
     uint64_t DONE_READ_count   ;
     uint64_t DONE_WRITE_count  ;
     uint64_t PAGED_count       ;

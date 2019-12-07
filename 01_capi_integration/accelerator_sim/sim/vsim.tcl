@@ -50,6 +50,7 @@ proc r  {} {
   vlog -quiet ../../accelerator_rtl/afu/wed_control.sv
 
   echo "Compiling RTL CU control "
+  vlog -quiet ../../accelerator_rtl/cu/cu_prefetch_stream_engine_control.sv
   vlog -quiet ../../accelerator_rtl/cu/cu_data_read_engine_control.sv
   vlog -quiet ../../accelerator_rtl/cu/cu_data_write_engine_control.sv
   vlog -quiet ../../accelerator_rtl/cu/cu_control.sv

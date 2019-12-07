@@ -113,20 +113,20 @@ module mmio (
   always_ff @(posedge clock) begin
 
     if(~rstn) begin
-      report_errors_latched         <= 0;
-      algorithm_status_latched      <= 0;
-      algorithm_status_done_latched <= 0;
-      afu_status_latched            <= 0;
-      algorithm_running_latched     <= 0;
+      report_errors_latched           <= 0;
+      algorithm_status_latched        <= 0;
+      algorithm_status_done_latched   <= 0;
+      afu_status_latched              <= 0;
+      algorithm_running_latched       <= 0;
       response_statistics_out_latched <= 0;
 
     end else  begin
 
-      report_errors_latched         <= report_errors;
-      algorithm_status_done_latched <= algorithm_status_done;
-      algorithm_status_latched      <= algorithm_status;
-      afu_status_latched            <= afu_status;
-      algorithm_running_latched     <= algorithm_running;
+      report_errors_latched           <= report_errors;
+      algorithm_status_done_latched   <= algorithm_status_done;
+      algorithm_status_latched        <= algorithm_status;
+      afu_status_latched              <= afu_status;
+      algorithm_running_latched       <= algorithm_running;
       response_statistics_out_latched <= response_statistics;
 
     end
@@ -260,8 +260,11 @@ module mmio (
           DONE_RESTART_COUNT_REG : begin
             data_out <= response_statistics_out_latched.DONE_RESTART_count;
           end
-          DONE_PREFETCH_COUNT_REG : begin
-            data_out <= response_statistics_out_latched.DONE_PREFETCH_count;
+          DONE_PREFETCH_READ_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.DONE_PREFETCH_READ_count;
+          end
+          DONE_PREFETCH_WRITE_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.DONE_PREFETCH_WRITE_count;
           end
           DONE_COUNT_REG : begin
             data_out <= response_statistics_out_latched.DONE_count;
