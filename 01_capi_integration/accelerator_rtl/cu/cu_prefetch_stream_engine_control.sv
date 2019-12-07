@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_prefetch_stream_engine_control.sv
 // Create : 2019-12-06 12:11:16
-// Revise : 2019-12-06 22:31:58
+// Revise : 2019-12-06 23:02:15
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -44,7 +44,8 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 	logic [0:63]           base_address_latched        ;
 	logic [0:63]           total_size_latched          ;
 	logic [0:63]           offset_size_latched         ;
-	afu_command_t          commmand_type_latched       ;
+	afu_command_t          transaction_type_latched    ;
+	command_type           cu_commmand_type_latched    ;
 	trans_order_behavior_t commmand_abt_latched        ;
 
 	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_job_counter_done_latched;
@@ -104,16 +105,18 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 			base_address_latched         <= 0;
 			total_size_latched           <= 0;
 			offset_size_latched          <= 0;
-			commmand_type_latched        <= 0;
-			commman_abt_latched          <= 0;
+			cu_commmand_type_latched     <= CMD_INVALID;
+			commmand_abt_latched         <= STRICT;
+			transaction_type_latched     <= TOUCH_I;
 		end else begin
 			if(enabled)begin
 				prefetch_response_in_latched <= prefetch_response_in;
 				base_address_latched         <= base_address;
 				total_size_latched           <= total_size;
 				offset_size_latched          <= offset_size;
-				commmand_type_latched        <= commmand_type;
+				cu_commmand_type_latched     <= cu_command_type;
 				commmand_abt_latched         <= commmand_abt;
+				transaction_type_latched     <= transaction_type;
 			end
 		end
 	end
@@ -155,11 +158,11 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 					prefetch_command_out_latched.cmd.real_size <= total_size_latched;
 				end
 
-				prefetch_command_out_latched.command <= transaction_type;
+				prefetch_command_out_latched.command <= transaction_type_latched;
 				prefetch_command_out_latched.size    <= 12'h080;
 
 				prefetch_command_out_latched.cmd.cu_id            <= CU_PREFETCH_CONTROL_ID;
-				prefetch_command_out_latched.cmd.cmd_type         <= cu_command_type;
+				prefetch_command_out_latched.cmd.cmd_type         <= cu_commmand_type_latched;
 				prefetch_command_out_latched.cmd.cacheline_offest <= 0;
 				prefetch_command_out_latched.cmd.address_offest   <= next_offest;
 				prefetch_command_out_latched.cmd.array_struct     <= PREFETCH_DATA;
@@ -170,9 +173,9 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 
 				prefetch_command_out_latched.valid <= 1'b1;
 
-				prefetch_command_out_latched.address <= base_address + next_offest;
+				prefetch_command_out_latched.address <= base_address_latched + next_offest;
 
-				next_offest <= next_offest + offset_size;
+				next_offest <= next_offest + offset_size_latched;
 
 			end else begin
 				prefetch_command_out_latched <= 0;

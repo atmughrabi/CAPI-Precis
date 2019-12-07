@@ -107,10 +107,11 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     printCmdResponseStats(&cmdResponseStats);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-15s %-18s %-15s | \n", " ", "Rd/Wrt Stats", " ");
+    printf("| %-15s %-18s %-15s  | \n", " ", "Rd/Wrt Stats", " ");
     printf(" -----------------------------------------------------\n");
-    printf("count_read : %lu\n", (((afu_status->algo_status_done) << 32) >> 32) );
-    printf("count_write: %lu\n", ((afu_status->algo_status_done) >> 32));
+    printf("| count_read  : %lu\n", (((afu_status->algo_status_done) << 32) >> 32) );
+    printf("| count_write : %lu\n", ((afu_status->algo_status_done) >> 32));
+    printf("*-----------------------------------------------------*\n");
 #endif
 
 }
@@ -144,31 +145,28 @@ void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s | \n", " ", "AFU Stats", " ");
     printf(" -----------------------------------------------------\n");
-
-    printf("CYCLE_count        : %lu\n", cmdResponseStats->CYCLE_count);
-
+    printf("| CYCLE_count        : %lu\n", cmdResponseStats->CYCLE_count);
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s | \n", " ", "Responses Stats", " ");
     printf(" -----------------------------------------------------\n");
-
-    printf("DONE_count               : %lu\n", cmdResponseStats->DONE_count);
+    printf("| DONE_count               : %lu\n", cmdResponseStats->DONE_count);
     printf(" -----------------------------------------------------\n");
-    printf("DONE_READ_count          : %lu\n", cmdResponseStats->DONE_READ_count);
-    printf("DONE_WRITE_count         : %lu\n", cmdResponseStats->DONE_WRITE_count);
+    printf("| DONE_READ_count          : %lu\n", cmdResponseStats->DONE_READ_count);
+    printf("| DONE_WRITE_count         : %lu\n", cmdResponseStats->DONE_WRITE_count);
     printf(" -----------------------------------------------------\n");
-    printf("DONE_RESTART_count       : %lu\n", cmdResponseStats->DONE_RESTART_count);
+    printf("| DONE_RESTART_count       : %lu\n", cmdResponseStats->DONE_RESTART_count);
     printf(" -----------------------------------------------------\n");
-    printf("DONE_PREFETCH_READ_count : %lu\n\n", cmdResponseStats->DONE_PREFETCH_READ_count);
-    printf("DONE_PREFETCH_WRITE_count: %lu\n\n", cmdResponseStats->DONE_PREFETCH_WRITE_count);
+    printf("| DONE_PREFETCH_READ_count : %lu\n", cmdResponseStats->DONE_PREFETCH_READ_count);
+    printf("| DONE_PREFETCH_WRITE_count: %lu\n", cmdResponseStats->DONE_PREFETCH_WRITE_count);
     printf(" -----------------------------------------------------\n");
-    printf("PAGED_count        : %lu\n", cmdResponseStats->PAGED_count);
-    printf("FLUSHED_count      : %lu\n", cmdResponseStats->FLUSHED_count);
-    printf("AERROR_count       : %lu\n", cmdResponseStats->AERROR_count);
-    printf("DERROR_count       : %lu\n", cmdResponseStats->DERROR_count);
-    printf("FAILED_count       : %lu\n", cmdResponseStats->FAILED_count);
-    printf("NRES_count         : %lu\n", cmdResponseStats->NRES_count);
-    printf("NLOCK_count        : %lu\n", cmdResponseStats->NLOCK_count);
-
+    printf("| PAGED_count        : %lu\n", cmdResponseStats->PAGED_count);
+    printf("| FLUSHED_count      : %lu\n", cmdResponseStats->FLUSHED_count);
+    printf("| AERROR_count       : %lu\n", cmdResponseStats->AERROR_count);
+    printf("| DERROR_count       : %lu\n", cmdResponseStats->DERROR_count);
+    printf("| FAILED_count       : %lu\n", cmdResponseStats->FAILED_count);
+    printf("| NRES_count         : %lu\n", cmdResponseStats->NRES_count);
+    printf("| NLOCK_count        : %lu\n", cmdResponseStats->NLOCK_count);
+    printf("*-----------------------------------------------------*\n");
 }
 
 void releaseAFU(struct cxl_afu_h **afu)

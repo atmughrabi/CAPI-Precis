@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : afu_control.sv
 // Create : 2019-09-26 15:20:35
-// Revise : 2019-12-06 22:05:42
+// Revise : 2019-12-07 01:48:34
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -276,7 +276,7 @@ module afu_control #(
 	end
 
 ////////////////////////////////////////////////////////////////////////////
-//command request logic
+//command request logic Priority 0->NUM_REQUESTS (high)->(low)
 ////////////////////////////////////////////////////////////////////////////
 
 
@@ -284,8 +284,8 @@ module afu_control #(
 	assign requests[PRIORITY_WED]            = ~command_buffer_status.wed_buffer.empty 		 && ~burst_command_buffer_states_afu.alfull;
 	assign requests[PRIORITY_WRITE]          = ~command_buffer_status.write_buffer.empty  	 && ~burst_command_buffer_states_afu.alfull && (|credits_write.credits);
 	assign requests[PRIORITY_READ]           = ~command_buffer_status.read_buffer.empty   	 && ~burst_command_buffer_states_afu.alfull && (|credits_read.credits);
-	assign requests[PRIORITY_PREFTECH_WRITE] = ~command_buffer_status.prefetch_write_buffer.empty    && ~burst_command_buffer_states_afu.alfull && (|credits_prefetch.credits);
-	assign requests[PRIORITY_PREFETCH_READ]  = ~command_buffer_status.prefetch_read_buffer.empty    && ~burst_command_buffer_states_afu.alfull && (|credits_prefetch.credits);
+	assign requests[PRIORITY_PREFTECH_WRITE] = ~command_buffer_status.prefetch_write_buffer.empty    && ~burst_command_buffer_states_afu.alfull && (|credits_prefetch_write.credits);
+	assign requests[PRIORITY_PREFETCH_READ]  = ~command_buffer_status.prefetch_read_buffer.empty     && ~burst_command_buffer_states_afu.alfull && (|credits_prefetch_read.credits);
 
 
 	assign valid_request = |requests;
@@ -446,6 +446,15 @@ module afu_control #(
 		.credit_out(credits_read                                                                                                                  )
 	);
 
+
+	credit_control credits_write_control_instant (
+		.clock     (clock                                                                                                                            ),
+		.rstn      (rstn                                                                                                                             ),
+		.enabled_in(enabled                                                                                                                          ),
+		.credit_in ({write_command_buffer_out.valid,response_control_out.write_response,response_control_out.response.response_credits,write_credits}),
+		.credit_out(credits_write                                                                                                                    )
+	);
+
 	credit_control credits_prefetch_read_control_instant (
 		.clock     (clock                                                                                                                                                    ),
 		.rstn      (rstn                                                                                                                                                     ),
@@ -462,13 +471,6 @@ module afu_control #(
 		.credit_out(credits_prefetch_write                                                                                                                                      )
 	);
 
-	credit_control credits_write_control_instant (
-		.clock     (clock                                                                                                                            ),
-		.rstn      (rstn                                                                                                                             ),
-		.enabled_in(enabled                                                                                                                          ),
-		.credit_in ({write_command_buffer_out.valid,response_control_out.write_response,response_control_out.response.response_credits,write_credits}),
-		.credit_out(credits_write                                                                                                                    )
-	);
 
 ////////////////////////////////////////////////////////////////////////////
 //response control
@@ -605,7 +607,7 @@ module afu_control #(
 
 	// logic request_pulse                            ;
 	// assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (|credits.credits) && ~(|request_pulse);
-	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (credits.credits>1) && ~restart_pending;
+	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (credits.credits > 2) && ~restart_pending;
 	fifo #(
 		.WIDTH($bits(CommandBufferLine)),
 		.DEPTH(BURST_CMD_BUFFER_SIZE   )
@@ -826,7 +828,7 @@ module afu_control #(
 		.alFull  (response_buffer_status.prefetch_read_buffer.alfull),
 		
 		.pop     (prefetch_read_response_buffer_pop                 ),
-		.valid   (response_buffer_status.prefetch_buffer.valid      ),
+		.valid   (response_buffer_status.prefetch_read_buffer.valid ),
 		.data_out(prefetch_read_response_out                        ),
 		.empty   (response_buffer_status.prefetch_read_buffer.empty )
 	);

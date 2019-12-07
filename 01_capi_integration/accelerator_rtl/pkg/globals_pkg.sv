@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : globals_pkg.sv
 // Create : 2019-09-26 15:20:15
-// Revise : 2019-12-06 22:23:05
+// Revise : 2019-12-07 01:23:01
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -114,9 +114,7 @@ package GLOBALS_AFU_PKG;
 
 	parameter DONE_COUNT_REG                = 26'h 3FFFFB0 >> 2;
 	parameter DONE_RESTART_COUNT_REG        = 26'h 3FFFFA8 >> 2;
-	parameter DONE_PREFETCH_READ_COUNT_REG  = 26'h 3FFFF60 >> 2;
-	parameter DONE_PREFETCH_WRITE_COUNT_REG = 26'h 3FFFF40 >> 2;
-
+	
 	parameter PAGED_COUNT_REG   = 26'h 3FFFFA0 >> 2;
 	parameter FLUSHED_COUNT_REG = 26'h 3FFFF98 >> 2;
 	parameter AERROR_COUNT_REG  = 26'h 3FFFF90 >> 2;
@@ -129,6 +127,8 @@ package GLOBALS_AFU_PKG;
 	parameter CYCLE_COUNT_REG      = 26'h 3FFFF58 >> 2;
 	parameter DONE_READ_COUNT_REG  = 26'h 3FFFF50 >> 2;
 	parameter DONE_WRITE_COUNT_REG = 26'h 3FFFF48 >> 2;
+	parameter DONE_PREFETCH_READ_COUNT_REG  = 26'h 3FFFF60 >> 2;
+	parameter DONE_PREFETCH_WRITE_COUNT_REG = 26'h 3FFFF40 >> 2;
 
 
 

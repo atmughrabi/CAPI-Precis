@@ -142,9 +142,9 @@ package AFU_PKG;
 
   typedef struct packed {
     logic              read_response          ;
+    logic              write_response         ;
     logic              prefetch_read_response ;
     logic              prefetch_write_response;
-    logic              write_response         ;
     logic              wed_response           ;
     logic              restart_response       ;
     ResponseBufferLine response               ;

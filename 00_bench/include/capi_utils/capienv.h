@@ -39,9 +39,6 @@
 #define  DONE_COUNT_REG              0x3FFFFB0
 #define  DONE_RESTART_COUNT_REG      0x3FFFFA8
 
-#define  DONE_PREFETCH_READ_COUNT_REG      0x3FFFF60
-#define  DONE_PREFETCH_WRITE_COUNT_REG     0x3FFFF40
-
 #define  PAGED_COUNT_REG             0x3FFFFA0
 #define  FLUSHED_COUNT_REG           0x3FFFF98
 #define  AERROR_COUNT_REG            0x3FFFF90
@@ -52,8 +49,11 @@
 #define  NLOCK_COUNT_REG             0x3FFFF68
 
 #define  CYCLE_COUNT_REG             0x3FFFF58
+
 #define  DONE_READ_COUNT_REG         0x3FFFF50
 #define  DONE_WRITE_COUNT_REG        0x3FFFF48
+#define  DONE_PREFETCH_READ_COUNT_REG      0x3FFFF60
+#define  DONE_PREFETCH_WRITE_COUNT_REG     0x3FFFF40
 
 
 #ifdef  SIM

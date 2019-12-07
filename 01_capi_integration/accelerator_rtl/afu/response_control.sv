@@ -159,11 +159,12 @@ module response_control (
             response_control_out_latched.prefetch_write_response <= 1'b1;
           end
           default : begin
-            response_control_out_latched.read_response     <= 1'b0;
-            response_control_out_latched.write_response    <= 1'b0;
-            response_control_out_latched.wed_response      <= 1'b0;
-            response_control_out_latched.restart_response  <= 1'b0;
-            response_control_out_latched.prefetch_response <= 1'b0;
+            response_control_out_latched.read_response           <= 1'b0;
+            response_control_out_latched.write_response          <= 1'b0;
+            response_control_out_latched.wed_response            <= 1'b0;
+            response_control_out_latched.restart_response        <= 1'b0;
+            response_control_out_latched.prefetch_read_response  <= 1'b0;
+            response_control_out_latched.prefetch_write_response <= 1'b0;
           end
         endcase
         response_control_out_latched.response.valid            <= response_in.valid;
