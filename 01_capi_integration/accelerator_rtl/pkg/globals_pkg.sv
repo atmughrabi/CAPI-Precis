@@ -80,9 +80,6 @@ package GLOBALS_AFU_PKG;
 // AFU-Control (Buffer Priorities) for Arbitration
 ////////////////////////////////////////////////////////////////////////////
 
-	// 0-fixed 1-round-robin
-	parameter PRIORITY_MODE = 1;
-
 	parameter PRIORITY_RESTART        = 0;
 	parameter PRIORITY_WED            = 1;
 	parameter PRIORITY_WRITE          = 2;
