@@ -278,7 +278,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
 ```
 
 # CAPI-Precis Structure:
-<p align="center"><img src="./02_slides/fig/CAPIPrecis_chipplanner.png" width="650" ></p>
+<p align="center"><img src="./02_slides/fig/CAPIPrecis_chipplanner.png" width="550" ></p>
 <p align="center"><img src="./02_slides/fig/theme2.png" width="650" ></p>
 
 ## CU Control
@@ -335,9 +335,9 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
   * *`Makefile`* - This makefile handles the compilation/and simulation of CAPIPrecis 
 * `01_capi_integration` - The SW side that runs on the Device(FPGA)/ModelSim
   * `accelerator_rtl` 
-    * `cu` - 
-    * `pkg`
-    * `afu`
+    * `cu` - CU Units reside in this folder (read/write engines)
+    * `pkg` - global packages 
+    * `afu` - AFU Control units in this folder
   * `accelerator_bin` - Binary images of CAPIPrecis (passed time requirements)
   * `accelerator_sim`
     * `server` - files for PSLSE layer
@@ -346,7 +346,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
       * `shim_host.dat`
     * `sim` - ModelSim file and tcl scripts
       * `vsim.tcl` - when adding files to you RTL project you need to update this script
-      * `inerface.do` - Wave file for ModelSim simulation
+      * `inerface.do` - Wave files for ModelSim simulation
   * `accelerator_synth` - synthesis scripts
     * `capi` - This folder contains helper scripts that generated the files necessary for synthesizing the project.
     * `psl_fpga` - This folder contains the RTL for the PSL layer, IPs, and the AFU top
