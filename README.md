@@ -224,8 +224,6 @@ CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-scr
 
 #### Running
 
-##### Silent run with no stats output
-
 1. (Optional) From the root directory go to benchmark directory:
 ```console
 CAPI@Precis:~CAPIPrecis$ cd 00_bench/

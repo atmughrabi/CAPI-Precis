@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-12-08 01:39:09
-// Revise : 2019-12-08 07:29:32
+// Revise : 2019-12-08 10:39:32
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -336,7 +336,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				else
 					prefetch_read_pulse <= prefetch_read_pulse + read_command_out_latched.valid;
 
-				enabled_instants_preftech_read <= ~(|prefetch_read_pulse);
+				enabled_instants_preftech_read <= ~(|prefetch_read_pulse) && cu_configure_latched[30];
 
 			end
 		end
@@ -435,7 +435,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				else
 					prefetch_write_pulse <= prefetch_write_pulse + write_command_out_latched.valid;
 
-				enabled_instants_preftech_write <= ~(|prefetch_write_pulse);
+				enabled_instants_preftech_write <= ~(|prefetch_write_pulse) && cu_configure_latched[31];
 			end
 		end
 	end

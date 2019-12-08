@@ -348,19 +348,6 @@ module afu_control #(
 		.NUM_REQUESTS(NUM_REQUESTS            ),
 		.WIDTH       ($bits(CommandBufferLine))
 	) round_robin_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
-		.clock      (clock                    ),
-		.rstn       (rstn                     ),
-		.enabled    (enabled                  ),
-		.buffer_in  (command_buffer_in_fixed  ),
-		.requests   (requests_fixed           ),
-		.arbiter_out(command_arbiter_out_fixed),
-		.ready      (ready_fixed              )
-	);
-
-	fixed_priority_arbiter_N_input_1_ouput #(
-		.NUM_REQUESTS(NUM_REQUESTS            ),
-		.WIDTH       ($bits(CommandBufferLine))
-	) fixed_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
 		.clock      (clock                          ),
 		.rstn       (rstn                           ),
 		.enabled    (enabled                        ),
@@ -368,6 +355,19 @@ module afu_control #(
 		.requests   (requests_round_robin           ),
 		.arbiter_out(command_arbiter_out_round_robin),
 		.ready      (ready_round_robin              )
+	);
+
+	fixed_priority_arbiter_N_input_1_ouput #(
+		.NUM_REQUESTS(NUM_REQUESTS            ),
+		.WIDTH       ($bits(CommandBufferLine))
+	) fixed_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
+		.clock      (clock                    ),
+		.rstn       (rstn                     ),
+		.enabled    (enabled                  ),
+		.buffer_in  (command_buffer_in_fixed  ),
+		.requests   (requests_fixed           ),
+		.arbiter_out(command_arbiter_out_fixed),
+		.ready      (ready_fixed              )
 	);
 
 

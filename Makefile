@@ -49,35 +49,52 @@ export MAIN_DIR         = main
 # WRITE_MS     0b1
 # WRITE_NA     0b0
 
+#disable both
+# ENABLE_RD_WR_PREFETCH=0 
+
+#enable write
+ENABLE_RD_WR_PREFETCH=1
+
+#enable read
+# ENABLE_RD_WR_PREFETCH=2
+
+#enable both
+# ENABLE_RD_WR_PREFETCH=3
+
 # // cu_read_engine_control            5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 00000 00000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b00000000000000000000000000000000
+# export CU_CONFIG_MODE=0x00000000 
 
 # // cu_read_engine_control            5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 10000 10000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b10000100000000000000000000000000
+# export CU_CONFIG_MODE?=0x84000000
 
 # // cu_read_engine_control            5-bits PREF | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11000 11000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b11000110000000000000000000000000
+# export CU_CONFIG_MODE=0xC6000000
 
 # // cu_read_engine_control            5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11000 11000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b01000010000000000000000000000000
+# export CU_CONFIG_MODE=0x42000000
 
 # // cu_read_engine_control            5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11000 11000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b11100111000000000000000000000000
+# export CU_CONFIG_MODE=0xE7000000
 
 ##############################################
 # With caches                                #
@@ -85,7 +102,7 @@ export MAIN_DIR         = main
 
 # // cu_read_engine_control            5-bits STRICT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
-
+# export CU_CONFIG_MODE=0x10400000
 # // 0b 00010 00001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b00010000010000000000000000000000
 
@@ -94,31 +111,39 @@ export MAIN_DIR         = main
 
 # // 0b 10010 10001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b10010100010000000000000000000000
+# export CU_CONFIG_MODE=0x94400000
 
 # // cu_read_engine_control            5-bits PREF | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11010 11001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b11010110010000000000000000000000
+# export CU_CONFIG_MODE=0xD6400000
 
 # // cu_read_engine_control            5-bits PAGE | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 01010 01001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b01010010010000000000000000000000
+export CU_CONFIG_MODE=0x5240000$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits SPEC | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11110 11101 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b11110111010000000000000000000000
+# export CU_CONFIG_MODE=0xF7400000
 
-export CU_CONFIG_MODE?=0x01 
+
+
+
+ROUND_ROBIN_ARB=0x01
+FIXED_ARB=0x02
+
+# export AFU_CONFIG_MODE=$(FIXED_ARB)
+export AFU_CONFIG_MODE=$(ROUND_ROBIN_ARB)
+
 export CU_CONFIG_GENERIC=$(CU_CONFIG_MODE)
-
-# export AFU_CONFIG_MODE=0x01
-# export AFU_CONFIG_MODE=0x02
-export AFU_CONFIG_MODE=0x03
 export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 
 #########################################################
@@ -126,8 +151,8 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #########################################################
 
 export NUM_THREADS = 8
-LHS=32 
-RHS=128
+LHS=512
+RHS=512
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
