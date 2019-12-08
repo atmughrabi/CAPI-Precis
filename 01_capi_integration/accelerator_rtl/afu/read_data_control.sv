@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
 //
-//    "ACCEL-GRAPH Shared Memory Accelerator Project"
+//    "CAPIPrecis Shared Memory Accelerator Project"
 //
 // -----------------------------------------------------------------------------
 // Copyright (c) 2014-2019 All rights reserved
@@ -11,6 +11,7 @@
 // Revise : 2019-09-30 02:22:24
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
+
 
 import GLOBALS_AFU_PKG::*;
 import CAPI_PKG::*;

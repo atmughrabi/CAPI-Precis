@@ -138,7 +138,7 @@ CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-scr
 ```
 
 # CAPI-Precis Structure:
-
+<p align="center"><img src="./02_slides/fig/CAPIPrecis.png" width="650" ></p>
 <p align="center"><img src="./02_slides/fig/theme2.png" width="650" ></p>
 
 ### MMIO

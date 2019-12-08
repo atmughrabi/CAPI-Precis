@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
 //
-//		"ACCEL-GRAPH Shared Memory Accelerator Project"
+//		"CAPIPrecis Shared Memory Accelerator Project"
 //
 // -----------------------------------------------------------------------------
 // Copyright (c) 2014-2019 All rights reserved
@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-09-26 15:18:39
-// Revise : 2019-12-07 05:57:02
+// Revise : 2019-12-07 19:53:45
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -92,6 +92,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	CommandBufferLine             prefetch_read_command_out_latched;
 	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_read_job_counter_done   ;
 	logic [                 0:63] array_line_size_read             ;
+	logic [                  0:6] offset_start_read                ;
 
 	logic [                  0:8] prefetch_write_pulse              ;
 	logic [                 0:63] base_address_write                ;
@@ -105,6 +106,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	CommandBufferLine             prefetch_write_command_out_latched;
 	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_write_job_counter_done   ;
 	logic [                 0:63] array_line_size_write             ;
+	logic [                  0:6] offset_start_write                ;
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
@@ -254,11 +256,9 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			base_address_read     <= 0;
-			total_size_read       <= 0;
-			total_size_read_valid <= 0;
-
-
+			base_address_read                 <= 0;
+			total_size_read                   <= 0;
+			total_size_read_valid             <= 0;
 			cu_command_type_read              <= CMD_PREFETCH_READ;
 			transaction_type_read             <= TOUCH_I;
 			commmand_abt_read                 <= STRICT;
@@ -269,15 +269,12 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				base_address_read     <= wed_request_in_latched.wed.array_send;
 				total_size_read       <= wed_request_in_latched.wed.size_send;
 				total_size_read_valid <= wed_request_in_latched.valid;
-
-				cu_command_type_read <= CMD_PREFETCH_READ;
+				cu_command_type_read  <= CMD_PREFETCH_READ;
 
 				if (wed_request_in_latched.wed.afu_config[3])
 					transaction_type_read <= TOUCH_S;
 				else
 					transaction_type_read <= TOUCH_I;
-
-
 
 				commmand_abt_read                 <= STRICT;
 				prefetch_read_response_in_latched <= prefetch_read_response_in;
@@ -300,24 +297,33 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	end
 
 ////////////////////////////////////////////////////////////////////////////
-//Drive output
+//Drive offsets
 ////////////////////////////////////////////////////////////////////////////
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			prefetch_read_pulse  <= 9'h0FF;
-			offset_size_read     <= 0;
-			array_line_size_read <= 0;
+			offset_size_read      <= 0;
+			array_line_size_read  <= 0;
+			offset_start_read     <= 0;
+			prefetch_read_pulse   <= 9'h0FF;
+			enabled_prefetch_read <= 0;
 		end else begin
 			if(enabled)begin
+				offset_start_read    <= 2;
 				offset_size_read     <= PAGE_SIZE;
 				array_line_size_read <= PAGE_ARRAY_NUM;
-				prefetch_read_pulse  <= prefetch_read_pulse + read_command_out_latched.valid;
+
+				if(~(|prefetch_read_pulse))
+					prefetch_read_pulse <= 1;
+				else
+					prefetch_read_pulse <= prefetch_read_pulse + read_command_out_latched.valid;
+
+				enabled_prefetch_read <= ~(|prefetch_read_pulse);
+
 			end
 		end
 	end
 
-	assign enabled_prefetch_read = ~(|prefetch_read_pulse);
 
 	cu_prefetch_stream_engine_control #(.CU_PREFETCH_CONTROL_ID(PREFETCH_READ_CONTROL_ID)) cu_prefetch_read_stream_engine_control_instant (
 		.clock                         (clock                            ),
@@ -327,6 +333,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		.total_size                    (total_size_read                  ),
 		.total_size_valid              (total_size_read_valid            ),
 		.offset_size                   (offset_size_read                 ),
+		.offset_start                  (offset_start_read                ),
 		.array_line_size               (array_line_size_read             ),
 		.cu_command_type               (cu_command_type_read             ),
 		.transaction_type              (transaction_type_read            ),
@@ -348,11 +355,9 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			base_address_write     <= 0;
-			total_size_write       <= 0;
-			total_size_write_valid <= 0;
-
-
+			base_address_write                 <= 0;
+			total_size_write                   <= 0;
+			total_size_write_valid             <= 0;
 			cu_command_type_write              <= CMD_PREFETCH_WRITE;
 			transaction_type_write             <= TOUCH_I;
 			commmand_abt_write                 <= STRICT;
@@ -363,15 +368,12 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				base_address_write     <= wed_request_in_latched.wed.array_receive;
 				total_size_write       <= wed_request_in_latched.wed.size_recive;
 				total_size_write_valid <= wed_request_in_latched.valid;
-
-				cu_command_type_write <= CMD_PREFETCH_WRITE;
+				cu_command_type_write  <= CMD_PREFETCH_WRITE;
 
 				if (wed_request_in_latched.wed.afu_config[9])
-					transaction_type_write <= TOUCH_I;
+					transaction_type_write <= TOUCH_M;
 				else
 					transaction_type_write <= TOUCH_I;
-
-
 
 				commmand_abt_write                 <= STRICT;
 				prefetch_write_response_in_latched <= prefetch_write_response_in;
@@ -394,24 +396,32 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	end
 
 ////////////////////////////////////////////////////////////////////////////
-//Drive output
+//Drive offsets
 ////////////////////////////////////////////////////////////////////////////
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			prefetch_write_pulse  <= 9'h0FF;
-			array_line_size_write <= 0;
-			offset_size_write     <= 0;
+			prefetch_write_pulse   <= 9'h0FF;
+			array_line_size_write  <= 0;
+			offset_size_write      <= 0;
+			offset_start_write     <= 0;
+			enabled_prefetch_write <= 0;
 		end else begin
 			if(enabled)begin
+				offset_start_write    <= 2;
 				array_line_size_write <= PAGE_ARRAY_NUM;
 				offset_size_write     <= PAGE_SIZE;
-				prefetch_write_pulse  <= prefetch_write_pulse + write_command_out_latched.valid;
+
+				if(~(|prefetch_write_pulse))
+					prefetch_write_pulse <= 1;
+				else
+					prefetch_write_pulse <= prefetch_write_pulse + write_command_out_latched.valid;
+
+				enabled_prefetch_write <= ~(|prefetch_write_pulse);
 			end
 		end
 	end
 
-	assign enabled_prefetch_write = ~(|prefetch_write_pulse);
 
 	cu_prefetch_stream_engine_control #(.CU_PREFETCH_CONTROL_ID(PREFETCH_WRITE_CONTROL_ID)) cu_prefetch_write_stream_engine_control_instant (
 		.clock                         (clock                             ),
@@ -421,6 +431,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		.total_size                    (total_size_write                  ),
 		.total_size_valid              (total_size_write_valid            ),
 		.offset_size                   (offset_size_write                 ),
+		.offset_start                  (offset_start_write                ),
 		.array_line_size               (array_line_size_write             ),
 		.cu_command_type               (cu_command_type_write             ),
 		.transaction_type              (transaction_type_write            ),

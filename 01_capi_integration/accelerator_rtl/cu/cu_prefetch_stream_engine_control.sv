@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
 //
-//		"ACCEL-GRAPH Shared Memory Accelerator Project"
+//		"CAPIPrecis Shared Memory Accelerator Project"
 //
 // -----------------------------------------------------------------------------
 // Copyright (c) 2014-2019 All rights reserved
@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_prefetch_stream_engine_control.sv
 // Create : 2019-12-06 12:11:16
-// Revise : 2019-12-07 06:07:26
+// Revise : 2019-12-07 18:24:08
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 	input  logic [                 0:63] total_size                    ,
 	input  logic                         total_size_valid              ,
 	input  logic [                 0:63] offset_size                   ,
+	input  logic [                  0:6] offset_start                  , // where to start prefetching shift address
 	input  logic [                 0:63] array_line_size               ,
 	input  command_type                  cu_command_type               ,
 	input  afu_command_t                 transaction_type              ,
@@ -47,6 +48,7 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 	logic [0:63]           total_size_latched          ;
 	logic                  total_size_valid_latched    ;
 	logic [0:63]           offset_size_latched         ;
+	logic [ 0:6]           offset_start_latched        ;
 	afu_command_t          transaction_type_latched    ;
 	command_type           cu_commmand_type_latched    ;
 	trans_order_behavior_t commmand_abt_latched        ;
@@ -102,20 +104,20 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 		if(~rstn) begin
 			prefetch_response_in_latched <= 0;
 			base_address_latched         <= 0;
-
-			offset_size_latched      <= 0;
-			cu_commmand_type_latched <= CMD_INVALID;
-			commmand_abt_latched     <= STRICT;
-			transaction_type_latched <= TOUCH_I;
+			offset_start_latched         <= 0;
+			offset_size_latched          <= 0;
+			cu_commmand_type_latched     <= CMD_INVALID;
+			commmand_abt_latched         <= STRICT;
+			transaction_type_latched     <= TOUCH_I;
 		end else begin
 			if(enabled)begin
 				prefetch_response_in_latched <= prefetch_response_in;
 				base_address_latched         <= base_address;
-
-				offset_size_latched      <= offset_size;
-				cu_commmand_type_latched <= cu_command_type;
-				commmand_abt_latched     <= commmand_abt;
-				transaction_type_latched <= transaction_type;
+				offset_start_latched         <= offset_start;
+				offset_size_latched          <= offset_size;
+				cu_commmand_type_latched     <= cu_command_type;
+				commmand_abt_latched         <= commmand_abt;
+				transaction_type_latched     <= transaction_type;
 			end
 		end
 	end
@@ -150,12 +152,12 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 
 			if(~total_size_valid_latched && enabled_cmd) begin
 
-				if(total_size >= (array_line_size << 1))begin
-					total_size_latched <= total_size - (array_line_size << 1);
-					next_offest        <= next_offest + (offset_size_latched<<1);
-				end else if (total_size < (array_line_size << 1)) begin
+				if(total_size >= (array_line_size << offset_start_latched))begin
+					total_size_latched <= total_size - (array_line_size << offset_start_latched);
+					next_offest        <= next_offest + (offset_size_latched<<offset_start_latched);
+				end else if (total_size < (array_line_size << offset_start_latched)) begin
 					total_size_latched <= 0;
-					next_offest        <= next_offest + (offset_size_latched << 1);
+					next_offest        <= next_offest + (offset_size_latched << offset_start_latched);
 				end
 
 				total_size_valid_latched <= total_size_valid;

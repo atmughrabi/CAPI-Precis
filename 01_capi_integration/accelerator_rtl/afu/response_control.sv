@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
 //
-//    "ACCEL-GRAPH Shared Memory Accelerator Project"
+//    "CAPIPrecis Shared Memory Accelerator Project"
 //
 // -----------------------------------------------------------------------------
 // Copyright (c) 2014-2019 All rights reserved
@@ -8,9 +8,10 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : response_control.sv
 // Create : 2019-09-30 02:22:05
-// Revise : 2019-09-30 02:22:05
+// Revise : 2019-12-07 20:54:50
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
+
 
 
 import CAPI_PKG::*;

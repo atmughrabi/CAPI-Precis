@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
 //
-//    "ACCEL-GRAPH Shared Memory Accelerator Project"
+//    "CAPIPrecis Shared Memory Accelerator Project"
 //
 // -----------------------------------------------------------------------------
 // Copyright (c) 2014-2019 All rights reserved
