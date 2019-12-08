@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : fixed_priority_arbiter.sv
 // Create : 2019-09-26 15:21:13
-// Revise : 2019-09-26 15:21:13
+// Revise : 2019-12-08 14:01:13
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
 

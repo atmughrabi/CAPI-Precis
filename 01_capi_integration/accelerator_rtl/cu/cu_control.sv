@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-12-08 01:39:09
-// Revise : 2019-12-08 10:39:32
+// Revise : 2019-12-08 14:00:42
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -96,6 +96,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_read_job_counter_done   ;
 	logic [                 0:63] array_line_size_read             ;
 	logic [                  0:6] offset_start_read                ;
+	logic                         prefetch_mode_read               ;
 
 	logic [                  0:8] prefetch_write_pulse              ;
 	logic [                 0:63] base_address_write                ;
@@ -110,6 +111,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_write_job_counter_done   ;
 	logic [                 0:63] array_line_size_write             ;
 	logic [                  0:6] offset_start_write                ;
+	logic                         prefetch_mode_write               ;
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
@@ -268,6 +270,9 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 //Prefetch Stream READ Engine
 ////////////////////////////////////////////////////////////////////////////
 
+	assign prefetch_mode_read  = cu_configure_latched[27];
+	assign prefetch_mode_write = cu_configure_latched[26];
+
 ////////////////////////////////////////////////////////////////////////////
 //Drive input
 ////////////////////////////////////////////////////////////////////////////
@@ -327,14 +332,21 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			enabled_instants_preftech_read <= 0;
 		end else begin
 			if(enabled_prefetch_read)begin
-				offset_start_read    <= 2;
-				offset_size_read     <= PAGE_SIZE;
-				array_line_size_read <= PAGE_ARRAY_NUM;
+				if(prefetch_mode_read) begin
+					offset_start_read    <= 9;
+					offset_size_read     <= CACHELINE_SIZE;
+					array_line_size_read <= CACHELINE_ARRAY_NUM;
+					prefetch_read_pulse  <= read_command_out_latched.valid;
+				end else begin
+					offset_start_read    <= 2;
+					offset_size_read     <= PAGE_SIZE;
+					array_line_size_read <= PAGE_ARRAY_NUM;
 
-				if(~(|prefetch_read_pulse))
-					prefetch_read_pulse <= 1;
-				else
-					prefetch_read_pulse <= prefetch_read_pulse + read_command_out_latched.valid;
+					if(~(|prefetch_read_pulse))
+						prefetch_read_pulse <= 1;
+					else
+						prefetch_read_pulse <= prefetch_read_pulse + read_command_out_latched.valid;
+				end
 
 				enabled_instants_preftech_read <= ~(|prefetch_read_pulse) && cu_configure_latched[30];
 
@@ -426,15 +438,21 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			enabled_instants_preftech_write <= 0;
 		end else begin
 			if(enabled_prefetch_write)begin
-				offset_start_write    <= 2;
-				array_line_size_write <= PAGE_ARRAY_NUM;
-				offset_size_write     <= PAGE_SIZE;
+				if(prefetch_mode_write) begin
+					offset_start_write    <= 9;
+					offset_size_write     <= CACHELINE_SIZE;
+					array_line_size_write <= CACHELINE_ARRAY_NUM;
+					prefetch_write_pulse  <= write_command_out_latched.valid;
+				end else begin
+					offset_start_write    <= 2;
+					array_line_size_write <= PAGE_ARRAY_NUM;
+					offset_size_write     <= PAGE_SIZE;
 
-				if(~(|prefetch_write_pulse))
-					prefetch_write_pulse <= 1;
-				else
-					prefetch_write_pulse <= prefetch_write_pulse + write_command_out_latched.valid;
-
+					if(~(|prefetch_write_pulse))
+						prefetch_write_pulse <= 1;
+					else
+						prefetch_write_pulse <= prefetch_write_pulse + write_command_out_latched.valid;
+				end
 				enabled_instants_preftech_write <= ~(|prefetch_write_pulse) && cu_configure_latched[31];
 			end
 		end

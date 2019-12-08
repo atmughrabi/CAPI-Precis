@@ -49,52 +49,40 @@ export MAIN_DIR         = main
 # WRITE_MS     0b1
 # WRITE_NA     0b0
 
-#disable both
-# ENABLE_RD_WR_PREFETCH=0 
-
-#enable write
-ENABLE_RD_WR_PREFETCH=1
-
-#enable read
-# ENABLE_RD_WR_PREFETCH=2
-
-#enable both
-# ENABLE_RD_WR_PREFETCH=3
-
 # // cu_read_engine_control            5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 00000 00000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b00000000000000000000000000000000
-# export CU_CONFIG_MODE=0x00000000 
+# export CU_CONFIG_MODE=0x000000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH) 
 
 # // cu_read_engine_control            5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 10000 10000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b10000100000000000000000000000000
-# export CU_CONFIG_MODE?=0x84000000
+# export CU_CONFIG_MODE=0x840000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits PREF | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11000 11000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b11000110000000000000000000000000
-# export CU_CONFIG_MODE=0xC6000000
+# export CU_CONFIG_MODE=0xC60000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11000 11000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b01000010000000000000000000000000
-# export CU_CONFIG_MODE=0x42000000
+# export CU_CONFIG_MODE=0x420000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11000 11000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b11100111000000000000000000000000
-# export CU_CONFIG_MODE=0xE7000000
+# export CU_CONFIG_MODE=0xE70000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 ##############################################
 # With caches                                #
@@ -102,7 +90,7 @@ ENABLE_RD_WR_PREFETCH=1
 
 # // cu_read_engine_control            5-bits STRICT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
-# export CU_CONFIG_MODE=0x10400000
+# export CU_CONFIG_MODE=0x104000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 # // 0b 00010 00001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b00010000010000000000000000000000
 
@@ -111,37 +99,61 @@ ENABLE_RD_WR_PREFETCH=1
 
 # // 0b 10010 10001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b10010100010000000000000000000000
-# export CU_CONFIG_MODE=0x94400000
+# export CU_CONFIG_MODE=0x944000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits PREF | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11010 11001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b11010110010000000000000000000000
-# export CU_CONFIG_MODE=0xD6400000
+# export CU_CONFIG_MODE=0xD64000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits PAGE | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 01010 01001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b01010010010000000000000000000000
-export CU_CONFIG_MODE=0x5240000$(ENABLE_RD_WR_PREFETCH)
+export CU_CONFIG_MODE=0x524000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits SPEC | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11110 11101 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b11110111010000000000000000000000
-# export CU_CONFIG_MODE=0xF7400000
+# export CU_CONFIG_MODE=0xF74000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
+##############################################
+# CAPI FPGA AFU PREFETCH CONFIG              #
+##############################################
 
+#disable both
+# ENABLE_RD_WR_PREFETCH=0
+#enable write
+# ENABLE_RD_WR_PREFETCH=1
+#enable read
+# ENABLE_RD_WR_PREFETCH=2
+#enable both
+ENABLE_RD_WR_PREFETCH=3
 
+#disable both page address based
+RD_WR_PREFETCH_MODE=0
+#disable both cacheline-read page-wrtie address based
+# RD_WR_PREFETCH_MODE=1
+#disable both cacheline-write page-read address based
+# RD_WR_PREFETCH_MODE=2
+#disable both cacheline address based
+# RD_WR_PREFETCH_MODE=3
+
+##############################################
+# CAPI FPGA AFU ARBITER CONFIG               #
+##############################################
 
 ROUND_ROBIN_ARB=0x01
 FIXED_ARB=0x02
 
-# export AFU_CONFIG_MODE=$(FIXED_ARB)
 export AFU_CONFIG_MODE=$(ROUND_ROBIN_ARB)
+# export AFU_CONFIG_MODE=$(FIXED_ARB)
+
 
 export CU_CONFIG_GENERIC=$(CU_CONFIG_MODE)
 export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
@@ -151,8 +163,8 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #########################################################
 
 export NUM_THREADS = 8
-LHS=32
-RHS=128
+LHS=512
+RHS=256
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
