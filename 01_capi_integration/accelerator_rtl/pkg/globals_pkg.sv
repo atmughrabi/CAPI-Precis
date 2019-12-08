@@ -100,36 +100,42 @@ package GLOBALS_AFU_PKG;
 ////////////////////////////////////////////////////////////////////////////
 // AFU-Control MMIO Registers Mapping on AFU and HOSt
 ////////////////////////////////////////////////////////////////////////////
+	
+	//AFU-Control Configurations
+	parameter AFU_CONFIGURE                 = 26'h 3FFFFF8 >> 2; // algorithm status START/STOP/RESET AFU reads this address
+	parameter AFU_STATUS                    = 26'h 3FFFFF0 >> 2; // AFU status job running
+	
+	//CU-Control Configurations
+	parameter CU_CONFIGURE                  = 26'h 3FFFFE8 >> 2; // algorithm status START/STOP/RESET AFU reads this address
+	parameter CU_STATUS                     = 26'h 3FFFFE0 >> 2;
+	
+	parameter CU_RETURN                   	= 26'h 3FFFFD8 >> 2; // algorithm status DONE/RUNNING HOST reads this address
+	parameter CU_RETURN_ACK               	= 26'h 3FFFFD0 >> 2;
+	
+	parameter CU_RETURN_DONE              	= 26'h 3FFFFC8 >> 2;
+    parameter CU_RETURN_DONE_ACK          	= 26'h 3FFFFC0 >> 2;
+	
+	parameter ERROR_REG                     = 26'h 3FFFFB8 >> 2; // AFU error reporting HOST reads this address
+	parameter ERROR_REG_ACK                 = 26'h 3FFFFB0 >> 2;
+	
+	// MMIO Response Statistics
+	parameter DONE_COUNT_REG                = 26'h 3FFFFA8 >> 2;
+	parameter DONE_RESTART_COUNT_REG        = 26'h 3FFFFA0 >> 2;
+	parameter DONE_READ_COUNT_REG           = 26'h 3FFFF98 >> 2;
+	parameter DONE_WRITE_COUNT_REG          = 26'h 3FFFF90 >> 2;
+	parameter DONE_PREFETCH_READ_COUNT_REG  = 26'h 3FFFF88 >> 2;
+	parameter DONE_PREFETCH_WRITE_COUNT_REG = 26'h 3FFFF80 >> 2;
 
-	parameter ALGO_STATUS  = 26'h 3FFFFF8 >> 2; // algorithm status DONE/RUNNING HOST reads this address
-	parameter ALGO_REQUEST = 26'h 3FFFFF0 >> 2; // algorithm status START/STOP/RESET AFU reads this address
-	parameter ERROR_REG    = 26'h 3FFFFE8 >> 2; // AFU error reporting HOST reads this address
-	parameter AFU_STATUS   = 26'h 3FFFFE0 >> 2; // AFU status job running
-	parameter ALGO_RUNNING = 26'h 3FFFFD8 >> 2; // KERNEL RETURN
-
-	parameter ALGO_STATUS_ACK = 26'h 3FFFFD0 >> 2;
-	parameter ERROR_REG_ACK   = 26'h 3FFFFC8 >> 2;
-
-	parameter ALGO_STATUS_DONE     = 26'h 3FFFFC0 >> 2;
-	parameter ALGO_STATUS_DONE_ACK = 26'h 3FFFFB8 >> 2;
-
-	parameter DONE_COUNT_REG         = 26'h 3FFFFB0 >> 2;
-	parameter DONE_RESTART_COUNT_REG = 26'h 3FFFFA8 >> 2;
-
-	parameter PAGED_COUNT_REG   = 26'h 3FFFFA0 >> 2;
-	parameter FLUSHED_COUNT_REG = 26'h 3FFFF98 >> 2;
-	parameter AERROR_COUNT_REG  = 26'h 3FFFF90 >> 2;
-	parameter DERROR_COUNT_REG  = 26'h 3FFFF88 >> 2;
-	parameter FAILED_COUNT_REG  = 26'h 3FFFF80 >> 2;
-	parameter FAULT_COUNT_REG   = 26'h 3FFFF78 >> 2;
-	parameter NRES_COUNT_REG    = 26'h 3FFFF70 >> 2;
-	parameter NLOCK_COUNT_REG   = 26'h 3FFFF68 >> 2;
-
-	parameter CYCLE_COUNT_REG               = 26'h 3FFFF58 >> 2;
-	parameter DONE_READ_COUNT_REG           = 26'h 3FFFF50 >> 2;
-	parameter DONE_WRITE_COUNT_REG          = 26'h 3FFFF48 >> 2;
-	parameter DONE_PREFETCH_READ_COUNT_REG  = 26'h 3FFFF60 >> 2;
-	parameter DONE_PREFETCH_WRITE_COUNT_REG = 26'h 3FFFF40 >> 2;
+	parameter PAGED_COUNT_REG               = 26'h 3FFFF78 >> 2;
+	parameter FLUSHED_COUNT_REG             = 26'h 3FFFF70 >> 2;
+	parameter AERROR_COUNT_REG              = 26'h 3FFFF68 >> 2;
+	parameter DERROR_COUNT_REG              = 26'h 3FFFF60 >> 2;
+	parameter FAILED_COUNT_REG              = 26'h 3FFFF58 >> 2;
+	parameter FAULT_COUNT_REG               = 26'h 3FFFF50 >> 2;
+	parameter NRES_COUNT_REG                = 26'h 3FFFF48 >> 2;
+	parameter NLOCK_COUNT_REG               = 26'h 3FFFF40 >> 2;
+	parameter CYCLE_COUNT_REG               = 26'h 3FFFF38 >> 2;
+	
 
 
 

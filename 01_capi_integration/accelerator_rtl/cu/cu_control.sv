@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-12-08 01:39:09
-// Revise : 2019-12-08 04:20:42
+// Revise : 2019-12-08 07:29:32
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -35,10 +35,10 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	input  BufferStatus       prefetch_read_buffer_status ,
 	input  BufferStatus       prefetch_write_buffer_status,
 	input  BufferStatus       write_buffer_status         ,
-	input  logic [0:63]       algorithm_requests          ,
-	output logic [0:63]       algorithm_status            ,
-	output logic              algorithm_done              ,
-	output logic [0:63]       algorithm_running           ,
+	input  logic [0:63]       cu_configure                ,
+	output logic [0:63]       cu_return                   ,
+	output logic              cu_done                     ,
+	output logic [0:63]       cu_status                   ,
 	output CommandBufferLine  read_command_out            ,
 	output CommandBufferLine  prefetch_read_command_out   ,
 	output CommandBufferLine  prefetch_write_command_out  ,
@@ -68,11 +68,11 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	ReadWriteDataLine  write_data_1_in            ;
 	BufferStatus       write_data_in_buffer_status;
 
-	logic [                 0:63] algorithm_status_latched  ;
-	logic [                 0:63] algorithm_requests_latched;
-	logic                         done_algorithm            ;
-	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done    ;
-	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done     ;
+	logic [                 0:63] cu_return_latched     ;
+	logic [                 0:63] cu_configure_latched  ;
+	logic                         done_algorithm        ;
+	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done;
+	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done ;
 
 	logic enabled                        ;
 	logic enabled_instants               ;
@@ -142,18 +142,33 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	assign done_algorithm = wed_request_in_latched.valid && (wed_request_in_latched.wed.size_send == read_job_counter_done) && (wed_request_in_latched.wed.size_recive == write_job_counter_done);
 
-	assign cu_ready = (|algorithm_requests_latched);
+	assign cu_ready = (|cu_configure_latched) && wed_request_in_latched.valid;
 
 	always_comb begin
-		algorithm_status_latched = 0;
+		cu_return_latched = 0;
 		if(wed_request_in_latched.valid)begin
-			algorithm_status_latched = {write_job_counter_done,read_job_counter_done};
+			cu_return_latched = {write_job_counter_done,read_job_counter_done};
 		end
 	end
 
 ////////////////////////////////////////////////////////////////////////////
 //Drive output
 ////////////////////////////////////////////////////////////////////////////
+
+	// drive outputs
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			cu_return <= 0;
+			cu_status <= 0;
+			cu_done   <= 0;
+		end else begin
+			if(enabled)begin
+				cu_return <= cu_return_latched;
+				cu_done   <= done_algorithm;
+				cu_status <= cu_ready;
+			end
+		end
+	end
 
 
 	// drive outputs
@@ -163,18 +178,12 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			write_data_0_out  <= 0;
 			write_data_1_out  <= 0;
 			read_command_out  <= 0;
-			algorithm_status  <= 0;
-			algorithm_running <= 0;
-			algorithm_done    <= 0;
 		end else begin
 			if(enabled)begin
 				write_command_out <= write_command_out_latched;
 				write_data_0_out  <= write_data_0_out_latched;
 				write_data_1_out  <= write_data_1_out_latched;
 				read_command_out  <= read_command_out_latched;
-				algorithm_status  <= algorithm_status_latched;
-				algorithm_done    <= done_algorithm;
-				algorithm_running <= cu_ready;
 			end
 		end
 	end
@@ -185,12 +194,12 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			wed_request_in_latched     <= 0;
-			read_response_in_latched   <= 0;
-			write_response_in_latched  <= 0;
-			read_data_0_in_latched     <= 0;
-			read_data_1_in_latched     <= 0;
-			algorithm_requests_latched <= 0;
+			wed_request_in_latched    <= 0;
+			read_response_in_latched  <= 0;
+			write_response_in_latched <= 0;
+			read_data_0_in_latched    <= 0;
+			read_data_1_in_latched    <= 0;
+			cu_configure_latched      <= 0;
 
 		end else begin
 			if(enabled)begin
@@ -200,8 +209,8 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				read_data_0_in_latched    <= read_data_0_in;
 				read_data_1_in_latched    <= read_data_1_in;
 
-				if((|algorithm_requests))
-					algorithm_requests_latched <= algorithm_requests;
+				if((|cu_configure))
+					cu_configure_latched <= cu_configure;
 			end
 		end
 	end
@@ -216,6 +225,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		.rstn                       (rstn                       ),
 		.enabled_in                 (enabled_instants           ),
 		.wed_request_in             (wed_request_in_latched     ),
+		.cu_configure               (cu_configure_latched       ),
 		.read_response_in           (read_response_in_latched   ),
 		.read_data_0_in             (read_data_0_in_latched     ),
 		.read_data_1_in             (read_data_1_in_latched     ),
@@ -242,6 +252,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		.rstn                       (rstn                       ),
 		.enabled_in                 (enabled_instants           ),
 		.wed_request_in             (wed_request_in_latched     ),
+		.cu_configure               (cu_configure_latched       ),
 		.write_response_in          (write_response_in_latched  ),
 		.write_data_0_in            (write_data_0_in            ),
 		.write_data_1_in            (write_data_1_in            ),
@@ -278,7 +289,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				total_size_read_valid <= wed_request_in_latched.valid;
 				cu_command_type_read  <= CMD_PREFETCH_READ;
 
-				if (wed_request_in_latched.wed.afu_config[3])
+				if (cu_configure_latched[3])
 					transaction_type_read <= TOUCH_S;
 				else
 					transaction_type_read <= TOUCH_I;
@@ -377,7 +388,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				total_size_write_valid <= wed_request_in_latched.valid;
 				cu_command_type_write  <= CMD_PREFETCH_WRITE;
 
-				if (wed_request_in_latched.wed.afu_config[9])
+				if (cu_configure_latched[9])
 					transaction_type_write <= TOUCH_M;
 				else
 					transaction_type_write <= TOUCH_I;

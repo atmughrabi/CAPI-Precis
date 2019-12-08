@@ -27,9 +27,8 @@ package WED_PKG;
     } wed_state;
 
     typedef struct packed{
-        logic [0:31] size_send    ; // 4-Bytes
-        logic [0:31] size_recive  ; // 4-Bytes
-        logic [0:31] size3        ; // 4-Bytes
+        logic [0:63] size_send    ; // 4-Bytes
+        logic [0:63] size_recive  ; // 4-Bytes
         logic [0:63] array_send   ; // 8-Bytes
         logic [0:63] array_receive; // 8-Bytes
         logic [0:63] pointer1     ; // 8-Bytes
@@ -44,8 +43,6 @@ package WED_PKG;
         logic [0:63] pointer10    ; // 8-Bytes
         logic [0:63] pointer11    ; // 8-Bytes
         logic [0:63] pointer12    ; // 8-Bytes
-
-        logic [0:31] afu_config   ; // 4-Bytes
     } WED_request;// 108-bytes used from 128-Bytes WED
 
     typedef struct packed{
@@ -59,25 +56,22 @@ package WED_PKG;
 
         WED_request wed;
 
-        wed.size_send               = swap_endianness_word(in[0:31]);               // 4-Bytes
-        wed.size_recive             = swap_endianness_word(in[32:63]);              // 4-Bytes
-        wed.size3                   = swap_endianness_word(in[64:95]);              // 4-Bytes
-
-        wed.array_send              = swap_endianness_double_word(in[96:159]);      // 8-Bytes
-        wed.array_receive           = swap_endianness_double_word(in[160:223]);     // 8-Bytes
-        wed.pointer1                = swap_endianness_double_word(in[224:287]);     // 8-Bytes
-        wed.pointer2                = swap_endianness_double_word(in[288:351]);     // 8-Bytes
-        wed.pointer3                = swap_endianness_double_word(in[352:415]);     // 8-Bytes
-        wed.pointer4                = swap_endianness_double_word(in[416:479]);     // 8-Bytes
-        wed.pointer5                = swap_endianness_double_word(in[480:543]);     // 8-Bytes
-        wed.pointer6                = swap_endianness_double_word(in[544:607]);     // 8-Bytes
-        wed.pointer7                = swap_endianness_double_word(in[608:671]);     // 8-Bytes
-        wed.pointer8                = swap_endianness_double_word(in[672:735]);     // 8-Bytes
-        wed.pointer9                = swap_endianness_double_word(in[736:799]);     // 8-Bytes
-        wed.pointer10               = swap_endianness_double_word(in[800:863]);     // 8-Bytes
-        wed.pointer11               = swap_endianness_double_word(in[864:927]);     // 8-Bytes
-        wed.pointer12               = swap_endianness_double_word(in[928:991]);     // 8-Bytes
-        wed.afu_config              = swap_endianness_word(in[992:1023]);           // 4-Bytes
+        wed.size_send               = swap_endianness_double_word(in[0:63]);        // 8-Bytes
+        wed.size_recive             = swap_endianness_double_word(in[64:127]);      // 8-Bytes
+        wed.array_send              = swap_endianness_double_word(in[128:191]);     // 8-Bytes
+        wed.array_receive           = swap_endianness_double_word(in[192:255]);     // 8-Bytes
+        wed.pointer1                = swap_endianness_double_word(in[256:319]);     // 8-Bytes
+        wed.pointer2                = swap_endianness_double_word(in[320:383]);     // 8-Bytes
+        wed.pointer3                = swap_endianness_double_word(in[384:447]);     // 8-Bytes
+        wed.pointer4                = swap_endianness_double_word(in[448:511]);     // 8-Bytes
+        wed.pointer5                = swap_endianness_double_word(in[512:575]);     // 8-Bytes
+        wed.pointer6                = swap_endianness_double_word(in[576:639]);     // 8-Bytes
+        wed.pointer7                = swap_endianness_double_word(in[640:703]);     // 8-Bytes
+        wed.pointer8                = swap_endianness_double_word(in[704:767]);     // 8-Bytes
+        wed.pointer9                = swap_endianness_double_word(in[768:831]);     // 8-Bytes
+        wed.pointer10               = swap_endianness_double_word(in[832:895]);     // 8-Bytes
+        wed.pointer11               = swap_endianness_double_word(in[896:959]);     // 8-Bytes
+        wed.pointer12               = swap_endianness_double_word(in[960:1023]);    // 8-Bytes
 
         return wed;
 

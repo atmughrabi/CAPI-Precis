@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : mmio.sv
 // Create : 2019-09-26 15:21:36
-// Revise : 2019-09-26 15:21:36
+// Revise : 2019-12-08 07:44:27
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
 
@@ -17,20 +17,21 @@ import CAPI_PKG::*;
 import AFU_PKG::*;
 
 module mmio (
-  input  logic                      clock                      ,
-  input  logic                      rstn                       ,
-  input  logic [0:63]               report_errors              ,
-  input  logic [0:63]               algorithm_status           ,
-  input  logic [0:63]               algorithm_status_done      ,
-  input  logic [0:63]               algorithm_running          ,
-  input  logic [0:63]               afu_status                 ,
-  input  ResponseStatistcsInterface response_statistics        ,
-  output logic [0:63]               algorithm_requests         ,
-  input  MMIOInterfaceInput         mmio_in                    ,
-  output MMIOInterfaceOutput        mmio_out                   ,
-  output logic [ 0:1]               mmio_errors                ,
-  output logic                      report_errors_ack          , // each register has an ack
-  output logic                      report_algorithm_status_ack, // each register has an ack
+  input  logic                      clock              ,
+  input  logic                      rstn               ,
+  input  logic [0:63]               report_errors      ,
+  input  logic [0:63]               cu_return          ,
+  input  logic [0:63]               cu_return_done     ,
+  input  logic [0:63]               cu_status          ,
+  input  logic [0:63]               afu_status         ,
+  input  ResponseStatistcsInterface response_statistics,
+  output logic [0:63]               afu_configure      ,
+  output logic [0:63]               cu_configure       ,
+  input  MMIOInterfaceInput         mmio_in            ,
+  output MMIOInterfaceOutput        mmio_out           ,
+  output logic [ 0:1]               mmio_errors        ,
+  output logic                      report_errors_ack  , // each register has an ack
+  output logic                      cu_return_done_ack , // each register has an ack
   output logic                      reset_mmio
 );
 
@@ -49,36 +50,36 @@ module mmio (
   logic mmio_write_latched;
   logic mmio_write        ;
 
-  logic cfg_read_latched                   ;
-  logic cfg_read                           ;
-  logic cfg_write_latched                  ;
-  logic cfg_write                          ;
-  logic doubleword_latched                 ;
-  logic doubleword                         ;
-  logic report_errors_ack_latched          ;
-  logic report_algorithm_status_ack_latched;
+  logic cfg_read_latched          ;
+  logic cfg_read                  ;
+  logic cfg_write_latched         ;
+  logic cfg_write                 ;
+  logic doubleword_latched        ;
+  logic doubleword                ;
+  logic report_errors_ack_latched ;
+  logic cu_return_done_ack_latched;
 
-  logic [0:23]       address                      ;
-  logic [0:23]       address_latched              ;
-  logic [0:63]       data_in                      ;
-  logic [0:63]       data_in_latched              ;
-  logic [0:63]       data_out                     ;
-  logic [0:63]       data_cfg                     ;
-  logic              data_out_parity              ;
-  logic              data_in_parity_link          ;
-  logic              data_in_parity               ;
-  logic              address_parity_link          ;
-  logic              address_parity               ;
-  logic              data_ack                     ;
-  logic [0:63]       report_errors_latched        ;
-  logic [0:63]       algorithm_status_latched     ;
-  logic [0:63]       algorithm_status_done_latched;
-  logic [0:63]       afu_status_latched           ;
-  logic [0:63]       algorithm_running_latched    ;
-  logic [0:63]       algorithm_status_mmio_ack    ;
-  logic [0:63]       report_errors_mmio_ack       ;
-  logic              mmio_in_latched_valid        ;
-  MMIOInterfaceInput mmio_in_latched              ;
+  logic [0:23]       address               ;
+  logic [0:23]       address_latched       ;
+  logic [0:63]       data_in               ;
+  logic [0:63]       data_in_latched       ;
+  logic [0:63]       data_out              ;
+  logic [0:63]       data_cfg              ;
+  logic              data_out_parity       ;
+  logic              data_in_parity_link   ;
+  logic              data_in_parity        ;
+  logic              address_parity_link   ;
+  logic              address_parity        ;
+  logic              data_ack              ;
+  logic [0:63]       report_errors_latched ;
+  logic [0:63]       cu_return_latched     ;
+  logic [0:63]       cu_return_done_latched;
+  logic [0:63]       afu_status_latched    ;
+  logic [0:63]       cu_status_latched     ;
+  logic [0:63]       cu_return_mmio_ack    ;
+  logic [0:63]       report_errors_mmio_ack;
+  logic              mmio_in_latched_valid ;
+  MMIOInterfaceInput mmio_in_latched       ;
 
   ResponseStatistcsInterface response_statistics_out_latched;
   // Set our AFU Descriptor values refer to page
@@ -114,19 +115,19 @@ module mmio (
 
     if(~rstn) begin
       report_errors_latched           <= 0;
-      algorithm_status_latched        <= 0;
-      algorithm_status_done_latched   <= 0;
+      cu_return_latched               <= 0;
+      cu_return_done_latched          <= 0;
       afu_status_latched              <= 0;
-      algorithm_running_latched       <= 0;
+      cu_status_latched               <= 0;
       response_statistics_out_latched <= 0;
 
     end else  begin
 
       report_errors_latched           <= report_errors;
-      algorithm_status_done_latched   <= algorithm_status_done;
-      algorithm_status_latched        <= algorithm_status;
+      cu_return_done_latched          <= cu_return_done;
+      cu_return_latched               <= cu_return;
       afu_status_latched              <= afu_status;
-      algorithm_running_latched       <= algorithm_running;
+      cu_status_latched               <= cu_status;
       response_statistics_out_latched <= response_statistics;
 
     end
@@ -187,37 +188,43 @@ module mmio (
     data_ack <= cfg_read_latched || cfg_write_latched || mmio_read_latched || mmio_write_latched;
   end
 
-  assign report_algorithm_status_ack_latched = (|algorithm_status_mmio_ack);
-  assign report_errors_ack_latched           = (|report_errors_mmio_ack);
+  assign cu_return_done_ack_latched = (|cu_return_mmio_ack);
+  assign report_errors_ack_latched  = (|report_errors_mmio_ack);
 
 // Write DATA LOGIC
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
-      algorithm_requests        <= 64'h0000_0000_0000_0000;
-      algorithm_status_mmio_ack <= 64'h0000_0000_0000_0000;
-      report_errors_mmio_ack    <= 64'h0000_0000_0000_0000;
+      cu_configure           <= 64'h0000_0000_0000_0000;
+      afu_configure          <= 64'h0000_0000_0000_0000;
+      cu_return_mmio_ack     <= 64'h0000_0000_0000_0000;
+      report_errors_mmio_ack <= 64'h0000_0000_0000_0000;
     end else begin
       if (mmio_write_latched) begin
         case (address_latched)
-          ALGO_REQUEST : begin
-            algorithm_requests <= data_in_latched;
+          CU_CONFIGURE : begin
+            cu_configure <= data_in_latched;
           end
-          ALGO_STATUS_DONE_ACK : begin
-            algorithm_status_mmio_ack <= data_in_latched;
+          AFU_CONFIGURE : begin
+            afu_configure <= data_in_latched;
+          end
+          CU_RETURN_DONE_ACK : begin
+            cu_return_mmio_ack <= data_in_latched;
           end
           ERROR_REG_ACK : begin
             report_errors_mmio_ack <= data_in_latched;
           end
           default : begin
-            algorithm_requests        <= 64'h0000_0000_0000_0000;
-            algorithm_status_mmio_ack <= 64'h0000_0000_0000_0000;
-            report_errors_mmio_ack    <= 64'h0000_0000_0000_0000;
+            cu_configure           <= 64'h0000_0000_0000_0000;
+            afu_configure          <= 64'h0000_0000_0000_0000;
+            cu_return_mmio_ack     <= 64'h0000_0000_0000_0000;
+            report_errors_mmio_ack <= 64'h0000_0000_0000_0000;
           end
         endcase
       end else begin
-        algorithm_requests        <= 64'h0000_0000_0000_0000;
-        algorithm_status_mmio_ack <= 64'h0000_0000_0000_0000;
-        report_errors_mmio_ack    <= 64'h0000_0000_0000_0000;
+        cu_configure           <= 64'h0000_0000_0000_0000;
+        afu_configure          <= 64'h0000_0000_0000_0000;
+        cu_return_mmio_ack     <= 64'h0000_0000_0000_0000;
+        report_errors_mmio_ack <= 64'h0000_0000_0000_0000;
       end
     end
   end
@@ -226,8 +233,6 @@ module mmio (
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
       data_out <= 64'h0000_0000_0000_0000;
-      // report_errors_ack_latched           <= 1'b0;
-      // report_algorithm_status_ack_latched <= 1'b0;
     end else begin
       if(cfg_read_latched) begin
         if(doubleword_latched) begin
@@ -239,23 +244,20 @@ module mmio (
         end
       end else if (mmio_read_latched) begin
         case (address_latched)
-          ALGO_STATUS : begin
-            data_out <= algorithm_status_latched;
-            // report_algorithm_status_ack_latched <= (|algorithm_status_latched);
+          CU_RETURN : begin
+            data_out <= cu_return_latched;
           end
-          ALGO_STATUS_DONE : begin
-            data_out <= algorithm_status_done_latched;
-            // report_algorithm_status_ack_latched <= (|algorithm_status_done_latched);
+          CU_RETURN_DONE : begin
+            data_out <= cu_return_done_latched;
           end
           ERROR_REG : begin
             data_out <= report_errors_latched;
-            // report_errors_ack_latched <= (|report_errors_latched);
           end
           AFU_STATUS : begin
             data_out <= afu_status_latched;
           end
-          ALGO_RUNNING : begin
-            data_out <= algorithm_running_latched;
+          CU_STATUS : begin
+            data_out <= cu_status_latched;
           end
           DONE_RESTART_COUNT_REG : begin
             data_out <= response_statistics_out_latched.DONE_RESTART_count;
@@ -304,24 +306,20 @@ module mmio (
           end
           default : begin
             data_out <= data_out;
-            // report_errors_ack_latched           <= 1'b0;
-            // report_algorithm_status_ack_latched <= 1'b0;
           end
         endcase
       end else begin
         data_out <= data_out;
-        // report_errors_ack_latched           <= 1'b0;
-        // report_algorithm_status_ack_latched <= 1'b0;
       end
     end
   end
 
   always_ff @(posedge clock) begin
-    mmio_out.ack                <= data_ack;
-    mmio_out.data               <= data_out;
-    mmio_out.data_parity        <= data_out_parity;
-    report_errors_ack           <= report_errors_ack_latched;
-    report_algorithm_status_ack <= report_algorithm_status_ack_latched;
+    mmio_out.ack         <= data_ack;
+    mmio_out.data        <= data_out;
+    mmio_out.data_parity <= data_out_parity;
+    report_errors_ack    <= report_errors_ack_latched;
+    cu_return_done_ack   <= cu_return_done_ack_latched;
   end
 
   parity #(.BITS(64)) mmio_data_out_parity_instant (

@@ -23,6 +23,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	input  logic                         rstn                       ,
 	input  logic                         enabled_in                 ,
 	input  WEDInterface                  wed_request_in             ,
+	input  logic [                 0:63] cu_configure               ,
 	input  ResponseBufferLine            read_response_in           ,
 	input  ReadWriteDataLine             read_data_0_in             ,
 	input  ReadWriteDataLine             read_data_1_in             ,
@@ -43,6 +44,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	ResponseBufferLine read_response_in_latched;
 	ReadWriteDataLine  read_data_0_in_latched  ;
 	ReadWriteDataLine  read_data_1_in_latched  ;
+	logic [0:63]       cu_configure_latched    ;
 
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done_latched;
 	logic                         enabled                      ;
@@ -102,11 +104,16 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			read_response_in_latched <= 0;
 			read_data_0_in_latched   <= 0;
 			read_data_1_in_latched   <= 0;
+			cu_configure_latched     <= 0;
 		end else begin
 			if(enabled)begin
 				read_response_in_latched <= read_response_in;
 				read_data_0_in_latched   <= read_data_0_in;
 				read_data_1_in_latched   <= read_data_1_in;
+
+				if((|cu_configure))
+					cu_configure_latched <= cu_configure;
+
 			end
 		end
 	end
@@ -146,7 +153,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 					wed_request_in_latched.wed.size_send   <= wed_request_in_latched.wed.size_send - CACHELINE_ARRAY_NUM;
 					read_command_out_latched.cmd.real_size <= CACHELINE_ARRAY_NUM;
 
-					if (wed_request_in_latched.wed.afu_config[3]) begin
+					if (cu_configure_latched[3]) begin
 						read_command_out_latched.command <= READ_CL_S;
 						read_command_out_latched.size    <= 12'h080;
 					end else begin
@@ -158,7 +165,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 					wed_request_in_latched.wed.size_send   <= 0;
 					read_command_out_latched.cmd.real_size <= wed_request_in_latched.wed.size_send;
 
-					if (wed_request_in_latched.wed.afu_config[3]) begin
+					if (cu_configure_latched[3]) begin
 						read_command_out_latched.command <= READ_CL_S;
 						read_command_out_latched.size    <= 12'h080;
 					end else begin
@@ -174,8 +181,8 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				read_command_out_latched.cmd.address_offest   <= next_offest;
 				read_command_out_latched.cmd.array_struct     <= READ_DATA;
 
-				read_command_out_latched.cmd.abt <= map_CABT(wed_request_in_latched.wed.afu_config[0:2]);
-				read_command_out_latched.abt     <= map_CABT(wed_request_in_latched.wed.afu_config[0:2]);
+				read_command_out_latched.cmd.abt <= map_CABT(cu_configure_latched[0:2]);
+				read_command_out_latched.abt     <= map_CABT(cu_configure_latched[0:2]);
 
 
 

@@ -33,13 +33,101 @@ export TEST_DIR         = tests
 #contains the main for the app processing framework
 export MAIN_DIR         = main
 
+
+##############################################
+# CAPI FPGA AFU PERFORMANCE CONFIG           #
+##############################################
+
+# STRICT 0b000
+# ABORT  0b001
+# PAGE   0b010
+# PREF   0b011
+# SPEC   0b111
+
+# READ_CL_S    0b1
+# READ_CL_NA   0b0
+# WRITE_MS     0b1
+# WRITE_NA     0b0
+
+# // cu_read_engine_control            5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 00000 00000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b00000000000000000000000000000000
+
+# // cu_read_engine_control            5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 10000 10000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b10000100000000000000000000000000
+
+# // cu_read_engine_control            5-bits PREF | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11000 11000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b11000110000000000000000000000000
+
+# // cu_read_engine_control            5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11000 11000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b01000010000000000000000000000000
+
+# // cu_read_engine_control            5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11000 11000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b11100111000000000000000000000000
+
+##############################################
+# With caches                                #
+##############################################
+
+# // cu_read_engine_control            5-bits STRICT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 00010 00001 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b00010000010000000000000000000000
+
+# // cu_read_engine_control            5-bits ABORT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 10010 10001 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b10010100010000000000000000000000
+
+# // cu_read_engine_control            5-bits PREF | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11010 11001 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b11010110010000000000000000000000
+
+# // cu_read_engine_control            5-bits PAGE | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 01010 01001 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b01010010010000000000000000000000
+
+# // cu_read_engine_control            5-bits SPEC | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11110 11101 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b11110111010000000000000000000000
+
+export CU_CONFIG_MODE?=0x01 
+export CU_CONFIG_GENERIC=$(CU_CONFIG_MODE)
+
+# export AFU_CONFIG_MODE=0x01
+# export AFU_CONFIG_MODE=0x02
+export AFU_CONFIG_MODE=0x03
+export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
+
 #########################################################
 #                RUN  ARGUMENTS                         #
 #########################################################
 
-export NUM_THREADS  = 8
-LHS=512 
-RHS=512
+export NUM_THREADS = 8
+LHS=32 
+RHS=128
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
@@ -52,78 +140,8 @@ export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 #1GB
 # export SIZE = 268435456
 
-export ARGS = -n $(NUM_THREADS) -s $(SIZE)
-
-##############################################
-# CAPI FPGA AFU PERFORMANCE CONFIG           #
-##############################################
-
-# // cu_read_engine_control            5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 00000 00000 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b00000000000000000000000000000000
-
-# // cu_read_engine_control            5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 10000 10000 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b10000100000000000000000000000000
-
-# // cu_read_engine_control            5-bits PREF | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 11000 11000 00000 00000 00000 00000 00
-export AFU_CONFIG_STRICT_1=0b11000110000000000000000000000000
-
-# // cu_read_engine_control            5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 11000 11000 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b01000010000000000000000000000000
-
-# // cu_read_engine_control            5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 11000 11000 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b11100111000000000000000000000000
-
-##############################################
-# With caches                                #
-##############################################
-
-# // cu_read_engine_control            5-bits STRICT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 00010 00001 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b00010000010000000000000000000000
-
-# // cu_read_engine_control            5-bits ABORT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 10010 10001 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b10010100010000000000000000000000
-
-# // cu_read_engine_control            5-bits PREF | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 11010 11001 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b11010110010000000000000000000000
-
-# // cu_read_engine_control            5-bits PAGE | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 01010 01001 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b01010010010000000000000000000000
-
-# // cu_read_engine_control            5-bits SPEC | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
-# // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
-
-# // 0b 11110 11101 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b11110111010000000000000000000000
-
- 
-export AFU_CONFIG_GENERIC=$(AFU_CONFIG_STRICT_1)
+##################################################
+export ARGS = -n $(NUM_THREADS) -s $(SIZE) -a $(AFU_CONFIG_GENERIC) -c $(CU_CONFIG_GENERIC)
 ##################################################
 
 APP_DIR                 = .

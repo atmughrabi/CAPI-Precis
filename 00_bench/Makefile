@@ -45,16 +45,17 @@ NUM_THREADS     ?= 4
 
 SIZE ?= 256
 
-ARGS ?= -n $(NUM_THREADS) -s $(SIZE)
-
-
 # // cu_read_engine_control          5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [27:31] [4] [3] [0:2]
 # // cu_write_engine_control         5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [22:26] [9] [8] [5:7]
 
- AFU_CONFIG_STRICT_1?=0x00000000  
+CU_CONFIG_MODE?=0x01 
+CU_CONFIG_GENERIC?=$(CU_CONFIG_MODE)
 
- 
- AFU_CONFIG_GENERIC?=$(AFU_CONFIG_STRICT_1)
+AFU_CONFIG_MODE?=0x01
+
+AFU_CONFIG_GENERIC?=$(AFU_CONFIG_MODE)
+
+ARGS ?= -n $(NUM_THREADS) -s $(SIZE) -a $(AFU_CONFIG_GENERIC) -c $(CU_CONFIG_GENERIC)
 
 ##################################################
 ##################################################

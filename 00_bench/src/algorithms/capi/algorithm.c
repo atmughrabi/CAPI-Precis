@@ -30,36 +30,40 @@
 
 #include "algorithm.h"
 
-struct DataArrays *newDataArrays(struct Arguments *arguments){
+struct DataArrays *newDataArrays(struct Arguments *arguments)
+{
 
-	struct DataArrays *dataArrays = (struct DataArrays *) my_malloc(sizeof(struct DataArrays));
+    struct DataArrays *dataArrays = (struct DataArrays *) my_malloc(sizeof(struct DataArrays));
 
-	dataArrays->size = arguments->size;
+    dataArrays->size = arguments->size;
 
-	dataArrays->array_send = (__u32 *) my_malloc(sizeof(__u32)* (dataArrays->size));
-	dataArrays->array_receive = (__u32 *) my_malloc(sizeof(__u32)* (dataArrays->size));
+    dataArrays->array_send = (__u32 *) my_malloc(sizeof(__u32) * (dataArrays->size));
+    dataArrays->array_receive = (__u32 *) my_malloc(sizeof(__u32) * (dataArrays->size));
 
-	return dataArrays;
+    return dataArrays;
 
 }
 
-void freeDataArrays(struct DataArrays *dataArrays){
+void freeDataArrays(struct DataArrays *dataArrays)
+{
 
-	if(dataArrays){
-		if(dataArrays->array_send)
-			free(dataArrays->array_send);
-		if(dataArrays->array_receive)
-			free(dataArrays->array_receive);
-		free(dataArrays);
-	}
+    if(dataArrays)
+    {
+        if(dataArrays->array_send)
+            free(dataArrays->array_send);
+        if(dataArrays->array_receive)
+            free(dataArrays->array_receive);
+        free(dataArrays);
+    }
 }
 
 
-void initializeDataArrays(struct DataArrays *dataArrays){
+void initializeDataArrays(struct DataArrays *dataArrays)
+{
 
-	__u32 i;
+    __u64 i;
 
-	#pragma omp parallel for
+    #pragma omp parallel for
     for(i = 0; i < dataArrays->size; i++)
     {
         dataArrays->array_send[i] = generateRandInt(mt19937var);
@@ -68,28 +72,31 @@ void initializeDataArrays(struct DataArrays *dataArrays){
 }
 
 
-__u32 compareDataArrays(struct DataArrays *dataArrays){
+__u64 compareDataArrays(struct DataArrays *dataArrays)
+{
 
-	__u32 missmatch = 0;
-	__u32 i;
+    __u64 missmatch = 0;
+    __u64 i;
 
-	#pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
+    #pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
     for(i = 0; i < dataArrays->size; i++)
-    {	
-        if(dataArrays->array_receive[i] != dataArrays->array_send[i]){
-        	printf("[%u] %u != %u\n",i , dataArrays->array_receive[i], dataArrays->array_send[i] );
-        	missmatch ++;
+    {
+        if(dataArrays->array_receive[i] != dataArrays->array_send[i])
+        {
+            printf("[%llu] %u != %u\n", i, dataArrays->array_receive[i], dataArrays->array_send[i] );
+            missmatch ++;
         }
     }
 
     return missmatch;
 }
 
-void copyDataArrays(struct DataArrays *dataArrays){
+void copyDataArrays(struct DataArrays *dataArrays, struct Arguments *arguments)
+{
 
-	struct cxl_afu_h *afu;
+    struct cxl_afu_h *afu;
 
-	// ********************************************************************************************
+    // ********************************************************************************************
     // ***************                  MAP CSR DataStructure                        **************
     // ********************************************************************************************
 
@@ -100,23 +107,24 @@ void copyDataArrays(struct DataArrays *dataArrays){
     // ********************************************************************************************
 
     setupAFU(&afu, wed);
-    
-    struct AFUStatus afu_status = {0};
-    afu_status.num_cu = numThreads; // non zero CU triggers the AFU to work
-    afu_status.algo_stop = wed->size_send;
 
-    waitJOBRunning(&afu, &afu_status);
+    struct AFUStatus afu_status = {0};
+    afu_status.afu_config = arguments->afu_config;
+    afu_status.cu_config = arguments->cu_config; // non zero CU triggers the AFU to work
+    afu_status.cu_stop = wed->size_send;
+
+    startAFU(&afu, &afu_status);
 
     // ********************************************************************************************
     // ***************                 START AFU                                     **************
     // ********************************************************************************************
 
-    startAFU(&afu, &afu_status);
+    startCU(&afu, &afu_status);
 
     // ********************************************************************************************
     // ***************                 WAIT AFU                                     **************
     // ********************************************************************************************
- 
+
     waitAFU(&afu, &afu_status);
 
     printMMIO_error(afu_status.error);

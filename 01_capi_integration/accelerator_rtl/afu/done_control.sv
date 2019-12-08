@@ -16,16 +16,16 @@ import GLOBALS_AFU_PKG::*;
 import AFU_PKG::*;
 
 module done_control (
-	input  logic                      clock                      , // Clock
-	input  logic                      rstn                       ,
-	input  logic                      soft_rstn                  ,
-	input  logic                      enabled_in                 ,
-	input  logic [0:63]               algorithm_status           ,
-	input  ResponseStatistcsInterface response_statistics        ,
-	input  logic                      algorithm_done             ,
-	input  logic                      report_algorithm_status_ack,
-	output logic                      reset_done                 ,
-	output logic [0:63]               report_algorithm_status    ,
+	input  logic                      clock                     , // Clock
+	input  logic                      rstn                      ,
+	input  logic                      soft_rstn                 ,
+	input  logic                      enabled_in                ,
+	input  logic [0:63]               cu_return                 ,
+	input  ResponseStatistcsInterface response_statistics       ,
+	input  logic                      cu_done                   ,
+	input  logic                      cu_return_done_ack        ,
+	output logic                      reset_done                ,
+	output logic [0:63]               cu_return_done            ,
 	output ResponseStatistcsInterface report_response_statistics
 );
 
@@ -33,13 +33,13 @@ module done_control (
 	done_state                 current_state, next_state;
 	logic                      done_flag                         ;
 	logic                      enabled                           ;
-	logic [0:63]               report_algorithm_status_latched   ;
+	logic [0:63]               cu_return_done_latched            ;
 	logic                      prev_soft_rstn                    ;
 	logic                      next_soft_rstn                    ;
 	logic                      done_soft_rstn                    ;
 	ResponseStatistcsInterface report_response_statistics_latched;
 
-	assign done_flag = algorithm_done;
+	assign done_flag = cu_done;
 
 
 	////////////////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ module done_control (
 					next_state = DONE_RESET_PENDING;
 			end
 			DONE_MMIO_REQ : begin
-				if(report_algorithm_status_ack)
+				if(cu_return_done_ack)
 					next_state = DONE_IDLE;
 				else
 					next_state = DONE_MMIO_REQ;
@@ -118,16 +118,16 @@ module done_control (
 	always_ff @(posedge clock) begin
 		case (current_state)
 			DONE_RESET : begin
-				report_algorithm_status            <= 64'b0;
-				report_algorithm_status_latched    <= 64'b0;
+				cu_return_done                     <= 64'b0;
+				cu_return_done_latched             <= 64'b0;
 				report_response_statistics_latched <= 0;
 				report_response_statistics         <= 0;
 				reset_done                         <= 1'b1;
 			end
 			DONE_IDLE : begin
-				report_algorithm_status            <= 64'b0;
+				cu_return_done                     <= 64'b0;
 				report_response_statistics         <= 0;
-				report_algorithm_status_latched    <= algorithm_status;
+				cu_return_done_latched             <= cu_return;
 				report_response_statistics_latched <= response_statistics;
 				reset_done                         <= 1'b1;
 			end
@@ -138,7 +138,7 @@ module done_control (
 				reset_done <= 1'b1;
 			end
 			DONE_MMIO_REQ : begin
-				report_algorithm_status    <= report_algorithm_status_latched;
+				cu_return_done             <= cu_return_done_latched;
 				report_response_statistics <= report_response_statistics_latched;
 			end
 

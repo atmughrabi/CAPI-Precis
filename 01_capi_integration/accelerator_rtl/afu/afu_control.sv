@@ -26,6 +26,7 @@ module afu_control #(
 	input  logic                         clock                      , // Clock
 	input  logic                         rstn                       ,
 	input  logic                         enabled_in                 ,
+	input  logic [0:63]                  afu_configure              ,
 	input  CommandBufferLine             prefetch_read_command_in   ,
 	input  CommandBufferLine             prefetch_write_command_in  ,
 	input  CommandBufferLine             read_command_in            ,
@@ -36,6 +37,7 @@ module afu_control #(
 	input  BufferInterfaceInput          buffer_in                  ,
 	input  ReadWriteDataLine             write_data_0_in            ,
 	input  ReadWriteDataLine             write_data_1_in            ,
+	output logic [0:63]                  afu_status                 ,
 	output ReadWriteDataLine             wed_data_0_out             ,
 	output ReadWriteDataLine             wed_data_1_out             ,
 	output ReadWriteDataLine             read_data_0_out            ,
@@ -45,8 +47,8 @@ module afu_control #(
 	output ResponseBufferLine            prefetch_write_response_out,
 	output ResponseBufferLine            write_response_out         ,
 	output ResponseBufferLine            wed_response_out           ,
-	output logic [0:6]                   command_response_error     ,
-	output logic [0:1]                   data_read_error            ,
+	output logic [ 0:6]                  command_response_error     ,
+	output logic [ 0:1]                  data_read_error            ,
 	output logic                         data_write_error           ,
 	output BufferInterfaceOutput         buffer_out                 ,
 	output CommandInterfaceOutput        command_out                ,
@@ -133,11 +135,23 @@ module afu_control #(
 	CommandTagLine read_tag_id     ;
 	CommandTagLine command_tag_id  ;
 
-	CommandBufferLine        command_arbiter_out                  ;
-	logic [NUM_REQUESTS-1:0] requests                             ;
-	logic [NUM_REQUESTS-1:0] ready                                ;
-	CommandBufferLine        command_buffer_in  [0:NUM_REQUESTS-1];
-	logic                    valid_request                        ;
+	CommandBufferLine command_arbiter_out            ;
+	CommandBufferLine command_arbiter_out_fixed      ;
+	CommandBufferLine command_arbiter_out_round_robin;
+
+	logic [NUM_REQUESTS-1:0] requests            ;
+	logic [NUM_REQUESTS-1:0] requests_fixed      ;
+	logic [NUM_REQUESTS-1:0] requests_round_robin;
+
+	logic [NUM_REQUESTS-1:0] ready            ;
+	logic [NUM_REQUESTS-1:0] ready_fixed      ;
+	logic [NUM_REQUESTS-1:0] ready_round_robin;
+
+	CommandBufferLine command_buffer_in            [0:NUM_REQUESTS-1];
+	CommandBufferLine command_buffer_in_fixed      [0:NUM_REQUESTS-1];
+	CommandBufferLine command_buffer_in_round_robin[0:NUM_REQUESTS-1];
+
+	logic valid_request;
 
 	logic enabled;
 
@@ -163,11 +177,12 @@ module afu_control #(
 
 	ResponseControlInterfaceOut response_control_out_latched_S[0:RSP_DELAY-1];
 
-	logic [0:7] total_credits         ;
-	logic [0:7] read_credits          ;
-	logic [0:7] write_credits         ;
-	logic [0:7] prefetch_read_credits ;
-	logic [0:7] prefetch_write_credits;
+	logic [ 0:7] total_credits         ;
+	logic [ 0:7] read_credits          ;
+	logic [ 0:7] write_credits         ;
+	logic [ 0:7] prefetch_read_credits ;
+	logic [ 0:7] prefetch_write_credits;
+	logic [0:63] afu_configure_latched ;
 
 ////////////////////////////////////////////////////////////////////////////
 //drive output response stats
@@ -184,6 +199,20 @@ module afu_control #(
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			afu_status            <= 0;
+			afu_configure_latched <= 0;
+		end else begin
+			if(enabled) begin
+				if((|afu_configure)) begin
+					afu_status            <= afu_configure;
+					afu_configure_latched <= afu_configure;
+				end
+			end
+		end
+	end
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
@@ -242,7 +271,7 @@ module afu_control #(
 	response_statistics_control response_statistics_control_instant (
 		.clock                  (clock                          ),
 		.rstn                   (rstn                           ),
-		.enabled_in             (enabled_in                     ),
+		.enabled_in             (enabled                        ),
 		.response               (response_filtered_stats_latched),
 		.response_tag_id_in     (response_tag_id                ),
 		.response_statistics_out(response_statistics_out        )
@@ -301,38 +330,46 @@ module afu_control #(
 //Buffer arbitration logic
 ////////////////////////////////////////////////////////////////////////////
 
-	generate if(PRIORITY_MODE) begin
-
-			round_robin_priority_arbiter_N_input_1_ouput #(
-				.NUM_REQUESTS(NUM_REQUESTS            ),
-				.WIDTH       ($bits(CommandBufferLine))
-			) round_robin_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
-				.clock      (clock              ),
-				.rstn       (rstn               ),
-				.enabled    (enabled            ),
-				.buffer_in  (command_buffer_in  ),
-				.requests   (requests           ),
-				.arbiter_out(command_arbiter_out),
-				.ready      (ready              )
-			);
-
+	always_comb begin
+		if(afu_configure_latched[63]) begin
+			command_buffer_in_round_robin = command_buffer_in;
+			requests_round_robin          = requests;
+			command_arbiter_out           = command_arbiter_out_round_robin;
+			ready                         = ready_round_robin;
 		end else begin
-
-			fixed_priority_arbiter_N_input_1_ouput #(
-				.NUM_REQUESTS(NUM_REQUESTS            ),
-				.WIDTH       ($bits(CommandBufferLine))
-			) fixed_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
-				.clock      (clock              ),
-				.rstn       (rstn               ),
-				.enabled    (enabled            ),
-				.buffer_in  (command_buffer_in  ),
-				.requests   (requests           ),
-				.arbiter_out(command_arbiter_out),
-				.ready      (ready              )
-			);
-
+			command_buffer_in_fixed = command_buffer_in;
+			requests_fixed          = requests;
+			command_arbiter_out     = command_arbiter_out_fixed;
+			ready                   = ready_fixed;
 		end
-	endgenerate
+	end
+
+	round_robin_priority_arbiter_N_input_1_ouput #(
+		.NUM_REQUESTS(NUM_REQUESTS            ),
+		.WIDTH       ($bits(CommandBufferLine))
+	) round_robin_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
+		.clock      (clock                    ),
+		.rstn       (rstn                     ),
+		.enabled    (enabled                  ),
+		.buffer_in  (command_buffer_in_fixed  ),
+		.requests   (requests_fixed           ),
+		.arbiter_out(command_arbiter_out_fixed),
+		.ready      (ready_fixed              )
+	);
+
+	fixed_priority_arbiter_N_input_1_ouput #(
+		.NUM_REQUESTS(NUM_REQUESTS            ),
+		.WIDTH       ($bits(CommandBufferLine))
+	) fixed_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
+		.clock      (clock                          ),
+		.rstn       (rstn                           ),
+		.enabled    (enabled                        ),
+		.buffer_in  (command_buffer_in_round_robin  ),
+		.requests   (requests_round_robin           ),
+		.arbiter_out(command_arbiter_out_round_robin),
+		.ready      (ready_round_robin              )
+	);
+
 
 
 ////////////////////////////////////////////////////////////////////////////

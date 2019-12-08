@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cached_afu.sv
 // Create : 2019-09-26 15:20:40
-// Revise : 2019-12-07 23:11:39
+// Revise : 2019-12-08 07:44:21
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
 
@@ -35,25 +35,26 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 
   // logic jdone;
 
-  logic [0:NUM_EXTERNAL_RESETS-1] external_rstn          ;
-  logic [                    0:1] job_errors             ;
-  logic [                    0:1] mmio_errors            ;
-  logic [                    0:1] data_read_error        ;
-  logic                           data_write_error       ;
-  logic [                    0:6] command_response_error ;
-  logic [                   0:63] external_errors        ;
-  logic [                   0:63] report_errors          ;
-  logic [                   0:63] algorithm_status       ;
-  logic [                   0:63] report_algorithm_status;
-  logic [                   0:63] algorithm_requests     ;
-  logic                           report_errors_ack      ;
-  logic                           reset_afu              ;
-  logic                           reset_afu_soft         ;
-  logic                           algorithm_done         ;
+  logic [0:NUM_EXTERNAL_RESETS-1] external_rstn         ;
+  logic [                    0:1] job_errors            ;
+  logic [                    0:1] mmio_errors           ;
+  logic [                    0:1] data_read_error       ;
+  logic                           data_write_error      ;
+  logic [                    0:6] command_response_error;
+  logic [                   0:63] external_errors       ;
+  logic [                   0:63] report_errors         ;
+  logic [                   0:63] cu_return             ;
+  logic [                   0:63] cu_return_done        ;
+  logic [                   0:63] cu_configure          ;
+  logic [                   0:63] afu_configure         ;
+  logic                           report_errors_ack     ;
+  logic                           reset_afu             ;
+  logic                           reset_afu_soft        ;
+  logic                           cu_done               ;
 
-  logic combined_reset_afu         ;
-  logic reset_done                 ;
-  logic report_algorithm_status_ack;
+  logic combined_reset_afu;
+  logic reset_done        ;
+  logic cu_return_done_ack;
 
   CommandBufferLine read_command_out          ;
   CommandBufferLine prefetch_read_command_out ;
@@ -85,13 +86,12 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
   logic                      enabled                   ;
   ResponseInterface          response_latched          ;
   logic [0:63]               afu_status                ;
-  logic [0:63]               algorithm_running         ;
+  logic [0:63]               cu_status                 ;
   ResponseStatistcsInterface response_statistics       ;
   ResponseStatistcsInterface report_response_statistics;
 
   always_ff @(posedge clock) begin
     combined_reset_afu <= reset_afu & reset_afu_soft;
-    afu_status         <= {63'b0,wed.valid};
   end
 
   // logic [0:7] restart_counter;
@@ -139,17 +139,17 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 ////////////////////////////////////////////////////////////////////////////
 
   done_control done_control_instant (
-    .clock                      (clock                      ),
-    .rstn                       (reset_afu                  ),
-    .soft_rstn                  (reset_afu_soft             ),
-    .enabled_in                 (enabled                    ),
-    .algorithm_status           (algorithm_status           ),
-    .response_statistics        (response_statistics        ),
-    .algorithm_done             (algorithm_done             ),
-    .report_algorithm_status_ack(report_algorithm_status_ack),
-    .reset_done                 (reset_done                 ),
-    .report_algorithm_status    (report_algorithm_status    ),
-    .report_response_statistics (report_response_statistics )
+    .clock                     (clock                     ),
+    .rstn                      (reset_afu                 ),
+    .soft_rstn                 (reset_afu_soft            ),
+    .enabled_in                (enabled                   ),
+    .cu_return                 (cu_return                 ),
+    .response_statistics       (response_statistics       ),
+    .cu_done                   (cu_done                   ),
+    .cu_return_done_ack        (cu_return_done_ack        ),
+    .reset_done                (reset_done                ),
+    .cu_return_done            (cu_return_done            ),
+    .report_response_statistics(report_response_statistics)
   );
 
 ////////////////////////////////////////////////////////////////////////////
@@ -194,6 +194,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .clock                      (clock                      ),
     .rstn                       (combined_reset_afu         ),
     .enabled_in                 (enabled                    ),
+    .afu_configure              (afu_configure              ),
     .prefetch_read_command_in   (prefetch_read_command_out  ),
     .prefetch_write_command_in  (prefetch_write_command_out ),
     .read_command_in            (read_command_out           ),
@@ -204,6 +205,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .buffer_in                  (buffer_in                  ),
     .write_data_0_in            (write_data_0_out           ),
     .write_data_1_in            (write_data_1_out           ),
+    .afu_status                 (afu_status                 ),
     .wed_data_0_out             (wed_data_0_out             ),
     .wed_data_1_out             (wed_data_1_out             ),
     .read_data_0_out            (read_data_0_out            ),
@@ -246,10 +248,10 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .prefetch_read_buffer_status (command_buffer_status.prefetch_read_buffer ),
     .prefetch_write_buffer_status(command_buffer_status.prefetch_write_buffer),
     .write_buffer_status         (command_buffer_status.write_buffer         ),
-    .algorithm_requests          (algorithm_requests                         ),
-    .algorithm_status            (algorithm_status                           ),
-    .algorithm_done              (algorithm_done                             ),
-    .algorithm_running           (algorithm_running                          ),
+    .cu_configure                (cu_configure                               ),
+    .cu_return                   (cu_return                                  ),
+    .cu_done                     (cu_done                                    ),
+    .cu_status                   (cu_status                                  ),
     .read_command_out            (read_command_out                           ),
     .prefetch_read_command_out   (prefetch_read_command_out                  ),
     .prefetch_write_command_out  (prefetch_write_command_out                 ),
@@ -264,21 +266,22 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 ////////////////////////////////////////////////////////////////////////////
 
   mmio mmio_instant (
-    .clock                      (clock                      ),
-    .rstn                       (reset_afu                  ),
-    .report_errors              (report_errors              ),
-    .algorithm_status           (algorithm_status           ),
-    .algorithm_status_done      (report_algorithm_status    ),
-    .algorithm_running          (algorithm_running          ),
-    .afu_status                 (afu_status                 ),
-    .response_statistics        (report_response_statistics ),
-    .algorithm_requests         (algorithm_requests         ),
-    .mmio_in                    (mmio_in                    ),
-    .mmio_out                   (mmio_out                   ),
-    .mmio_errors                (mmio_errors                ),
-    .report_errors_ack          (report_errors_ack          ),
-    .report_algorithm_status_ack(report_algorithm_status_ack),
-    .reset_mmio                 (external_rstn[1]           )
+    .clock              (clock                     ),
+    .rstn               (reset_afu                 ),
+    .report_errors      (report_errors             ),
+    .cu_return          (cu_return                 ),
+    .cu_return_done     (cu_return_done            ),
+    .cu_status          (cu_status                 ),
+    .afu_status         (afu_status                ),
+    .response_statistics(report_response_statistics),
+    .cu_configure       (cu_configure              ),
+    .afu_configure      (afu_configure             ),
+    .mmio_in            (mmio_in                   ),
+    .mmio_out           (mmio_out                  ),
+    .mmio_errors        (mmio_errors               ),
+    .report_errors_ack  (report_errors_ack         ),
+    .cu_return_done_ack (cu_return_done_ack        ),
+    .reset_mmio         (external_rstn[1]          )
   );
 
 ////////////////////////////////////////////////////////////////////////////

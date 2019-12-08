@@ -24,6 +24,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	input  logic                         rstn                       ,
 	input  logic                         enabled_in                 ,
 	input  WEDInterface                  wed_request_in             ,
+	input  logic [                 0:63] cu_configure               ,
 	input  ResponseBufferLine            write_response_in          ,
 	input  ReadWriteDataLine             write_data_0_in            ,
 	input  ReadWriteDataLine             write_data_1_in            ,
@@ -40,6 +41,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	BufferStatus write_data_in_1_buffer_status;
 
 	logic             enabled                  ;
+	logic [0:63]      cu_configure_latched     ;
 	ReadWriteDataLine write_data_0_out_latched ;
 	ReadWriteDataLine write_data_1_out_latched ;
 	CommandBufferLine write_command_out_latched;
@@ -77,9 +79,12 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
 			wed_request_in_latched <= 0;
+			cu_configure_latched   <= 0;
 		end else begin
 			if(enabled) begin
 				wed_request_in_latched <= wed_request_in;
+				if((|cu_configure))
+					cu_configure_latched <= cu_configure;
 			end
 		end
 	end
@@ -149,12 +154,12 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				write_data_1_out_latched.cmd   <= cmd;
 				write_data_1_out_latched.data  <= write_data_1_out_buffer.data ;
 
-				write_data_1_out_latched.cmd.abt  <= map_CABT(wed_request_in_latched.wed.afu_config[5:7]);
-				write_data_0_out_latched.cmd.abt  <= map_CABT(wed_request_in_latched.wed.afu_config[5:7]);
-				write_command_out_latched.cmd.abt <= map_CABT(wed_request_in_latched.wed.afu_config[5:7]);
-				write_command_out_latched.abt     <= map_CABT(wed_request_in_latched.wed.afu_config[5:7]);
+				write_data_1_out_latched.cmd.abt  <= map_CABT(cu_configure_latched[5:7]);
+				write_data_0_out_latched.cmd.abt  <= map_CABT(cu_configure_latched[5:7]);
+				write_command_out_latched.cmd.abt <= map_CABT(cu_configure_latched[5:7]);
+				write_command_out_latched.abt     <= map_CABT(cu_configure_latched[5:7]);
 
-				if (wed_request_in_latched.wed.afu_config[9]) begin
+				if (cu_configure_latched[9]) begin
 					write_command_out_latched.command <= WRITE_MS;
 				end else begin
 					write_command_out_latched.command <= WRITE_NA;

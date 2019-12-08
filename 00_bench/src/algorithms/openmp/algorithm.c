@@ -52,7 +52,7 @@ void freeDataArrays(struct DataArrays *dataArrays){
 
 void initializeDataArrays(struct DataArrays *dataArrays){
 
-	__u32 i;
+	__u64 i;
 
 	#pragma omp parallel for
     for(i = 0; i < dataArrays->size; i++)
@@ -63,16 +63,16 @@ void initializeDataArrays(struct DataArrays *dataArrays){
 }
 
 
-__u32 compareDataArrays(struct DataArrays *dataArrays){
+__u64 compareDataArrays(struct DataArrays *dataArrays){
 
-	__u32 missmatch = 0;
-	__u32 i;
+	__u64 missmatch = 0;
+	__u64 i;
 
 	#pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
     for(i = 0; i < dataArrays->size; i++)
     {
         if(dataArrays->array_receive[i] != dataArrays->array_send[i]){
-        	printf("[%u] %u != %u\n",i , dataArrays->array_receive[i], dataArrays->array_send[i] );
+        	printf("[%llu] %u != %u\n",i , dataArrays->array_receive[i], dataArrays->array_send[i] );
         	missmatch ++;
         }
     }
@@ -80,9 +80,9 @@ __u32 compareDataArrays(struct DataArrays *dataArrays){
     return missmatch;
 }
 
-void copyDataArrays(struct DataArrays *dataArrays){
+void copyDataArrays(struct DataArrays *dataArrays, struct Arguments *arguments){
 
-	__u32 i;
+	__u64 i;
 
 	#pragma omp parallel for
     for(i = 0; i < dataArrays->size; i++)

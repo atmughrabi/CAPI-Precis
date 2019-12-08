@@ -50,33 +50,36 @@ int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed)
 
 }
 
-void waitJOBRunning(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
-{
-    do
-    {
-        cxl_mmio_read64((*afu), AFU_STATUS, &(afu_status->afu_status));
-
-#ifdef  VERBOSE
-        printf("waitJOBRunning %lu \n", (afu_status->afu_status) );
-#endif
-
-    }
-    while(!(afu_status->afu_status));
-}
-
 void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 {
+#ifdef  VERBOSE
+    printf("AFU configuration start status(0x%08lx) \n", (afu_status->afu_status) );
+#endif
     do
     {
-        cxl_mmio_write64((*afu), ALGO_REQUEST, afu_status->num_cu);
-        cxl_mmio_read64((*afu), ALGO_RUNNING, &(afu_status->algo_running));
-
-#ifdef  VERBOSE
-        printf("startAFU %lu \n", (afu_status->algo_running) );
-#endif
-
+        cxl_mmio_write64((*afu), AFU_CONFIGURE, afu_status->afu_config);
+        cxl_mmio_read64((*afu), AFU_STATUS, &(afu_status->afu_status));
     }
-    while(!((afu_status->algo_running)));
+    while(!(afu_status->afu_status));
+#ifdef  VERBOSE
+    printf("AFU configuration done status(0x%08lx) \n", (afu_status->afu_status) );
+#endif
+}
+
+void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
+{
+#ifdef  VERBOSE
+    printf("CU configuration start status(0x%08lx) \n", (afu_status->cu_status) );
+#endif
+    do
+    {
+        cxl_mmio_write64((*afu), CU_CONFIGURE, afu_status->cu_config);
+        cxl_mmio_read64((*afu), CU_STATUS, &(afu_status->cu_status));
+    }
+    while(!((afu_status->cu_status)));
+#ifdef  VERBOSE
+    printf("CU configuration done status(0x%08lx) \n", (afu_status->cu_status) );
+#endif
 }
 
 void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
@@ -86,18 +89,20 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 
     do
     {
-
+        // Poll for errors always
         cxl_mmio_read64((*afu), ERROR_REG, &(afu_status->error));
         cxl_mmio_write64((*afu), ERROR_REG_ACK, afu_status->error);
 
-        cxl_mmio_read64((*afu), ALGO_STATUS_DONE, &(afu_status->algo_status_done));
+        // read final return result
+        cxl_mmio_read64((*afu), CU_RETURN_DONE, &(afu_status->cu_return_done));
 
-        // if((((afu_status->algo_status_done) << 32) >> 32) >= (afu_status->algo_stop))
+        // if((((afu_status->cu_return_done) << 32) >> 32) >= (afu_status->cu_stop))
         //     break;
 
-        if((((afu_status->algo_status_done)) >> 32) >= (afu_status->algo_stop)){
+        if((((afu_status->cu_return_done)) >> 32) >= (afu_status->cu_stop))
+        {
             readCmdResponseStats(afu, &cmdResponseStats);
-            cxl_mmio_write64((*afu), ALGO_STATUS_DONE_ACK, afu_status->algo_status_done);
+            cxl_mmio_write64((*afu), CU_RETURN_DONE_ACK, afu_status->cu_return_done);
             break;
         }
     }
@@ -109,8 +114,8 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s  | \n", " ", "Rd/Wrt Stats", " ");
     printf(" -----------------------------------------------------\n");
-    printf("| count_read  : %lu\n", (((afu_status->algo_status_done) << 32) >> 32) );
-    printf("| count_write : %lu\n", ((afu_status->algo_status_done) >> 32));
+    printf("| count_read  : %lu\n", (((afu_status->cu_return_done) << 32) >> 32) );
+    printf("| count_write : %lu\n", ((afu_status->cu_return_done) >> 32));
     printf("*-----------------------------------------------------*\n");
 #endif
 
@@ -119,7 +124,7 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdResponseStats)
 {
 
- 
+
     cxl_mmio_read64((*afu), DONE_COUNT_REG, &(cmdResponseStats->DONE_count));
     cxl_mmio_read64((*afu), DONE_RESTART_COUNT_REG, &(cmdResponseStats->DONE_RESTART_count));
 
@@ -265,12 +270,9 @@ struct  WEDStruct *mapDataArraysToWED(struct DataArrays *dataArrays)
 
     wed->size_send    = dataArrays->size;
     wed->size_recive  = dataArrays->size;
-
     wed->array_send     = dataArrays->array_send;
     wed->array_receive  = dataArrays->array_receive;
 
-
-    wed->afu_config = AFU_CONFIG;
 
 #ifdef  VERBOSE
     printWEDPointers(wed);
@@ -286,14 +288,11 @@ void printWEDPointers(struct  WEDStruct *wed)
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s | \n", " ", "WEDStruct structure", " ");
     printf(" -----------------------------------------------------\n");
-    printf("  wed: %p\n", wed);
-
-    printf("  wed->size_send: %u\n", wed->size_send);
-    printf("  wed->size_recive: %u\n", wed->size_recive);
-
-    printf("  wed->array_send: %p\n", wed->array_send);
+    printf("  wed               : %p\n", wed);
+    printf("  wed->size_send    : %llu\n", wed->size_send);
+    printf("  wed->size_recive  : %llu\n", wed->size_recive);
+    printf("  wed->array_send   : %p\n", wed->array_send);
     printf("  wed->array_receive: %p\n", wed->array_receive);
 
-    printf("  wed->afu_config: %p\n", &(wed->afu_config));
 
 }

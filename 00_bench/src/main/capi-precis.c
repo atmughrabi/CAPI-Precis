@@ -40,7 +40,7 @@ static char doc[] =
     "CAPIPrecis is an open source CAPI enabled FPGA processing framework, it is designed to abstract the PSL layer for a faster development cycle";
 
 /* A description of the arguments we accept. */
-static char args_doc[] = "-s <size> -n [num threads]";
+static char args_doc[] = "-s <size> -n [num threads] -a [afu config] -c [cu config]  ";
 
 /* The options we understand. */
 static struct argp_option options[] =
@@ -52,6 +52,14 @@ static struct argp_option options[] =
     {
         "size",         's', "SIZE:512",      0,
         "\nSize of array to be sent and copied back "
+    },
+    {
+        "afu-config",         'a', "[DEFAULT:0x1]",      0,
+        "\nafu buffer arbitration 0x01 round robin 0x10 fix priority"
+    },
+    {
+        "cu-config",         'c', "[DEFAULT:0x01]",      0,
+        "\nCU configurations for requests cached/non cached/prefetcher active or not check README for more explanation"
     },
     { 0 }
 };
@@ -65,14 +73,21 @@ parse_opt (int key, char *arg, struct argp_state *state)
     /* Get the input argument from argp_parse, which we
        know is a pointer to our arguments structure. */
     struct Arguments *arguments = state->input;
+    char *eptr;
 
     switch (key)
     {
     case 's':
-        arguments->size = atoi(arg);
+        arguments->size = strtoll(arg, &eptr, 0);
         break;
     case 'n':
         arguments->numThreads = atoi(arg);
+        break;
+    case 'a':
+        arguments->afu_config = strtoll(arg, &eptr, 0);
+        break;
+    case 'c':
+        arguments->cu_config = strtoll(arg, &eptr, 0);
         break;
     default:
         return ARGP_ERR_UNKNOWN;
@@ -93,6 +108,8 @@ main (int argc, char **argv)
 
     arguments.numThreads = omp_get_max_threads();
     arguments.size = 512;
+    arguments.afu_config = 0x01;
+    arguments.cu_config  = 0x01;
 
      argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
@@ -110,7 +127,7 @@ main (int argc, char **argv)
 
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20u | \n", "Allocating Data Arrays (SIZE)", arguments.size);
+    printf("| %-30s %-20llu | \n", "Allocating Data Arrays (SIZE)", arguments.size);
     printf(" -----------------------------------------------------\n");
 
     struct DataArrays *dataArrays = newDataArrays(&arguments);
@@ -122,11 +139,11 @@ main (int argc, char **argv)
     initializeDataArrays(dataArrays);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20u | \n", "Copy data (SIZE)", arguments.size);
+    printf("| %-30s %-20llu | \n", "Copy data (SIZE)", arguments.size);
     printf(" -----------------------------------------------------\n");
 
     Start(timer);
-    copyDataArrays(dataArrays);
+    copyDataArrays(dataArrays, &arguments);
     Stop(timer);
     printf("| %-22s | %-27.20lf| \n","Time (Seconds)", Seconds(timer));
        
@@ -136,11 +153,11 @@ main (int argc, char **argv)
     printf("| %-22s | %-27.20lf| \n","BandWidth MB/s", bandwidth_MB);
     printf("| %-22s | %-27.20lf| \n","BandWidth GB/s", bandwidth_GB);
 
-    __u32 missmatch = 0;
+    __u64 missmatch = 0;
     missmatch = compareDataArrays(dataArrays);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s | %-20u | \n", "Data Missmatched (#)", missmatch);
+    printf("| %-30s | %-20llu | \n", "Data Missmatched (#)", missmatch);
     printf(" -----------------------------------------------------\n");
 
        if(missmatch != 0)
@@ -152,7 +169,7 @@ main (int argc, char **argv)
     }
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20u | \n", "Freeing Data Arrays (SIZE)", arguments.size);
+    printf("| %-30s %-20llu | \n", "Freeing Data Arrays (SIZE)", arguments.size);
     printf(" -----------------------------------------------------\n");
 
     freeDataArrays(dataArrays);

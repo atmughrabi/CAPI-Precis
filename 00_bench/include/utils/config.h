@@ -10,8 +10,10 @@ extern mt19937state *mt19937var;
 /* Used by main to communicate with parse_opt. */
 struct Arguments
 {
-    __u32 size;
+    __u64 size;
     __u32 numThreads;
+    __u64 afu_config;
+    __u64 cu_config;
 };
 
 #endif
