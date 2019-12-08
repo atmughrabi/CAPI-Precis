@@ -30,7 +30,7 @@ export CAPI_UTIL_DIR    = capi_utils
 #contains the tests use make run-test to compile what in this directory
 export TEST_DIR         = tests
 
-#contains the main for the graph processing framework
+#contains the main for the app processing framework
 export MAIN_DIR         = main
 
 #########################################################
@@ -38,8 +38,8 @@ export MAIN_DIR         = main
 #########################################################
 
 export NUM_THREADS  = 8
-LHS=512 
-RHS=512
+LHS=32 
+RHS=32
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
@@ -133,6 +133,7 @@ MAKE_DIR_SYNTH          = 01_capi_integration/accelerator_synth
 MAKE_NUM_THREADS        = $(shell grep -c ^processor /proc/cpuinfo)
 MAKE_ARGS               = -w -C $(APP_DIR)/$(MAKE_DIR) -j$(MAKE_NUM_THREADS)
 MAKE_ARGS_SYNTH         = -w -C $(APP_DIR)/$(MAKE_DIR_SYNTH) -j$(MAKE_NUM_THREADS)
+
 ##################################################
 ##################################################
 
@@ -142,60 +143,60 @@ MAKE_ARGS_SYNTH         = -w -C $(APP_DIR)/$(MAKE_DIR_SYNTH) -j$(MAKE_NUM_THREAD
 
 .PHONY: help
 help:
-    $(MAKE) help $(MAKE_ARGS)
+	$(MAKE) help $(MAKE_ARGS)
 
 .PHONY: run
 run:
-    $(MAKE) run $(MAKE_ARGS)
+	$(MAKE) run $(MAKE_ARGS)
 
 .PHONY: run-openmp
 run-openmp:
-    $(MAKE) run-openmp $(MAKE_ARGS)
+	$(MAKE) run-openmp $(MAKE_ARGS)
 
 .PHONY: debug-openmp
 debug-openmp: 
-    $(MAKE) debug-openmp $(MAKE_ARGS)
+	$(MAKE) debug-openmp $(MAKE_ARGS)
 
 .PHONY: debug-memory-openmp
 debug-memory-openmp: 
-    $(MAKE) debug-memory-openmp $(MAKE_ARGS)
+	$(MAKE) debug-memory-openmp $(MAKE_ARGS)
 
 .PHONY: test-verbose
 test-verbose:
-    $(MAKE) test-verbose $(MAKE_ARGS)
-    
+	$(MAKE) test-verbose $(MAKE_ARGS)
+	
 # test files
 .PHONY: test
 test:
-    $(MAKE) test $(MAKE_ARGS)
-    
+	$(MAKE) test $(MAKE_ARGS)
+	
 .PHONY: run-test
 run-test: 
-    $(MAKE) run-test $(MAKE_ARGS)
+	$(MAKE) run-test $(MAKE_ARGS)
 
 .PHONY: run-test-openmp
 run-test-openmp:
-    $(MAKE) run-test-openmp $(MAKE_ARGS)
+	$(MAKE) run-test-openmp $(MAKE_ARGS)
 
 .PHONY: debug-test-openmp
 debug-test-openmp: 
-    $(MAKE) debug-test-openmp $(MAKE_ARGS)
+	$(MAKE) debug-test-openmp $(MAKE_ARGS)
 
 .PHONY: debug-memory-test-openmp
 debug-memory-test-openmp:   
-    $(MAKE) debug-memory-test-openmp $(MAKE_ARGS)
+	$(MAKE) debug-memory-test-openmp $(MAKE_ARGS)
 # cache performance
 .PHONY: cachegrind-perf-openmp
 cachegrind-perf-openmp:
-    $(MAKE) cachegrind-perf-openmp $(MAKE_ARGS)
+	$(MAKE) cachegrind-perf-openmp $(MAKE_ARGS)
 
 .PHONY: cache-perf
 cache-perf-openmp: 
-    $(MAKE) cache-perf-openmp $(MAKE_ARGS)
+	$(MAKE) cache-perf-openmp $(MAKE_ARGS)
 
 .PHONY: clean
 clean: 
-    $(MAKE) clean $(MAKE_ARGS)
+	$(MAKE) clean $(MAKE_ARGS)
 
 .PHONY: clean-all
 clean-all: clean clean-sim clean-synth
@@ -209,39 +210,39 @@ clean-all: clean clean-sim clean-synth
 
 .PHONY: run-capi-sim
 run-capi-sim:
-    $(MAKE) run-capi-sim $(MAKE_ARGS)
+	$(MAKE) run-capi-sim $(MAKE_ARGS)
 
 .PHONY: run-capi-fpga
 run-capi-fpga:
-    $(MAKE) run-capi-fpga $(MAKE_ARGS)
+	$(MAKE) run-capi-fpga $(MAKE_ARGS)
 
 .PHONY: run-capi-sim-verbose
 run-capi-sim-verbose:
-    $(MAKE) run-capi-sim-verbose $(MAKE_ARGS)
+	$(MAKE) run-capi-sim-verbose $(MAKE_ARGS)
 
 .PHONY: run-capi-fpga-verbose
 run-capi-fpga-verbose:
-    $(MAKE) run-capi-fpga-verbose $(MAKE_ARGS)
+	$(MAKE) run-capi-fpga-verbose $(MAKE_ARGS)
 
 .PHONY: run-test-capi
 run-test-capi:
-    $(MAKE) run-test-capi $(MAKE_ARGS)
+	$(MAKE) run-test-capi $(MAKE_ARGS)
 
 .PHONY: run-vsim
 run-vsim:
-    $(MAKE) run-vsim $(MAKE_ARGS)
+	$(MAKE) run-vsim $(MAKE_ARGS)
 
 .PHONY: run-pslse
 run-pslse:
-    $(MAKE) run-pslse $(MAKE_ARGS)
+	$(MAKE) run-pslse $(MAKE_ARGS)
 
 .PHONY: build-pslse
 build-pslse:
-      $(MAKE) build-pslse $(MAKE_ARGS)
+	  $(MAKE) build-pslse $(MAKE_ARGS)
 
 .PHONY: clean-sim
 clean-sim:
-     $(MAKE) clean-sim $(MAKE_ARGS)
+	 $(MAKE) clean-sim $(MAKE_ARGS)
 ##################################################
 ##################################################
 
@@ -251,58 +252,58 @@ clean-sim:
 
 .PHONY: run-capi-synth
 run-capi-synth:
-     $(MAKE) all $(MAKE_ARGS_SYNTH)
+	 $(MAKE) all $(MAKE_ARGS_SYNTH)
 
 .PHONY: run-capi-gui
 run-capi-gui:
-     $(MAKE) gui $(MAKE_ARGS_SYNTH)
+	 $(MAKE) gui $(MAKE_ARGS_SYNTH)
 
 .PHONY: map
 map:
-     $(MAKE) map $(MAKE_ARGS_SYNTH)
+	 $(MAKE) map $(MAKE_ARGS_SYNTH)
 
 .PHONY: fit
 fit:
-     $(MAKE) fit $(MAKE_ARGS_SYNTH)
+	 $(MAKE) fit $(MAKE_ARGS_SYNTH)
 
 .PHONY: asm
 asm:
-     $(MAKE) asm $(MAKE_ARGS_SYNTH)
+	 $(MAKE) asm $(MAKE_ARGS_SYNTH)
 
 .PHONY: sta
 sta:
-     $(MAKE) sta $(MAKE_ARGS_SYNTH)
+	 $(MAKE) sta $(MAKE_ARGS_SYNTH)
 
 .PHONY: qxp
 qxp:
-     $(MAKE) qxp $(MAKE_ARGS_SYNTH)
+	 $(MAKE) qxp $(MAKE_ARGS_SYNTH)
 
 .PHONY: rbf
 rbf:
-     $(MAKE) rbf $(MAKE_ARGS_SYNTH)
+	 $(MAKE) rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY: smart
 smart:
-     $(MAKE) smart $(MAKE_ARGS_SYNTH)
+	 $(MAKE) smart $(MAKE_ARGS_SYNTH)
 
 .PHONY: program
 program:
-     $(MAKE) program $(MAKE_ARGS_SYNTH)
+	 $(MAKE) program $(MAKE_ARGS_SYNTH)
 
 .PHONY: timing
 timing:
-     $(MAKE) timing $(MAKE_ARGS_SYNTH)
+	 $(MAKE) timing $(MAKE_ARGS_SYNTH)
 
 .PHONY: stats
 stats:
-     $(MAKE) stats $(MAKE_ARGS_SYNTH)
+	 $(MAKE) stats $(MAKE_ARGS_SYNTH)
 
 .PHONY: gen-rbf
 gen-rbf:
-     $(MAKE) gen-rbf $(MAKE_ARGS_SYNTH)
+	 $(MAKE) gen-rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY: clean-synth
 clean-synth:
-     $(MAKE) clean $(MAKE_ARGS_SYNTH)
+	 $(MAKE) clean $(MAKE_ARGS_SYNTH)
 ##################################################
 ##################################################

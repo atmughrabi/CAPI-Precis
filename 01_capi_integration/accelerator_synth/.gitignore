@@ -19,3 +19,4 @@ reconfig_mif
 *.qws
 *.done
 hc_output
+.psl_fpga/psl/psl_A000_0001.qarlog

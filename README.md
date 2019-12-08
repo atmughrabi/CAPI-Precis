@@ -20,18 +20,37 @@ CAPI@Precis:~$ sudo apt-get install libomp-dev
 ```
 
 ### CAPI
-1. Simulation with ModelSim
+1. Simulation and Synthesis
+  * This framework were developed on Ubuntu 18.04 LTS.
+  * ModelSIM is used for simulation and installed along side Quartus II 18.1.
+  * Synthesis requires ALTERA Quartus, starting from release 15.0 of Quartus II should be fine.
+  * Nallatech P385-A7 card with the Altera Stratix V GX A7 FPGA is supported.
   * Environment Variable setup, `HOME` and `ALTERAPATH` depend on where you clone the repository and install ModelSim.
+
 ```bash
+#quartus 18.1 env-variables
+export ALTERAPATH="${HOME}/intelFPGA/18.1"
+export QUARTUS_INSTALL_DIR="${ALTERAPATH}/quartus"
+export LM_LICENSE_FILE="${ALTERAPATH}/licenses/psl_A000_license.dat:${ALTERAPATH}/licenses/common_license.dat"
+export QSYS_ROOTDIR="${ALTERAPATH}/quartus/sopc_builder/bin"
+export PATH=$PATH:${ALTERAPATH}/quartus/bin
+export PATH=$PATH:${ALTERAPATH}/nios2eds/bin
+
+#modelsim env-variables
+export PATH=$PATH:${ALTERAPATH}/modelsim_ase/bin
+
+#CAPIPrecis project folder
+export CAPI_PROJECT=00_CAPIPrecis
+
 #CAPI framework env variables
-export PSLSE_INSTALL_DIR="${HOME}/00_CAPIPrecis/01_capi_integration/pslse"
+export PSLSE_INSTALL_DIR="${HOME}/Documents/github_repos/${CAPI_PROJECT}/01_capi_integration/pslse"
 export VPI_USER_H_DIR="${ALTERAPATH}/modelsim_ase/include"
 export PSLVER=8
 export BIT32=n
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PSLSE_INSTALL_DIR/libcxl:$PSLSE_INSTALL_DIR/afu_driver/src"
 
 #PSLSE env variables
-export PSLSE_SERVER_DIR="${HOME}/00_CAPIPrecis/01_capi_integration/accelerator_sim/server"
+export PSLSE_SERVER_DIR="${HOME}/Documents/github_repos/${CAPI_PROJECT}/01_capi_integration/accelerator_sim/server"
 export PSLSE_SERVER_DAT="${PSLSE_SERVER_DIR}/pslse_server.dat"
 export SHIM_HOST_DAT="${PSLSE_SERVER_DIR}/shim_host.dat"
 export PSLSE_PARMS="${PSLSE_SERVER_DIR}/pslse.parms"
@@ -221,14 +240,14 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga
 
 ##### Verbose run with stats output
 
-This run outputs different afu_control stats based on the response received from the PSL
+This run outputs different AFU-Control stats based on the response received from the PSL
 
 2. Runs algorithm that communicates with the or PSL (real HW):
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
 ```
 
-3. Example output:
+3. Example output: please check [(CAPI User's Manual)](http://www.nallatech.com/wp-content/uploads/IBM_CAPI_Users_Guide_1-2.pdf), for each response explanation. The stats are labeled `RESPONSE_COMMANADTYPE_count`.
 ```
 *-----------------------------------------------------*
 |                 AFU Stats                          | 
@@ -294,29 +313,49 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
 
 # Organization 
 
-* `00_bench`
+* `00_bench` - The SW side that runs on the host(CPU)
   * `include` 
-    * `algorithms` 
-      * `openmp`  
-        * `capi-precis.h`   
-      * `capi` - CAPI integration
   * `src` 
     * `algorithms` 
       * `openmp`  
-        * `capi-precis.c` 
+        * `algorithm.c` - Contains a version of the code that runs on CPU.
       * `capi`
+        * `algorithm.c` - Contains a version of the code that runs on FPGA.
+    * `capi-utils` 
+      * `capienv.c` - Has the functions for setting up CAPI with our application (setup/start/wait/error).
+    * `main`
+      * `capi-precis.c` - Our main program execution starts from here.
+    * `tests`
+      * `test_afu.c` - test file to try things before integration.
+      * `test_capi-precis.c` - another test bed to try some functionalities.
     * `utils`
-* `01_capi_integration`
-  * `accelerator` 
-    * `cu`
+      * `mt19937.c` - Random number generator.
+      * `myMalloc.c` - Custom malloc wrapper for aligned allocations.
+      * `timer.c` - simple time measurement library.
+  * *`Makefile`* - This makefile handles the compilation/and simulation of CAPIPrecis 
+* `01_capi_integration` - The SW side that runs on the Device(FPGA)/ModelSIM
+  * `accelerator_rtl` 
+    * `cu` - 
     * `pkg`
-    * `rtl`
-  * `accelerator_bin`
-  * `capi_common`
+    * `afu`
+  * `accelerator_bin` - Binary images of CAPIPrecis (passed time requirements)
+  * `accelerator_sim`
+    * `server` - files for PSLSE layer
+      * `pslse.parms`
+      * `pslse_server.dat`
+      * `shim_host.dat`
+    * `sim` - ModelSIM file and tcl scripts
+      * `vsim.tcl` - when adding files to you RTL project you need to update this script
+      * `inerface.do` - Wave file for modelSim simulation
+  * `accelerator_synth` - synthesis scripts
+    * `capi` - This folder contains helper scripts that generated the files necessary for synthesizing the project.
+    * `psl_fpga` - This folder contains the RTL for the PSL layer, IPs, and the AFU top
+    * `capi-precis.tcl`
+    * *`Makefile`* - Synthesis Makefile that invokes Quartus.
   * `pslse`
   * `libcxl`
   * `capi-utils`
 * *`Makefile`* - Global makefile
 
-Report bugs to <atmughra@ncsu.edu>
+Contact:  <atmughrabi@gmail.edu>/<atmughra@ncsu.edu>
 <p align="right"> <img src="./02_slides/fig/logo1.png" width="200" ></p>

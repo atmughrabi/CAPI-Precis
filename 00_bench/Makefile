@@ -1,58 +1,52 @@
 
-
 #########################################################
-#       		 GENERAL DIRECTOIRES   	    			#
+#                GENERAL DIRECTOIRES                    #
 #########################################################
-# globals binaary /bin/accel-graph name doesn't need to match main/accel-graph.c
+# globals binaary /bin/capi-precis name doesn't need to match main/capi-precis.c
   APP               ?= capi-precis
 
-# test name needs to match the file name test/test_accel-graph.c
+# test name needs to match the file name test/test_capi-precis.c
   APP_TEST          = test_afu
 #   APP_TEST          ?= test_capi-precis
 
-
 # dirs Root app 
-APP_DIR           	?= .
+APP_DIR             ?= .
 
 #dir root/managed_folders
-SRC_DIR           	?= src
-OBJ_DIR			  	?= obj
-INC_DIR			  	?= include
-BIN_DIR			  	?= bin
+SRC_DIR             ?= src
+OBJ_DIR             ?= obj
+INC_DIR             ?= include
+BIN_DIR             ?= bin
 
 #if you want to compile from cmake you need this directory
 #cd build
 #cmake ..
-BUILD_DIR		  	?= build
+BUILD_DIR           ?= build
 
 # relative directories used for managing src/obj files
-ALGO_DIR		  	?= algorithms
-UTIL_DIR		  	?= utils
-CAPI_UTIL_DIR		?= capi_utils
+ALGO_DIR            ?= algorithms
+UTIL_DIR            ?= utils
+CAPI_UTIL_DIR       ?= capi_utils
 
 #contains the tests use make run-test to compile what in this directory
-TEST_DIR		  	?= tests
+TEST_DIR            ?= tests
 
-#contains the main for the graph processing framework
-MAIN_DIR		  	?= main
+#contains the main for the accel processing framework
+MAIN_DIR            ?= main
 
 ##################################################
 ##################################################
 
 #########################################################
-#       		 RUN  ARGUMENTS    						#
+#                RUN  ARGUMENTS                         #
 #########################################################
 
-NUM_THREADS  	?= 4
+NUM_THREADS     ?= 4
 
 SIZE ?= 256
 
 ARGS ?= -n $(NUM_THREADS) -s $(SIZE)
 
-
-##############################################
-# CAPI FPGA  GRAPH AFU PERFORMANCE CONFIG    #
-##############################################
 
 # // cu_read_engine_control          5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [27:31] [4] [3] [0:2]
 # // cu_write_engine_control         5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [22:26] [9] [8] [5:7]
@@ -71,22 +65,22 @@ ARGS ?= -n $(NUM_THREADS) -s $(SIZE)
 
 
 #each implementation is contained in a separate folder. when you compile for openmp for example the files in openmp folder gets included
-SRC_FILES_ALGO_OPENMP		=	$(wildcard $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/openmp/*.c)
+SRC_FILES_ALGO_OPENMP       =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/openmp/*.c)
 
-SRC_FILES_UTIL		=	$(wildcard $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/*.c) 
-SRC_FILES_MAIN		=	$(wildcard $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/*.c)
-SRC_FILES_TEST		=	$(wildcard $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/*.c)
+SRC_FILES_UTIL      =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/*.c) 
+SRC_FILES_MAIN      =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/*.c)
+SRC_FILES_TEST      =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/*.c)
 
 #create object file rules for the final binary target
-OBJ_FILES_ALGO_OPENMP 		= $(patsubst $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/openmp/%.c,$(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/openmp/%.o,$(SRC_FILES_ALGO_OPENMP)) 
+OBJ_FILES_ALGO_OPENMP       = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/openmp/%.c,$(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/openmp/%.o,$(SRC_FILES_ALGO_OPENMP)) 
 
-OBJ_FILES_UTIL 		= $(patsubst $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(UTIL_DIR)/%.o,$(SRC_FILES_UTIL)) 
-OBJ_FILES_MAIN  	= $(patsubst $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/%.o,$(SRC_FILES_MAIN)) 
-OBJ_FILES_TEST  	= $(patsubst $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/%.o,$(SRC_FILES_TEST)) 
+OBJ_FILES_UTIL      = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(UTIL_DIR)/%.o,$(SRC_FILES_UTIL)) 
+OBJ_FILES_MAIN      = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/%.o,$(SRC_FILES_MAIN)) 
+OBJ_FILES_TEST      = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/%.o,$(SRC_FILES_TEST)) 
 
-CC				  = gcc 
+CC                = gcc 
 
-OPENMP_INC = 	-I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/openmp 	\
+OPENMP_INC =    -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/openmp  \
 				-I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) 
 
 # flags
@@ -110,22 +104,22 @@ ARCHITECTURE = $(shell uname -p) # store the output of the command in a variable
 PSLSE_DIR         = ../01_capi_integration/pslse
 LIBCXL_DIR        = ../01_capi_integration/libcxl
 CAPI_UTILS_DIR    = ../01_capi_integration/capi-utils
-CAPI_ACCEL		  = ../01_capi_integration/accelerator_rtl
-CAPI_COMMON		  = ../01_capi_integration/accelerator_sim
+CAPI_ACCEL        = ../01_capi_integration/accelerator_rtl
+CAPI_COMMON       = ../01_capi_integration/accelerator_sim
 
-CAPI_SIM		  = $(CAPI_COMMON)/sim
-CAPI_SERVER		  = $(CAPI_COMMON)/server
+CAPI_SIM          = $(CAPI_COMMON)/sim
+CAPI_SERVER       = $(CAPI_COMMON)/server
 
 
 PSLSE_COMMON_DIR  = $(PSLSE_DIR)/common
 # PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 
 
-SRC_FILES_ALGO_CAPI			=  $(wildcard $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/*.c) 
-OBJ_FILES_ALGO_CAPI 		=  $(patsubst $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/%.c,$(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/capi/%.o,$(SRC_FILES_ALGO_CAPI))
+SRC_FILES_ALGO_CAPI         =  $(wildcard $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/*.c) 
+OBJ_FILES_ALGO_CAPI         =  $(patsubst $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/%.c,$(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/capi/%.o,$(SRC_FILES_ALGO_CAPI))
 
-SRC_FILES_CAPI_UTIL		=	$(wildcard $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/*.c)
-OBJ_FILES_CAPI_UTIL 	=   $(patsubst $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(CAPI_UTIL_DIR)/%.o,$(SRC_FILES_CAPI_UTIL)) 
+SRC_FILES_CAPI_UTIL     =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/*.c)
+OBJ_FILES_CAPI_UTIL     =   $(patsubst $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(CAPI_UTIL_DIR)/%.o,$(SRC_FILES_CAPI_UTIL)) 
 
 
 CAPI_LINKFLAGS = -lrt -lpthread
@@ -141,11 +135,11 @@ CAPI_AFU_CONFIG = -DAFU_CONFIG=$(AFU_CONFIG_GENERIC)
 
 
 #########################################################
-#       		 ACCEL APP GENERATION    				#
+#                ACCEL APP GENERATION                   #
 #########################################################
 
-.PHONY: graph-openmp
-graph-openmp : directories directories-openmp $(APP_DIR)/$(BIN_DIR)/$(APP)-openmp
+.PHONY: app-openmp
+app-openmp : directories directories-openmp $(APP_DIR)/$(BIN_DIR)/$(APP)-openmp
 	@echo "\n ******************************************************************************  "
 	@echo " * DONE!! NOTHING ELSE TO COMPILE ---> CAPI-Precis: ./$(word 3,$^)"
 	@echo " ******************************************************************************  \n"
@@ -197,7 +191,7 @@ clean:
 ##################################################
 
 #########################################################
-#       		 CAPI GENERATION    	    			#
+#                CAPI GENERATION                        #
 #########################################################
 
 .PHONY: clean-pslse
@@ -206,8 +200,8 @@ clean-pslse:
 	@cd $(PSLSE_DIR)/pslse && make clean
 	@cd $(PSLSE_DIR)/libcxl && make clean
 
-.PHONY: graph-capi
-graph-capi : directories directories-capi $(APP_DIR)/$(BIN_DIR)/$(APP)-capi
+.PHONY: app-capi
+app-capi : directories directories-capi $(APP_DIR)/$(BIN_DIR)/$(APP)-capi
 	@echo "\n ******************************************************************************  "
 	@echo " * DONE!! NOTHING ELSE TO COMPILE ---> CAPI-Precis: ./$(word 3,$^)"
 	@echo " ******************************************************************************  \n"
@@ -264,7 +258,7 @@ clean-sim:
 	@rm -f $(CAPI_SIM)/vsim.wlf
 	@rm -rf $(CAPI_SIM)/work
 	@rm -f $(CAPI_SERVER)/debug.log
-	@rm -f $(CAPI_SIM)/gmon.out	 
+	@rm -f $(CAPI_SIM)/gmon.out  
 	@cd $(PSLSE_DIR)/afu_driver/src && make clean
 	@cd $(PSLSE_DIR)/libcxl && make clean
 	@cd $(PSLSE_DIR)/pslse && make  clean
@@ -273,26 +267,26 @@ clean-sim:
 ##################################################
 
 ##############################################
-#         ACCEL GRAPH TOP LEVEL RULES        #
+#             APP TOP LEVEL RULES            #
 ##############################################
 
 .PHONY: help
-help: graph-openmp
+help: app-openmp
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  --help
 
 .PHONY: run
 run: run-openmp
 
 .PHONY: run-openmp
-run-openmp: graph-openmp
+run-openmp: app-openmp
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 .PHONY: debug-openmp
-debug-openmp: graph-openmp	
+debug-openmp: app-openmp    
 	gdb -ex=r --args ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 .PHONY: debug-memory-openmp
-debug-memory-openmp: graph-openmp	
+debug-memory-openmp: app-openmp 
 	valgrind --leak-check=full --show-leak-kinds=all ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 .PHONY: test-verbose
@@ -314,25 +308,25 @@ run-test-openmp: test-openmp
 	./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-openmp
 
 .PHONY: debug-test-openmp
-debug-test-openmp: test-openmp	
+debug-test-openmp: test-openmp  
 	gdb ./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-openmp
 
 .PHONY: debug-memory-test-openmp
-debug-memory-test-openmp: test-openmp	
+debug-memory-test-openmp: test-openmp   
 	valgrind --leak-check=full --show-leak-kinds=all ./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-openmp
 # cache performance
 .PHONY: cachegrind-perf-openmp
-cachegrind-perf-openmp: graph-openmp
+cachegrind-perf-openmp: app-openmp
 	valgrind --tool=cachegrind ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 .PHONY: cache-perf
-cache-perf-openmp: graph-openmp
+cache-perf-openmp: app-openmp
 	sudo perf record -d ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 ##################################################
 ##################################################
 
 ##############################################
-#      ACCEL GRAPH CAPI TOP LEVEL RULES      #
+#         APP CAPI TOP LEVEL RULES           #
 ##############################################
 
 
@@ -340,28 +334,28 @@ cache-perf-openmp: graph-openmp
 run-capi-sim: CAPI_FLAGS = -DSIM $(CAPI_AFU_CONFIG)
 run-capi-sim: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
-run-capi-sim: graph-capi
+run-capi-sim: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-sim-verbose
 run-capi-sim-verbose: CAPI_FLAGS = -DSIM -DVERBOSE $(CAPI_AFU_CONFIG)
 run-capi-sim-verbose: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim-verbose: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
-run-capi-sim-verbose: graph-capi
+run-capi-sim-verbose: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga
 run-capi-fpga: CAPI_FLAGS = $(CAPI_AFU_CONFIG)
 run-capi-fpga: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
-run-capi-fpga: graph-capi
+run-capi-fpga: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga-verbose
 run-capi-fpga-verbose: CAPI_FLAGS = -DVERBOSE $(CAPI_AFU_CONFIG)
 run-capi-fpga-verbose: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga-verbose: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
-run-capi-fpga-verbose: graph-capi
+run-capi-fpga-verbose: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 
