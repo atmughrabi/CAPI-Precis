@@ -154,7 +154,7 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 
 				if(total_size >= (array_line_size << offset_start_latched))begin
 					total_size_latched <= total_size - (array_line_size << offset_start_latched);
-					next_offest        <= next_offest + (offset_size_latched<<offset_start_latched);
+					next_offest        <= next_offest + (offset_size_latched << offset_start_latched);
 				end else if (total_size < (array_line_size << offset_start_latched)) begin
 					total_size_latched <= 0;
 					next_offest        <= next_offest + (offset_size_latched << offset_start_latched);

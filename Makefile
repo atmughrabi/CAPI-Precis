@@ -38,8 +38,8 @@ export MAIN_DIR         = main
 #########################################################
 
 export NUM_THREADS  = 8
-LHS=32 
-RHS=32
+LHS=512 
+RHS=512
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
@@ -47,7 +47,7 @@ export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 # export SIZE = 1073741824
 
 #16 GB
-# export SIZE = 4294967295
+# export SIZE = 4294967290
 
 #1GB
 # export SIZE = 268435456
@@ -62,7 +62,7 @@ export ARGS = -n $(NUM_THREADS) -s $(SIZE)
 # // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 00000 00000 00000 00000 00000 00000 00
-export AFU_CONFIG_STRICT_1=0b00000000000000000000000000000000
+# export AFU_CONFIG_STRICT_1=0b00000000000000000000000000000000
 
 # // cu_read_engine_control            5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
@@ -74,7 +74,7 @@ export AFU_CONFIG_STRICT_1=0b00000000000000000000000000000000
 # // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
 # // 0b 11000 11000 00000 00000 00000 00000 00
-# export AFU_CONFIG_STRICT_1=0b11000110000000000000000000000000
+export AFU_CONFIG_STRICT_1=0b11000110000000000000000000000000
 
 # // cu_read_engine_control            5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]

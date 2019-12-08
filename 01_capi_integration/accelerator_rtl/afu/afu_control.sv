@@ -301,31 +301,39 @@ module afu_control #(
 //Buffer arbitration logic
 ////////////////////////////////////////////////////////////////////////////
 
-	fixed_priority_arbiter_N_input_1_ouput #(
-		.NUM_REQUESTS(NUM_REQUESTS            ),
-		.WIDTH       ($bits(CommandBufferLine))
-	) fixed_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
-		.clock      (clock              ),
-		.rstn       (rstn               ),
-		.enabled    (enabled            ),
-		.buffer_in  (command_buffer_in  ),
-		.requests   (requests           ),
-		.arbiter_out(command_arbiter_out),
-		.ready      (ready              )
-	);
+	generate if(PRIORITY_MODE) begin
 
-	// round_robin_priority_arbiter_N_input_1_ouput #(
-	// 	.NUM_REQUESTS(NUM_REQUESTS            ),
-	// 	.WIDTH       ($bits(CommandBufferLine))
-	// ) round_robin_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
-	// 	.clock      (clock              ),
-	// 	.rstn       (rstn               ),
-	// 	.enabled    (enabled            ),
-	// 	.buffer_in  (command_buffer_in  ),
-	// 	.requests   (requests           ),
-	// 	.arbiter_out(command_arbiter_out),
-	// 	.ready      (ready              )
-	// );
+			round_robin_priority_arbiter_N_input_1_ouput #(
+				.NUM_REQUESTS(NUM_REQUESTS            ),
+				.WIDTH       ($bits(CommandBufferLine))
+			) round_robin_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
+				.clock      (clock              ),
+				.rstn       (rstn               ),
+				.enabled    (enabled            ),
+				.buffer_in  (command_buffer_in  ),
+				.requests   (requests           ),
+				.arbiter_out(command_arbiter_out),
+				.ready      (ready              )
+			);
+
+		end else begin
+
+			fixed_priority_arbiter_N_input_1_ouput #(
+				.NUM_REQUESTS(NUM_REQUESTS            ),
+				.WIDTH       ($bits(CommandBufferLine))
+			) fixed_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
+				.clock      (clock              ),
+				.rstn       (rstn               ),
+				.enabled    (enabled            ),
+				.buffer_in  (command_buffer_in  ),
+				.requests   (requests           ),
+				.arbiter_out(command_arbiter_out),
+				.ready      (ready              )
+			);
+
+		end
+	endgenerate
+
 
 ////////////////////////////////////////////////////////////////////////////
 //command interface control logic

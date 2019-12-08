@@ -1,16 +1,17 @@
 // -----------------------------------------------------------------------------
 //
-//		"CAPIPrecis Shared Memory Accelerator Project"
+//    "CAPIPrecis Shared Memory Accelerator Project"
 //
 // -----------------------------------------------------------------------------
 // Copyright (c) 2014-2019 All rights reserved
 // -----------------------------------------------------------------------------
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
-// Create : 2019-09-26 15:18:39
-// Revise : 2019-12-07 19:53:45
+// Create : 2019-12-08 01:39:09
+// Revise : 2019-12-08 04:20:42
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
+
 
 import GLOBALS_AFU_PKG::*;
 import CAPI_PKG::*;
@@ -73,11 +74,13 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done    ;
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done     ;
 
-	logic enabled               ;
-	logic enabled_instants      ;
-	logic enabled_prefetch_read ;
-	logic enabled_prefetch_write;
-	logic cu_ready              ;
+	logic enabled                        ;
+	logic enabled_instants               ;
+	logic enabled_instants_preftech_read ;
+	logic enabled_instants_preftech_write;
+	logic enabled_prefetch_read          ;
+	logic enabled_prefetch_write         ;
+	logic cu_ready                       ;
 
 
 	logic [                  0:8] prefetch_read_pulse              ;
@@ -125,7 +128,11 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		if(~rstn) begin
 			enabled_instants <= 0;
 		end else begin
-			enabled_instants <= enabled && cu_ready;
+			if(enabled) begin
+				enabled_instants       <= cu_ready;
+				enabled_prefetch_read  <= cu_ready;
+				enabled_prefetch_write <= cu_ready;
+			end
 		end
 	end
 
@@ -265,7 +272,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			prefetch_read_response_in_latched <= 0;
 
 		end else begin
-			if(enabled)begin
+			if(enabled_prefetch_read)begin
 				base_address_read     <= wed_request_in_latched.wed.array_send;
 				total_size_read       <= wed_request_in_latched.wed.size_send;
 				total_size_read_valid <= wed_request_in_latched.valid;
@@ -290,7 +297,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		if(~rstn) begin
 			prefetch_read_command_out <= 0;
 		end else begin
-			if(enabled)begin
+			if(enabled_prefetch_read)begin
 				prefetch_read_command_out <= prefetch_read_command_out_latched;
 			end
 		end
@@ -302,13 +309,13 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			offset_size_read      <= 0;
-			array_line_size_read  <= 0;
-			offset_start_read     <= 0;
-			prefetch_read_pulse   <= 9'h0FF;
-			enabled_prefetch_read <= 0;
+			prefetch_read_pulse            <= 9'h1FF;
+			offset_size_read               <= 0;
+			array_line_size_read           <= 0;
+			offset_start_read              <= 0;
+			enabled_instants_preftech_read <= 0;
 		end else begin
-			if(enabled)begin
+			if(enabled_prefetch_read)begin
 				offset_start_read    <= 2;
 				offset_size_read     <= PAGE_SIZE;
 				array_line_size_read <= PAGE_ARRAY_NUM;
@@ -318,7 +325,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				else
 					prefetch_read_pulse <= prefetch_read_pulse + read_command_out_latched.valid;
 
-				enabled_prefetch_read <= ~(|prefetch_read_pulse);
+				enabled_instants_preftech_read <= ~(|prefetch_read_pulse);
 
 			end
 		end
@@ -328,7 +335,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	cu_prefetch_stream_engine_control #(.CU_PREFETCH_CONTROL_ID(PREFETCH_READ_CONTROL_ID)) cu_prefetch_read_stream_engine_control_instant (
 		.clock                         (clock                            ),
 		.rstn                          (rstn                             ),
-		.enabled_in                    (enabled_prefetch_read            ),
+		.enabled_in                    (enabled_instants_preftech_read   ),
 		.base_address                  (base_address_read                ),
 		.total_size                    (total_size_read                  ),
 		.total_size_valid              (total_size_read_valid            ),
@@ -364,7 +371,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			prefetch_write_response_in_latched <= 0;
 
 		end else begin
-			if(enabled)begin
+			if(enabled_prefetch_write)begin
 				base_address_write     <= wed_request_in_latched.wed.array_receive;
 				total_size_write       <= wed_request_in_latched.wed.size_recive;
 				total_size_write_valid <= wed_request_in_latched.valid;
@@ -389,7 +396,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		if(~rstn) begin
 			prefetch_write_command_out <= 0;
 		end else begin
-			if(enabled)begin
+			if(enabled_prefetch_write)begin
 				prefetch_write_command_out <= prefetch_write_command_out_latched;
 			end
 		end
@@ -401,13 +408,13 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			prefetch_write_pulse   <= 9'h0FF;
-			array_line_size_write  <= 0;
-			offset_size_write      <= 0;
-			offset_start_write     <= 0;
-			enabled_prefetch_write <= 0;
+			prefetch_write_pulse            <= 9'h1FF;
+			array_line_size_write           <= 0;
+			offset_size_write               <= 0;
+			offset_start_write              <= 0;
+			enabled_instants_preftech_write <= 0;
 		end else begin
-			if(enabled)begin
+			if(enabled_prefetch_write)begin
 				offset_start_write    <= 2;
 				array_line_size_write <= PAGE_ARRAY_NUM;
 				offset_size_write     <= PAGE_SIZE;
@@ -417,7 +424,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				else
 					prefetch_write_pulse <= prefetch_write_pulse + write_command_out_latched.valid;
 
-				enabled_prefetch_write <= ~(|prefetch_write_pulse);
+				enabled_instants_preftech_write <= ~(|prefetch_write_pulse);
 			end
 		end
 	end
@@ -426,7 +433,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	cu_prefetch_stream_engine_control #(.CU_PREFETCH_CONTROL_ID(PREFETCH_WRITE_CONTROL_ID)) cu_prefetch_write_stream_engine_control_instant (
 		.clock                         (clock                             ),
 		.rstn                          (rstn                              ),
-		.enabled_in                    (enabled_prefetch_write            ),
+		.enabled_in                    (enabled_instants_preftech_write   ),
 		.base_address                  (base_address_write                ),
 		.total_size                    (total_size_write                  ),
 		.total_size_valid              (total_size_write_valid            ),

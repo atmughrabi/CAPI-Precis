@@ -80,12 +80,13 @@ package GLOBALS_AFU_PKG;
 // AFU-Control (Buffer Priorities) for Arbitration
 ////////////////////////////////////////////////////////////////////////////
 
-	parameter PRIORITY_RESTART = 0;
-	parameter PRIORITY_WED     = 1;
+	// 0-fixed 1-round-robin
+	parameter PRIORITY_MODE = 1;
 
-	parameter PRIORITY_WRITE = 2;
-	parameter PRIORITY_READ  = 3;
-
+	parameter PRIORITY_RESTART        = 0;
+	parameter PRIORITY_WED            = 1;
+	parameter PRIORITY_WRITE          = 2;
+	parameter PRIORITY_READ           = 3;
 	parameter PRIORITY_PREFTECH_WRITE = 4;
 	parameter PRIORITY_PREFETCH_READ  = 5;
 
@@ -112,9 +113,9 @@ package GLOBALS_AFU_PKG;
 	parameter ALGO_STATUS_DONE     = 26'h 3FFFFC0 >> 2;
 	parameter ALGO_STATUS_DONE_ACK = 26'h 3FFFFB8 >> 2;
 
-	parameter DONE_COUNT_REG                = 26'h 3FFFFB0 >> 2;
-	parameter DONE_RESTART_COUNT_REG        = 26'h 3FFFFA8 >> 2;
-	
+	parameter DONE_COUNT_REG         = 26'h 3FFFFB0 >> 2;
+	parameter DONE_RESTART_COUNT_REG = 26'h 3FFFFA8 >> 2;
+
 	parameter PAGED_COUNT_REG   = 26'h 3FFFFA0 >> 2;
 	parameter FLUSHED_COUNT_REG = 26'h 3FFFF98 >> 2;
 	parameter AERROR_COUNT_REG  = 26'h 3FFFF90 >> 2;
@@ -124,9 +125,9 @@ package GLOBALS_AFU_PKG;
 	parameter NRES_COUNT_REG    = 26'h 3FFFF70 >> 2;
 	parameter NLOCK_COUNT_REG   = 26'h 3FFFF68 >> 2;
 
-	parameter CYCLE_COUNT_REG      = 26'h 3FFFF58 >> 2;
-	parameter DONE_READ_COUNT_REG  = 26'h 3FFFF50 >> 2;
-	parameter DONE_WRITE_COUNT_REG = 26'h 3FFFF48 >> 2;
+	parameter CYCLE_COUNT_REG               = 26'h 3FFFF58 >> 2;
+	parameter DONE_READ_COUNT_REG           = 26'h 3FFFF50 >> 2;
+	parameter DONE_WRITE_COUNT_REG          = 26'h 3FFFF48 >> 2;
 	parameter DONE_PREFETCH_READ_COUNT_REG  = 26'h 3FFFF60 >> 2;
 	parameter DONE_PREFETCH_WRITE_COUNT_REG = 26'h 3FFFF40 >> 2;
 
@@ -159,8 +160,8 @@ package GLOBALS_AFU_PKG;
 	parameter CACHELINE_ARRAY_NUM        = (CACHELINE_SIZE >> $clog2(ARRAY_SIZE))                                                               ; // number of  in one cacheline                                                                ; // number of edges in one cacheline
 	parameter CACHELINE_INT_COUNTER_BITS = $clog2((ARRAY_SIZE_BITS < CACHELINE_SIZE_BITS_HF) ? (2 * CACHELINE_SIZE_BITS_HF)/ARRAY_SIZE_BITS : 2);
 
-	parameter PAGE_ARRAY_NUM        = (PAGE_SIZE >> $clog2(ARRAY_SIZE))                                                               ; // number of  in one cacheline                                                                ; // number of edges in one cacheline
-	
+	parameter PAGE_ARRAY_NUM = (PAGE_SIZE >> $clog2(ARRAY_SIZE)); // number of  in one cacheline                                                                ; // number of edges in one cacheline
+
 
 ////////////////////////////////////////////////////////////////////////////
 //  AFU-Control CU IDs any compute unite that generate command must have an ID
