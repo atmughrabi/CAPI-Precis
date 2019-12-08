@@ -125,9 +125,6 @@ OBJ_FILES_CAPI_UTIL     =   $(patsubst $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/%.
 
 CAPI_LINKFLAGS = -lrt -lpthread
 
-
-
-CAPI_AFU_CONFIG = -DAFU_CONFIG=$(AFU_CONFIG_GENERIC)
 # CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 # CAPI_FLAGS = -DSIM -DVERBOSE 
 
@@ -332,28 +329,28 @@ cache-perf-openmp: app-openmp
 
 
 .PHONY: run-capi-sim
-run-capi-sim: CAPI_FLAGS = -DSIM $(CAPI_AFU_CONFIG)
+run-capi-sim: CAPI_FLAGS = -DSIM
 run-capi-sim: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-sim: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-sim-verbose
-run-capi-sim-verbose: CAPI_FLAGS = -DSIM -DVERBOSE $(CAPI_AFU_CONFIG)
+run-capi-sim-verbose: CAPI_FLAGS = -DSIM -DVERBOSE 
 run-capi-sim-verbose: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim-verbose: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-sim-verbose: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga
-run-capi-fpga: CAPI_FLAGS = $(CAPI_AFU_CONFIG)
+run-capi-fpga: CAPI_FLAGS = 
 run-capi-fpga: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-fpga: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga-verbose
-run-capi-fpga-verbose: CAPI_FLAGS = -DVERBOSE $(CAPI_AFU_CONFIG)
+run-capi-fpga-verbose: CAPI_FLAGS = -DVERBOSE 
 run-capi-fpga-verbose: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga-verbose: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-fpga-verbose: app-capi
@@ -361,7 +358,7 @@ run-capi-fpga-verbose: app-capi
 
 
 .PHONY: run-test-capi
-run-test-capi: CAPI_FLAGS = -DSIM $(CAPI_AFU_CONFIG) -DVERBOSE 
+run-test-capi: CAPI_FLAGS = -DSIM -DVERBOSE 
 run-test-capi: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-test-capi: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-test-capi: test-capi
