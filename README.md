@@ -115,6 +115,55 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-sim
 
 ### FPGA
 
+#### Synthesize
+
+This step requires ALTERA Quartus synthesis tool, starting from release 15.0 of Quartus II should be fine.
+
+##### Using terminal
+1. From the root directory (using terminal)
+```console
+CAPI@Precis:~CAPIPrecis$ make run-capi-synth
+```
+2. Check CAPIPrecis.sta.rpt for timing requirements violations
+
+##### Using Quartus GUI
+1. From the root directory (using terminal)
+```console
+CAPI@Precis:~CAPIPrecis$ make run-capi-gui
+```
+2. Synthesize using Quartus GUI
+
+##### Another way (using terminal)
+1. From the root directory go to CAPI integration directory -> CAPIPrecis synthesis folder
+```console
+CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_synth/
+```
+2. invoke synthesis from terminal
+```console
+CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make
+```
+
+##### Another way (using Quartus GUI)
+1. From the root directory go to CAPI integration directory -> CAPIPrecis synthesis folder
+```console
+CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_synth/
+```
+2. invoke synthesis from terminal
+```console
+CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make gui
+```
+
+#### Flashing image
+
+1. From the root directory go to CAPI integration directory -> CAPIPrecis binary images:
+```console
+CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_bin/
+```
+2. Flash the image to the corresponding `#define DEVICE` you can modify it according to your Power8 system from `00_bench/include/capienv.h`
+```console
+CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-script CAPIPrecis_GIT_COMMIT#_DATE_TIME.rbf
+```
+
 #### Running
 
 1. (Optional) From the root directory go to benchmark directory:
@@ -126,20 +175,16 @@ CAPI@Precis:~CAPIPrecis$ cd 00_bench/
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga
 ```
 
-#### Flashing image
-
-1. From the root directory go to CAPI integration directory -> CAPIPrecis binary images:
-```console
-CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_bin/
-```
-2. Flash the image to the corresponding `#define DEVICE` you can modify it according to your Power8 system from `00_bench/include/capienv.h`
-```console
-CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-script CAPIPrecis_ALGORITHM.rbf
-```
 
 # CAPI-Precis Structure:
-<p align="center"><img src="./02_slides/fig/CAPIPrecis.png" width="650" ></p>
+<p align="center"><img src="./02_slides/fig/CAPIPrecis_chipplanner.png" width="650" ></p>
 <p align="center"><img src="./02_slides/fig/theme2.png" width="650" ></p>
+
+## CU Control
+
+### Interface
+
+## AFU Control
 
 ### MMIO
 
