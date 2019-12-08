@@ -108,9 +108,48 @@ ModelSim> c
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-pslse
 ```
+
+##### Silent run with no stats output
+
 5. Runs algorithm that communicates with the PSLSE (simulation):
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-sim
+```
+
+##### Verbose run with stats output
+
+5. Runs algorithm that communicates with the PSLSE (simulation) printing out stats based on the responses received to the AFU-Control layer:
+```console
+CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-sim-verbose
+```
+6. Example output: please check [(CAPI User's Manual)](http://www.nallatech.com/wp-content/uploads/IBM_CAPI_Users_Guide_1-2.pdf), for each response explanation. The stats are labeled `RESPONSE_COMMANADTYPE_count`.
+```
+*-----------------------------------------------------*
+|                 AFU Stats                          | 
+ -----------------------------------------------------
+| CYCLE_count        : #Cycles                       |
+*-----------------------------------------------------*
+|                 Responses Stats                    | 
+ -----------------------------------------------------
+| DONE_count               : (#) Commands successful |
+ -----------------------------------------------------
+| DONE_READ_count          : (#) Reads successful    |
+| DONE_WRITE_count         : (#) Writes successful   |
+ -----------------------------------------------------
+| DONE_RESTART_count       : (#) Bus Restart         |
+ -----------------------------------------------------
+| DONE_PREFETCH_READ_count : (#) Read Prefetches     |
+| DONE_PREFETCH_WRITE_count: (#) Write Prefetches    |
+ -----------------------------------------------------
+| PAGED_count        : 0                             |
+| FLUSHED_count      : 0                             |
+| AERROR_count       : 0                             |
+| DERROR_count       : 0                             |
+| FAILED_count       : 0                             |
+| NRES_count         : 0                             |
+| NLOCK_count        : 0                             |
+*-----------------------------------------------------*
+
 ```
 
 ### FPGA
@@ -166,15 +205,58 @@ CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-scr
 
 #### Running
 
+##### Silent run with no stats output
+
 1. (Optional) From the root directory go to benchmark directory:
 ```console
 CAPI@Precis:~CAPIPrecis$ cd 00_bench/
 ```
+
+##### Silent run with no stats output
+
 2. Runs algorithm that communicates with the or PSL (real HW):
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga
 ```
 
+##### Verbose run with stats output
+
+This run outputs different afu_control stats based on the response received from the PSL
+
+2. Runs algorithm that communicates with the or PSL (real HW):
+```console
+CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
+```
+
+3. Example output:
+```
+*-----------------------------------------------------*
+|                 AFU Stats                          | 
+ -----------------------------------------------------
+| CYCLE_count        : 106804                        |
+*-----------------------------------------------------*
+|                 Responses Stats                    | 
+ -----------------------------------------------------
+| DONE_count               : 16764                   |
+ -----------------------------------------------------
+| DONE_READ_count          : 8192                    |
+| DONE_WRITE_count         : 8192                    |
+ -----------------------------------------------------
+| DONE_RESTART_count       : 355                     |
+ -----------------------------------------------------
+| DONE_PREFETCH_READ_count : 12                      |
+| DONE_PREFETCH_WRITE_count: 12                      |
+ -----------------------------------------------------
+| PAGED_count        : 355                           |
+| FLUSHED_count      : 0                             |
+| AERROR_count       : 0                             |
+| DERROR_count       : 0                             |
+| FAILED_count       : 0                             |
+| NRES_count         : 0                             |
+| NLOCK_count        : 0                             |
+*-----------------------------------------------------*
+
+```
 
 # CAPI-Precis Structure:
 <p align="center"><img src="./02_slides/fig/CAPIPrecis_chipplanner.png" width="650" ></p>
