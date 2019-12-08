@@ -151,8 +151,8 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #########################################################
 
 export NUM_THREADS = 8
-LHS=512
-RHS=512
+LHS=32
+RHS=128
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 

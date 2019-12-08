@@ -135,21 +135,19 @@ module afu_control #(
 	CommandTagLine read_tag_id     ;
 	CommandTagLine command_tag_id  ;
 
+	logic             round_robin_priority_enabled   ;
+	logic             fixed_priority_enabled         ;
 	CommandBufferLine command_arbiter_out            ;
 	CommandBufferLine command_arbiter_out_fixed      ;
 	CommandBufferLine command_arbiter_out_round_robin;
 
-	logic [NUM_REQUESTS-1:0] requests            ;
-	logic [NUM_REQUESTS-1:0] requests_fixed      ;
-	logic [NUM_REQUESTS-1:0] requests_round_robin;
+	logic [NUM_REQUESTS-1:0] requests;
 
 	logic [NUM_REQUESTS-1:0] ready            ;
 	logic [NUM_REQUESTS-1:0] ready_fixed      ;
 	logic [NUM_REQUESTS-1:0] ready_round_robin;
 
-	CommandBufferLine command_buffer_in            [0:NUM_REQUESTS-1];
-	CommandBufferLine command_buffer_in_fixed      [0:NUM_REQUESTS-1];
-	CommandBufferLine command_buffer_in_round_robin[0:NUM_REQUESTS-1];
+	CommandBufferLine command_buffer_in[0:NUM_REQUESTS-1];
 
 	logic valid_request;
 
@@ -331,16 +329,27 @@ module afu_control #(
 ////////////////////////////////////////////////////////////////////////////
 
 	always_comb begin
-		if(afu_configure_latched[63]) begin
-			command_buffer_in_round_robin = command_buffer_in;
-			requests_round_robin          = requests;
-			command_arbiter_out           = command_arbiter_out_round_robin;
-			ready                         = ready_round_robin;
+		command_arbiter_out          = command_arbiter_out_fixed;
+		ready                        = ready_fixed;
+		round_robin_priority_enabled = 0;
+		fixed_priority_enabled       = 0;
+		if(enabled)begin
+			if(afu_configure_latched[63]) begin
+				command_arbiter_out          = command_arbiter_out_round_robin;
+				ready                        = ready_round_robin;
+				round_robin_priority_enabled = 1;
+				fixed_priority_enabled       = 0;
+			end else begin
+				command_arbiter_out          = command_arbiter_out_fixed;
+				ready                        = ready_fixed;
+				round_robin_priority_enabled = 0;
+				fixed_priority_enabled       = 1;
+			end
 		end else begin
-			command_buffer_in_fixed = command_buffer_in;
-			requests_fixed          = requests;
-			command_arbiter_out     = command_arbiter_out_fixed;
-			ready                   = ready_fixed;
+			command_arbiter_out          = command_arbiter_out_round_robin;
+			ready                        = ready_round_robin;
+			round_robin_priority_enabled = 1;
+			fixed_priority_enabled       = 0;
 		end
 	end
 
@@ -350,9 +359,9 @@ module afu_control #(
 	) round_robin_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
 		.clock      (clock                          ),
 		.rstn       (rstn                           ),
-		.enabled    (enabled                        ),
-		.buffer_in  (command_buffer_in_round_robin  ),
-		.requests   (requests_round_robin           ),
+		.enabled    (round_robin_priority_enabled   ),
+		.buffer_in  (command_buffer_in              ),
+		.requests   (requests                       ),
 		.arbiter_out(command_arbiter_out_round_robin),
 		.ready      (ready_round_robin              )
 	);
@@ -363,9 +372,9 @@ module afu_control #(
 	) fixed_priority_arbiter_N_input_1_ouput_command_buffer_arbiter_instant (
 		.clock      (clock                    ),
 		.rstn       (rstn                     ),
-		.enabled    (enabled                  ),
-		.buffer_in  (command_buffer_in_fixed  ),
-		.requests   (requests_fixed           ),
+		.enabled    (fixed_priority_enabled   ),
+		.buffer_in  (command_buffer_in        ),
+		.requests   (requests                 ),
 		.arbiter_out(command_arbiter_out_fixed),
 		.ready      (ready_fixed              )
 	);
