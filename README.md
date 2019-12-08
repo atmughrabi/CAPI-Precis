@@ -22,7 +22,7 @@ CAPI@Precis:~$ sudo apt-get install libomp-dev
 ### CAPI
 1. Simulation and Synthesis
   * This framework were developed on Ubuntu 18.04 LTS.
-  * ModelSIM is used for simulation and installed along side Quartus II 18.1.
+  * ModelSim is used for simulation and installed along side Quartus II 18.1.
   * Synthesis requires ALTERA Quartus, starting from release 15.0 of Quartus II should be fine.
   * Nallatech P385-A7 card with the Altera Stratix V GX A7 FPGA is supported.
   * Environment Variable setup, `HOME` and `ALTERAPATH` depend on where you clone the repository and install ModelSim.
@@ -114,7 +114,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-openmp
 ```console
 CAPI@Precis:~CAPIPrecis$ cd 00_bench/
 ```
-2. Run [Modelsim vsim] for `simulation` this step is not needed when running on real hardware, this just simulates the AFU that resides on your (CAPI supported) FPGA  :
+2. Run [ModelSim vsim] for `simulation` this step is not needed when running on real hardware, this just simulates the AFU that resides on your (CAPI supported) FPGA  :
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-vsim
 ```
@@ -333,7 +333,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
       * `myMalloc.c` - Custom malloc wrapper for aligned allocations.
       * `timer.c` - simple time measurement library.
   * *`Makefile`* - This makefile handles the compilation/and simulation of CAPIPrecis 
-* `01_capi_integration` - The SW side that runs on the Device(FPGA)/ModelSIM
+* `01_capi_integration` - The SW side that runs on the Device(FPGA)/ModelSim
   * `accelerator_rtl` 
     * `cu` - 
     * `pkg`
@@ -344,9 +344,9 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
       * `pslse.parms`
       * `pslse_server.dat`
       * `shim_host.dat`
-    * `sim` - ModelSIM file and tcl scripts
+    * `sim` - ModelSim file and tcl scripts
       * `vsim.tcl` - when adding files to you RTL project you need to update this script
-      * `inerface.do` - Wave file for modelSim simulation
+      * `inerface.do` - Wave file for ModelSim simulation
   * `accelerator_synth` - synthesis scripts
     * `capi` - This folder contains helper scripts that generated the files necessary for synthesizing the project.
     * `psl_fpga` - This folder contains the RTL for the PSL layer, IPs, and the AFU top
