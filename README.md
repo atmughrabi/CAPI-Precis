@@ -278,7 +278,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
 ```
 
 # CAPI-Precis Structure:
-<p align="center"><img src="./02_slides/fig/CAPIPrecis_chipplanner.png" width="550" ></p>
+<p align="center"><img src="./02_slides/fig/CAPIPrecis_chipplanner.png" width="600" ></p>
 <p align="center"><img src="./02_slides/fig/theme2.png" width="650" ></p>
 
 ## CU Control
