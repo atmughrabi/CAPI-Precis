@@ -128,12 +128,14 @@ export CU_CONFIG_MODE=0x52400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR
 
 #disable both engines
 # ENABLE_RD_WR=0
-#enable write engine
-# ENABLE_RD_WR=1
 #enable read engine
-# ENABLE_RD_WR=2
-#enable both engines
-ENABLE_RD_WR=3
+# ENABLE_RD_WR=1
+# enable write engine independent
+ENABLE_RD_WR=4
+#enable both engines dependent
+# ENABLE_RD_WR=3
+#enable both engines independent
+# ENABLE_RD_WR=5
 
 #disable both PREFETCH
 # ENABLE_RD_WR_PREFETCH=0
@@ -167,14 +169,12 @@ RD_WR_PREFETCH_MODE=0
 ROUND_ROBIN_ARB=0x1111000000000001
 FIXED_ARB=0x1111000000000002
 
-
 ##############################################
 # CAPI FPGA AFU/CU      CONFIG               #
 ##############################################
 
 export AFU_CONFIG_MODE=$(ROUND_ROBIN_ARB)
 # export AFU_CONFIG_MODE=$(FIXED_ARB)
-
 
 export CU_CONFIG_GENERIC=$(CU_CONFIG_MODE)
 export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
@@ -184,8 +184,8 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #########################################################
 
 export NUM_THREADS = 8
-LHS=32
-RHS=256
+LHS=512
+RHS=512
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 

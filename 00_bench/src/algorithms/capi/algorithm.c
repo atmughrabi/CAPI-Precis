@@ -83,7 +83,7 @@ __u64 compareDataArrays(struct DataArrays *dataArrays)
     {
         if(dataArrays->array_receive[i] != dataArrays->array_send[i])
         {
-            printf("[%llu] %u != %u\n", i, dataArrays->array_receive[i], dataArrays->array_send[i] );
+            // printf("[%llu] %u != %u\n", i, dataArrays->array_receive[i], dataArrays->array_send[i] );
             missmatch ++;
         }
     }

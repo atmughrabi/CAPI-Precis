@@ -40,17 +40,16 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	CommandBufferLine read_command_out_latched;
 
 	//input lateched
-	WEDInterface       wed_request_in_latched  ;
-	ResponseBufferLine read_response_in_latched;
-	ReadWriteDataLine  read_data_0_in_latched  ;
-	ReadWriteDataLine  read_data_1_in_latched  ;
-	logic [0:63]       cu_configure_latched    ;
-
+	WEDInterface                  wed_request_in_latched       ;
+	ResponseBufferLine            read_response_in_latched     ;
+	ReadWriteDataLine             read_data_0_in_latched       ;
+	ReadWriteDataLine             read_data_1_in_latched       ;
+	logic [                 0:63] cu_configure_latched         ;
+	logic                         send_to_write_engine         ;
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done_latched;
 	logic                         enabled                      ;
 	logic                         enabled_cmd                  ;
 	logic [                 0:63] next_offest                  ;
-
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -108,8 +107,10 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 		end else begin
 			if(enabled)begin
 				read_response_in_latched <= read_response_in;
-				read_data_0_in_latched   <= read_data_0_in;
-				read_data_1_in_latched   <= read_data_1_in;
+
+				read_data_0_in_latched <= read_data_0_in;
+				read_data_1_in_latched <= read_data_1_in;
+
 
 				if((|cu_configure))
 					cu_configure_latched <= cu_configure;
@@ -136,6 +137,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 //read commands sending logic
 ////////////////////////////////////////////////////////////////////////////
 
+	assign send_to_write_engine = (~read_data_out_buffer_status.alfull && cu_configure_latched[22]) ||  cu_configure_latched[21] || ~(cu_configure_latched[22] || cu_configure_latched[21]);
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
@@ -147,7 +149,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			if(~wed_request_in_latched.valid && enabled_cmd)
 				wed_request_in_latched <= wed_request_in;
 
-			if (wed_request_in_latched.valid && ~read_command_buffer_status.alfull && ~read_data_out_buffer_status.alfull && (|wed_request_in_latched.wed.size_send) && enabled_cmd) begin
+			if (wed_request_in_latched.valid && ~read_command_buffer_status.alfull && send_to_write_engine && (|wed_request_in_latched.wed.size_send) && enabled_cmd) begin
 
 				if(wed_request_in_latched.wed.size_send >= CACHELINE_ARRAY_NUM)begin
 					wed_request_in_latched.wed.size_send   <= wed_request_in_latched.wed.size_send - CACHELINE_ARRAY_NUM;

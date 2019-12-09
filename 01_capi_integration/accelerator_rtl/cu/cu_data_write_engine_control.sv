@@ -37,8 +37,9 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 );
 
 
-	BufferStatus write_data_in_0_buffer_status;
-	BufferStatus write_data_in_1_buffer_status;
+	BufferStatus                  write_data_in_0_buffer_status;
+	BufferStatus                  write_data_in_1_buffer_status;
+	logic [0:63]                  next_offest                  ;
 
 	logic             enabled                  ;
 	logic [0:63]      cu_configure_latched     ;
@@ -78,11 +79,9 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			wed_request_in_latched <= 0;
-			cu_configure_latched   <= 0;
+			cu_configure_latched <= 0;
 		end else begin
 			if(enabled) begin
-				wed_request_in_latched <= wed_request_in;
 				if((|cu_configure))
 					cu_configure_latched <= cu_configure;
 			end
@@ -137,8 +136,14 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			write_command_out_latched <= 0;
 			write_data_0_out_latched  <= 0;
 			write_data_1_out_latched  <= 0;
+			wed_request_in_latched    <= 0;
+			next_offest               <= 0;
 		end else begin
-			if (write_data_0_out_buffer.valid && write_data_1_out_buffer.valid && enabled) begin
+
+			if(~wed_request_in_latched.valid && enabled)
+				wed_request_in_latched <= wed_request_in;
+
+			if (write_data_0_out_buffer.valid && write_data_1_out_buffer.valid && enabled && cu_configure_latched[22]) begin
 				write_command_out_latched.valid <= write_data_0_out_buffer.valid;
 
 				write_command_out_latched.address <= wed_request_in_latched.wed.array_receive + write_data_0_out_buffer.cmd.address_offest;
@@ -164,6 +169,67 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				end else begin
 					write_command_out_latched.command <= WRITE_NA;
 				end
+
+			end else if (wed_request_in_latched.valid && enabled && cu_configure_latched[21] && ~write_command_buffer_status.alfull && (|wed_request_in_latched.wed.size_recive)) begin
+
+				if(wed_request_in_latched.wed.size_recive >= CACHELINE_ARRAY_NUM)begin
+					wed_request_in_latched.wed.size_recive  <= wed_request_in_latched.wed.size_recive - CACHELINE_ARRAY_NUM;
+					write_command_out_latched.cmd.real_size <= CACHELINE_ARRAY_NUM;
+
+					if (cu_configure_latched[9]) begin
+						write_command_out_latched.command <= WRITE_MS;
+						write_command_out_latched.size    <= 12'h080;
+					end else begin
+						write_command_out_latched.size    <= cmd_size_calculate(wed_request_in_latched.wed.size_recive);
+						write_command_out_latched.command <= WRITE_NA;
+					end
+
+				end else if (wed_request_in_latched.wed.size_recive < CACHELINE_ARRAY_NUM) begin
+					wed_request_in_latched.wed.size_recive  <= 0;
+					write_command_out_latched.cmd.real_size <= wed_request_in_latched.wed.size_recive;
+
+					if (cu_configure_latched[9]) begin
+						write_command_out_latched.command <= WRITE_MS;
+						write_command_out_latched.size    <= 12'h080;
+					end else begin
+						write_command_out_latched.size    <= cmd_size_calculate(wed_request_in_latched.wed.size_recive);
+						write_command_out_latched.command <= WRITE_NA;
+					end
+
+				end
+
+				write_command_out_latched.address <= wed_request_in_latched.wed.array_receive + next_offest;
+
+				write_command_out_latched.valid                <= 1'b1;
+				write_command_out_latched.cmd.cu_id            <= CU_WRITE_CONTROL_ID;
+				write_command_out_latched.cmd.cmd_type         <= CMD_WRITE;
+				write_command_out_latched.cmd.cacheline_offest <= 0;
+				write_command_out_latched.cmd.address_offest   <= next_offest;
+				write_command_out_latched.cmd.array_struct     <= READ_DATA;
+
+				write_data_0_out_latched.valid                <= 1'b1;
+				write_data_0_out_latched.cmd.cu_id            <= CU_WRITE_CONTROL_ID;
+				write_data_0_out_latched.cmd.cmd_type         <= CMD_WRITE;
+				write_data_0_out_latched.cmd.cacheline_offest <= 0;
+				write_data_0_out_latched.cmd.address_offest   <= next_offest;
+				write_data_0_out_latched.cmd.array_struct     <= READ_DATA;
+				write_data_0_out_latched.data                 <= next_offest ;
+
+				write_data_1_out_latched.valid                <= 1'b1;
+				write_data_1_out_latched.cmd.cu_id            <= CU_WRITE_CONTROL_ID;
+				write_data_1_out_latched.cmd.cmd_type         <= CMD_WRITE;
+				write_data_1_out_latched.cmd.cacheline_offest <= 0;
+				write_data_1_out_latched.cmd.address_offest   <= next_offest;
+				write_data_1_out_latched.cmd.array_struct     <= READ_DATA;
+				write_data_1_out_latched.data                 <= next_offest ;
+
+				write_data_1_out_latched.cmd.abt  <= map_CABT(cu_configure_latched[5:7]);
+				write_data_0_out_latched.cmd.abt  <= map_CABT(cu_configure_latched[5:7]);
+				write_command_out_latched.cmd.abt <= map_CABT(cu_configure_latched[5:7]);
+				write_command_out_latched.abt     <= map_CABT(cu_configure_latched[5:7]);
+
+
+				next_offest <= next_offest + CACHELINE_SIZE;
 
 			end else begin
 				write_command_out_latched <= 0;

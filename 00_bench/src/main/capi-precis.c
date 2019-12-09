@@ -165,7 +165,7 @@ main (int argc, char **argv)
     missmatch = compareDataArrays(dataArrays);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s | %-20llu | \n", "Data Missmatched (#)", missmatch);
+    printf("| %-30s | %-18llu | \n", "Data Missmatched (#)", missmatch);
     printf(" -----------------------------------------------------\n");
 
        if(missmatch != 0)

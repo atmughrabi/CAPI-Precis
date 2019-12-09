@@ -489,7 +489,7 @@ module afu_control #(
 			prefetch_read_credits  <= (total_credits >> afu_configure_latched[8:11]);
 			prefetch_write_credits <= (total_credits >> afu_configure_latched[12:15]);
 			if(enabled) begin
-				if((credits.credits == 255)|(credits.credits > 64))
+				if((credits.credits <= 255) && (credits.credits > 64))
 					credit_overflow_error <= 1;
 			end
 		end

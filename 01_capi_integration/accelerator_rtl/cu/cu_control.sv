@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-12-08 01:39:09
-// Revise : 2019-12-09 06:35:42
+// Revise : 2019-12-09 09:05:55
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -136,7 +136,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		end else begin
 			if(enabled) begin
 				enabled_instants_read  <= cu_ready && cu_configure_latched[23]; // activate read mode
-				enabled_instants_write <= cu_ready && cu_configure_latched[22]; // activate write mode
+				enabled_instants_write <= cu_ready && (cu_configure_latched[22]| cu_configure_latched[21]); // activate write mode cu_configure_latched[21]; // activate independent write mode
 				enabled_prefetch_read  <= cu_ready;
 				enabled_prefetch_write <= cu_ready;
 			end
@@ -152,12 +152,18 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		cu_return_latched = 0;
 		done_algorithm = 0;
 		if(wed_request_in_latched.valid)begin
-			if(cu_configure_latched[22]) begin
-				done_algorithm = (wed_request_in_latched.wed.size_recive == write_job_counter_done);
+			if((cu_configure_latched[21] || cu_configure_latched[22]) && cu_configure_latched[23]) begin
+				done_algorithm = ((wed_request_in_latched.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.wed.size_send == read_job_counter_done));
 				cu_return_latched = {write_job_counter_done};
-			end else begin
+			end else if(cu_configure_latched[21] || cu_configure_latched[22]) begin
+				done_algorithm = ((wed_request_in_latched.wed.size_recive == write_job_counter_done));
+				cu_return_latched = {write_job_counter_done};
+			end else if(cu_configure_latched[23]) begin
 				done_algorithm = (wed_request_in_latched.wed.size_send == read_job_counter_done);
 				cu_return_latched = {read_job_counter_done};
+			end else begin
+				done_algorithm = ((wed_request_in_latched.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.wed.size_send == read_job_counter_done));
+				cu_return_latched = {write_job_counter_done};
 			end
 		end
 	end
@@ -176,7 +182,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			if(enabled)begin
 				cu_return <= cu_return_latched;
 				cu_done   <= done_algorithm;
-				cu_status <= cu_ready;
+				cu_status <= cu_configure_latched;
 			end
 		end
 	end
@@ -226,6 +232,9 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		end
 	end
 
+////////////////////////////////////////////////////////////////////////////
+//Independent write Engine
+////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////
 //READ Engine
