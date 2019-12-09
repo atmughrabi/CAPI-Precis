@@ -50,6 +50,7 @@ module afu_control #(
 	output logic [ 0:6]                  command_response_error     ,
 	output logic [ 0:1]                  data_read_error            ,
 	output logic                         data_write_error           ,
+	output logic                         credit_overflow_error      ,
 	output BufferInterfaceOutput         buffer_out                 ,
 	output CommandInterfaceOutput        command_out                ,
 	output CommandBufferStatusInterface  command_buffer_status      ,
@@ -480,12 +481,17 @@ module afu_control #(
 			write_credits          <= 0;
 			prefetch_read_credits  <= 0;
 			prefetch_write_credits <= 0;
+			credit_overflow_error  <= 0;
 		end else begin
 			total_credits          <= (command_in_latched.room);
 			read_credits           <= (total_credits >> afu_configure_latched[0:3]);
 			write_credits          <= (total_credits >> afu_configure_latched[4:7]);
 			prefetch_read_credits  <= (total_credits >> afu_configure_latched[8:11]);
 			prefetch_write_credits <= (total_credits >> afu_configure_latched[12:15]);
+			if(enabled) begin
+				if((credits.credits == 255)|(credits.credits > 64))
+					credit_overflow_error <= 1;
+			end
 		end
 	end
 

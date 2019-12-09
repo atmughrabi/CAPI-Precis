@@ -53,32 +53,32 @@ int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed)
 void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 {
 #ifdef  VERBOSE
-    printf("AFU configuration start status(0x%08lx) \n", (afu_status->afu_status) );
+    printf("AFU configuration start status(0x%08llx) \n", (afu_status->afu_status) );
 #endif
     do
     {
         cxl_mmio_write64((*afu), AFU_CONFIGURE, afu_status->afu_config);
-        cxl_mmio_read64((*afu), AFU_STATUS, &(afu_status->afu_status));
+        cxl_mmio_read64((*afu), AFU_STATUS, (uint64_t *) & (afu_status->afu_status));
     }
     while(!(afu_status->afu_status));
 #ifdef  VERBOSE
-    printf("AFU configuration done status(0x%08lx) \n", (afu_status->afu_status) );
+    printf("AFU configuration done status(0x%08llx) \n", (afu_status->afu_status) );
 #endif
 }
 
 void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 {
 #ifdef  VERBOSE
-    printf("CU configuration start status(0x%08lx) \n", (afu_status->cu_status) );
+    printf("CU configuration start status(0x%08llx) \n", (afu_status->cu_status) );
 #endif
     do
     {
-        cxl_mmio_write64((*afu), CU_CONFIGURE, afu_status->cu_config);
-        cxl_mmio_read64((*afu), CU_STATUS, &(afu_status->cu_status));
+        cxl_mmio_write64((*afu), CU_CONFIGURE, (uint64_t)afu_status->cu_config);
+        cxl_mmio_read64((*afu), CU_STATUS, (uint64_t *) & (afu_status->cu_status));
     }
     while(!((afu_status->cu_status)));
 #ifdef  VERBOSE
-    printf("CU configuration done status(0x%08lx) \n", (afu_status->cu_status) );
+    printf("CU configuration done status(0x%08llx) \n", (afu_status->cu_status) );
 #endif
 }
 
@@ -90,11 +90,11 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     do
     {
         // Poll for errors always
-        cxl_mmio_read64((*afu), ERROR_REG, &(afu_status->error));
-        cxl_mmio_write64((*afu), ERROR_REG_ACK, afu_status->error);
+        cxl_mmio_read64((*afu), ERROR_REG, (uint64_t *) & (afu_status->error));
+        cxl_mmio_write64((*afu), ERROR_REG_ACK, (uint64_t)afu_status->error);
 
         // read final return result
-        cxl_mmio_read64((*afu), CU_RETURN_DONE, &(afu_status->cu_return_done));
+        cxl_mmio_read64((*afu), CU_RETURN_DONE, (uint64_t *) & (afu_status->cu_return_done));
 
         // if((((afu_status->cu_return_done) << 32) >> 32) >= (afu_status->cu_stop))
         //     break;
@@ -102,7 +102,7 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
         if((afu_status->cu_return_done) >= (afu_status->cu_stop))
         {
             readCmdResponseStats(afu, &cmdResponseStats);
-            cxl_mmio_write64((*afu), CU_RETURN_DONE_ACK, afu_status->cu_return_done);
+            cxl_mmio_write64((*afu), CU_RETURN_DONE_ACK, (uint64_t)afu_status->cu_return_done);
             break;
         }
     }
@@ -114,8 +114,8 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s  | \n", " ", "Rd/Wrt Stats", " ");
     printf(" -----------------------------------------------------\n");
-    printf("| count_read  : %lu\n", (afu_status->cu_return_done));
-    printf("| count_write : %lu\n", (afu_status->cu_return_done));
+    printf("| count_read  : %llu\n", (afu_status->cu_return_done));
+    printf("| count_write : %llu\n", (afu_status->cu_return_done));
     printf("*-----------------------------------------------------*\n");
 #endif
 
@@ -125,23 +125,23 @@ void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdRe
 {
 
 
-    cxl_mmio_read64((*afu), DONE_COUNT_REG, &(cmdResponseStats->DONE_count));
-    cxl_mmio_read64((*afu), DONE_RESTART_COUNT_REG, &(cmdResponseStats->DONE_RESTART_count));
+    cxl_mmio_read64((*afu), DONE_COUNT_REG, (uint64_t *) & (cmdResponseStats->DONE_count));
+    cxl_mmio_read64((*afu), DONE_RESTART_COUNT_REG, (uint64_t *) & (cmdResponseStats->DONE_RESTART_count));
 
-    cxl_mmio_read64((*afu), DONE_PREFETCH_READ_COUNT_REG, &(cmdResponseStats->DONE_PREFETCH_READ_count));
-    cxl_mmio_read64((*afu), DONE_PREFETCH_WRITE_COUNT_REG, &(cmdResponseStats->DONE_PREFETCH_WRITE_count));
+    cxl_mmio_read64((*afu), DONE_PREFETCH_READ_COUNT_REG, (uint64_t *) & (cmdResponseStats->DONE_PREFETCH_READ_count));
+    cxl_mmio_read64((*afu), DONE_PREFETCH_WRITE_COUNT_REG, (uint64_t *) & (cmdResponseStats->DONE_PREFETCH_WRITE_count));
 
-    cxl_mmio_read64((*afu), PAGED_COUNT_REG, &(cmdResponseStats->PAGED_count));
-    cxl_mmio_read64((*afu), FLUSHED_COUNT_REG, &(cmdResponseStats->FLUSHED_count));
-    cxl_mmio_read64((*afu), AERROR_COUNT_REG, &(cmdResponseStats->AERROR_count));
-    cxl_mmio_read64((*afu), DERROR_COUNT_REG, &(cmdResponseStats->DERROR_count));
-    cxl_mmio_read64((*afu), FAILED_COUNT_REG, &(cmdResponseStats->FAILED_count));
-    cxl_mmio_read64((*afu), FAULT_COUNT_REG, &(cmdResponseStats->FAULT_count));
-    cxl_mmio_read64((*afu), NRES_COUNT_REG, &(cmdResponseStats->NRES_count));
-    cxl_mmio_read64((*afu), NLOCK_COUNT_REG, &(cmdResponseStats->NLOCK_count));
-    cxl_mmio_read64((*afu), CYCLE_COUNT_REG, &(cmdResponseStats->CYCLE_count));
-    cxl_mmio_read64((*afu), DONE_READ_COUNT_REG, &(cmdResponseStats->DONE_READ_count));
-    cxl_mmio_read64((*afu), DONE_WRITE_COUNT_REG, &(cmdResponseStats->DONE_WRITE_count));
+    cxl_mmio_read64((*afu), PAGED_COUNT_REG, (uint64_t *) & (cmdResponseStats->PAGED_count));
+    cxl_mmio_read64((*afu), FLUSHED_COUNT_REG, (uint64_t *) & (cmdResponseStats->FLUSHED_count));
+    cxl_mmio_read64((*afu), AERROR_COUNT_REG, (uint64_t *) & (cmdResponseStats->AERROR_count));
+    cxl_mmio_read64((*afu), DERROR_COUNT_REG, (uint64_t *) & (cmdResponseStats->DERROR_count));
+    cxl_mmio_read64((*afu), FAILED_COUNT_REG, (uint64_t *) & (cmdResponseStats->FAILED_count));
+    cxl_mmio_read64((*afu), FAULT_COUNT_REG, (uint64_t *) & (cmdResponseStats->FAULT_count));
+    cxl_mmio_read64((*afu), NRES_COUNT_REG, (uint64_t *) & (cmdResponseStats->NRES_count));
+    cxl_mmio_read64((*afu), NLOCK_COUNT_REG, (uint64_t *) & (cmdResponseStats->NLOCK_count));
+    cxl_mmio_read64((*afu), CYCLE_COUNT_REG, (uint64_t *) & (cmdResponseStats->CYCLE_count));
+    cxl_mmio_read64((*afu), DONE_READ_COUNT_REG, (uint64_t *) & (cmdResponseStats->DONE_READ_count));
+    cxl_mmio_read64((*afu), DONE_WRITE_COUNT_REG, (uint64_t *) & (cmdResponseStats->DONE_WRITE_count));
 
 }
 
@@ -150,27 +150,27 @@ void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s | \n", " ", "AFU Stats", " ");
     printf(" -----------------------------------------------------\n");
-    printf("| CYCLE_count        : %lu\n", cmdResponseStats->CYCLE_count);
+    printf("| CYCLE_count        : %llu\n", cmdResponseStats->CYCLE_count);
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s | \n", " ", "Responses Stats", " ");
     printf(" -----------------------------------------------------\n");
-    printf("| DONE_count               : %lu\n", cmdResponseStats->DONE_count);
+    printf("| DONE_count               : %llu\n", cmdResponseStats->DONE_count);
     printf(" -----------------------------------------------------\n");
-    printf("| DONE_READ_count          : %lu\n", cmdResponseStats->DONE_READ_count);
-    printf("| DONE_WRITE_count         : %lu\n", cmdResponseStats->DONE_WRITE_count);
+    printf("| DONE_READ_count          : %llu\n", cmdResponseStats->DONE_READ_count);
+    printf("| DONE_WRITE_count         : %llu\n", cmdResponseStats->DONE_WRITE_count);
     printf(" -----------------------------------------------------\n");
-    printf("| DONE_RESTART_count       : %lu\n", cmdResponseStats->DONE_RESTART_count);
+    printf("| DONE_RESTART_count       : %llu\n", cmdResponseStats->DONE_RESTART_count);
     printf(" -----------------------------------------------------\n");
-    printf("| DONE_PREFETCH_READ_count : %lu\n", cmdResponseStats->DONE_PREFETCH_READ_count);
-    printf("| DONE_PREFETCH_WRITE_count: %lu\n", cmdResponseStats->DONE_PREFETCH_WRITE_count);
+    printf("| DONE_PREFETCH_READ_count : %llu\n", cmdResponseStats->DONE_PREFETCH_READ_count);
+    printf("| DONE_PREFETCH_WRITE_count: %llu\n", cmdResponseStats->DONE_PREFETCH_WRITE_count);
     printf(" -----------------------------------------------------\n");
-    printf("| PAGED_count        : %lu\n", cmdResponseStats->PAGED_count);
-    printf("| FLUSHED_count      : %lu\n", cmdResponseStats->FLUSHED_count);
-    printf("| AERROR_count       : %lu\n", cmdResponseStats->AERROR_count);
-    printf("| DERROR_count       : %lu\n", cmdResponseStats->DERROR_count);
-    printf("| FAILED_count       : %lu\n", cmdResponseStats->FAILED_count);
-    printf("| NRES_count         : %lu\n", cmdResponseStats->NRES_count);
-    printf("| NLOCK_count        : %lu\n", cmdResponseStats->NLOCK_count);
+    printf("| PAGED_count        : %llu\n", cmdResponseStats->PAGED_count);
+    printf("| FLUSHED_count      : %llu\n", cmdResponseStats->FLUSHED_count);
+    printf("| AERROR_count       : %llu\n", cmdResponseStats->AERROR_count);
+    printf("| DERROR_count       : %llu\n", cmdResponseStats->DERROR_count);
+    printf("| FAILED_count       : %llu\n", cmdResponseStats->FAILED_count);
+    printf("| NRES_count         : %llu\n", cmdResponseStats->NRES_count);
+    printf("| NLOCK_count        : %llu\n", cmdResponseStats->NLOCK_count);
     printf("*-----------------------------------------------------*\n");
 }
 
@@ -186,8 +186,11 @@ void releaseAFU(struct cxl_afu_h **afu)
 
 void printMMIO_error( uint64_t error )
 {
-
-    if(error >> 12)
+    if(error >> 14)
+    {
+        printf("(BIT-14) Credit Overflow AFU Error\n");
+    }
+    else if(error >> 12)
     {
         switch(error >> 12)
         {

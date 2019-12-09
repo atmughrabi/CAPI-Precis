@@ -14,6 +14,7 @@ struct Arguments
     __u32 numThreads;
     __u64 afu_config;
     __u64 cu_config;
+    __u32 cu_mode;
 };
 
 #endif

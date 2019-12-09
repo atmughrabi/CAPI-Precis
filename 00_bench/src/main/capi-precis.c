@@ -46,20 +46,24 @@ static char args_doc[] = "-s <size> -n [num threads] -a [afu config] -c [cu conf
 static struct argp_option options[] =
 {
     {
-        "num-threads",       'n', "[DEFAULT:MAX]",      0,
+        "num-threads",          'n', "[DEFAULT:MAX]",      0,
         "\nDefault:max number of threads the system has"
     },
     {
-        "size",         's', "SIZE:512",      0,
+        "size",                 's', "SIZE:512",      0,
         "\nSize of array to be sent and copied back "
     },
     {
-        "afu-config",         'a', "[DEFAULT:0x1]",      0,
+        "afu-config",           'a', "[DEFAULT:0x1]",      0,
         "\nafu buffer arbitration 0x01 round robin 0x10 fix priority"
     },
     {
-        "cu-config",         'c', "[DEFAULT:0x01]",      0,
+        "cu-config",            'c', "[DEFAULT:0x01]",      0,
         "\nCU configurations for requests cached/non cached/prefetcher active or not check README for more explanation"
+    },
+    {
+        "cu-mode",            'm', "[DEFAULT:0x03]",      0,
+        "\nCU configurations for read/write engines. disable-both-engines-[0] write-engine-[1] read-engine-[2] enable-both-engines-[3]"
     },
     { 0 }
 };
@@ -89,6 +93,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case 'c':
         arguments->cu_config = strtoll(arg, &eptr, 0);
         break;
+    case 'm':
+        arguments->cu_mode = atoi(arg);
+        break;
     default:
         return ARGP_ERR_UNKNOWN;
     }
@@ -110,6 +117,7 @@ main (int argc, char **argv)
     arguments.size = 512;
     arguments.afu_config = 0x01;
     arguments.cu_config  = 0x01;
+    arguments.cu_mode    = 0x03;
 
      argp_parse (&argp, argc, argv, 0, 0, &arguments);
 

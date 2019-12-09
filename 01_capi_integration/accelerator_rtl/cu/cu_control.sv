@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-12-08 01:39:09
-// Revise : 2019-12-09 04:07:28
+// Revise : 2019-12-09 06:35:42
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			enabled_prefetch_write <= 0;
 		end else begin
 			if(enabled) begin
-				enabled_instants_read  <= cu_ready;
-				enabled_instants_write <= cu_ready;
+				enabled_instants_read  <= cu_ready && cu_configure_latched[23]; // activate read mode
+				enabled_instants_write <= cu_ready && cu_configure_latched[22]; // activate write mode
 				enabled_prefetch_read  <= cu_ready;
 				enabled_prefetch_write <= cu_ready;
 			end
@@ -146,15 +146,19 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 ////////////////////////////////////////////////////////////////////////////
 //Done signal
 ////////////////////////////////////////////////////////////////////////////a
-
-	assign done_algorithm = wed_request_in_latched.valid && (wed_request_in_latched.wed.size_send == read_job_counter_done) && (wed_request_in_latched.wed.size_recive == write_job_counter_done);
-
 	assign cu_ready = (|cu_configure_latched) && wed_request_in_latched.valid;
 
 	always_comb begin
 		cu_return_latched = 0;
+		done_algorithm = 0;
 		if(wed_request_in_latched.valid)begin
-			cu_return_latched = {write_job_counter_done};
+			if(cu_configure_latched[22]) begin
+				done_algorithm = (wed_request_in_latched.wed.size_recive == write_job_counter_done);
+				cu_return_latched = {write_job_counter_done};
+			end else begin
+				done_algorithm = (wed_request_in_latched.wed.size_send == read_job_counter_done);
+				cu_return_latched = {read_job_counter_done};
+			end
 		end
 	end
 

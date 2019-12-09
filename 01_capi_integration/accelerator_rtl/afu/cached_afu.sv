@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cached_afu.sv
 // Create : 2019-09-26 15:20:40
-// Revise : 2019-12-08 14:00:25
+// Revise : 2019-12-09 07:11:01
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
 
@@ -40,6 +40,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
   logic [                    0:1] mmio_errors           ;
   logic [                    0:1] data_read_error       ;
   logic                           data_write_error      ;
+  logic                           credit_overflow_error ;
   logic [                    0:6] command_response_error;
   logic [                   0:63] external_errors       ;
   logic [                   0:63] report_errors         ;
@@ -156,7 +157,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 //ERROR
 ////////////////////////////////////////////////////////////////////////////
 
-  assign external_errors = {50'b0, job_errors, mmio_errors, data_write_error ,data_read_error, command_response_error};
+  assign external_errors = {49'b0, credit_overflow_error, job_errors, mmio_errors, data_write_error ,data_read_error, command_response_error};
 
   error_control error_control_instant (
     .clock            (clock            ),
@@ -218,6 +219,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .command_response_error     (command_response_error     ),
     .data_read_error            (data_read_error            ),
     .data_write_error           (data_write_error           ),
+    .credit_overflow_error      (credit_overflow_error      ),
     .buffer_out                 (buffer_out                 ),
     .command_out                (command_out                ),
     .command_buffer_status      (command_buffer_status      ),
