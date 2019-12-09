@@ -1,0 +1,855 @@
+Assembler report for capi-precis
+Sun Dec  8 15:21:56 2019
+Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Standard Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Assembler Summary
+  3. Assembler Settings
+  4. Assembler Encrypted IP Cores Summary
+  5. Assembler Generated Files
+  6. Assembler Device Options: capi-precis.sof
+  7. Assembler Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2018  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details.
+
+
+
++---------------------------------------------------------------+
+; Assembler Summary                                             ;
++-----------------------+---------------------------------------+
+; Assembler Status      ; Successful - Sun Dec  8 15:21:56 2019 ;
+; Revision Name         ; capi-precis                           ;
+; Top-level Entity Name ; psl_fpga                              ;
+; Family                ; Stratix V                             ;
+; Device                ; 5SGXMA7H2F35C2                        ;
++-----------------------+---------------------------------------+
+
+
++---------------------------------------------------------------------------------------------------------------+
+; Assembler Settings                                                                                            ;
++-----------------------------------------------------------------------------+----------------+----------------+
+; Option                                                                      ; Setting        ; Default Value  ;
++-----------------------------------------------------------------------------+----------------+----------------+
+; Maximum processors allowed for parallel compilation                         ; All            ;                ;
+; Use smart compilation                                                       ; Off            ; Off            ;
+; Enable parallel Assembler and Timing Analyzer during compilation            ; On             ; On             ;
+; Enable compact report table                                                 ; Off            ; Off            ;
+; Generate compressed bitstreams                                              ; On             ; On             ;
+; Compression mode                                                            ; Off            ; Off            ;
+; Clock source for configuration device                                       ; Internal       ; Internal       ;
+; Clock frequency of the configuration device                                 ; 10 MHZ         ; 10 MHz         ;
+; Divide clock frequency by                                                   ; 1              ; 1              ;
+; Auto user code                                                              ; On             ; On             ;
+; Configuration device                                                        ; Auto           ; Auto           ;
+; Voltage output format                                                       ; Auto discovery ; Auto discovery ;
+; Configuration device auto user code                                         ; Off            ; Off            ;
+; Generate Tabular Text File (.ttf) For Target Device                         ; Off            ; Off            ;
+; Generate Raw Binary File (.rbf) For Target Device                           ; Off            ; Off            ;
+; Generate Hexadecimal (Intel-Format) Output File (.hexout) for Target Device ; Off            ; Off            ;
+; Hexadecimal Output File start address                                       ; 0              ; 0              ;
+; Hexadecimal Output File count direction                                     ; Up             ; Up             ;
+; Release clears before tri-states                                            ; Off            ; Off            ;
+; Auto-restart configuration after error                                      ; On             ; On             ;
+; Enable OCT_DONE                                                             ; Off            ; Off            ;
+; Use Checkered Pattern as Uninitialized RAM Content                          ; Off            ; Off            ;
+; Enable autonomous PCIe HIP mode                                             ; Off            ; Off            ;
+; Generate Serial Vector Format File (.svf) for Target Device                 ; Off            ; Off            ;
+; Generate a JEDEC STAPL Format File (.jam) for Target Device                 ; Off            ; Off            ;
+; Generate a compressed Jam STAPL Byte Code 2.0 File (.jbc) for Target Device ; Off            ; Off            ;
+; Generate a compressed Jam STAPL Byte Code 2.0 File (.jbc) for Target Device ; On             ; On             ;
++-----------------------------------------------------------------------------+----------------+----------------+
+
+
++----------------------------------------------------------------------------+
+; Assembler Encrypted IP Cores Summary                                       ;
++--------+----------------------------------------------------+--------------+
+; Vendor ; IP Core Name                                       ; License Type ;
++--------+----------------------------------------------------+--------------+
+; Altera ; Signal Tap (6AF7 BCE1)                             ; Licensed     ;
+; Altera ; Signal Tap (6AF7 BCEC)                             ; Licensed     ;
+; IBM    ; psl.vhdl (A0ED A000)                               ; Licensed     ;
+; IBM    ; psl_afu_debug.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_bpfifo32x88.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_byteswiz128.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_byteswiz256.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_byteswiz32.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_cd.vhdl (A0ED A000)                            ; Licensed     ;
+; IBM    ; psl_cdbank.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_cdpar.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_cdrpmux1.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_cdrpmux2.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_cdrpmux32.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_cdword.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_clkcontrol.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_cmddec.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_cmddecode.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_complete.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ct.vhdl (A0ED A000)                            ; Licensed     ;
+; IBM    ; psl_ct_co.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_ct_dcbzf.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ct_fill.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ct_pslcmd.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ct_wrs.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ctfcccntrl.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ctfcdreq.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ctfexi.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ctfhitmiss.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ctfi.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_ctfmachhit.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ctfmch.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ctfminit.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ctfqtinv.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ctfqtrsp.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ctfrdasgn.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ctfrej.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ctfrxrsp.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ctfsnp.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ctftagcmp.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ctfull.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ctfvict.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ctfvicta.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ctqt.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_da.vhdl (A0ED A000)                            ; Licensed     ;
+; IBM    ; psl_da2qt.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_da_fill.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_da_issue.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_da_pipe.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_da_rsp.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_da_snp.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_da_wdd.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_da_wrs.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_dafifo32.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_dafifo_room32x5.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_dataswiz.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_dcred.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_dec16x12.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_dec16x16.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_dec256x256.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_dec32x32.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_dec4x1.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_dec4x2.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_dec4x3.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_dec4x4.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_dec4x5.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_dec64x64.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_dec8x8.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_decfill8x8.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_delay_10_ram_10_3.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_1_pipe_1_1.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_1_pipe_1_13.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_1_pipe_1_3.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_1_pipe_1_32.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_1_pipe_1_35.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_1_pipe_1_50.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_1_pipe_1_6.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_1_pipe_1_8.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_20_ram_20_1.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_2_pipe_2_1.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_pipe_2_3.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_pipe_2_88.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_1.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_13.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_28.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_3.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_316.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_33.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_35.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_4.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_50.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_6.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_64.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_66.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_72.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_74.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_8.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_9.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_92.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_2_ram_2_95.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_3_pipe_3_1.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_3_pipe_3_4.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_3_pipe_3_6.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_3_pipe_3_8.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_3_pipe_3_9.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_3_ram_3_1.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_3_ram_3_2.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_3_ram_3_32.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_3_ram_3_50.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_3_ram_3_56.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_3_ram_3_6.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_3_ram_3_8.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_4_pipe_4_1.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_4_pipe_4_16.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_4_pipe_4_17.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_delay_4_pipe_4_2.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_4_pipe_4_8.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_4_pipe_4_9.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_4_ram_4_1.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_4_ram_4_12.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_4_ram_4_15.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_4_ram_4_2.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_4_ram_4_3.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_5_pipe_5_1.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_delay_5_ram_5_1.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_7_ram_7_3.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_delay_8_ram_8_7.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_dff_hier1.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_dff_hier124.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_dff_hier128.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_dff_hier17.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_dff_hier2.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_dff_hier256.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_dff_hier28.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_dff_hier32.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_dff_hier37.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_dff_hier8.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_dff_hier9.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_dff_hline.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_dff_hline512.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ds.vhdl (A0ED A000)                            ; Licensed     ;
+; IBM    ; psl_ds_brcnt.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_brpick.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ds_bwcnt.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_bwsch.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_comrk.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_conf.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ds_core.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ds_da_fill.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ds_frmpci.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ds_inq_cc.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ds_inq_cd.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ds_inq_fill.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ds_inq_q.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_latdec.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ds_prcnt.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_prcnttw.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ds_prienc_cc.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ds_prienc_cd.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ds_prienc_x.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ds_prsch.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_prschq.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ds_pwcnt.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_pwsch.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_pwschpci.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ds_pwschq.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ds_rd.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_ds_rpick_cd.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ds_rpick_q.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ds_rpick_x.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ds_topci.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ds_topcior.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ds_wpick_cd.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ds_wpick_q.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ds_wr.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_dsfifo_schedinfo_nobypass.vhdl (A0ED A000)     ; Licensed     ;
+; IBM    ; psl_dsfifo_schedinfocc_nobypass.vhdl (A0ED A000)   ; Licensed     ;
+; IBM    ; psl_dsfifo_schedinfofill_nobypass.vhdl (A0ED A000) ; Licensed     ;
+; IBM    ; psl_dsfifo_schedinfoq_nobypass.vhdl (A0ED A000)    ; Licensed     ;
+; IBM    ; psl_eight4cnt.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_en_rise_dff.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_en_rise_vdff.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_enc32to5_5.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_enc4to2.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_enc4to2_2.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_enc4x1.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_enc4x4.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_enc8to3.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_encmux10_64.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_encmux16_4.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux16_64.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_encmux28_36.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_encmux29_36.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_encmux2_1.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux2_2.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux2_32.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux2_64.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux2_7.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux2_8.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux2_hline.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_encmux32_9.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux3_16.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux3_3.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux3_32.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux3_6.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux3_64.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux3_8.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux3_qhline128.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_encmux4_1.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux4_10.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux4_2.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux4_32.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux4_4.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux4_5.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux4_6.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux4_64.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux4_8.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux4_9.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux5_16.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux5_32.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux5_qhline128.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_encmux64_2.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux8_1.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux8_17.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux8_2.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encmux8_22.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux8_56.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux8_64.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encmux8_8.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_encselbit12.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_encselbit16.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_encselbit16_8.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_encselbit32.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_encselbit4.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_encselbit4_4.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_encselbit4x4.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_encselbit64.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_encselbit6_8.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_encselbit8_1.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_encselbit8_8.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_encstatevirt.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_endff_hier1.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_endff_hier128.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_endff_hier16.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_endff_hier2.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_endff_hier32.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_endff_hier64.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_endff_hline.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_erat.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_errflrecmx.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_errflrecmx8.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_fifo128x34.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_fifo32x10.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_fifo32x128.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_fifo32x15.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_fifo32x23.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_fifo32x5.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_fifo32x8.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_fifo32x9.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_fifo4x2.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_fifo64x15.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_fifo64x8.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_fifo64x9.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_fifo_116x55.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_fifo_1256x4.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_fifo_132x12.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_fifo_132x152.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_fifo_132x257.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_fifo_132x293.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_fifo_132x305.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_fifo_132x4.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_fifo_132x5.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_fifo_132x7.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_fifo_164x36.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_fifo_164x6.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_fifo_1_room32x10.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_fir_gen26.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_fir_gen64.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_fir_gen_1_10.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_fir_gen_1_2.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_fir_gen_1_9.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_flash.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_four3cnt.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_freelist.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_gpi1.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_gpi2.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_gpio1.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_gpio32.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_gpo1.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_gpo2.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_gpo26.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_gpo4.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_gpo6.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_hangdet.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_i2c.vhdl (A0ED A000)                           ; Licensed     ;
+; IBM    ; psl_id_stage1.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_id_stage_hline.vhdl (A0ED A000)                ; Licensed     ;
+; IBM    ; psl_inc16.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_interrupt.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_issue.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_jm.vhdl (A0ED A000)                            ; Licensed     ;
+; IBM    ; psl_jm_afummio.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_jm_cmd_slice.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_jm_intr.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_jm_intr_slice.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_jm_regs.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_jm_regs_slice.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_jm_stg_toslice6.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_jm_tb.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_jm_tb_slice.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_jm_tm.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_jm_tm_cf.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_jm_tm_pedefnmux.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_jm_tm_slice.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_jm_tracerd_reg.vhdl (A0ED A000)                ; Licensed     ;
+; IBM    ; psl_li.vhdl (A0ED A000)                            ; Licensed     ;
+; IBM    ; psl_li_both.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_li_fifolimit5.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_li_fifolimit8.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_li_rx0_only.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_li_rx_ctl.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_li_rx_data.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_li_rxdrctl.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_li_rxmsgdcd.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_li_tx0_only.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_li_tx_ctl.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_li_tx_data.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_lru4.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_lru8.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_m20kecc.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_machaddr.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_miss.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_miss_mode0.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_miss_wllnxt.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_mmio_arb.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_mmio_callshdw.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_mmio_mst.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_mmio_shdw.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_mmio_slv.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_mmio_slv2.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_mmio_slv_16.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_mmio_slv_afu.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_mmio_strm.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_montmult_2048_dp.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_montmult_2048_pipe.vhdl (A0ED A000)            ; Licensed     ;
+; IBM    ; psl_mux128.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_mux2.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_mux32.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_mux3_116.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_mux3_128.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_mux3_37.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_mux_hline.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_mux_hline512.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_mux_qhline128.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_onehot_check8.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_onehot_check_1_8.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_partial_write_decoder4.vhdl (A0ED A000)        ; Licensed     ;
+; IBM    ; psl_pcihip0.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_pgen128.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_pgen1_2.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_pgen1_24.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_pgen1_32.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_pgen1_50.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_pgen1_64.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_pgen1_7.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_pgen1_8.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_pgen256.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_pgen2_8.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_pgen32.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_pgen8.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_pgen8_512.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_pgen_1_113_1_1.vhdl (A0ED A000)                ; Licensed     ;
+; IBM    ; psl_pgen_1_150_1_1.vhdl (A0ED A000)                ; Licensed     ;
+; IBM    ; psl_pgen_1_164_1_1.vhdl (A0ED A000)                ; Licensed     ;
+; IBM    ; psl_pgen_1_17_1_1.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_pgen_1_18_1_1.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_pgen_1_4256_1_4.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_pgen_1_64.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_pgen_1_8.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_pgen_1_8512_1_8.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; psl_pgen_hline512.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_prienc1.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_prienc16.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_prienc16to4.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_prienc2.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_prienc3.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_prienc32.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_prienc32to5_32.vhdl (A0ED A000)                ; Licensed     ;
+; IBM    ; psl_prienc4.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_prienc4to2.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_prienc5.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_prienc7.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_prienc8.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_prienc8to3.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_priencboth8.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ptmon.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_r_rise_vdff.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram128x34.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram128x6.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram128x88.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram16x2.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram16x3.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram16x4.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram16x55.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram256x2.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram256x32.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram256x4.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram256x64.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram2x1.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram2x13.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x28.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x3.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram2x316.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram2x33.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x35.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x4.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram2x50.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x6.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram2x64.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x66.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x72.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x74.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x8.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram2x9.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram2x92.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram2x95.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x1.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x10.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x12.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x128.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram32x130.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram32x15.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x152.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram32x16.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x17.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x18.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x2.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x23.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x24.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x257.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram32x293.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram32x3.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x30.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x305.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram32x316.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram32x36.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x4.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x43.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x46.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x5.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x50.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x51.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x6.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x60.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x66.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram32x7.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x8.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x9.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram32x98.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram4x1.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram4x12.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram4x15.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram4x2.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram4x3.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram4x32.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram4x43.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram4x50.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram4x56.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram4x6.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram4x8.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram512x1.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram512x113.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x116.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x126.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x128.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x133.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x134.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x142.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x164.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x170.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x176.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x18.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram512x192.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x2.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram512x561.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x563.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x57.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram512x576.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram512x58.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram512x60.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram512x64.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram512x68.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram512x8.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x1.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram64x10.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x11.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x116.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram64x15.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x155.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ram64x2.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram64x20.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x21.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x3.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram64x36.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x4.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram64x6.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram64x74.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x76.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x79.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x8.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram64x80.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram64x9.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram64x96.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_ram8x1.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram8x11.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram8x15.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram8x20.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram8x3.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram8x31.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram8x32.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram8x38.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_ram8x7.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ram_mlab64x110.vhdl (A0ED A000)                ; Licensed     ;
+; IBM    ; psl_ram_mlab64x14.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_ram_mlab64x17.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_ram_mlab64x30.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_ram_mlab64x7.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ram_mlab64x9.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ram_mlb64x110.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_ram_mlb64x14.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ram_mlb64x17.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ram_mlb64x30.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ram_mlb64x7.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_mlb64x9.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt256x32.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ram_wt256x64.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ram_wt32x1.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt32x12.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt32x17.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt32x2.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt32x24.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt32x3.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt32x316.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ram_wt32x4.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt32x43.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt32x5.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt32x6.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt32x60.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt32x66.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt32x8.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt32x98.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt512x1.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt64x1.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt64x10.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt64x155.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ram_wt64x21.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt64x3.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt64x6.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt64x74.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt64x76.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt64x8.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt64x80.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ram_wt64x9.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ram_wt64x96.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_rambp16x2.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_rambp64x11.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ramecc256x28.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ramecc256x56.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ramecc32x72.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ramecc512x140.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_ramecc512x148.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_ramecc512x152.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_ramecc512x32.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ramecc512x512.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_ramecc512x59.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ramecc64x166.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ramecc64x29.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ramecc64x35.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ramecc64x44.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ramecc64x50.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ramecc64x512.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ramecc64x74.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ramecc64x88.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ramecc64x9.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ramecc64x95.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_rcmdq.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_rcmdq_adwt3.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_reissue.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_reserv.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_reversebus16.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_reversebus2.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_reversebus26.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_reversebus3.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_reversebus32.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_reversebus4.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_reversebus5.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_reversebus7.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_reversebus8.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_rise_dff.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_rise_vdff.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_rq2snr.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_rqmux.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_rrarbv2.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_rrarbv3.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_rrarbv4.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_rrarbv7.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_rsa_2048_dp.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_rx.vhdl (A0ED A000)                            ; Licensed     ;
+; IBM    ; psl_rx_a.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_rx_fifo10.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_rx_fifo155.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_rx_fifo2_110.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_rx_fifo2_14.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_rx_fifo2_17.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_rx_fifo2_7.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_rx_fifo2_9.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_rx_s.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_rxs_sec2048.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_sbpllc.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_sbplnklst.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_slbi_a.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_snoop_decoder.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_snpreq.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_sreconfig.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_ssdff1.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ssdff2.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ssdff3.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ssdff5.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ssdff6.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ssdff8.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ssdff9.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_ssrdram32x1.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ssrdram32x46.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ssrdram32x5.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ssrdram32x50.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ssrdram32x51.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ssrdram32x66.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_ssrwram8x11.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ssrwram8x15.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ssrwram8x20.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ssrwram8x3.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_ssrwram8x31.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ssrwram8x32.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_ssrwram8x38.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_svcrc.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_tb_timer12.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_tb_timer5.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_tb_timer60.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_tb_timer_1_60.vhdl (A0ED A000)                 ; Licensed     ;
+; IBM    ; psl_tlbi.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_traceary_0_1512x130.vhdl (A0ED A000)           ; Licensed     ;
+; IBM    ; psl_traceary_1512x88.vhdl (A0ED A000)              ; Licensed     ;
+; IBM    ; psl_traceary_1_0512x136.vhdl (A0ED A000)           ; Licensed     ;
+; IBM    ; psl_traceary_1_1512x17.vhdl (A0ED A000)            ; Licensed     ;
+; IBM    ; psl_traceary_1_2_1512x28.vhdl (A0ED A000)          ; Licensed     ;
+; IBM    ; psl_traceary_1_6_1512x20.vhdl (A0ED A000)          ; Licensed     ;
+; IBM    ; psl_traceary_1_8_1512x73.vhdl (A0ED A000)          ; Licensed     ;
+; IBM    ; psl_traceary_1_9512x93.vhdl (A0ED A000)            ; Licensed     ;
+; IBM    ; psl_traceary_1_9_1512x24.vhdl (A0ED A000)          ; Licensed     ;
+; IBM    ; psl_traceary_1_c512x152.vhdl (A0ED A000)           ; Licensed     ;
+; IBM    ; psl_traceary_1_d512x76.vhdl (A0ED A000)            ; Licensed     ;
+; IBM    ; psl_traceary_1_d_1512x94.vhdl (A0ED A000)          ; Licensed     ;
+; IBM    ; psl_traceary_1_e_1512x86.vhdl (A0ED A000)          ; Licensed     ;
+; IBM    ; psl_traceary_3512x124.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_traceary_3_1512x18.vhdl (A0ED A000)            ; Licensed     ;
+; IBM    ; psl_traceary_4512x523.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_traceary_4_1512x521.vhdl (A0ED A000)           ; Licensed     ;
+; IBM    ; psl_traceary_5_1512x521.vhdl (A0ED A000)           ; Licensed     ;
+; IBM    ; psl_traceary_6512x536.vhdl (A0ED A000)             ; Licensed     ;
+; IBM    ; psl_traceary_7_1512x102.vhdl (A0ED A000)           ; Licensed     ;
+; IBM    ; psl_tw_fifo5.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_tw_fifo6.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_tw_fifo8.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_twdisp.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_twsm.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_twsm_calra.vhdl (A0ED A000)                    ; Licensed     ;
+; IBM    ; psl_twsm_din.vhdl (A0ED A000)                      ; Licensed     ;
+; IBM    ; psl_twsm_dout.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_twsm_getpte.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_twsm_getste.vhdl (A0ED A000)                   ; Licensed     ;
+; IBM    ; psl_twsm_portdec.vhdl (A0ED A000)                  ; Licensed     ;
+; IBM    ; psl_twsm_sm.vhdl (A0ED A000)                       ; Licensed     ;
+; IBM    ; psl_twsm_time.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_twt.vhdl (A0ED A000)                           ; Licensed     ;
+; IBM    ; psl_twt_llnxt.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_vdbwr3.vhdl (A0ED A000)                        ; Licensed     ;
+; IBM    ; psl_vdr1w.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_vdr2.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_vdr3.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; psl_vdrb1.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_vdrb2.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_vdrb3.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_vdrli.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_vdrr3.vhdl (A0ED A000)                         ; Licensed     ;
+; IBM    ; psl_vdrrprtw2.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_vdzosgpr3.vhdl (A0ED A000)                     ; Licensed     ;
+; IBM    ; psl_vsec.vhdl (A0ED A000)                          ; Licensed     ;
+; IBM    ; std_ulogic_function_support.vhdl (A0ED A000)       ; Licensed     ;
+; IBM    ; std_ulogic_support.vhdl (A0ED A000)                ; Licensed     ;
+; IBM    ; std_ulogic_unsigned.vhdl (A0ED A000)               ; Licensed     ;
+; IBM    ; synthesis_support.vhdl (A0ED A000)                 ; Licensed     ;
++--------+----------------------------------------------------+--------------+
+
+
++-----------------------------------------------------------------------------------------------------+
+; Assembler Generated Files                                                                           ;
++-----------------------------------------------------------------------------------------------------+
+; File Name                                                                                           ;
++-----------------------------------------------------------------------------------------------------+
+; /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/capi-precis.sof ;
++-----------------------------------------------------------------------------------------------------+
+
+
++-------------------------------------------+
+; Assembler Device Options: capi-precis.sof ;
++----------------+--------------------------+
+; Option         ; Setting                  ;
++----------------+--------------------------+
+; JTAG usercode  ; 0x0C80DF07               ;
+; Checksum       ; 0x0C80DF07               ;
++----------------+--------------------------+
+
+
++--------------------+
+; Assembler Messages ;
++--------------------+
+Info: *******************************************************************
+Info: Running Quartus Prime Assembler
+    Info: Version 18.1.0 Build 625 09/12/2018 SJ Standard Edition
+    Info: Copyright (C) 2018  Intel Corporation. All rights reserved.
+    Info: Your use of Intel Corporation's design tools, logic functions 
+    Info: and other software and tools, and its AMPP partner logic 
+    Info: functions, and any output files from any of the foregoing 
+    Info: (including device programming or simulation files), and any 
+    Info: associated documentation or information are expressly subject 
+    Info: to the terms and conditions of the Intel Program License 
+    Info: Subscription Agreement, the Intel Quartus Prime License Agreement,
+    Info: the Intel FPGA IP License Agreement, or other applicable license
+    Info: agreement, including, without limitation, that your use is for
+    Info: the sole purpose of programming logic devices manufactured by
+    Info: Intel and sold by Intel or its authorized distributors.  Please
+    Info: refer to the applicable agreement for further details.
+    Info: Processing started: Sun Dec  8 15:20:39 2019
+Info: Command: quartus_asm --64bit capi-precis
+Warning (20013): Ignored 2 assignments for entity "build_version" -- entity does not exist in design
+    Warning (20014): Assignment for entity set_parameter -name BUILD_TIMESTAMP 1575833067 -entity build_version was ignored
+    Warning (20014): Assignment for entity set_parameter -name BUILD_VERSION "54d07fb                 " -entity build_version was ignored
+Warning (20013): Ignored 26 assignments for entity "psl_mac36x36" -- entity does not exist in design
+Warning (20013): Ignored 199 assignments for entity "psl_mac36x36_0002" -- entity does not exist in design
+Warning (15104): Quartus Prime software detected a bonding design. Reconfiguration is not supported for Bonded designs and MIF is not created for this design. File: /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/pcie_wrap0/synthesis/submodules/sv_tx_pma_ch.sv Line: 182
+Warning (15104): Quartus Prime software detected a bonding design. Reconfiguration is not supported for Bonded designs and MIF is not created for this design. File: /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/pcie_wrap0/synthesis/submodules/sv_tx_pma_ch.sv Line: 182
+Warning (15104): Quartus Prime software detected a bonding design. Reconfiguration is not supported for Bonded designs and MIF is not created for this design. File: /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/pcie_wrap0/synthesis/submodules/sv_tx_pma_ch.sv Line: 182
+Warning (15104): Quartus Prime software detected a bonding design. Reconfiguration is not supported for Bonded designs and MIF is not created for this design. File: /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/pcie_wrap0/synthesis/submodules/sv_tx_pma_ch.sv Line: 182
+Warning (15104): Quartus Prime software detected a bonding design. Reconfiguration is not supported for Bonded designs and MIF is not created for this design. File: /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/pcie_wrap0/synthesis/submodules/sv_tx_pma_ch.sv Line: 182
+Warning (15104): Quartus Prime software detected a bonding design. Reconfiguration is not supported for Bonded designs and MIF is not created for this design. File: /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/pcie_wrap0/synthesis/submodules/sv_tx_pma_ch.sv Line: 182
+Warning (15104): Quartus Prime software detected a bonding design. Reconfiguration is not supported for Bonded designs and MIF is not created for this design. File: /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/pcie_wrap0/synthesis/submodules/sv_tx_pma_ch.sv Line: 182
+Warning (15104): Quartus Prime software detected a bonding design. Reconfiguration is not supported for Bonded designs and MIF is not created for this design. File: /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/pcie_wrap0/synthesis/submodules/sv_tx_pma_ch.sv Line: 182
+Warning (15104): Quartus Prime software detected a bonding design. Reconfiguration is not supported for Bonded designs and MIF is not created for this design. File: /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/pcie_wrap0/synthesis/submodules/sv_tx_pma_ch.sv Line: 182
+Info (115030): Assembler is generating device programming files
+Warning (12914): The file, /home/ab/Documents/github_repos/02_CAPIPrecis/01_capi_integration/accelerator_synth/psl_fpga/quartus_ip/sfpp_reconfig.sopcinfo, is not embedded into sof file as expected.  Some tools, such as System Console, may not function fully.
+Info: Quartus Prime Assembler was successful. 0 errors, 15 warnings
+    Info: Peak virtual memory: 2606 megabytes
+    Info: Processing ended: Sun Dec  8 15:21:59 2019
+    Info: Elapsed time: 00:01:20
+    Info: Total CPU time (on all processors): 00:01:20
+
+
