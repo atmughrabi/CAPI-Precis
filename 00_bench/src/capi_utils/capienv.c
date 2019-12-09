@@ -99,7 +99,7 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
         // if((((afu_status->cu_return_done) << 32) >> 32) >= (afu_status->cu_stop))
         //     break;
 
-        if((((afu_status->cu_return_done)) >> 32) >= (afu_status->cu_stop))
+        if((afu_status->cu_return_done) >= (afu_status->cu_stop))
         {
             readCmdResponseStats(afu, &cmdResponseStats);
             cxl_mmio_write64((*afu), CU_RETURN_DONE_ACK, afu_status->cu_return_done);
@@ -114,8 +114,8 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s  | \n", " ", "Rd/Wrt Stats", " ");
     printf(" -----------------------------------------------------\n");
-    printf("| count_read  : %lu\n", (((afu_status->cu_return_done) << 32) >> 32) );
-    printf("| count_write : %lu\n", ((afu_status->cu_return_done) >> 32));
+    printf("| count_read  : %lu\n", (afu_status->cu_return_done));
+    printf("| count_write : %lu\n", (afu_status->cu_return_done));
     printf("*-----------------------------------------------------*\n");
 #endif
 

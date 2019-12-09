@@ -127,12 +127,21 @@ export CU_CONFIG_MODE=0x524000$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 ##############################################
 
 #disable both
-# ENABLE_RD_WR_PREFETCH=0
+# ENABLE_RD_WR=0
 #enable write
-# ENABLE_RD_WR_PREFETCH=1
+# ENABLE_RD_WR=1
 #enable read
-# ENABLE_RD_WR_PREFETCH=2
+# ENABLE_RD_WR=2
 #enable both
+ENABLE_RD_WR=3
+
+#disable both PREFETCH
+# ENABLE_RD_WR_PREFETCH=0
+#enable write PREFETCH
+# ENABLE_RD_WR_PREFETCH=1
+#enable read PREFETCH
+# ENABLE_RD_WR_PREFETCH=2
+#enable both PREFETCH
 ENABLE_RD_WR_PREFETCH=3
 
 #disable both page address based
@@ -148,8 +157,20 @@ RD_WR_PREFETCH_MODE=0
 # CAPI FPGA AFU ARBITER CONFIG               #
 ##############################################
 
-ROUND_ROBIN_ARB=0x01
-FIXED_ARB=0x02
+# read_credits            [0:3]
+# write_credits           [4:7]
+# prefetch_read_credits   [8:11]
+# prefetch_write_credits  [12:15]
+# FIXED_ARB               [62]
+# ROUND_ROBIN_ARB         [63]
+
+ROUND_ROBIN_ARB=0x1111000000000001
+FIXED_ARB=0x1111000000000002
+
+
+##############################################
+# CAPI FPGA AFU/CU      CONFIG               #
+##############################################
 
 export AFU_CONFIG_MODE=$(ROUND_ROBIN_ARB)
 # export AFU_CONFIG_MODE=$(FIXED_ARB)
@@ -172,7 +193,7 @@ export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 # export SIZE = 1073741824
 
 #16 GB
-# export SIZE = 4294967290
+# export SIZE = 4294967296
 
 #1GB
 # export SIZE = 268435456

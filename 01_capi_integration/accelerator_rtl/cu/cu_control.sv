@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-12-08 01:39:09
-// Revise : 2019-12-08 14:00:42
+// Revise : 2019-12-09 04:07:28
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -75,7 +75,8 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done ;
 
 	logic enabled                        ;
-	logic enabled_instants               ;
+	logic enabled_instants_read          ;
+	logic enabled_instants_write         ;
 	logic enabled_instants_preftech_read ;
 	logic enabled_instants_preftech_write;
 	logic enabled_prefetch_read          ;
@@ -128,10 +129,14 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			enabled_instants <= 0;
+			enabled_instants_read  <= 0;
+			enabled_instants_write <= 0;
+			enabled_prefetch_read  <= 0;
+			enabled_prefetch_write <= 0;
 		end else begin
 			if(enabled) begin
-				enabled_instants       <= cu_ready;
+				enabled_instants_read  <= cu_ready;
+				enabled_instants_write <= cu_ready;
 				enabled_prefetch_read  <= cu_ready;
 				enabled_prefetch_write <= cu_ready;
 			end
@@ -149,7 +154,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	always_comb begin
 		cu_return_latched = 0;
 		if(wed_request_in_latched.valid)begin
-			cu_return_latched = {write_job_counter_done,read_job_counter_done};
+			cu_return_latched = {write_job_counter_done};
 		end
 	end
 
@@ -225,7 +230,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	cu_data_read_engine_control cu_data_read_engine_control_instant (
 		.clock                      (clock                      ),
 		.rstn                       (rstn                       ),
-		.enabled_in                 (enabled_instants           ),
+		.enabled_in                 (enabled_instants_read      ),
 		.wed_request_in             (wed_request_in_latched     ),
 		.cu_configure               (cu_configure_latched       ),
 		.read_response_in           (read_response_in_latched   ),
@@ -252,7 +257,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	cu_data_write_engine_control cu_data_write_engine_control_instant (
 		.clock                      (clock                      ),
 		.rstn                       (rstn                       ),
-		.enabled_in                 (enabled_instants           ),
+		.enabled_in                 (enabled_instants_write     ),
 		.wed_request_in             (wed_request_in_latched     ),
 		.cu_configure               (cu_configure_latched       ),
 		.write_response_in          (write_response_in_latched  ),

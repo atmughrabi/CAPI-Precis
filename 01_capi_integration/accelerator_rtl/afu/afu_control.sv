@@ -329,8 +329,8 @@ module afu_control #(
 ////////////////////////////////////////////////////////////////////////////
 
 	always_comb begin
-		command_arbiter_out          = command_arbiter_out_fixed;
-		ready                        = ready_fixed;
+		command_arbiter_out          = command_arbiter_out_round_robin;
+		ready                        = ready_round_robin;
 		round_robin_priority_enabled = 0;
 		fixed_priority_enabled       = 0;
 		if(enabled)begin
@@ -339,11 +339,16 @@ module afu_control #(
 				ready                        = ready_round_robin;
 				round_robin_priority_enabled = 1;
 				fixed_priority_enabled       = 0;
-			end else begin
+			end else if(afu_configure_latched[62]) begin
 				command_arbiter_out          = command_arbiter_out_fixed;
 				ready                        = ready_fixed;
 				round_robin_priority_enabled = 0;
 				fixed_priority_enabled       = 1;
+			end else begin
+				command_arbiter_out          = command_arbiter_out_round_robin;
+				ready                        = ready_round_robin;
+				round_robin_priority_enabled = 1;
+				fixed_priority_enabled       = 0;
 			end
 		end else begin
 			command_arbiter_out          = command_arbiter_out_round_robin;
@@ -476,11 +481,11 @@ module afu_control #(
 			prefetch_read_credits  <= 0;
 			prefetch_write_credits <= 0;
 		end else begin
-			total_credits          <= (command_in_latched.room >> 0);
-			read_credits           <= (total_credits >> 0);
-			write_credits          <= (total_credits >> 0);
-			prefetch_read_credits  <= (total_credits >> 0);
-			prefetch_write_credits <= (total_credits >> 0);
+			total_credits          <= (command_in_latched.room);
+			read_credits           <= (total_credits >> afu_configure_latched[0:3]);
+			write_credits          <= (total_credits >> afu_configure_latched[4:7]);
+			prefetch_read_credits  <= (total_credits >> afu_configure_latched[8:11]);
+			prefetch_write_credits <= (total_credits >> afu_configure_latched[12:15]);
 		end
 	end
 
@@ -661,7 +666,7 @@ module afu_control #(
 
 	// logic request_pulse                            ;
 	// assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (|credits.credits) && ~(|request_pulse);
-	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (credits.credits > 2) && ~restart_pending;
+	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (credits.credits > 3) && ~restart_pending;
 	fifo #(
 		.WIDTH($bits(CommandBufferLine)),
 		.DEPTH(BURST_CMD_BUFFER_SIZE   )
