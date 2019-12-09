@@ -138,10 +138,8 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-openmp
 
 * NOTE: You need CAPI environment setup on your machine.
 * [CAPI Education Videos](https://developer.ibm.com/linuxonpower/capi/education/)
-* We are not supporting CAPI-SNAP since our processing suite heavily depends on accelerator-cache. SNAP does not support this feature yet. So if you are interested in streaming applications or do not benefit from caches SNAP is a good candidate.
-* For Deeper understanding of the SNAP framework: https://github.com/open-power/snap
-* CAPI and SNAP on IBM developerworks: https://developer.ibm.com/linuxonpower/capi/  
-* [IBM Developerworks Forum, tag CAPI_SNAP (to get support)](https://developer.ibm.com/answers/smartspace/capi-snap/index.html)
+* We are not supporting CAPI-SNAP since our processing suite supports accelerator-cache. SNAP does not support this feature yet. So if you are interested in streaming applications or do not benefit from caches SNAP is also good candidate.
+* To check the SNAP framework: https://github.com/open-power/snap.
 
 ### Simulation
 
