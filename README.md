@@ -1,13 +1,22 @@
 [![Build Status](https://travis-ci.com/atmughrabi/CAPIPrecis.svg?token=L3reAtGHdEVVPvzcVqQ6&branch=master)](https://travis-ci.com/atmughrabi/CAPIPrecis)
 <p align="center"><img src="./02_slides/fig/logo3.png" width="650" ></p>
 
-#  Coherent Accelerator Processor Interface (CAPI) Abstract Layer
+#  CAPI-Precis Coherent Accelerator Processor Interface (CAPI) Abstract Layer
 
 ## Overview 
 
 <p align="center"><img src="./02_slides/fig/theme.png" width="650" ></p>
 
-CAPI-Precis is an abstraction layer (AFU Control) that simplifies communication and buffering with the Power Service Layer (PSL). While each control unit handling different aspects of communication with the PSL, it simplifies the interface for sending and receving memory transactions, and preserves the fine-grain random or sequentail memory access pattern. Furthermore our layer differentiate its self from other CAPI frameworks, by keeping the PSL cache support.
+CAPI-Precis is an abstraction layer (AFU-Control) that simplifies communication and buffering with IBM CAPI Power Service Layer (PSL). Each control unit handling different aspects of communication with the PSL, it simplifies the interface for sending and receiving memory transactions, and preserves the fine-grain random or sequential memory access pattern. Furthermore our layer differentiate its self from other CAPI frameworks, by keeping the PSL cache support.
+
+### Key Features and Benefits
+
+* Design your Compute Units (CUs) without the need to interface with the PSL directly (CU-centric).
+* Supports PSL cache access.
+* Supports fine grain random access, or streaming access as it keeps the command-buffer exposed and flexible for any CAPI-PSL supported command.
+* You will only be concerned with sending PSL supported commands, for example you can send reads/writes without the need to check parity, error reporting, and latency requirements. You only need to push your command to its corresponding buffer, and wait for the response.
+* Each sent command can be coupled with meta-data (for example CU-id, size), and receive data and responses coupled with those meta-data elements for a better multi-CU design.
+* Open-source and minimalistic design.
 
 # Installation 
 
@@ -75,7 +84,7 @@ CAPI@Precis:~$ cd CAPIPrecis/
 CAPI@Precis:~CAPIPrecis$ git submodule update --init --recursive
 ```
 
-# Running CAPI-Precis
+# Running CAPI-Precis (Memory Copy engines)
 
 [<img src="./02_slides/fig/openmp_logo.png" height="45" align="right" >](https://www.openmp.org/)
 
@@ -97,6 +106,32 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-openmp
 ```
+4. Example output:
+```
+*-----------------------------------------------------*
+| Number of Threads :  8                              | 
+ -----------------------------------------------------
+*-----------------------------------------------------*
+| Allocating Data Arrays (SIZE)  131072               | 
+ -----------------------------------------------------
+*-----------------------------------------------------*
+| Populating Data Arrays (Seed)  27491095             | 
+ -----------------------------------------------------
+*-----------------------------------------------------*
+| Copy data (SIZE)               131072               | 
+ -----------------------------------------------------
+| Time (Seconds)         | 0.00000900000000000000     | 
+| BandWidth MB/s         | 55555.55555555555474711582 | 
+| BandWidth GB/s         | 54.25347222222222143273    | 
+*-----------------------------------------------------*
+| Data Missmatched (#)           | 0                  | 
+ -----------------------------------------------------
+| PASS                                                |
+*-----------------------------------------------------*
+| Freeing Data Arrays (SIZE)     131072               | 
+ -----------------------------------------------------
+```
+
 [<img src="./02_slides/fig/capi_logo.png" height="45" align="right" >](https://openpowerfoundation.org/capi-drives-business-performance/)
 
 ## Initial compilation for framework with Coherent Accelerator Processor Interface (CAPI)  
@@ -219,7 +254,7 @@ CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_bin/
 ```
 2. Flash the image to the corresponding `#define DEVICE` you can modify it according to your Power8 system from `00_bench/include/capienv.h`
 ```console
-CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-script CAPIPrecis_GIT_COMMIT#_DATE_TIME.rbf
+CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-script capi-precis_GITCOMMIT#_DATETIME.rbf
 ```
 
 #### Running
@@ -337,6 +372,8 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
     * `pkg` - global packages 
     * `afu` - AFU Control units in this folder
   * `accelerator_bin` - Binary images of CAPIPrecis (passed time requirements)
+    * `capi-precis_GITCOMMIT#_DATETIME.rbf` - flash binary image 
+    * `synthesis_reports_capi-precis_GITCOMMIT#_DATETIME` - synthesis reports for that binary image
   * `accelerator_sim`
     * `server` - files for PSLSE layer
       * `pslse.parms`
