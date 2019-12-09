@@ -13,9 +13,9 @@ CAPI-Precis is an abstraction layer (AFU-Control) that simplifies communication 
 
 * Design your Compute Units (CUs) without the need to interface with the PSL directly (CU-centric).
 * Supports PSL cache access.
-* Supports fine grain random access, or streaming access as it keeps the command-buffer exposed and flexible for any CAPI-PSL supported command.
-* You will only be concerned with sending PSL supported commands, for example you can send reads/writes without the need to check parity, error reporting, and latency requirements. You only need to push your command to its corresponding buffer, and wait for the response.
-* Each sent command can be coupled with meta-data (for example CU-id, size), and receive data and responses coupled with those meta-data elements for a better multi-CU design.
+* Supports fine grain random, or streaming access, for it keeps the command-buffer exposed and flexible for any CAPI-PSL supported commands.
+* You will only be concerned with sending PSL supported commands, for example you can send reads/writes without the need to check parity, error reporting, and latency requirements. Just push commands to their corresponding buffers, and wait for the response.
+* Each sent command can be coupled with meta-data (for example CU_ID, request_size, etc.), and then receive data or responses coupled with those elements for an easier multi-CU design.
 * Open-source and minimalistic design.
 
 # Installation 
@@ -33,7 +33,7 @@ CAPI@Precis:~$ sudo apt-get install libomp-dev
   * This framework were developed on Ubuntu 18.04 LTS.
   * ModelSim is used for simulation and installed along side Quartus II 18.1.
   * Synthesis requires ALTERA Quartus, starting from release 15.0 of Quartus II should be fine.
-  * Nallatech P385-A7 card with the Altera Stratix V GX A7 FPGA is supported.
+  * Nallatech P385-A7 card with the Altera Stratix-V-GX-A7 FPGA is supported.
   * Environment Variable setup, `HOME` and `ALTERAPATH` depend on where you clone the repository and install ModelSim.
 
 ```bash
