@@ -328,58 +328,62 @@ clean-sim:
 
 .PHONY: run-capi-synth
 run-capi-synth:
-	 $(MAKE) all $(MAKE_ARGS_SYNTH)
+	$(MAKE) all $(MAKE_ARGS_SYNTH)
 
 .PHONY: run-capi-gui
 run-capi-gui:
-	 $(MAKE) gui $(MAKE_ARGS_SYNTH)
+	$(MAKE) gui $(MAKE_ARGS_SYNTH)
+
+.PHONY: run-capi-sweep
+run-capi-sweep:
+	$(MAKE) sweep $(MAKE_ARGS_SYNTH)
 
 .PHONY: map
 map:
-	 $(MAKE) map $(MAKE_ARGS_SYNTH)
+	$(MAKE) map $(MAKE_ARGS_SYNTH)
 
 .PHONY: fit
 fit:
-	 $(MAKE) fit $(MAKE_ARGS_SYNTH)
+	$(MAKE) fit $(MAKE_ARGS_SYNTH)
 
 .PHONY: asm
 asm:
-	 $(MAKE) asm $(MAKE_ARGS_SYNTH)
+	$(MAKE) asm $(MAKE_ARGS_SYNTH)
 
 .PHONY: sta
 sta:
-	 $(MAKE) sta $(MAKE_ARGS_SYNTH)
+	$(MAKE) sta $(MAKE_ARGS_SYNTH)
 
 .PHONY: qxp
 qxp:
-	 $(MAKE) qxp $(MAKE_ARGS_SYNTH)
+	$(MAKE) qxp $(MAKE_ARGS_SYNTH)
 
 .PHONY: rbf
 rbf:
-	 $(MAKE) rbf $(MAKE_ARGS_SYNTH)
+	$(MAKE) rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY: smart
 smart:
-	 $(MAKE) smart $(MAKE_ARGS_SYNTH)
+	$(MAKE) smart $(MAKE_ARGS_SYNTH)
 
 .PHONY: program
 program:
-	 $(MAKE) program $(MAKE_ARGS_SYNTH)
+	$(MAKE) program $(MAKE_ARGS_SYNTH)
 
 .PHONY: timing
 timing:
-	 $(MAKE) timing $(MAKE_ARGS_SYNTH)
+	$(MAKE) timing $(MAKE_ARGS_SYNTH)
 
 .PHONY: stats
 stats:
-	 $(MAKE) stats $(MAKE_ARGS_SYNTH)
+	$(MAKE) stats $(MAKE_ARGS_SYNTH)
 
 .PHONY: gen-rbf
 gen-rbf:
-	 $(MAKE) gen-rbf $(MAKE_ARGS_SYNTH)
+	$(MAKE) gen-rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY: clean-synth
 clean-synth:
-	 $(MAKE) clean $(MAKE_ARGS_SYNTH)
+	$(MAKE) clean $(MAKE_ARGS_SYNTH)
 ##################################################
 ##################################################
