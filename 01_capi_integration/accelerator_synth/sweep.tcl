@@ -18,24 +18,24 @@ set rptdir seed_rpt
 file mkdir $rptdir
 set trynum 0
 while { $timetrynum > $trynum } {
-set current_seed [lindex $seedList $trynum]
-set_global_assignment -name SEED $current_seed
+	set current_seed [lindex $seedList $trynum]
+	set_global_assignment -name SEED $current_seed
 # Place & Route
 if {[catch {execute_module -tool fit} result]} {
- puts "\nResult: $result\n"
- puts "ERROR: Quartus II Fitter failed. See the report file.\n"
- qexit -error
-} else {
- puts "\nInfo: Quartus II Fitter was successful.\n"
-}
+	puts "\nResult: $result\n"
+	puts "ERROR: Quartus II Fitter failed. See the report file.\n"
+	qexit -error
+	} else {
+		puts "\nInfo: Quartus II Fitter was successful.\n"
+	}
 # TimeQuest Timing Analyzer
 if {[catch {execute_module -tool sta} result]} {
- puts "\nResult: $result\n"
- puts "ERROR: TimeQuest Analyzer failed. See the report file.\n"
- qexit -error
-} else {
- puts "\nInfo: TimeQuest Analyzer was successful.\n"
-}
+	puts "\nResult: $result\n"
+	puts "ERROR: TimeQuest Analyzer failed. See the report file.\n"
+	qexit -error
+	} else {
+		puts "\nInfo: TimeQuest Analyzer was successful.\n"
+	}
 # Store compile results
 #file copy -force ./$project_revision.fit.rpt $rptdir/seed$current_seed.fit.rpt
 #file copy -force ./$project_revision.sta.rpt $rptdir/seed$current_seed.sta.rpt
@@ -43,11 +43,11 @@ load_report
 set panel {TimeQuest Timing Analyzer||Multicorner Timing Analysis Summary}
 set id [get_report_panel_id $panel]
 if {$id != -1} {
-    write_report_panel -file $rptdir/Multicorner_sta_seed$current_seed.htm -html -id $id
-} else {
-    puts "Error: report panel could not be found."
-}
-unload_report
-incr trynum
+	write_report_panel -file $rptdir/Multicorner_sta_seed$current_seed.htm -html -id $id
+	} else {
+		puts "Error: report panel could not be found."
+	}
+	unload_report
+	incr trynum
 }
 project_close
