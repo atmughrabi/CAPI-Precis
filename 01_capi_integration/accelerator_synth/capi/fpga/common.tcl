@@ -61,7 +61,7 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT NORMAL
-set_global_assignment -name SEED 29
+set_global_assignment -name SEED 8
 
 set_global_assignment -name PARTITION_NETLIST_TYPE POST_FIT -section_id "psl_accel:a0"
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id "psl_accel:a0"
@@ -163,7 +163,7 @@ set_global_assignment -name LL_SECURITY_ROUTING_INTERFACE OFF -section_id afu_co
 set_global_assignment -name LL_IGNORE_IO_BANK_SECURITY_CONSTRAINT OFF -section_id afu_control
 set_global_assignment -name LL_PR_REGION OFF -section_id afu_control
 set_global_assignment -name LL_ROUTING_REGION_EXPANSION_SIZE 2147483647 -section_id afu_control
-set_global_assignment -name LL_WIDTH 31 -section_id afu_control
+set_global_assignment -name LL_WIDTH 33 -section_id afu_control
 set_global_assignment -name LL_HEIGHT 68 -section_id afu_control
 set_global_assignment -name LL_ORIGIN X105_Y1 -section_id afu_control
 set_instance_assignment -name LL_MEMBER_OF afu_control -to "psl_accel:a0|afu:afu0|cached_afu:svAFU|afu_control:afu_control_instant" -section_id afu_control

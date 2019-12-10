@@ -1,4 +1,7 @@
-project_new capi-precis -overwrite
+set project_name capi-precis
+set project_revision capi-precis
+
+project_new $project_name -overwrite -revision $project_revision
 
 set_global_assignment -name TOP_LEVEL_ENTITY psl_fpga
 
@@ -9,6 +12,7 @@ source $LIBCAPI/fpga/common.tcl
 source $LIBCAPI/fpga/ibm_sources.tcl
 source $LIBCAPI/fpga/pins.tcl
 source $LIBCAPI/fpga/build_version.tcl
+
 
 # foreach filename [glob ../accelerator/rtl/*.vhd] {
 #     set_global_assignment -name VHDL_FILE $filename

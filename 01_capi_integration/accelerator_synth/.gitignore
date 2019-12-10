@@ -8,6 +8,7 @@ quartus_output
 *.log
 *.txt
 incremental_db
+seed_rpt
 *.rpt
 *.summary
 *.smsg

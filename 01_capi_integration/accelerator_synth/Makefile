@@ -30,8 +30,8 @@ VERION_GIT = $(shell python ./capi/scripts/version.py)
 TIME_STAMP = $(shell date +%Y_%m_%d_%H_%M_%S)
 ACCEL_RTL_DIR = accelerator_rtl
 ACCEL_BIN_DIR = accelerator_bin
-SOURCE_FILES =  $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.sv)	\
-				$(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.sv)	\
+SOURCE_FILES =  $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.sv)   \
+				$(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.sv)   \
 				$(wildcard ../$(ACCEL_RTL_DIR)/cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu/*.sv)
 				
 	
@@ -56,7 +56,7 @@ default:rbf
 all: rbf smart.log $(PROJECT).asm.rpt $(PROJECT).sta.rpt
 
 clean:
-	rm -rf *~ ./tcl/*~ *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db *.summary *.qpf *.qsf incremental_db *.smsg *.done *~ *.txt *.qxp *.bsf *.qarlog *.cmp *.v *.rbf nohup.out *.log hc_output reconfig_mif *.jdi *.qdf *.sld *.qws
+	rm -rf *~ ./tcl/*~ *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db dse seed_rpt *.summary *.qpf *.qsf incremental_db *.smsg *.done *~ *.txt *.qxp *.bsf *.qarlog *.cmp *.v *.rbf nohup.out *.log hc_output reconfig_mif *.jdi *.qdf *.sld *.qws
 
 map: smart.log $(PROJECT).map.rpt
 fit: smart.log $(PROJECT).fit.rpt
@@ -133,18 +133,29 @@ asm.chg:
 	$(STAMP) asm.chg
 merge.chg:
 	$(STAMP) merge.chg
+sweep.chg:
+	$(STAMP) sweep.chg
 
+.PHONY:program
 program: $(PROJECT).sof
 	quartus_pgm -c "USB-Blaster on cgy1-flash.pmc-sierra.internal" -m jtag -o S\;EPM2210 -o P\;$<
 
+.PHONY:timing
 timing: $(PROJECT).sta.rpt
 
+.PHONY:gen-rbf
 gen-rbf:
 	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
 	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT)_$(TIME_STAMP).rbf 
 
+.PHONY:stats
 stats:
 	altera_stats.py $(PROJECT)
 
+.PHONY:gui
 gui: $(ASSIGNMENT_FILES)
 	quartus $(PROJECT).qpf 
+
+.PHONY:sweep 
+sweep: sweep.chg $(PROJECT).merge.rpt
+	quartus_sh --64bit -t sweep.tcl

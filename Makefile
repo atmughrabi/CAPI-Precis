@@ -130,10 +130,10 @@ export CU_CONFIG_MODE=0x52400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR
 # ENABLE_RD_WR=0
 #enable read engine
 # ENABLE_RD_WR=1
-# enable write engine independent
-ENABLE_RD_WR=4
+# enable write engine dependent
+# ENABLE_RD_WR=4
 #enable both engines dependent
-# ENABLE_RD_WR=3
+ENABLE_RD_WR=3
 #enable both engines independent
 # ENABLE_RD_WR=5
 
@@ -147,13 +147,13 @@ ENABLE_RD_WR=4
 ENABLE_RD_WR_PREFETCH=3
 
 #disable both page address based
-RD_WR_PREFETCH_MODE=0
-#disable both cacheline-read page-wrtie address based
+# RD_WR_PREFETCH_MODE=0
+#cacheline-read page-wrtie address based
 # RD_WR_PREFETCH_MODE=1
-#disable both cacheline-write page-read address based
+# cacheline-write page-read address based
 # RD_WR_PREFETCH_MODE=2
-#disable both cacheline address based
-# RD_WR_PREFETCH_MODE=3
+# both cacheline address based
+RD_WR_PREFETCH_MODE=3
 
 ##############################################
 # CAPI FPGA AFU ARBITER CONFIG               #
@@ -184,8 +184,8 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #########################################################
 
 export NUM_THREADS = 8
-LHS=512
-RHS=512
+LHS=32
+RHS=256
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 

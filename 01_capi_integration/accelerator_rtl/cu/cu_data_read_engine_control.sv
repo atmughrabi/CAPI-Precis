@@ -103,22 +103,26 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			read_response_in_latched <= 0;
 			read_data_0_in_latched   <= 0;
 			read_data_1_in_latched   <= 0;
-			cu_configure_latched     <= 0;
 		end else begin
-			if(enabled)begin
+			if(enabled_cmd)begin
 				read_response_in_latched <= read_response_in;
-
 				read_data_0_in_latched <= read_data_0_in;
 				read_data_1_in_latched <= read_data_1_in;
-
-
-				if((|cu_configure))
-					cu_configure_latched <= cu_configure;
-
 			end
 		end
 	end
 
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			cu_configure_latched <= 0;
+		end else begin
+			if(enabled) begin
+				if((|cu_configure))
+					cu_configure_latched <= cu_configure;
+			end
+		end
+	end
 ////////////////////////////////////////////////////////////////////////////
 //response tracking logic
 ////////////////////////////////////////////////////////////////////////////
