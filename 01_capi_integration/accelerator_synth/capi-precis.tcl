@@ -1,12 +1,13 @@
 set project_name capi-precis
+set PSL_FPGA ./psl_fpga
+set LIBCAPI  ./capi
+set VERSION   [binary format A24 [exec $LIBCAPI/scripts/version.py]]
 set project_revision capi-precis
 
 project_new $project_name -overwrite -revision $project_revision
 
 set_global_assignment -name TOP_LEVEL_ENTITY psl_fpga
 
-set PSL_FPGA ./psl_fpga
-set LIBCAPI  ./capi
 
 source $LIBCAPI/fpga/common.tcl
 source $LIBCAPI/fpga/ibm_sources.tcl

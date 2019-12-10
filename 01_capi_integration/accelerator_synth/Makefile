@@ -142,7 +142,8 @@ program: $(PROJECT).sof
 
 .PHONY:timing
 timing: $(PROJECT).sta.rpt
-
+	quartus_sta --64bit -t extract_timing.tcl
+	
 .PHONY:gen-rbf
 gen-rbf:
 	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
