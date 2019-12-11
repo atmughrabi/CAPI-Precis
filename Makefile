@@ -135,9 +135,9 @@ export CU_CONFIG_MODE=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR
 # enable write engine dependent (nothing to write)
 # ENABLE_RD_WR=2
 # enable write engine independent
-# ENABLE_RD_WR=4
+ENABLE_RD_WR=4
 #enable both engines  dependent
-ENABLE_RD_WR=3
+# ENABLE_RD_WR=3
 #enable both engines independent
 # ENABLE_RD_WR=5
 

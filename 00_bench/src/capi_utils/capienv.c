@@ -166,9 +166,9 @@ void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
 
     __u64 size_read  = (cmdResponseStats->DONE_READ_count * 128);
     __u64 size_write = (cmdResponseStats->DONE_WRITE_count * 128);
-    __u64 size       = (cmdResponseStats->DONE_WRITE_count * 128);
-    if(size_write)
-        size       = (cmdResponseStats->DONE_WRITE_count * 128);
+    __u64 size       = size_read;
+    if(size_write > size_read)
+        size = size_write;
     double time_elapsed = (double)(cmdResponseStats->CYCLE_count * 4) / 1e9;
     double size_GB = (double)(size) / (double)(1024 * 1024 * 256);
     double size_MB = (double)(size) / (double)(1024 * 256);
