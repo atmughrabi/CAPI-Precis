@@ -164,8 +164,8 @@ void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdRe
 void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
 {
 
-    __u64 size_read  = (cmdResponseStats->DONE_READ_count * 128);
-    __u64 size_write = (cmdResponseStats->DONE_WRITE_count * 128);
+    __u64 size_read  = (cmdResponseStats->DONE_READ_count);
+    __u64 size_write = (cmdResponseStats->DONE_WRITE_count);
     __u64 size       = size_read;
     if(size_write > size_read)
         size = size_write;
