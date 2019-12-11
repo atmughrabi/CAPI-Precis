@@ -152,7 +152,14 @@ module afu_control #(
 
 	logic valid_request;
 
-	logic enabled;
+	logic enabled                      ;
+	logic enabled_credit_total         ;
+	logic enabled_credit_read          ;
+	logic enabled_credit_write         ;
+	logic enabled_credit_prefetch_read ;
+	logic enabled_credit_prefetch_write;
+
+
 
 	DataBufferStatusInterface burst_write_data_buffer_status ;
 	BufferStatus              burst_command_buffer_states_afu;
@@ -234,12 +241,12 @@ module afu_control #(
 		end else begin
 			if(enabled && response.valid) begin
 				case (response.response)
-					DONE,NLOCK,NRES,FAILED: begin
+					DONE,NLOCK,NRES,FAILED,DERROR,AERROR: begin
 						response_filtered_done    <= response;
 						response_filtered_restart <= 0;
 						response_tagged           <= response;
 					end
-					AERROR,DERROR,PAGED,FAULT,FLUSHED: begin
+					PAGED,FAULT,FLUSHED: begin
 						response_filtered_done    <= 0;
 						response_filtered_restart <= response;
 						response_tagged           <= response;
@@ -483,11 +490,13 @@ module afu_control #(
 			prefetch_write_credits <= 0;
 			credit_overflow_error  <= 0;
 		end else begin
-			total_credits          <= (command_in_latched.room);
-			read_credits           <= (total_credits >> afu_configure_latched[0:3]);
-			write_credits          <= (total_credits >> afu_configure_latched[4:7]);
-			prefetch_read_credits  <= (total_credits >> afu_configure_latched[8:11]);
-			prefetch_write_credits <= (total_credits >> afu_configure_latched[12:15]);
+			if(|afu_configure_latched) begin
+				total_credits          <= (command_in_latched.room);
+				read_credits           <= (total_credits >> afu_configure_latched[0:3]);
+				write_credits          <= (total_credits >> afu_configure_latched[4:7]);
+				prefetch_read_credits  <= (total_credits >> afu_configure_latched[8:11]);
+				prefetch_write_credits <= (total_credits >> afu_configure_latched[12:15]);
+			end
 			if(enabled) begin
 				if((credits.credits <= 255) && (credits.credits > 64))
 					credit_overflow_error <= 1;
@@ -495,10 +504,29 @@ module afu_control #(
 		end
 	end
 
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			enabled_credit_total          <= 0;
+			enabled_credit_read           <= 0;
+			enabled_credit_write          <= 0;
+			enabled_credit_prefetch_read  <= 0;
+			enabled_credit_prefetch_write <= 0;
+		end else begin
+			if(|total_credits) begin
+				enabled_credit_total          <= 1;
+				enabled_credit_read           <= 1;
+				enabled_credit_write          <= 1;
+				enabled_credit_prefetch_read  <= 1;
+				enabled_credit_prefetch_write <= 1;
+			end
+		end
+	end
+
+
 	credit_control credits_total_control_instant (
 		.clock     (clock                                                                                                                      ),
 		.rstn      (rstn                                                                                                                       ),
-		.enabled_in(enabled                                                                                                                    ),
+		.enabled_in(enabled_credit_total                                                                                                       ),
 		.credit_in ({command_buffer_out.valid,response_control_out.response.valid,response_control_out.response.response_credits,total_credits}),
 		.credit_out(credits                                                                                                                    )
 	);
@@ -506,7 +534,7 @@ module afu_control #(
 	credit_control credits_read_control_instant (
 		.clock     (clock                                                                                                                         ),
 		.rstn      (rstn                                                                                                                          ),
-		.enabled_in(enabled                                                                                                                       ),
+		.enabled_in(enabled_credit_read                                                                                                           ),
 		.credit_in ({read_command_buffer_out.valid,response_control_out.read_response,response_control_out.response.response_credits,read_credits}),
 		.credit_out(credits_read                                                                                                                  )
 	);
@@ -515,7 +543,7 @@ module afu_control #(
 	credit_control credits_write_control_instant (
 		.clock     (clock                                                                                                                            ),
 		.rstn      (rstn                                                                                                                             ),
-		.enabled_in(enabled                                                                                                                          ),
+		.enabled_in(enabled_credit_write                                                                                                             ),
 		.credit_in ({write_command_buffer_out.valid,response_control_out.write_response,response_control_out.response.response_credits,write_credits}),
 		.credit_out(credits_write                                                                                                                    )
 	);
@@ -523,7 +551,7 @@ module afu_control #(
 	credit_control credits_prefetch_read_control_instant (
 		.clock     (clock                                                                                                                                                    ),
 		.rstn      (rstn                                                                                                                                                     ),
-		.enabled_in(enabled                                                                                                                                                  ),
+		.enabled_in(enabled_credit_prefetch_read                                                                                                                             ),
 		.credit_in ({prefetch_read_command_buffer_out.valid,response_control_out.prefetch_read_response,response_control_out.response.response_credits,prefetch_read_credits}),
 		.credit_out(credits_prefetch_read                                                                                                                                    )
 	);
@@ -531,7 +559,7 @@ module afu_control #(
 	credit_control credits_prefetch_write_control_instant (
 		.clock     (clock                                                                                                                                                       ),
 		.rstn      (rstn                                                                                                                                                        ),
-		.enabled_in(enabled                                                                                                                                                     ),
+		.enabled_in(enabled_credit_prefetch_write                                                                                                                               ),
 		.credit_in ({prefetch_write_command_buffer_out.valid,response_control_out.prefetch_write_response,response_control_out.response.response_credits,prefetch_write_credits}),
 		.credit_out(credits_prefetch_write                                                                                                                                      )
 	);

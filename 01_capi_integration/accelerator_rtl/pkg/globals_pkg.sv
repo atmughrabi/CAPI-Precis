@@ -82,9 +82,11 @@ package GLOBALS_AFU_PKG;
 
 	parameter PRIORITY_RESTART        = 0;
 	parameter PRIORITY_WED            = 1;
+
 	parameter PRIORITY_WRITE          = 2;
-	parameter PRIORITY_READ           = 3;
-	parameter PRIORITY_PREFTECH_WRITE = 4;
+	parameter PRIORITY_PREFTECH_WRITE = 3;
+
+	parameter PRIORITY_READ           = 4;
 	parameter PRIORITY_PREFETCH_READ  = 5;
 
 ////////////////////////////////////////////////////////////////////////////

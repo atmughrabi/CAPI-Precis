@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-12-08 01:39:09
-// Revise : 2019-12-09 09:05:55
+// Revise : 2019-12-11 14:42:50
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -351,7 +351,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		end else begin
 			if(enabled_prefetch_read)begin
 				if(prefetch_mode_read) begin
-					offset_start_read    <= 9;
+					offset_start_read    <= 8;
 					offset_size_read     <= CACHELINE_SIZE;
 					array_line_size_read <= CACHELINE_ARRAY_NUM;
 					prefetch_read_pulse  <= read_command_out_latched.valid;
@@ -457,7 +457,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		end else begin
 			if(enabled_prefetch_write)begin
 				if(prefetch_mode_write) begin
-					offset_start_write    <= 9;
+					offset_start_write    <= 8;
 					offset_size_write     <= CACHELINE_SIZE;
 					array_line_size_write <= CACHELINE_ARRAY_NUM;
 					prefetch_write_pulse  <= write_command_out_latched.valid;
