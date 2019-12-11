@@ -136,7 +136,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-openmp
 
 ## Initial compilation for framework with Coherent Accelerator Processor Interface (CAPI)  
 
-* NOTE: You need CAPI environment setup on your machine.
+* NOTE: You need CAPI environment setup on your machine (tested on Power8 8247-22L).
 * [CAPI Education Videos](https://developer.ibm.com/linuxonpower/capi/education/)
 * We are not supporting CAPI-SNAP since our processing suite supports accelerator-cache. SNAP does not support this feature yet. So if you are interested in streaming applications or do not benefit from caches SNAP is also good candidate.
 * To check the SNAP framework: https://github.com/open-power/snap.

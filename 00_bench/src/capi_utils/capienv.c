@@ -53,7 +53,11 @@ int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed)
 void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 {
 #ifdef  VERBOSE
-    printf("AFU configuration start status(0x%08lx) \n", (afu_status->afu_status) );
+    // printf("AFU configuration start status(0x%08lx) \n", (afu_status->afu_status) );
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-13s %-23s %-13s | \n", " ", "AFU configuration START", " ");
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27lx| \n", "status", (afu_status->afu_status));
 #endif
     do
     {
@@ -62,14 +66,22 @@ void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     }
     while(!(afu_status->afu_status));
 #ifdef  VERBOSE
-    printf("AFU configuration done status(0x%08lx) \n", (afu_status->afu_status) );
+    // printf("AFU configuration done status(0x%08lx) \n", (afu_status->afu_status) );
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-13s %-23s %-13s | \n", " ", "AFU configuration DONE", " ");
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27lx| \n", "status", (afu_status->afu_status));
+    printf("*-----------------------------------------------------*\n");
 #endif
 }
 
 void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 {
 #ifdef  VERBOSE
-    printf("CU configuration start status(0x%08lx) \n", (afu_status->cu_status) );
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-13s %-23s %-13s | \n", " ", "CU configuration START", " ");
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27lx| \n", "status", (afu_status->cu_status));
 #endif
     do
     {
@@ -78,7 +90,11 @@ void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     }
     while(!((afu_status->cu_status)));
 #ifdef  VERBOSE
-    printf("CU configuration done status(0x%08lx) \n", (afu_status->cu_status) );
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-13s %-23s %-13s | \n", " ", "CU configuration DONE", " ");
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27lx| \n", "status", (afu_status->cu_status));
+    printf("*-----------------------------------------------------*\n");
 #endif
 }
 
@@ -112,11 +128,11 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     printCmdResponseStats(&cmdResponseStats);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-15s %-18s %-15s  | \n", " ", "Rd/Wrt Stats", " ");
+    printf("| %-15s %-18s %-15s  | \n", " ", "CU return", " ");
     printf(" -----------------------------------------------------\n");
-    printf("| count_read  : %llu\n", (afu_status->cu_return_done));
-    printf("| count_write : %llu\n", (afu_status->cu_return_done));
+    printf("| %-22s | %-27lu| \n", "Return", (afu_status->cu_return_done));
     printf("*-----------------------------------------------------*\n");
+
 #endif
 
 }
@@ -147,30 +163,48 @@ void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdRe
 
 void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
 {
+
+    __u64 size = (cmdResponseStats->DONE_READ_count * 128) + (cmdResponseStats->DONE_WRITE_count * 128);
+    double time_elapsed = (double)(cmdResponseStats->CYCLE_count * 4) / 1e9;
+    double size_GB = (double)(size) / (double)(1024 * 1024 * 256);
+    double size_MB = (double)(size) / (double)(1024 * 256);
+    double bandwidth_GB = size_GB / time_elapsed; //GB/s
+    double bandwidth_MB = size_MB / time_elapsed; //MB/s
+
     printf("*-----------------------------------------------------*\n");
-    printf("| %-15s %-18s %-15s | \n", " ", "AFU Stats", " ");
+    printf("| %-15s %-19s %-15s | \n", " ", "AFU Stats", " ");
     printf(" -----------------------------------------------------\n");
-    printf("| CYCLE_count        : %llu\n", cmdResponseStats->CYCLE_count);
+    printf("| %-22s | %-27lu| \n", "CYCLE_count ", cmdResponseStats->CYCLE_count);
+
+    printf("| %-22s | %-27.20lf| \n", "Time (Seconds)", time_elapsed);
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27.20lf| \n", "Data MB", size_MB);
+    printf("| %-22s | %-27.20lf| \n", "Data GB", size_GB);
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
+    printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
+
+
     printf("*-----------------------------------------------------*\n");
-    printf("| %-15s %-18s %-15s | \n", " ", "Responses Stats", " ");
+    printf("| %-15s %-19s %-15s | \n", " ", "Responses Stats", " ");
     printf(" -----------------------------------------------------\n");
-    printf("| DONE_count               : %llu\n", cmdResponseStats->DONE_count);
+    printf("| %-22s | %-27lu| \n", "DONE_count", cmdResponseStats->DONE_count);
     printf(" -----------------------------------------------------\n");
-    printf("| DONE_READ_count          : %llu\n", cmdResponseStats->DONE_READ_count);
-    printf("| DONE_WRITE_count         : %llu\n", cmdResponseStats->DONE_WRITE_count);
+    printf("| %-22s | %-27lu| \n", "DONE_READ_count", cmdResponseStats->DONE_READ_count);
+    printf("| %-22s | %-27lu| \n", "DONE_WRITE_count", cmdResponseStats->DONE_WRITE_count);
     printf(" -----------------------------------------------------\n");
-    printf("| DONE_RESTART_count       : %llu\n", cmdResponseStats->DONE_RESTART_count);
+    printf("| %-22s | %-27lu| \n", "DONE_RESTART_count", cmdResponseStats->DONE_RESTART_count);
     printf(" -----------------------------------------------------\n");
-    printf("| DONE_PREFETCH_READ_count : %llu\n", cmdResponseStats->DONE_PREFETCH_READ_count);
-    printf("| DONE_PREFETCH_WRITE_count: %llu\n", cmdResponseStats->DONE_PREFETCH_WRITE_count);
+    printf("| %-26s | %-23lu| \n", "DONE_PREFETCH_READ_count", cmdResponseStats->DONE_PREFETCH_READ_count);
+    printf("| %-26s | %-23lu| \n", "DONE_PREFETCH_WRITE_count", cmdResponseStats->DONE_PREFETCH_WRITE_count);
     printf(" -----------------------------------------------------\n");
-    printf("| PAGED_count        : %llu\n", cmdResponseStats->PAGED_count);
-    printf("| FLUSHED_count      : %llu\n", cmdResponseStats->FLUSHED_count);
-    printf("| AERROR_count       : %llu\n", cmdResponseStats->AERROR_count);
-    printf("| DERROR_count       : %llu\n", cmdResponseStats->DERROR_count);
-    printf("| FAILED_count       : %llu\n", cmdResponseStats->FAILED_count);
-    printf("| NRES_count         : %llu\n", cmdResponseStats->NRES_count);
-    printf("| NLOCK_count        : %llu\n", cmdResponseStats->NLOCK_count);
+    printf("| %-22s | %-27lu| \n", "PAGED_count", cmdResponseStats->PAGED_count);
+    printf("| %-22s | %-27lu| \n", "FLUSHED_count", cmdResponseStats->FLUSHED_count);
+    printf("| %-22s | %-27lu| \n", "AERROR_count", cmdResponseStats->AERROR_count);
+    printf("| %-22s | %-27lu| \n", "DERROR_count", cmdResponseStats->DERROR_count);
+    printf("| %-22s | %-27lu| \n", "FAILED_count", cmdResponseStats->FAILED_count);
+    printf("| %-22s | %-27lu| \n", "NRES_count", cmdResponseStats->NRES_count);
+    printf("| %-22s | %-27lu| \n", "NLOCK_count", cmdResponseStats->NLOCK_count);
     printf("*-----------------------------------------------------*\n");
 }
 
@@ -291,11 +325,11 @@ void printWEDPointers(struct  WEDStruct *wed)
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-18s %-15s | \n", " ", "WEDStruct structure", " ");
     printf(" -----------------------------------------------------\n");
-    printf("  wed               : %p\n", wed);
-    printf("  wed->size_send    : %llu\n", wed->size_send);
-    printf("  wed->size_recive  : %llu\n", wed->size_recive);
-    printf("  wed->array_send   : %p\n", wed->array_send);
-    printf("  wed->array_receive: %p\n", wed->array_receive);
-
+    printf("| %-22s | %-27p| \n", "wed",   wed);
+    printf("| %-22s | %-27lu| \n","wed->size_send", wed->size_send);
+    printf("| %-22s | %-27lu| \n","wed->size_recive", wed->size_recive);
+    printf("| %-22s | %-27p| \n", "wed->array_send", wed->array_send);
+    printf("| %-22s | %-27p| \n", "wed->array_receive", wed->array_receive);
+    printf(" -----------------------------------------------------\n");
 
 }
