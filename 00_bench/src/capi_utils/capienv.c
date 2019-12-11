@@ -170,8 +170,8 @@ void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
     if(size_write > size_read)
         size = size_write;
     double time_elapsed = (double)(cmdResponseStats->CYCLE_count * 4) / 1e9;
-    double size_GB = (double)(size) / (double)(1024 * 1024 * 256);
-    double size_MB = (double)(size) / (double)(1024 * 256);
+    double size_GB = (double)(size) / (double)(1024 * 1024 * 8);
+    double size_MB = (double)(size) / (double)(1024 * 8);
     double bandwidth_GB = size_GB / time_elapsed; //GB/s
     double bandwidth_MB = size_MB / time_elapsed; //MB/s
 
