@@ -14,7 +14,7 @@ set project_revision capi-precis
 set INPUT_SOF ${PROJECT}.sof
 
 # Set seeds
-set seedList { 2 3 5 7 11 13 17 19 23 29 31 27 41 43 }
+set seedList { 2 3 5 7 11 13 17 19 23 29 31 37 41 43 }
 # set seedList { 2 }
 
 set timetrynum [llength $seedList]

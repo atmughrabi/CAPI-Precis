@@ -53,7 +53,7 @@ int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed)
 void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 {
 #ifdef  VERBOSE
-    printf("AFU configuration start status(0x%08llx) \n", (afu_status->afu_status) );
+    printf("AFU configuration start status(0x%08lx) \n", (afu_status->afu_status) );
 #endif
     do
     {
@@ -62,14 +62,14 @@ void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     }
     while(!(afu_status->afu_status));
 #ifdef  VERBOSE
-    printf("AFU configuration done status(0x%08llx) \n", (afu_status->afu_status) );
+    printf("AFU configuration done status(0x%08lx) \n", (afu_status->afu_status) );
 #endif
 }
 
 void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 {
 #ifdef  VERBOSE
-    printf("CU configuration start status(0x%08llx) \n", (afu_status->cu_status) );
+    printf("CU configuration start status(0x%08lx) \n", (afu_status->cu_status) );
 #endif
     do
     {
@@ -78,7 +78,7 @@ void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     }
     while(!((afu_status->cu_status)));
 #ifdef  VERBOSE
-    printf("CU configuration done status(0x%08llx) \n", (afu_status->cu_status) );
+    printf("CU configuration done status(0x%08lx) \n", (afu_status->cu_status) );
 #endif
 }
 
