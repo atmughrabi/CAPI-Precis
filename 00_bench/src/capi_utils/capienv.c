@@ -164,7 +164,11 @@ void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdRe
 void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
 {
 
-    __u64 size = (cmdResponseStats->DONE_READ_count * 128) + (cmdResponseStats->DONE_WRITE_count * 128);
+    __u64 size_read  = (cmdResponseStats->DONE_READ_count * 128);
+    __u64 size_write = (cmdResponseStats->DONE_WRITE_count * 128);
+    __u64 size       = (cmdResponseStats->DONE_WRITE_count * 128);
+    if(size_write)
+        size       = (cmdResponseStats->DONE_WRITE_count * 128);
     double time_elapsed = (double)(cmdResponseStats->CYCLE_count * 4) / 1e9;
     double size_GB = (double)(size) / (double)(1024 * 1024 * 256);
     double size_MB = (double)(size) / (double)(1024 * 256);
@@ -326,8 +330,8 @@ void printWEDPointers(struct  WEDStruct *wed)
     printf("| %-15s %-18s %-15s | \n", " ", "WEDStruct structure", " ");
     printf(" -----------------------------------------------------\n");
     printf("| %-22s | %-27p| \n", "wed",   wed);
-    printf("| %-22s | %-27lu| \n","wed->size_send", wed->size_send);
-    printf("| %-22s | %-27lu| \n","wed->size_recive", wed->size_recive);
+    printf("| %-22s | %-27lu| \n", "wed->size_send", wed->size_send);
+    printf("| %-22s | %-27lu| \n", "wed->size_recive", wed->size_recive);
     printf("| %-22s | %-27p| \n", "wed->array_send", wed->array_send);
     printf("| %-22s | %-27p| \n", "wed->array_receive", wed->array_receive);
     printf(" -----------------------------------------------------\n");
