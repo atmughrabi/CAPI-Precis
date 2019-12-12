@@ -149,6 +149,10 @@ gen-rbf:
 	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
 	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT)_$(TIME_STAMP).rbf 
 
+.PHONY:copy-rbf
+copy-rbf:
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT)_$(TIME_STAMP).rbf 
+
 .PHONY:stats
 stats:
 	altera_stats.py $(PROJECT)

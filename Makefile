@@ -151,13 +151,13 @@ ENABLE_RD_WR=3
 ENABLE_RD_WR_PREFETCH=3
 
 #disable both page address based
-# RD_WR_PREFETCH_MODE=0
+RD_WR_PREFETCH_MODE=0
 #cacheline-read page-wrtie address based
 # RD_WR_PREFETCH_MODE=1
 # cacheline-write page-read address based
 # RD_WR_PREFETCH_MODE=2
 # both cacheline address based
-RD_WR_PREFETCH_MODE=3
+# RD_WR_PREFETCH_MODE=3
 
 ##############################################
 # CAPI FPGA AFU ARBITER CONFIG               #
@@ -170,8 +170,8 @@ RD_WR_PREFETCH_MODE=3
 # FIXED_ARB               [62]
 # ROUND_ROBIN_ARB         [63]
 
-ROUND_ROBIN_ARB=0x16FF000000000001
-FIXED_ARB=0x00FF000000000002
+ROUND_ROBIN_ARB=0x0011000000000001
+FIXED_ARB=0x11FF000000000002
 
 ##############################################
 # CAPI FPGA AFU/CU      CONFIG               #
@@ -191,16 +191,28 @@ export NUM_THREADS = 8
 LHS=32
 RHS=512
 #test
-export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
+# export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
-#4GB
-# export SIZE = 1073741824
+#32 GB 
+export SIZE = 8589934592
 
 #16 GB
-# export SIZE = 4294967296
+export SIZE = 4294967296
+
+#4GB
+export SIZE = 1073741824
+
+#2GB
+export SIZE = 536870912
 
 #1GB
-# export SIZE = 268435456
+export SIZE = 268435456
+
+#512MB
+export SIZE = 134217728
+
+#256
+export SIZE = 67108864
 
 ##################################################
 export ARGS = -n $(NUM_THREADS) -s $(SIZE) -a $(AFU_CONFIG_GENERIC) -c $(CU_CONFIG_GENERIC) -m $(ENABLE_RD_WR)
@@ -385,6 +397,10 @@ stats:
 .PHONY: gen-rbf
 gen-rbf:
 	$(MAKE) gen-rbf $(MAKE_ARGS_SYNTH)
+
+.PHONY:copy-rbf
+copy-rbf:
+	$(MAKE) copy-rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY: clean-synth
 clean-synth:
