@@ -170,7 +170,7 @@ RD_WR_PREFETCH_MODE=0
 # FIXED_ARB               [62]
 # ROUND_ROBIN_ARB         [63]
 
-ROUND_ROBIN_ARB=0x0011000000000001
+ROUND_ROBIN_ARB=0x6011000000000001
 FIXED_ARB=0x11FF000000000002
 
 ##############################################
@@ -188,31 +188,31 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #########################################################
 
 export NUM_THREADS = 8
-LHS=32
+LHS=512
 RHS=512
 #test
-# export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
+export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
 #32 GB 
-export SIZE = 8589934592
+# export SIZE = 8589934592
 
 #16 GB
-export SIZE = 4294967296
+# export SIZE = 4294967296
 
 #4GB
-export SIZE = 1073741824
+# export SIZE = 1073741824
 
 #2GB
-export SIZE = 536870912
+# export SIZE = 536870912
 
 #1GB
-export SIZE = 268435456
+# export SIZE = 268435456
 
 #512MB
-export SIZE = 134217728
+# export SIZE = 134217728
 
 #256
-export SIZE = 67108864
+# export SIZE = 67108864
 
 ##################################################
 export ARGS = -n $(NUM_THREADS) -s $(SIZE) -a $(AFU_CONFIG_GENERIC) -c $(CU_CONFIG_GENERIC) -m $(ENABLE_RD_WR)

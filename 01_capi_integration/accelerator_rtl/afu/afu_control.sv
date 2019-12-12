@@ -700,7 +700,7 @@ module afu_control #(
 
 	// logic request_pulse                            ;
 	// assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (|credits.credits) && ~(|request_pulse);
-	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (credits.credits > 3) && ~restart_pending;
+	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (credits.credits > 2) && ~restart_pending;
 	fifo #(
 		.WIDTH($bits(CommandBufferLine)),
 		.DEPTH(BURST_CMD_BUFFER_SIZE   )
