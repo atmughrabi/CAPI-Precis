@@ -316,6 +316,11 @@ run-capi-sim-verbose:
 run-capi-fpga-verbose:
 	$(MAKE) run-capi-fpga-verbose $(MAKE_ARGS)
 
+.PHONY: capi
+capi:
+	$(MAKE) run-capi-fpga-verbose $(MAKE_ARGS) &&\
+	sudo ./scripts/clean_cache.sh
+
 .PHONY: run-test-capi
 run-test-capi:
 	$(MAKE) run-test-capi $(MAKE_ARGS)
