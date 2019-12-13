@@ -30,7 +30,7 @@ CAPI@Precis:~$ sudo apt-get install libomp-dev
 
 ### CAPI
 1. Simulation and Synthesis
-  * This framework were developed on Ubuntu 18.04 LTS.
+  * This framework was developed on Ubuntu 18.04 LTS.
   * ModelSim is used for simulation and installed along side Quartus II 18.1.
   * Synthesis requires ALTERA Quartus, starting from release 15.0 of Quartus II should be fine.
   * Nallatech P385-A7 card with the Altera Stratix-V-GX-A7 FPGA is supported.

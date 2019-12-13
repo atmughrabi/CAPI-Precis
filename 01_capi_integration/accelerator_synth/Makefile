@@ -139,10 +139,6 @@ sweep.chg:
 .PHONY:program
 program: $(PROJECT).sof
 	quartus_pgm -c "USB-Blaster on cgy1-flash.pmc-sierra.internal" -m jtag -o S\;EPM2210 -o P\;$<
-
-.PHONY:timing
-timing: $(PROJECT).sta.rpt
-	quartus_sta --64bit -t extract_timing.tcl
 	
 .PHONY:gen-rbf
 gen-rbf:
