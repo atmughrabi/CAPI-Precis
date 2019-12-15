@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-12-08 01:39:09
-// Revise : 2019-12-11 14:42:50
+// Revise : 2019-12-14 08:47:57
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -136,7 +136,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		end else begin
 			if(enabled) begin
 				enabled_instants_read  <= cu_ready && cu_configure_latched[23]; // activate read mode
-				enabled_instants_write <= cu_ready && (cu_configure_latched[22]| cu_configure_latched[21]); // activate write mode cu_configure_latched[21]; // activate independent write mode
+				enabled_instants_write <= cu_ready && (cu_configure_latched[22] | cu_configure_latched[21]); // activate write mode cu_configure_latched[21]; // activate independent write mode
 				enabled_prefetch_read  <= cu_ready;
 				enabled_prefetch_write <= cu_ready;
 			end

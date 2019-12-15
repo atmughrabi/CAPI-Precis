@@ -199,6 +199,9 @@ export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 #16 GB
 # export SIZE = 4294967296
 
+#8 GB
+# export SIZE = 1294967296
+
 #4GB
 # export SIZE = 1073741824
 

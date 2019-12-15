@@ -56,6 +56,10 @@ set_global_assignment -name INI_VARS "vpr_net_rr_default_lab_source_level=0;vpr_
 
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 
+set_global_assignment -name TIMEQUEST_DO_CCPP_REMOVAL ON
+set_global_assignment -name TIMEQUEST_DO_REPORT_TIMING OFF
+set_global_assignment -name TIMEQUEST_REPORT_NUM_WORST_CASE_TIMING_PATHS 100
+set_global_assignment -name USE_TIMEQUEST_TIMING_ANALYZER ON
 set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
