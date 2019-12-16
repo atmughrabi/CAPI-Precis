@@ -13,7 +13,7 @@
 // Editor : Abdullah Mughrabi
 // -----------------------------------------------------------------------------
 
-#include <linux/types.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -37,7 +37,7 @@ int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed)
         return 1;
     }
 
-    cxl_afu_attach((*afu), (__u64)wed);
+    cxl_afu_attach((*afu), (uint64_t)wed);
     int base_address = cxl_mmio_map ((*afu), CXL_MMIO_BIG_ENDIAN);
 
     if (base_address < 0)
@@ -164,9 +164,9 @@ void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdRe
 void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
 {
 
-    __u64 size_read  = (cmdResponseStats->DONE_READ_count);
-    __u64 size_write = (cmdResponseStats->DONE_WRITE_count);
-    __u64 size       = size_read;
+    uint64_t size_read  = (cmdResponseStats->DONE_READ_count);
+    uint64_t size_write = (cmdResponseStats->DONE_WRITE_count);
+    uint64_t size       = size_read;
     if(size_write > size_read)
         size = size_write;
     double time_elapsed = (double)(cmdResponseStats->CYCLE_count * 4) / 1e9;

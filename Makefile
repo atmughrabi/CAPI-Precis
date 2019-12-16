@@ -187,9 +187,11 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #                RUN  ARGUMENTS                         #
 #########################################################
 
+#1-128bye cacheline equal to 32 unsigned int type
+
 export NUM_THREADS = 8
-LHS=512
-RHS=512
+LHS=32 
+RHS=256
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 

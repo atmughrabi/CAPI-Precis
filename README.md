@@ -390,5 +390,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
   * `capi-utils`
 * *`Makefile`* - Global makefile
 
-Contact:  <atmughrabi@gmail.edu>/<atmughra@ncsu.edu>
+Report bugs to: 
+- <atmughrabi@gmail.com>
+- <atmughra@ncsu.edu>
 <p align="right"> <img src="./02_slides/fig/logo1.png" width="200" ></p>

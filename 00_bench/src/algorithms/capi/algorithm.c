@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
@@ -37,8 +38,8 @@ struct DataArrays *newDataArrays(struct Arguments *arguments)
 
     dataArrays->size = arguments->size;
 
-    dataArrays->array_send = (__u32 *) my_malloc(sizeof(__u32) * (dataArrays->size));
-    dataArrays->array_receive = (__u32 *) my_malloc(sizeof(__u32) * (dataArrays->size));
+    dataArrays->array_send = (uint32_t *) my_malloc(sizeof(uint32_t) * (dataArrays->size));
+    dataArrays->array_receive = (uint32_t *) my_malloc(sizeof(uint32_t) * (dataArrays->size));
 
     return dataArrays;
 
@@ -61,7 +62,7 @@ void freeDataArrays(struct DataArrays *dataArrays)
 void initializeDataArrays(struct DataArrays *dataArrays)
 {
 
-    __u64 i;
+    uint64_t i;
 
     #pragma omp parallel for
     for(i = 0; i < dataArrays->size; i++)
@@ -72,11 +73,11 @@ void initializeDataArrays(struct DataArrays *dataArrays)
 }
 
 
-__u64 compareDataArrays(struct DataArrays *dataArrays)
+uint64_t compareDataArrays(struct DataArrays *dataArrays)
 {
 
-    __u64 missmatch = 0;
-    __u64 i;
+    uint64_t missmatch = 0;
+    uint64_t i;
 
     #pragma omp parallel for shared(dataArrays) reduction(+: missmatch)
     for(i = 0; i < dataArrays->size; i++)

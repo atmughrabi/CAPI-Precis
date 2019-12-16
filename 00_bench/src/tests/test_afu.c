@@ -127,7 +127,7 @@ main (int argc, char **argv)
 
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20llu | \n", "Allocating Data Arrays (SIZE)", arguments.size);
+    printf("| %-30s %-20lu | \n", "Allocating Data Arrays (SIZE)", arguments.size);
     printf(" -----------------------------------------------------\n");
 
     struct DataArrays *dataArrays = newDataArrays(&arguments);
@@ -139,7 +139,7 @@ main (int argc, char **argv)
     initializeDataArrays(dataArrays);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20llu | \n", "Copy data (SIZE)", arguments.size);
+    printf("| %-30s %-20lu | \n", "Copy data (SIZE)", arguments.size);
     printf(" -----------------------------------------------------\n");
 
     Start(timer);
@@ -153,11 +153,11 @@ main (int argc, char **argv)
     printf("| %-22s | %-27.20lf| \n","BandWidth MB/s", bandwidth_MB);
     printf("| %-22s | %-27.20lf| \n","BandWidth GB/s", bandwidth_GB);
 
-    __u64 missmatch = 0;
+    uint64_t missmatch = 0;
     missmatch = compareDataArrays(dataArrays);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s | %-20llu | \n", "Data Missmatched (#)", missmatch);
+    printf("| %-30s | %-20lu | \n", "Data Missmatched (#)", missmatch);
     printf(" -----------------------------------------------------\n");
 
        if(missmatch != 0)
@@ -169,7 +169,7 @@ main (int argc, char **argv)
     }
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20llu | \n", "Freeing Data Arrays (SIZE)", arguments.size);
+    printf("| %-30s %-20lu | \n", "Freeing Data Arrays (SIZE)", arguments.size);
     printf(" -----------------------------------------------------\n");
 
     freeDataArrays(dataArrays);

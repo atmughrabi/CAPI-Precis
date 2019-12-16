@@ -1,7 +1,7 @@
 #ifndef CAPIENV_H
 #define CAPIENV_H
 
-#include <linux/types.h>
+#include <stdint.h>
 #include "myMalloc.h"
 #include "libcxl.h"
 
@@ -58,35 +58,35 @@
 
 struct AFUStatus
 {
-    __u64 cu_stop;  // afu stopping condition
-    __u64 cu_config;
-    __u64 cu_status;
-    __u64 cu_mode;
-    __u64 afu_config;
-    __u64 afu_status;
-    __u64 error;
-    __u64 cu_return; // running return
-    __u64 cu_return_done; // final return when cu send done
+    uint64_t cu_stop;  // afu stopping condition
+    uint64_t cu_config;
+    uint64_t cu_status;
+    uint64_t cu_mode;
+    uint64_t afu_config;
+    uint64_t afu_status;
+    uint64_t error;
+    uint64_t cu_return; // running return
+    uint64_t cu_return_done; // final return when cu send done
 };
 
 
 struct CmdResponseStats
 {
-    __u64 DONE_count        ;
-    __u64 DONE_RESTART_count;
-    __u64 DONE_PREFETCH_READ_count;
-    __u64 DONE_PREFETCH_WRITE_count;
-    __u64 DONE_READ_count   ;
-    __u64 DONE_WRITE_count  ;
-    __u64 PAGED_count       ;
-    __u64 FLUSHED_count     ;
-    __u64 AERROR_count      ;
-    __u64 DERROR_count      ;
-    __u64 FAILED_count      ;
-    __u64 FAULT_count       ;
-    __u64 NRES_count        ;
-    __u64 NLOCK_count       ;
-    __u64 CYCLE_count       ;
+    uint64_t DONE_count        ;
+    uint64_t DONE_RESTART_count;
+    uint64_t DONE_PREFETCH_READ_count;
+    uint64_t DONE_PREFETCH_WRITE_count;
+    uint64_t DONE_READ_count   ;
+    uint64_t DONE_WRITE_count  ;
+    uint64_t PAGED_count       ;
+    uint64_t FLUSHED_count     ;
+    uint64_t AERROR_count      ;
+    uint64_t DERROR_count      ;
+    uint64_t FAILED_count      ;
+    uint64_t FAULT_count       ;
+    uint64_t NRES_count        ;
+    uint64_t NLOCK_count       ;
+    uint64_t CYCLE_count       ;
 };
 
 // ********************************************************************************************
@@ -95,8 +95,8 @@ struct CmdResponseStats
 
 struct __attribute__((__packed__)) WEDStruct
 {
-    __u64 size_send;                // 8-Bytes
-    __u64 size_recive;              // 8-Bytes
+    uint64_t size_send;                // 8-Bytes
+    uint64_t size_recive;              // 8-Bytes
     void *array_send;               // 8-Bytes
     void *array_receive;            // 8-Bytes
     void *pointer1;                 // 8-Bytes

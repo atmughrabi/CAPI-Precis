@@ -161,7 +161,7 @@ main (int argc, char **argv)
     printf("| %-22s | %-27.20lf| \n","BandWidth MB/s", bandwidth_MB);
     printf("| %-22s | %-27.20lf| \n","BandWidth GB/s", bandwidth_GB);
 
-    __u64 missmatch = 0;
+    uint64_t missmatch = 0;
     missmatch = compareDataArrays(dataArrays);
 
     printf("*-----------------------------------------------------*\n");
