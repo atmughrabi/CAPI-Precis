@@ -34,10 +34,10 @@ mt19937state *mt19937var;
 const char *argp_program_version =
     "CAPIPrecis 1.0";
 const char *argp_program_bug_address =
-    "<atmughra@ncsu.edu>";
+    "<atmughra@ncsu.edu>\n<atmughra@ncsu.edu>";
 /* Program documentation. */
 static char doc[] =
-    "CAPIPrecis is an open source CAPI enabled FPGA processing framework, it is designed to abstract the PSL layer for a faster development cycle";
+    "CAPIPrecis is an open source CAPI enabled FPGA processing framework, it is designed to abstract the PSL layer for a faster development cycles";
 
 /* A description of the arguments we accept. */
 static char args_doc[] = "-s <size> -n [num threads] -a [afu config] -c [cu config]  ";
@@ -46,23 +46,31 @@ static char args_doc[] = "-s <size> -n [num threads] -a [afu config] -c [cu conf
 static struct argp_option options[] =
 {
     {
-        "num-threads",          'n', "[DEFAULT:MAX]",      0,
-        "\nDefault:max number of threads the system has"
+        "num-threads",           'n', "[DEFAULT:MAX]",      0,
+        "\nDefault: MAX number of threads the system has"
     },
     {
-        "size",                 's', "SIZE:512",      0,
+        "size",                  's', "SIZE:512",      0,
         "\nSize of array to be sent and copied back "
     },
     {
-        "afu-config",           'a', "[DEFAULT:0x1]",      0,
-        "\nafu buffer arbitration 0x01 round robin 0x10 fix priority"
+        "afu-config",            'a', "[DEFAULT:0x1]",      0,
+        "\nAFU-Control buffers(read/write/prefetcher) arbitration 0x01 round robin 0x10 fixed priority"
     },
     {
-        "cu-config",            'c', "[DEFAULT:0x01]",      0,
+        "afu-config2",           'b', "[DEFAULT:0x0]",      0,
+        "\nAFU-Control MMIO register for extensible features"
+    },
+    {
+        "cu-config",             'c', "[DEFAULT:0x01]",      0,
         "\nCU configurations for requests cached/non cached/prefetcher active or not check README for more explanation"
     },
     {
-        "cu-mode",            'm', "[DEFAULT:0x03]",      0,
+        "cu-config2",            'd', "[DEFAULT:0x00]",      0,
+        "\nCU-Control MMIO register for extensible features"
+    },
+    {
+        "cu-mode",               'm', "[DEFAULT:0x03]",      0,
         "\nCU configurations for read/write engines. disable-both-engines-[0] write-engine-[1] read-engine-[2] enable-both-engines-[3]"
     },
     { 0 }
@@ -90,8 +98,14 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case 'a':
         arguments->afu_config = strtoll(arg, &eptr, 0);
         break;
+    case 'b':
+        arguments->afu_config_2 = strtoll(arg, &eptr, 0);
+        break;
     case 'c':
         arguments->cu_config = strtoll(arg, &eptr, 0);
+        break;
+    case 'd':
+        arguments->cu_config_2 = strtoll(arg, &eptr, 0);
         break;
     case 'm':
         arguments->cu_mode = atoi(arg);
@@ -111,7 +125,7 @@ int
 main (int argc, char **argv)
 {
 
-    struct Arguments arguments;
+    struct Arguments arguments = {0};
 
     arguments.numThreads = omp_get_max_threads();
     arguments.size = 512;

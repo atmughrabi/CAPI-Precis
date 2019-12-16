@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cu_control.sv
 // Create : 2019-12-08 01:39:09
-// Revise : 2019-12-14 08:47:57
+// Revise : 2019-12-16 15:52:36
 // Editor : sublime text3, tab size (4)
 // -----------------------------------------------------------------------------
 
@@ -36,6 +36,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	input  BufferStatus       prefetch_write_buffer_status,
 	input  BufferStatus       write_buffer_status         ,
 	input  logic [0:63]       cu_configure                ,
+	input  logic [0:63]       cu_configure_2              ,
 	output logic [0:63]       cu_return                   ,
 	output logic              cu_done                     ,
 	output logic [0:63]       cu_status                   ,
@@ -70,6 +71,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	logic [                 0:63] cu_return_latched     ;
 	logic [                 0:63] cu_configure_latched  ;
+	logic [                 0:63] cu_configure_2_latched;
 	logic                         done_algorithm        ;
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done;
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done ;
@@ -150,19 +152,19 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 	always_comb begin
 		cu_return_latched = 0;
-		done_algorithm = 0;
+		done_algorithm    = 0;
 		if(wed_request_in_latched.valid)begin
 			if((cu_configure_latched[21] || cu_configure_latched[22]) && cu_configure_latched[23]) begin
-				done_algorithm = ((wed_request_in_latched.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.wed.size_send == read_job_counter_done));
+				done_algorithm    = ((wed_request_in_latched.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.wed.size_send == read_job_counter_done));
 				cu_return_latched = {write_job_counter_done};
 			end else if(cu_configure_latched[21] || cu_configure_latched[22]) begin
-				done_algorithm = ((wed_request_in_latched.wed.size_recive == write_job_counter_done));
+				done_algorithm    = ((wed_request_in_latched.wed.size_recive == write_job_counter_done));
 				cu_return_latched = {write_job_counter_done};
 			end else if(cu_configure_latched[23]) begin
-				done_algorithm = (wed_request_in_latched.wed.size_send == read_job_counter_done);
+				done_algorithm    = (wed_request_in_latched.wed.size_send == read_job_counter_done);
 				cu_return_latched = {read_job_counter_done};
 			end else begin
-				done_algorithm = ((wed_request_in_latched.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.wed.size_send == read_job_counter_done));
+				done_algorithm    = ((wed_request_in_latched.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.wed.size_send == read_job_counter_done));
 				cu_return_latched = {write_job_counter_done};
 			end
 		end
@@ -217,7 +219,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			read_data_0_in_latched    <= 0;
 			read_data_1_in_latched    <= 0;
 			cu_configure_latched      <= 0;
-
+			cu_configure_2_latched    <= 0;
 		end else begin
 			if(enabled)begin
 				wed_request_in_latched    <= wed_request_in;
@@ -228,6 +230,9 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 
 				if((|cu_configure))
 					cu_configure_latched <= cu_configure;
+
+				if((|cu_configure_2))
+					cu_configure_2_latched <= cu_configure_2;
 			end
 		end
 	end

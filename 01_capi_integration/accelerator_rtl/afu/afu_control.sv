@@ -27,6 +27,7 @@ module afu_control #(
 	input  logic                         rstn                       ,
 	input  logic                         enabled_in                 ,
 	input  logic [0:63]                  afu_configure              ,
+	input  logic [0:63]                  afu_configure_2            ,
 	input  CommandBufferLine             prefetch_read_command_in   ,
 	input  CommandBufferLine             prefetch_write_command_in  ,
 	input  CommandBufferLine             read_command_in            ,
@@ -183,13 +184,17 @@ module afu_control #(
 
 	ResponseControlInterfaceOut response_control_out_latched_S[0:RSP_DELAY-1];
 
-	logic [ 0:7] total_credits         ;
-	logic [ 0:7] read_credits          ;
-	logic [ 0:7] write_credits         ;
-	logic [ 0:7] prefetch_read_credits ;
-	logic [ 0:7] prefetch_write_credits;
-	logic [0:63] afu_configure_latched ;
+	logic [ 0:7] total_credits          ;
+	logic [ 0:7] read_credits           ;
+	logic [ 0:7] write_credits          ;
+	logic [ 0:7] prefetch_read_credits  ;
+	logic [ 0:7] prefetch_write_credits ;
+	logic [0:63] afu_configure_latched  ;
+	logic [0:63] afu_configure_2_latched;
+	logic        afu_ready              ;
 
+
+	assign afu_config_ready = (|afu_configure_latched);
 ////////////////////////////////////////////////////////////////////////////
 //drive output response stats
 ////////////////////////////////////////////////////////////////////////////
@@ -208,13 +213,17 @@ module afu_control #(
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			afu_status            <= 0;
-			afu_configure_latched <= 0;
+			afu_status              <= 0;
+			afu_configure_latched   <= 0;
+			afu_configure_2_latched <= 0;
 		end else begin
 			if(enabled) begin
 				if((|afu_configure)) begin
-					afu_status            <= afu_configure;
-					afu_configure_latched <= afu_configure;
+					afu_status              <= afu_configure;
+					afu_configure_latched   <= afu_configure;
+				end
+				if((|afu_configure_2)) begin
+					afu_configure_2_latched <= afu_configure_2;
 				end
 			end
 		end
@@ -241,12 +250,12 @@ module afu_control #(
 		end else begin
 			if(enabled && response.valid) begin
 				case (response.response)
-					DONE,NLOCK,NRES,FAILED,DERROR,AERROR: begin
+					DONE,NLOCK,NRES,FAILED: begin
 						response_filtered_done    <= response;
 						response_filtered_restart <= 0;
 						response_tagged           <= response;
 					end
-					PAGED,FAULT,FLUSHED: begin
+					DERROR,AERROR,PAGED,FAULT,FLUSHED: begin
 						response_filtered_done    <= 0;
 						response_filtered_restart <= response;
 						response_tagged           <= response;
@@ -490,7 +499,7 @@ module afu_control #(
 			prefetch_write_credits <= 0;
 			credit_overflow_error  <= 0;
 		end else begin
-			if(|afu_configure_latched) begin
+			if(afu_config_ready) begin
 				total_credits          <= (command_in_latched.room);
 				read_credits           <= (total_credits >> afu_configure_latched[0:3]);
 				write_credits          <= (total_credits >> afu_configure_latched[4:7]);

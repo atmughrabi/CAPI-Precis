@@ -55,24 +55,24 @@ package GLOBALS_AFU_PKG;
 	parameter TAG_COUNT   = 256  ;
 	parameter INVALID_TAG = 8'h00;
 
-	parameter BURST_CMD_BUFFER_SIZE = 64; // size of command burst for PSL leave as is
+	parameter BURST_CMD_BUFFER_SIZE = 32; // size of command burst for PSL leave as is
 
-	parameter READ_CMD_BUFFER_SIZE           = 256;
-	parameter WRITE_CMD_BUFFER_SIZE          = 256;
-	parameter PREFETCH_READ_CMD_BUFFER_SIZE  = 256;
-	parameter PREFETCH_WRITE_CMD_BUFFER_SIZE = 256;
+	parameter READ_CMD_BUFFER_SIZE           = 32;
+	parameter WRITE_CMD_BUFFER_SIZE          = 32;
+	parameter PREFETCH_READ_CMD_BUFFER_SIZE  = 32;
+	parameter PREFETCH_WRITE_CMD_BUFFER_SIZE = 32;
 	parameter RESTART_CMD_BUFFER_SIZE        = 4  ;
 	parameter WED_CMD_BUFFER_SIZE            = 4  ;
 
-	parameter READ_RSP_BUFFER_SIZE           = 256;
-	parameter PREFETCH_READ_RSP_BUFFER_SIZE  = 256;
-	parameter PREFETCH_WRITE_RSP_BUFFER_SIZE = 256;
-	parameter WRITE_RSP_BUFFER_SIZE          = 256;
+	parameter READ_RSP_BUFFER_SIZE           = 32;
+	parameter PREFETCH_READ_RSP_BUFFER_SIZE  = 32;
+	parameter PREFETCH_WRITE_RSP_BUFFER_SIZE = 32;
+	parameter WRITE_RSP_BUFFER_SIZE          = 32;
 	parameter RESTART_RSP_BUFFER_SIZE        = 4  ;
 	parameter WED_RSP_BUFFER_SIZE            = 4  ;
 
-	parameter READ_DATA_BUFFER_SIZE    = 256;
-	parameter WRITE_DATA_BUFFER_SIZE   = 256;
+	parameter READ_DATA_BUFFER_SIZE    = 32;
+	parameter WRITE_DATA_BUFFER_SIZE   = 32;
 	parameter RESTART_DATA_BUFFER_SIZE = 4  ;
 	parameter WED_DATA_BUFFER_SIZE     = 4  ;
 
@@ -80,14 +80,14 @@ package GLOBALS_AFU_PKG;
 // AFU-Control (Buffer Priorities) for Arbitration
 ////////////////////////////////////////////////////////////////////////////
 
-	parameter PRIORITY_RESTART        = 0;
-	parameter PRIORITY_WED            = 1;
+	parameter PRIORITY_RESTART = 0;
+	parameter PRIORITY_WED     = 1;
 
 	parameter PRIORITY_WRITE          = 2;
 	parameter PRIORITY_PREFTECH_WRITE = 3;
 
-	parameter PRIORITY_READ           = 4;
-	parameter PRIORITY_PREFETCH_READ  = 5;
+	parameter PRIORITY_READ          = 4;
+	parameter PRIORITY_PREFETCH_READ = 5;
 
 ////////////////////////////////////////////////////////////////////////////
 // CU-Control  (Buffer size)
@@ -101,12 +101,14 @@ package GLOBALS_AFU_PKG;
 ////////////////////////////////////////////////////////////////////////////
 
 	//AFU-Control Configurations
-	parameter AFU_CONFIGURE = 26'h 3FFFFF8 >> 2; // algorithm status START/STOP/RESET AFU reads this address
-	parameter AFU_STATUS    = 26'h 3FFFFF0 >> 2; // AFU status job running
+	parameter AFU_CONFIGURE   = 26'h 3FFFFF8 >> 2;
+	parameter AFU_CONFIGURE_2 = 26'h 3FFFF30 >> 2;
+	parameter AFU_STATUS      = 26'h 3FFFFF0 >> 2; // AFU status job running
 
 	//CU-Control Configurations
-	parameter CU_CONFIGURE = 26'h 3FFFFE8 >> 2; // algorithm status START/STOP/RESET AFU reads this address
-	parameter CU_STATUS    = 26'h 3FFFFE0 >> 2;
+	parameter CU_CONFIGURE   = 26'h 3FFFFE8 >> 2;
+	parameter CU_CONFIGURE_2 = 26'h 3FFFF28 >> 2;
+	parameter CU_STATUS      = 26'h 3FFFFE0 >> 2;
 
 	parameter CU_RETURN     = 26'h 3FFFFD8 >> 2; // algorithm status DONE/RUNNING HOST reads this address
 	parameter CU_RETURN_ACK = 26'h 3FFFFD0 >> 2;
@@ -165,7 +167,7 @@ package GLOBALS_AFU_PKG;
 	parameter CACHELINE_INT_COUNTER_BITS = $clog2((DATA_SIZE_READ_BITS < CACHELINE_SIZE_BITS_HF) ? (2 * CACHELINE_SIZE_BITS_HF)/DATA_SIZE_READ_BITS : 2);
 
 	parameter CACHELINE_ARRAY_NUM = (CACHELINE_SIZE >> $clog2(DATA_SIZE_READ)); // number of  in one cacheline
-	parameter PAGE_ARRAY_NUM      = (PAGE_SIZE >> $clog2(DATA_SIZE_READ))     ; // number of  in one page      
+	parameter PAGE_ARRAY_NUM      = (PAGE_SIZE >> $clog2(DATA_SIZE_READ))     ; // number of  in one page
 
 ////////////////////////////////////////////////////////////////////////////
 //  AFU-Control CU IDs any compute unite that generate command must have an ID

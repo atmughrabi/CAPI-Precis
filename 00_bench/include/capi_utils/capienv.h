@@ -10,14 +10,16 @@
 // ********************************************************************************************
 // ***************                  MMIO General                                 **************
 // ********************************************************************************************
-
+// 0x3fffff8 >> 2 = 0xfffffc
 #define AFU_CONFIGURE           0x3FFFFF8
-#define AFU_STATUS              0x3FFFFF0             // running counters that you can read continuosly
+#define AFU_CONFIGURE_2         0x3FFFF30
+#define AFU_STATUS              0x3FFFFF0   
 
-#define CU_CONFIGURE            0x3FFFFE8             // 0x3fffff8 >> 2 = 0xfffffc
+#define CU_CONFIGURE            0x3FFFFE8
+#define CU_CONFIGURE_2          0x3FFFF28        
 #define CU_STATUS               0x3FFFFE0
 
-#define CU_RETURN               0x3FFFFD8             // 0x3fffff8 >> 2 = 0xfffffe
+#define CU_RETURN               0x3FFFFD8         // running counters that you can read continuosly     
 #define CU_RETURN_ACK           0x3FFFFD0
 
 #define  CU_RETURN_DONE         0x3FFFFC8
@@ -60,9 +62,11 @@ struct AFUStatus
 {
     uint64_t cu_stop;  // afu stopping condition
     uint64_t cu_config;
+    uint64_t cu_config_2;
     uint64_t cu_status;
     uint64_t cu_mode;
     uint64_t afu_config;
+    uint64_t afu_config_2;
     uint64_t afu_status;
     uint64_t error;
     uint64_t cu_return; // running return

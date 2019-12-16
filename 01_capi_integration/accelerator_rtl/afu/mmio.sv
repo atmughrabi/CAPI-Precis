@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : mmio.sv
 // Create : 2019-09-26 15:21:36
-// Revise : 2019-12-08 07:44:27
+// Revise : 2019-12-16 15:43:32
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
 
@@ -26,7 +26,9 @@ module mmio (
   input  logic [0:63]               afu_status         ,
   input  ResponseStatistcsInterface response_statistics,
   output logic [0:63]               afu_configure      ,
+  output logic [0:63]               afu_configure_2    ,
   output logic [0:63]               cu_configure       ,
+  output logic [0:63]               cu_configure_2     ,
   input  MMIOInterfaceInput         mmio_in            ,
   output MMIOInterfaceOutput        mmio_out           ,
   output logic [ 0:1]               mmio_errors        ,
@@ -204,8 +206,14 @@ module mmio (
           CU_CONFIGURE : begin
             cu_configure <= data_in_latched;
           end
+          CU_CONFIGURE_2 : begin
+            cu_configure_2 <= data_in_latched;
+          end
           AFU_CONFIGURE : begin
             afu_configure <= data_in_latched;
+          end
+          AFU_CONFIGURE_2 : begin
+            afu_configure_2 <= data_in_latched;
           end
           CU_RETURN_DONE_ACK : begin
             cu_return_mmio_ack <= data_in_latched;

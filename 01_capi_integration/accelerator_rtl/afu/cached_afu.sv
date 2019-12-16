@@ -8,7 +8,7 @@
 // Author : Abdullah Mughrabi atmughrabi@gmail.com/atmughra@ncsu.edu
 // File   : cached_afu.sv
 // Create : 2019-09-26 15:20:40
-// Revise : 2019-12-09 07:11:01
+// Revise : 2019-12-16 16:25:39
 // Editor : sublime text3, tab size (2)
 // -----------------------------------------------------------------------------
 
@@ -47,7 +47,9 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
   logic [                   0:63] cu_return             ;
   logic [                   0:63] cu_return_done        ;
   logic [                   0:63] cu_configure          ;
+  logic [                   0:63] cu_configure_2        ;
   logic [                   0:63] afu_configure         ;
+  logic [                   0:63] afu_configure_2       ;
   logic                           report_errors_ack     ;
   logic                           reset_afu             ;
   logic                           reset_afu_soft        ;
@@ -196,6 +198,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .rstn                       (combined_reset_afu         ),
     .enabled_in                 (enabled                    ),
     .afu_configure              (afu_configure              ),
+    .afu_configure_2            (afu_configure_2            ),
     .prefetch_read_command_in   (prefetch_read_command_out  ),
     .prefetch_write_command_in  (prefetch_write_command_out ),
     .read_command_in            (read_command_out           ),
@@ -251,6 +254,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .prefetch_write_buffer_status(command_buffer_status.prefetch_write_buffer),
     .write_buffer_status         (command_buffer_status.write_buffer         ),
     .cu_configure                (cu_configure                               ),
+    .cu_configure_2              (cu_configure_2                             ),
     .cu_return                   (cu_return                                  ),
     .cu_done                     (cu_done                                    ),
     .cu_status                   (cu_status                                  ),
@@ -277,7 +281,9 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .afu_status         (afu_status                ),
     .response_statistics(report_response_statistics),
     .cu_configure       (cu_configure              ),
+    .cu_configure_2     (cu_configure_2            ),
     .afu_configure      (afu_configure             ),
+    .afu_configure_2    (afu_configure_2           ),
     .mmio_in            (mmio_in                   ),
     .mmio_out           (mmio_out                  ),
     .mmio_errors        (mmio_errors               ),

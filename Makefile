@@ -170,7 +170,7 @@ RD_WR_PREFETCH_MODE=0
 # FIXED_ARB               [62]
 # ROUND_ROBIN_ARB         [63]
 
-ROUND_ROBIN_ARB=0x0011000000000001
+ROUND_ROBIN_ARB=0x5511000000000001
 FIXED_ARB=0x11FF000000000002
 
 ##############################################
@@ -190,8 +190,8 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #1-128bye cacheline equal to 32 unsigned int type
 
 export NUM_THREADS = 8
-LHS=32 
-RHS=256
+LHS=512 
+RHS=512
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
