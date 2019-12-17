@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.com/atmughrabi/CAPIPrecis.svg?token=L3reAtGHdEVVPvzcVqQ6&branch=master)](https://travis-ci.com/atmughrabi/CAPIPrecis)
-[![](https://tokei.rs/b1/github/atmughrabi/CAPIPrecis/01_capi_integration?category=code)](https://github.com/atmughrabi/CAPIPrecis)
 <p align="center"><img src="./02_slides/fig/logo3.png" width="650" ></p>
 
 #  CAPI-Precis Coherent Accelerator Processor Interface (CAPI) Abstract Layer
