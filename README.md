@@ -1,13 +1,13 @@
 [![Build Status](https://travis-ci.com/atmughrabi/CAPIPrecis.svg?token=L3reAtGHdEVVPvzcVqQ6&branch=master)](https://travis-ci.com/atmughrabi/CAPIPrecis)
 <p align="center"><img src="./02_slides/fig/logo3.png" width="650" ></p>
 
-#  CAPI-Precis Coherent Accelerator Processor Interface (CAPI) Abstract Layer
+#  CAPIPrecis Coherent Accelerator Processor Interface (CAPI) Abstract Layer
 
 ## Overview 
 
 <p align="center"><img src="./02_slides/fig/theme.png" width="650" ></p>
 
-CAPI-Precis is an abstraction layer (AFU-Control) that simplifies communication and buffering with IBM CAPI Power Service Layer (PSL). Each control unit handling different aspects of communication with the PSL, it simplifies the interface for sending and receiving memory transactions, and preserves the fine-grain random or sequential memory access pattern. Furthermore our layer differentiate its self from other CAPI frameworks, by keeping the PSL cache support.
+CAPIPrecis is an abstraction layer (AFU-Control) that simplifies communication and buffering with IBM CAPI Power Service Layer (PSL). Each control unit handling different aspects of communication with the PSL, it simplifies the interface for sending and receiving memory transactions, and preserves the fine-grain random or sequential memory access pattern. Furthermore our layer differentiate its self from other CAPI frameworks, by keeping the PSL cache support.
 
 ### Key Features and Benefits
 
@@ -71,7 +71,7 @@ export DEBUG_LOG_PATH="${PSLSE_SERVER_DIR}/debug.log"
 
 ## Setting up the source code 
 
-1. Clone CAPI-Precis.
+1. Clone CAPIPrecis.
 ```console
 CAPI@Precis:~$ git clone https://github.com/atmughrabi/CAPIPrecis.git
 ```
@@ -84,7 +84,7 @@ CAPI@Precis:~$ cd CAPIPrecis/
 CAPI@Precis:~CAPIPrecis$ git submodule update --init --recursive
 ```
 
-# Running CAPI-Precis (Memory Copy engines)
+# Running CAPIPrecis (Memory Copy engines)
 
 [<img src="./02_slides/fig/openmp_logo.png" height="45" align="right" >](https://www.openmp.org/)
 
@@ -308,7 +308,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
 
 ```
 
-# CAPI-Precis Structure:
+# CAPIPrecis Structure:
 <p align="center"><img src="./02_slides/fig/CAPIPrecis_chipplanner.png" width="600" ></p>
 <p align="center"><img src="./02_slides/fig/theme2.png" width="650" ></p>
 
