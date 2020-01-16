@@ -20,26 +20,31 @@ import CU_PKG::*;
 import CREDIT_PKG::*;
 
 module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
-	input  logic                         clock                      , // Clock
-	input  logic                         rstn                       ,
-	input  logic                         enabled_in                 ,
-	input  WEDInterface                  wed_request_in             ,
-	input  logic [                 0:63] cu_configure               ,
-	input  ResponseBufferLine            write_response_in          ,
-	input  ReadWriteDataLine             write_data_0_in            ,
-	input  ReadWriteDataLine             write_data_1_in            ,
-	input  BufferStatus                  write_command_buffer_status,
-	output BufferStatus                  write_data_in_buffer_status,
-	output CommandBufferLine             write_command_out          ,
-	output ReadWriteDataLine             write_data_0_out           ,
-	output ReadWriteDataLine             write_data_1_out           ,
+	input  logic                         clock                         , // Clock
+	input  logic                         rstn                          ,
+	input  logic                         write_enabled_in              ,
+	input  logic                         prefetch_enabled_in           ,
+	input  WEDInterface                  wed_request_in                ,
+	input  logic [                 0:63] cu_configure                  ,
+	input  ResponseBufferLine            write_response_in             ,
+	input  ReadWriteDataLine             write_data_0_in               ,
+	input  ReadWriteDataLine             write_data_1_in               ,
+	input  BufferStatus                  write_command_buffer_status   ,
+	input  ResponseBufferLine            prefetch_response_in          ,
+	input  BufferStatus                  prefetch_command_buffer_status,
+	output CommandBufferLine             prefetch_command_out          ,
+	output BufferStatus                  write_data_in_buffer_status   ,
+	output CommandBufferLine             write_command_out             ,
+	output ReadWriteDataLine             write_data_0_out              ,
+	output ReadWriteDataLine             write_data_1_out              ,
 	output logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done
 );
+	
+	assign prefetch_command_out = 0;
 
-
-	BufferStatus                  write_data_in_0_buffer_status;
-	BufferStatus                  write_data_in_1_buffer_status;
-	logic [0:63]                  next_offest                  ;
+	BufferStatus write_data_in_0_buffer_status;
+	BufferStatus write_data_in_1_buffer_status;
+	logic [0:63] next_offest                  ;
 
 	logic             enabled                  ;
 	logic [0:63]      cu_configure_latched     ;
@@ -96,7 +101,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 		if(~rstn) begin
 			enabled <= 0;
 		end else begin
-			enabled <= enabled_in;
+			enabled <= write_enabled_in;
 		end
 	end
 

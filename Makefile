@@ -136,7 +136,7 @@ export CU_CONFIG_MODE=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR
 # ENABLE_RD_WR=2
 # enable write engine independent
 # ENABLE_RD_WR=4
-#enable both engines  dependent
+# enable both engines  dependent
 ENABLE_RD_WR=3
 #enable both engines independent
 # ENABLE_RD_WR=5
@@ -146,9 +146,9 @@ ENABLE_RD_WR=3
 #enable write PREFETCH
 # ENABLE_RD_WR_PREFETCH=1
 #enable read PREFETCH
-# ENABLE_RD_WR_PREFETCH=2
+ENABLE_RD_WR_PREFETCH=2
 #enable both PREFETCH
-ENABLE_RD_WR_PREFETCH=3
+# ENABLE_RD_WR_PREFETCH=3
 
 #disable both page address based
 RD_WR_PREFETCH_MODE=0
@@ -170,7 +170,7 @@ RD_WR_PREFETCH_MODE=0
 # FIXED_ARB               [62]
 # ROUND_ROBIN_ARB         [63]
 
-ROUND_ROBIN_ARB=0x5511000000000001
+ROUND_ROBIN_ARB=0x1111000000000001
 FIXED_ARB=0x11FF000000000002
 
 ##############################################
@@ -187,7 +187,7 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #                RUN  ARGUMENTS                         #
 #########################################################
 
-#1-128bye cacheline equal to 32 unsigned int type
+#1-128byte cacheline equal to 32 unsigned int type
 
 export NUM_THREADS = 8
 LHS=512 

@@ -61,20 +61,20 @@ package GLOBALS_AFU_PKG;
 	parameter WRITE_CMD_BUFFER_SIZE          = 32;
 	parameter PREFETCH_READ_CMD_BUFFER_SIZE  = 32;
 	parameter PREFETCH_WRITE_CMD_BUFFER_SIZE = 32;
-	parameter RESTART_CMD_BUFFER_SIZE        = 4  ;
-	parameter WED_CMD_BUFFER_SIZE            = 4  ;
+	parameter RESTART_CMD_BUFFER_SIZE        = 4 ;
+	parameter WED_CMD_BUFFER_SIZE            = 4 ;
 
 	parameter READ_RSP_BUFFER_SIZE           = 32;
 	parameter PREFETCH_READ_RSP_BUFFER_SIZE  = 32;
 	parameter PREFETCH_WRITE_RSP_BUFFER_SIZE = 32;
 	parameter WRITE_RSP_BUFFER_SIZE          = 32;
-	parameter RESTART_RSP_BUFFER_SIZE        = 4  ;
-	parameter WED_RSP_BUFFER_SIZE            = 4  ;
+	parameter RESTART_RSP_BUFFER_SIZE        = 4 ;
+	parameter WED_RSP_BUFFER_SIZE            = 4 ;
 
 	parameter READ_DATA_BUFFER_SIZE    = 32;
 	parameter WRITE_DATA_BUFFER_SIZE   = 32;
-	parameter RESTART_DATA_BUFFER_SIZE = 4  ;
-	parameter WED_DATA_BUFFER_SIZE     = 4  ;
+	parameter RESTART_DATA_BUFFER_SIZE = 4 ;
+	parameter WED_DATA_BUFFER_SIZE     = 4 ;
 
 ////////////////////////////////////////////////////////////////////////////
 // AFU-Control (Buffer Priorities) for Arbitration
@@ -169,6 +169,13 @@ package GLOBALS_AFU_PKG;
 	parameter CACHELINE_ARRAY_NUM = (CACHELINE_SIZE >> $clog2(DATA_SIZE_READ)); // number of  in one cacheline
 	parameter PAGE_ARRAY_NUM      = (PAGE_SIZE >> $clog2(DATA_SIZE_READ))     ; // number of  in one page
 
+// aligenment to page 64K-BYTES
+	parameter [0:63] ADDRESS_PAGE_MOD_MASK   = {{48{1'b0}},{16{1'b1}}};
+	parameter [0:63] ADDRESS_PAGE_ALIGN_MASK = {{48{1'b1}},{16{1'b0}}};
+
+	parameter TLB_SIZE            = 8*2                                    ;
+	parameter TLB_PAGE_BYTE_SIZE  = TLB_SIZE * PAGE_SIZE                   ;
+	parameter MAX_TLB_CL_REQUESTS = TLB_SIZE * (PAGE_SIZE / CACHELINE_SIZE);
 ////////////////////////////////////////////////////////////////////////////
 //  AFU-Control CU IDs any compute unite that generate command must have an ID
 ////////////////////////////////////////////////////////////////////////////

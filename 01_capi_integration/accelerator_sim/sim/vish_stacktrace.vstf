@@ -183,3 +183,88 @@
 # 6    0xf7aa8fb4: '<unknown (@0xf7aa8fb4)>'
 # End of Stack Trace
 
+# Current time Thu Dec 19 12:06:49 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0xf7fd2b49: '<unknown (@0xf7fd2b49)>'
+# 1    0x0854b8f4: 'Tcl_DoOneEvent + 0xf4' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 2    0x083f2b8f: 'Tk_MainLoop + 0x1f' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 3    0x083fb4a4: 'Tk_MainEx + 0x374' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 4    0x081fee66: 'vish_inner_loop + 0x116' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 5    0x080e6029: 'main + 0x989' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 6    0xf7aa8fb4: '<unknown (@0xf7aa8fb4)>'
+# End of Stack Trace
+
+# Current time Tue Dec 24 15:24:00 2019
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0xf7fd2b49: '<unknown (@0xf7fd2b49)>'
+# Current time Mon Jan 13 19:29:39 2020
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0xf7fd2b49: '<unknown (@0xf7fd2b49)>'
+# 1    0x0854b8f4: 'Tcl_DoOneEvent + 0xf4' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 2    0x083f2b8f: 'Tk_MainLoop + 0x1f' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 3    0x083fb4a4: 'Tk_MainEx + 0x374' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 4    0x081fee66: 'vish_inner_loop + 0x116' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 5    0x080e6029: 'main + 0x989' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 6    0xf7aa8fb4: '<unknown (@0xf7aa8fb4)>'
+# End of Stack Trace
+
+# Current time Wed Jan 15 15:23:46 2020
+# ModelSim - Intel FPGA Edition Stack Trace
+# Program = vish
+# Id = "10.5b"
+# Version = "2016.10"
+# Date = "Oct  5 2016"
+# Platform = linuxpe
+# 0    0x0852408a: '<unknown (@0x852408a)>'
+# 1    0x0852431b: '<unknown (@0x852431b)>'
+# 2    0x0854cb04: 'TclFreeObj + 0x84' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 3    0x084cdf62: '<unknown (@0x84cdf62)>'
+# 4    0x084ce4c5: 'Tcl_EvalEx + 0x35' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 5    0x0849b7a0: 'Tk_BindEvent + 0x780' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 6    0x0849d737: 'TkBindEventProc + 0xd7' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 7    0x083f2053: 'Tk_HandleEvent + 0x3d3' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 8    0x08400381: 'Tk_UnmapWindow + 0x91' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 9    0x084aa255: '<unknown (@0x84aa255)>'
+# 10   0x083f2021: 'Tk_HandleEvent + 0x3a1' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 11   0x08400381: 'Tk_UnmapWindow + 0x91' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 12   0x084ab5b5: '<unknown (@0x84ab5b5)>'
+# 13   0x083f2021: 'Tk_HandleEvent + 0x3a1' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 14   0x08400381: 'Tk_UnmapWindow + 0x91' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 15   0x084aa255: '<unknown (@0x84aa255)>'
+# 16   0x083f2021: 'Tk_HandleEvent + 0x3a1' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 17   0x08400381: 'Tk_UnmapWindow + 0x91' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 18   0x084aa255: '<unknown (@0x84aa255)>'
+# 19   0x083f2021: 'Tk_HandleEvent + 0x3a1' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 20   0x08400381: 'Tk_UnmapWindow + 0x91' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 21   0x084ab5b5: '<unknown (@0x84ab5b5)>'
+# 22   0x083f2021: 'Tk_HandleEvent + 0x3a1' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 23   0x08400381: 'Tk_UnmapWindow + 0x91' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 24   0x084a3d7d: '<unknown (@0x84a3d7d)>'
+# 25   0x083f2021: 'Tk_HandleEvent + 0x3a1' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 26   0x0848e9ca: '<unknown (@0x848e9ca)>'
+# 27   0x083f2021: 'Tk_HandleEvent + 0x3a1' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 28   0x083f2556: '<unknown (@0x83f2556)>'
+# 29   0x0854b5d3: 'Tcl_ServiceEvent + 0x73' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 30   0x0854b869: 'Tcl_DoOneEvent + 0x69' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 31   0x083f2b8f: 'Tk_MainLoop + 0x1f' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 32   0x083fb4a4: 'Tk_MainEx + 0x374' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 33   0x081fee66: 'vish_inner_loop + 0x116' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 34   0x080e6029: 'main + 0x989' in '/home/ab/intelFPGA/18.1/modelsim_ase/linuxaloem/vish'
+# 35   0xf7aa8fb4: '<unknown (@0xf7aa8fb4)>'
+# End of Stack Trace
+

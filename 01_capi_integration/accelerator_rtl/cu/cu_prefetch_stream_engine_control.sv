@@ -76,7 +76,7 @@ module cu_prefetch_stream_engine_control #(parameter CU_PREFETCH_CONTROL_ID = PR
 		if(~rstn) begin
 			enabled_cmd <= 0;
 		end else begin
-			enabled_cmd <= enabled;
+			enabled_cmd <= enabled_in;
 		end
 	end
 
