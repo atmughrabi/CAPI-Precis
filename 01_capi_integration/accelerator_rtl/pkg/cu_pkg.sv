@@ -17,6 +17,19 @@ package CU_PKG;
 // Relating to array int types and sizes
 	import GLOBALS_AFU_PKG::*;
 
+	typedef enum int unsigned {
+		READ_STREAM_RESET,
+		READ_STREAM_IDLE,
+		STREAM_SET,
+		PREFETCH_STREAM_START,
+		PREFETCH_STREAM_REQ,
+		PREFETCH_STREAM_PENDING,
+		READ_STREAM_START,
+		READ_STREAM_REQ,
+		READ_STREAM_PENDING,
+		READ_STREAM_DONE
+	} read_state;
+
 	typedef enum int unsigned{
 		STRUCT_INVALID,
 		READ_DATA,
