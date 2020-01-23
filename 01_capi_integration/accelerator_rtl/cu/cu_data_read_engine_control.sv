@@ -231,7 +231,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			READ_STREAM_DONE : begin
 				if((|wed_prefetch_in_latched.wed.size_send) && enabled_prefetch)
 					next_state = PREFETCH_READ_STREAM_START;
-				else if((|wed_request_in_latched.wed.size_send) && ~enabled_prefetch)
+				else if((|wed_request_in_latched.wed.size_send))
 					next_state = READ_STREAM_START;
 				else
 					next_state = READ_STREAM_FINAL;

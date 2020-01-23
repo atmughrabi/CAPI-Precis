@@ -223,7 +223,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			WRITE_STREAM_DONE : begin
 				if((|wed_prefetch_in_latched.wed.size_recive) && enabled_prefetch)
 					next_state = PREFETCH_WRITE_STREAM_START;
-				else if((|wed_request_in_latched.wed.size_recive) && ~enabled_prefetch)
+				else if((|wed_request_in_latched.wed.size_recive))
 					next_state = WRITE_STREAM_START;
 				else
 					next_state = WRITE_STREAM_FINAL;

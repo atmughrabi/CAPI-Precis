@@ -37,9 +37,6 @@ package GLOBALS_AFU_PKG;
 //   CU-Control/AFU-Control CAPI Globals
 ////////////////////////////////////////////////////////////////////////////
 	parameter PAGE_SIZE              = 65536                  ; // Pagesize default  is 64KB
-
-	// parameter PAGE_SIZE              = 65536 / 8                 ; // Pagesize default  is 64KB
-
 	parameter PAGE_SIZE_BITS         = (PAGE_SIZE * 8)        ;
 	parameter CACHELINE_SIZE         = 128                    ; // cacheline is 128bytes
 	parameter CACHELINE_SIZE_BITS    = (CACHELINE_SIZE * 8)   ;
