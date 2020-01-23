@@ -37,6 +37,9 @@ package GLOBALS_AFU_PKG;
 //   CU-Control/AFU-Control CAPI Globals
 ////////////////////////////////////////////////////////////////////////////
 	parameter PAGE_SIZE              = 65536                  ; // Pagesize default  is 64KB
+
+	// parameter PAGE_SIZE              = 65536 / 8                 ; // Pagesize default  is 64KB
+
 	parameter PAGE_SIZE_BITS         = (PAGE_SIZE * 8)        ;
 	parameter CACHELINE_SIZE         = 128                    ; // cacheline is 128bytes
 	parameter CACHELINE_SIZE_BITS    = (CACHELINE_SIZE * 8)   ;
@@ -173,7 +176,7 @@ package GLOBALS_AFU_PKG;
 	parameter [0:63] ADDRESS_PAGE_MOD_MASK   = {{48{1'b0}},{16{1'b1}}};
 	parameter [0:63] ADDRESS_PAGE_ALIGN_MASK = {{48{1'b1}},{16{1'b0}}};
 
-	parameter TLB_SIZE            = 8*2                                    ;
+	parameter TLB_SIZE            = 2048                                   ;
 	parameter TLB_PAGE_BYTE_SIZE  = TLB_SIZE * PAGE_SIZE                   ;
 	parameter MAX_TLB_CL_REQUESTS = TLB_SIZE * (PAGE_SIZE / CACHELINE_SIZE);
 ////////////////////////////////////////////////////////////////////////////

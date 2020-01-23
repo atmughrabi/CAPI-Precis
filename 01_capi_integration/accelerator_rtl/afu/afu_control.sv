@@ -191,7 +191,6 @@ module afu_control #(
 	logic [ 0:7] prefetch_write_credits ;
 	logic [0:63] afu_configure_latched  ;
 	logic [0:63] afu_configure_2_latched;
-	logic        afu_ready              ;
 
 
 	assign afu_config_ready = (|afu_configure_latched);

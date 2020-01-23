@@ -146,9 +146,9 @@ ENABLE_RD_WR=3
 #enable write PREFETCH
 # ENABLE_RD_WR_PREFETCH=1
 #enable read PREFETCH
-ENABLE_RD_WR_PREFETCH=2
+# ENABLE_RD_WR_PREFETCH=2
 #enable both PREFETCH
-# ENABLE_RD_WR_PREFETCH=3
+ENABLE_RD_WR_PREFETCH=3
 
 #disable both page address based
 RD_WR_PREFETCH_MODE=0
@@ -162,7 +162,7 @@ RD_WR_PREFETCH_MODE=0
 ##############################################
 # CAPI FPGA AFU ARBITER CONFIG               #
 ##############################################
-
+# shift credits >> 
 # read_credits            [0:3]
 # write_credits           [4:7]
 # prefetch_read_credits   [8:11]
@@ -170,7 +170,7 @@ RD_WR_PREFETCH_MODE=0
 # FIXED_ARB               [62]
 # ROUND_ROBIN_ARB         [63]
 
-ROUND_ROBIN_ARB=0x1111000000000001
+ROUND_ROBIN_ARB=0x5555000000000001
 FIXED_ARB=0x11FF000000000002
 
 ##############################################
@@ -190,8 +190,8 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #1-128byte cacheline equal to 32 unsigned int type
 
 export NUM_THREADS = 8
-LHS=512 
-RHS=512
+LHS=32 
+RHS=2048
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 

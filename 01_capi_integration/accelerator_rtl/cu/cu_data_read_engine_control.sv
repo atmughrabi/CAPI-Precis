@@ -39,8 +39,6 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	output logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done
 );
 
-	assign prefetch_command_out = 0;
-
 	//output latched
 	CommandBufferLine read_command_out_latched;
 
@@ -65,6 +63,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_counter_send_latched;
 	logic [                 0:63] next_prefetch_offest         ;
 	logic                         enabled_prefetch             ;
+	ResponseBufferLine            prefetch_response_in_latched ;
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
@@ -84,7 +83,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			enabled_prefetch <= 0;
 		end else begin
 			enabled_cmd      <= enabled;
-			enabled_prefetch <= prefetch_enabled_in;
+			enabled_prefetch <= prefetch_enabled_in && cu_configure_latched[30];
 		end
 	end
 
@@ -100,12 +99,14 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			read_job_counter_done <= 0;
 			read_data_0_out       <= 0;
 			read_data_1_out       <= 0;
+			prefetch_command_out  <= 0;
 		end else begin
 			if(enabled)begin
 				read_command_out      <= read_command_out_latched;
 				read_job_counter_done <= read_job_counter_done_latched;
 				read_data_0_out       <= read_data_0_in_latched;
 				read_data_1_out       <= read_data_1_in_latched;
+				prefetch_command_out  <= prefetch_command_out_latched;
 			end
 		end
 	end
@@ -116,14 +117,16 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			read_response_in_latched <= 0;
-			read_data_0_in_latched   <= 0;
-			read_data_1_in_latched   <= 0;
+			read_response_in_latched     <= 0;
+			read_data_0_in_latched       <= 0;
+			read_data_1_in_latched       <= 0;
+			prefetch_response_in_latched <= 0;
 		end else begin
 			if(enabled_cmd)begin
-				read_response_in_latched <= read_response_in;
-				read_data_0_in_latched   <= read_data_0_in;
-				read_data_1_in_latched   <= read_data_1_in;
+				read_response_in_latched     <= read_response_in;
+				read_data_0_in_latched       <= read_data_0_in;
+				read_data_1_in_latched       <= read_data_1_in;
+				prefetch_response_in_latched <= prefetch_response_in;
 			end
 		end
 	end
@@ -183,53 +186,58 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			end
 			READ_STREAM_IDLE : begin
 				if(wed_request_in.valid && enabled_cmd)
-					next_state = STREAM_SET;
+					next_state = READ_STREAM_SET;
 				else
 					next_state = READ_STREAM_IDLE;
 			end
-			STREAM_SET : begin
-				if(wed_request_in_latched.valid && enabled_cmd)
-					next_state = PREFETCH_STREAM_START;
-				else
-					next_state = STREAM_SET;
-			end
-			PREFETCH_STREAM_START : begin
-				next_state = PREFETCH_STREAM_REQ;
-			end
-			PREFETCH_STREAM_REQ : begin
-				if(prefetch_counter_send_latched >= MAX_TLB_CL_REQUESTS || ~(|wed_prefetch_in_latched.wed.size_send))
-					next_state = PREFETCH_STREAM_PENDING;
-				else
-					next_state = PREFETCH_STREAM_REQ;
-			end
-			PREFETCH_STREAM_PENDING : begin
-				if(prefetch_counter_send_latched == prefetch_counter_resp_latched)	
+			READ_STREAM_SET : begin
+				if(wed_request_in_latched.valid && enabled_prefetch)
+					next_state = PREFETCH_READ_STREAM_START;
+				else if(wed_request_in_latched.valid && ~enabled_prefetch)
 					next_state = READ_STREAM_START;
 				else
-					next_state = PREFETCH_STREAM_PENDING;
+					next_state = READ_STREAM_SET;
+			end
+			PREFETCH_READ_STREAM_START : begin
+				next_state = PREFETCH_READ_STREAM_REQ;
+			end
+			PREFETCH_READ_STREAM_REQ : begin
+				if(prefetch_counter_send_latched >= (TLB_SIZE-2) || ~(|wed_prefetch_in_latched.wed.size_send))
+					next_state = PREFETCH_READ_STREAM_PENDING;
+				else
+					next_state = PREFETCH_READ_STREAM_REQ;
+			end
+			PREFETCH_READ_STREAM_PENDING : begin
+				if(prefetch_counter_send_latched == prefetch_counter_resp_latched)
+					next_state = READ_STREAM_START;
+				else
+					next_state = PREFETCH_READ_STREAM_PENDING;
 			end
 			READ_STREAM_START : begin
 				next_state = READ_STREAM_REQ;
 			end
 			READ_STREAM_REQ : begin
-				if(read_job_send_done_latched >= MAX_TLB_CL_REQUESTS || ~(|wed_request_in_latched.wed.size_send))
+				if(read_job_send_done_latched >= (MAX_TLB_CL_REQUESTS-2) || ~(|wed_request_in_latched.wed.size_send))
 					next_state = READ_STREAM_PENDING;
 				else
 					next_state = READ_STREAM_REQ;
 			end
 			READ_STREAM_PENDING : begin
-				if(read_job_send_done_latched == read_job_resp_done_latched)	
+				if(read_job_send_done_latched == read_job_resp_done_latched)
 					next_state = READ_STREAM_DONE;
 				else
 					next_state = READ_STREAM_PENDING;
 			end
 			READ_STREAM_DONE : begin
-				if((|wed_prefetch_in_latched.wed.size_send))
-					next_state = PREFETCH_STREAM_START;
-				else if((|wed_request_in_latched.wed.size_send))
+				if((|wed_prefetch_in_latched.wed.size_send) && enabled_prefetch)
+					next_state = PREFETCH_READ_STREAM_START;
+				else if((|wed_request_in_latched.wed.size_send) && ~enabled_prefetch)
 					next_state = READ_STREAM_START;
 				else
-					next_state = READ_STREAM_RESET;
+					next_state = READ_STREAM_FINAL;
+			end
+			READ_STREAM_FINAL : begin
+				next_state = READ_STREAM_FINAL;
 			end
 		endcase
 	end
@@ -253,26 +261,26 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				prefetch_counter_send_latched <= 0;
 
 			end
-			READ_STREAM_IDLE  : begin
+			READ_STREAM_IDLE : begin
 			end
-			STREAM_SET : begin
+			READ_STREAM_SET       : begin
 				wed_request_in_latched  <= wed_request_in;
 				wed_prefetch_in_latched <= wed_request_in;
 			end
-			PREFETCH_STREAM_START : begin
+			PREFETCH_READ_STREAM_START : begin
 
 				prefetch_counter_send_latched <= 0;
 				prefetch_counter_resp_latched <= 0;
-				
+
 			end
-			PREFETCH_STREAM_REQ : begin
+			PREFETCH_READ_STREAM_REQ : begin
 
 				if (~prefetch_command_buffer_status.alfull && send_to_write_engine && (|wed_prefetch_in_latched.wed.size_send)) begin
 
-					if(wed_prefetch_in_latched.wed.size_send >= CACHELINE_ARRAY_NUM)begin
-						wed_prefetch_in_latched.wed.size_send      <= wed_prefetch_in_latched.wed.size_send - CACHELINE_ARRAY_NUM;
-						prefetch_command_out_latched.cmd.real_size <= CACHELINE_ARRAY_NUM;
-					end else if (wed_prefetch_in_latched.wed.size_send < CACHELINE_ARRAY_NUM) begin
+					if(wed_prefetch_in_latched.wed.size_send > PAGE_ARRAY_NUM)begin
+						wed_prefetch_in_latched.wed.size_send      <= wed_prefetch_in_latched.wed.size_send - PAGE_ARRAY_NUM;
+						prefetch_command_out_latched.cmd.real_size <= PAGE_ARRAY_NUM;
+					end else if (wed_prefetch_in_latched.wed.size_send <= PAGE_ARRAY_NUM) begin
 						wed_prefetch_in_latched.wed.size_send      <= 0;
 						prefetch_command_out_latched.cmd.real_size <= wed_prefetch_in_latched.wed.size_send;
 					end
@@ -301,83 +309,88 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				end
 
 				prefetch_counter_send_latched <= prefetch_counter_send_latched + prefetch_command_out_latched.valid;
-				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in.valid; 
+				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
 
 			end
-			PREFETCH_STREAM_PENDING : begin
+			PREFETCH_READ_STREAM_PENDING : begin
 
+				prefetch_command_out_latched  <= 0;
 				prefetch_counter_send_latched <= prefetch_counter_send_latched + prefetch_command_out_latched.valid;
-				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in.valid; 
+				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
 
 			end
 			READ_STREAM_START : begin
 
 				read_job_resp_done_latched <= 0;
 				read_job_send_done_latched <= 0;
-				
+
 			end
 			READ_STREAM_REQ : begin
 
 				if (~read_command_buffer_status.alfull && send_to_write_engine && (|wed_request_in_latched.wed.size_send))begin
 
-				if(wed_request_in_latched.wed.size_send >= CACHELINE_ARRAY_NUM)begin
-					wed_request_in_latched.wed.size_send   <= wed_request_in_latched.wed.size_send - CACHELINE_ARRAY_NUM;
-					read_command_out_latched.cmd.real_size <= CACHELINE_ARRAY_NUM;
+					if(wed_request_in_latched.wed.size_send > CACHELINE_ARRAY_NUM)begin
+						wed_request_in_latched.wed.size_send   <= wed_request_in_latched.wed.size_send - CACHELINE_ARRAY_NUM;
+						read_command_out_latched.cmd.real_size <= CACHELINE_ARRAY_NUM;
 
-					if (cu_configure_latched[3]) begin
-						read_command_out_latched.command <= READ_CL_S;
-						read_command_out_latched.size    <= 12'h080;
-					end else begin
-						read_command_out_latched.size    <= cmd_size_calculate(wed_request_in_latched.wed.size_send);
-						read_command_out_latched.command <= READ_CL_NA;
+						if (cu_configure_latched[3]) begin
+							read_command_out_latched.command <= READ_CL_S;
+							read_command_out_latched.size    <= 12'h080;
+						end else begin
+							read_command_out_latched.size    <= cmd_size_calculate(wed_request_in_latched.wed.size_send);
+							read_command_out_latched.command <= READ_CL_NA;
+						end
+
+					end else if (wed_request_in_latched.wed.size_send <= CACHELINE_ARRAY_NUM) begin
+						wed_request_in_latched.wed.size_send   <= 0;
+						read_command_out_latched.cmd.real_size <= wed_request_in_latched.wed.size_send;
+
+						if (cu_configure_latched[3]) begin
+							read_command_out_latched.command <= READ_CL_S;
+							read_command_out_latched.size    <= 12'h080;
+						end else begin
+							read_command_out_latched.size    <= cmd_size_calculate(wed_request_in_latched.wed.size_send);
+							read_command_out_latched.command <= READ_PNA;
+						end
+
 					end
 
-				end else if (wed_request_in_latched.wed.size_send < CACHELINE_ARRAY_NUM) begin
-					wed_request_in_latched.wed.size_send   <= 0;
-					read_command_out_latched.cmd.real_size <= wed_request_in_latched.wed.size_send;
+					read_command_out_latched.cmd.cu_id            <= CU_READ_CONTROL_ID;
+					read_command_out_latched.cmd.cmd_type         <= CMD_READ;
+					read_command_out_latched.cmd.cacheline_offest <= 0;
+					read_command_out_latched.cmd.address_offest   <= next_offest;
+					read_command_out_latched.cmd.array_struct     <= READ_DATA;
 
-					if (cu_configure_latched[3]) begin
-						read_command_out_latched.command <= READ_CL_S;
-						read_command_out_latched.size    <= 12'h080;
-					end else begin
-						read_command_out_latched.size    <= cmd_size_calculate(wed_request_in_latched.wed.size_send);
-						read_command_out_latched.command <= READ_PNA;
-					end
+					read_command_out_latched.cmd.abt <= map_CABT(cu_configure_latched[0:2]);
+					read_command_out_latched.abt     <= map_CABT(cu_configure_latched[0:2]);
 
+
+
+					read_command_out_latched.valid <= 1'b1;
+
+					read_command_out_latched.address <= wed_request_in_latched.wed.array_send + next_offest;
+
+					next_offest <= next_offest + CACHELINE_SIZE;
+
+				end else begin
+					read_command_out_latched <= 0;
 				end
 
-				read_command_out_latched.cmd.cu_id            <= CU_READ_CONTROL_ID;
-				read_command_out_latched.cmd.cmd_type         <= CMD_READ;
-				read_command_out_latched.cmd.cacheline_offest <= 0;
-				read_command_out_latched.cmd.address_offest   <= next_offest;
-				read_command_out_latched.cmd.array_struct     <= READ_DATA;
-
-				read_command_out_latched.cmd.abt <= map_CABT(cu_configure_latched[0:2]);
-				read_command_out_latched.abt     <= map_CABT(cu_configure_latched[0:2]);
-
-
-
-				read_command_out_latched.valid <= 1'b1;
-
-				read_command_out_latched.address <= wed_request_in_latched.wed.array_send + next_offest;
-
-				next_offest <= next_offest + CACHELINE_SIZE;
-
-			end else begin
-				read_command_out_latched <= 0;
-			end
-
 				read_job_send_done_latched <= read_job_send_done_latched + read_command_out_latched.valid;
-				read_job_resp_done_latched <= read_job_resp_done_latched + read_response_in_latched.valid; 
+				read_job_resp_done_latched <= read_job_resp_done_latched + read_response_in_latched.valid;
 
 			end
 			READ_STREAM_PENDING : begin
 
+				read_command_out_latched <= 0;
 				read_job_send_done_latched <= read_job_send_done_latched + read_command_out_latched.valid;
-				read_job_resp_done_latched <= read_job_resp_done_latched + read_response_in_latched.valid; 
-				
+				read_job_resp_done_latched <= read_job_resp_done_latched + read_response_in_latched.valid;
+
 			end
 			READ_STREAM_DONE : begin
+
+			end
+			READ_STREAM_FINAL : begin
 
 			end
 		endcase
