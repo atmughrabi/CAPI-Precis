@@ -67,6 +67,10 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	logic                         enabled_prefetch             ;
 	ResponseBufferLine            prefetch_response_in_latched ;
 
+	logic [0:63] tlb_size           ;
+	logic [0:63] max_tlb_cl_requests;
+
+
 	assign write_data_in_buffer_status = write_data_in_0_buffer_status;
 
 ////////////////////////////////////////////////////////////////////////////
@@ -106,6 +110,28 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 
 				write_response_in_latched    <= write_response_in;
 				prefetch_response_in_latched <= prefetch_response_in;
+			end
+		end
+	end
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			cu_configure_latched <= 0;
+			tlb_size             <= TLB_SIZE;
+			max_tlb_cl_requests  <= MAX_TLB_CL_REQUESTS;
+		end else begin
+			if(enabled) begin
+				if((|cu_configure)) begin
+					cu_configure_latched <= cu_configure;
+
+					if(cu_configure[39])begin
+						tlb_size            <= (TLB_SIZE >> cu_configure[32:35]);
+						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure[32:35]));
+					end else begin
+						tlb_size            <= (TLB_SIZE << cu_configure[32:35]);
+						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure[32:35]));
+					end
+				end
 			end
 		end
 	end
@@ -194,7 +220,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				next_state = PREFETCH_WRITE_STREAM_REQ;
 			end
 			PREFETCH_WRITE_STREAM_REQ : begin
-				if(prefetch_counter_send_latched >= (TLB_SIZE-2) || ~(|wed_prefetch_in_latched.wed.size_recive))
+				if(prefetch_counter_send_latched >= (tlb_size-2) || ~(|wed_prefetch_in_latched.wed.size_recive))
 					next_state = PREFETCH_WRITE_STREAM_PENDING;
 				else
 					next_state = PREFETCH_WRITE_STREAM_REQ;
@@ -209,7 +235,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				next_state = WRITE_STREAM_REQ;
 			end
 			WRITE_STREAM_REQ : begin
-				if(write_job_send_done_latched >= (MAX_TLB_CL_REQUESTS-2) || ~(|wed_request_in_latched.wed.size_recive))
+				if(write_job_send_done_latched >= (max_tlb_cl_requests-2) || ~(|wed_request_in_latched.wed.size_recive))
 					next_state = WRITE_STREAM_PENDING;
 				else
 					next_state = WRITE_STREAM_REQ;

@@ -64,6 +64,9 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	logic [                 0:63] next_prefetch_offest         ;
 	logic                         enabled_prefetch             ;
 	ResponseBufferLine            prefetch_response_in_latched ;
+	logic [                 0:63] tlb_size                     ;
+	logic [                 0:63] max_tlb_cl_requests          ;
+
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
@@ -135,10 +138,21 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
 			cu_configure_latched <= 0;
+			tlb_size             <= TLB_SIZE;
+			max_tlb_cl_requests  <= MAX_TLB_CL_REQUESTS;
 		end else begin
 			if(enabled) begin
-				if((|cu_configure))
+				if((|cu_configure)) begin
 					cu_configure_latched <= cu_configure;
+
+					if(cu_configure[39])begin
+						tlb_size            <= (TLB_SIZE >> cu_configure[32:35]);
+						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure[32:35]));
+					end else begin
+						tlb_size            <= (TLB_SIZE << cu_configure[32:35]);
+						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure[32:35]));
+					end
+				end
 			end
 		end
 	end
@@ -202,7 +216,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				next_state = PREFETCH_READ_STREAM_REQ;
 			end
 			PREFETCH_READ_STREAM_REQ : begin
-				if(prefetch_counter_send_latched >= (TLB_SIZE-2) || ~(|wed_prefetch_in_latched.wed.size_send))
+				if(prefetch_counter_send_latched >= (tlb_size-2) || ~(|wed_prefetch_in_latched.wed.size_send))
 					next_state = PREFETCH_READ_STREAM_PENDING;
 				else
 					next_state = PREFETCH_READ_STREAM_REQ;
@@ -217,7 +231,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				next_state = READ_STREAM_REQ;
 			end
 			READ_STREAM_REQ : begin
-				if(read_job_send_done_latched >= (MAX_TLB_CL_REQUESTS-2) || ~(|wed_request_in_latched.wed.size_send))
+				if(read_job_send_done_latched >= (max_tlb_cl_requests-2) || ~(|wed_request_in_latched.wed.size_send))
 					next_state = READ_STREAM_PENDING;
 				else
 					next_state = READ_STREAM_REQ;
@@ -263,7 +277,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			end
 			READ_STREAM_IDLE : begin
 			end
-			READ_STREAM_SET       : begin
+			READ_STREAM_SET  : begin
 				wed_request_in_latched  <= wed_request_in;
 				wed_prefetch_in_latched <= wed_request_in;
 			end
@@ -382,7 +396,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			end
 			READ_STREAM_PENDING : begin
 
-				read_command_out_latched <= 0;
+				read_command_out_latched   <= 0;
 				read_job_send_done_latched <= read_job_send_done_latched + read_command_out_latched.valid;
 				read_job_resp_done_latched <= read_job_resp_done_latched + read_response_in_latched.valid;
 

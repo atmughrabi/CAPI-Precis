@@ -253,6 +253,7 @@ clean-sim:
 	@rm -f $(CAPI_SIM)/modelsim.ini
 	@rm -f $(CAPI_SIM)/transcript
 	@rm -f $(CAPI_SIM)/vsim_stacktrace.vstf
+	@rm -f $(CAPI_SIM)/vish_stacktrace.vstf
 	@rm -f $(CAPI_SIM)/vsim.wlf
 	@rm -rf $(CAPI_SIM)/work
 	@rm -f $(CAPI_SERVER)/debug.log
