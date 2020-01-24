@@ -32,6 +32,8 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	input  BufferStatus                  read_data_out_buffer_status   ,
 	input  ResponseBufferLine            prefetch_response_in          ,
 	input  BufferStatus                  prefetch_command_buffer_status,
+	input  logic [                 0:63] tlb_size                      ,
+	input  logic [                 0:63] max_tlb_cl_requests           ,
 	output CommandBufferLine             prefetch_command_out          ,
 	output CommandBufferLine             read_command_out              ,
 	output ReadWriteDataLine             read_data_0_out               ,
@@ -67,11 +69,8 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	ResponseBufferLine            prefetch_response_in_latched ;
 	logic                         send_cmd_prefetch            ;
 
-	// logic [0:63] tlb_size           ;
-	// logic [0:63] max_tlb_cl_requests;
-
-	// logic [0:63] tlb_size_latched           ;
-	// logic [0:63] max_tlb_cl_requests_latched;
+	logic [0:63] tlb_size_latched           ;
+	logic [0:63] max_tlb_cl_requests_latched;
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
@@ -154,15 +153,15 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 
 
 
-	// always_ff @(posedge clock or negedge rstn) begin
-	// 	if(~rstn) begin
-	// 		tlb_size_latched            <= 0;
-	// 		max_tlb_cl_requests_latched <= 0;
-	// 	end else begin
-	// 		tlb_size_latched            <= tlb_size;
-	// 		max_tlb_cl_requests_latched <= max_tlb_cl_requests;
-	// 	end
-	// end
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			tlb_size_latched            <= 0;
+			max_tlb_cl_requests_latched <= 0;
+		end else begin
+			tlb_size_latched            <= tlb_size;
+			max_tlb_cl_requests_latched <= max_tlb_cl_requests;
+		end
+	end
 
 ////////////////////////////////////////////////////////////////////////////
 //response tracking logic
@@ -223,7 +222,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				next_state = PREFETCH_READ_STREAM_REQ;
 			end
 			PREFETCH_READ_STREAM_REQ : begin
-				if(prefetch_counter_send_latched >= (TLB_SIZE-3) || ~(|wed_prefetch_in_latched.wed.size_send))
+				if(prefetch_counter_send_latched >= (tlb_size_latched) || ~(|wed_prefetch_in_latched.wed.size_send))
 					next_state = PREFETCH_READ_STREAM_PENDING;
 				else
 					next_state = PREFETCH_READ_STREAM_REQ;
@@ -238,7 +237,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				next_state = READ_STREAM_REQ;
 			end
 			READ_STREAM_REQ : begin
-				if(read_job_send_done_latched >= (MAX_TLB_CL_REQUESTS-3) || ~(|wed_request_in_latched.wed.size_send))
+				if(read_job_send_done_latched >= (max_tlb_cl_requests_latched) || ~(|wed_request_in_latched.wed.size_send))
 					next_state = READ_STREAM_PENDING;
 				else
 					next_state = READ_STREAM_REQ;

@@ -89,8 +89,8 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	ResponseBufferLine prefetch_write_response_in_latched;
 	CommandBufferLine  prefetch_write_command_out_latched;
 
-	// logic [0:63] tlb_size           ;
-	// logic [0:63] max_tlb_cl_requests;
+	logic [0:63] tlb_size           ;
+	logic [0:63] max_tlb_cl_requests;
 
 	// logic [0:63] tlb_size_latched           ;
 	// logic [0:63] max_tlb_cl_requests_latched;
@@ -240,6 +240,8 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		.prefetch_response_in          (prefetch_read_response_in_latched),
 		.prefetch_command_buffer_status(prefetch_read_buffer_status      ),
 		.prefetch_command_out          (prefetch_read_command_out_latched),
+		.tlb_size                      (tlb_size                         ),
+		.max_tlb_cl_requests           (max_tlb_cl_requests              ),
 		.read_command_out              (read_command_out_latched         ),
 		.read_data_0_out               (read_data_0_out                  ),
 		.read_data_1_out               (read_data_1_out                  ),
@@ -269,6 +271,8 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		.write_command_buffer_status   (write_buffer_status               ),
 		.prefetch_response_in          (prefetch_write_response_in_latched),
 		.prefetch_command_buffer_status(prefetch_write_buffer_status      ),
+		.tlb_size                      (tlb_size                          ),
+		.max_tlb_cl_requests           (max_tlb_cl_requests               ),
 		.prefetch_command_out          (prefetch_write_command_out_latched),
 		.write_data_in_buffer_status   (write_data_in_buffer_status       ),
 		.write_command_out             (write_command_out_latched         ),
@@ -339,23 +343,26 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		end
 	end
 
+////////////////////////////////////////////////////////////////////////////
+//Drive TLB SIZE 
+////////////////////////////////////////////////////////////////////////////
 
-	// always_ff @(posedge clock or negedge rstn) begin
-	// 	if(~rstn) begin
-	// 		tlb_size            <= TLB_SIZE;
-	// 		max_tlb_cl_requests <= MAX_TLB_CL_REQUESTS;
-	// 	end else begin
-	// 		if((|cu_configure_latched)) begin
-	// 			if(cu_configure_latched[39])begin
-	// 				tlb_size            <= (TLB_SIZE >> cu_configure_latched[32:35]);
-	// 				max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure_latched[32:35]));
-	// 			end else begin
-	// 				tlb_size            <= (TLB_SIZE << cu_configure_latched[32:35]);
-	// 				max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure_latched[32:35]));
-	// 			end
-	// 		end
-	// 	end
-	// end
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			tlb_size            <= 0;
+			max_tlb_cl_requests <= 0;
+		end else begin
+			if((|cu_configure_latched)) begin
+				if(cu_configure_latched[39])begin
+					tlb_size            <= (TLB_SIZE >> cu_configure_latched[32:35]) - 3;
+					max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure_latched[32:35])) - 3;
+				end else begin
+					tlb_size            <= (TLB_SIZE << cu_configure_latched[32:35]) - 3;
+					max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure_latched[32:35])) - 3;
+				end
+			end
+		end
+	end
 
 
 endmodule
