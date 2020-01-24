@@ -76,18 +76,18 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done;
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done ;
 
-	logic enabled                        ;
-	logic enabled_instants_read          ;
-	logic enabled_instants_write         ;
-	logic enabled_prefetch_read          ;
-	logic enabled_prefetch_write         ;
-	logic cu_ready                       ;
+	logic enabled               ;
+	logic enabled_instants_read ;
+	logic enabled_instants_write;
+	logic enabled_prefetch_read ;
+	logic enabled_prefetch_write;
+	logic cu_ready              ;
 
-	ResponseBufferLine            prefetch_read_response_in_latched;
-	CommandBufferLine             prefetch_read_command_out_latched;
+	ResponseBufferLine prefetch_read_response_in_latched;
+	CommandBufferLine  prefetch_read_command_out_latched;
 
-	ResponseBufferLine            prefetch_write_response_in_latched;
-	CommandBufferLine             prefetch_write_command_out_latched;
+	ResponseBufferLine prefetch_write_response_in_latched;
+	CommandBufferLine  prefetch_write_command_out_latched;
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
