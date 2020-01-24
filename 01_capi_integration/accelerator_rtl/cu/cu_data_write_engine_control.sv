@@ -47,6 +47,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 
 	ResponseBufferLine            write_response_in_latched  ;
 	logic                         enabled                    ;
+	logic                         enabled_cmd                ;
 	logic [                 0:63] cu_configure_latched       ;
 	ReadWriteDataLine             write_data_0_out_latched   ;
 	ReadWriteDataLine             write_data_1_out_latched   ;
@@ -103,7 +104,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			write_response_in_latched    <= 0;
 			prefetch_response_in_latched <= 0;
 		end else begin
-			if(enabled) begin
+			if(enabled_cmd) begin
 				write_response_in_latched    <= write_response_in;
 				prefetch_response_in_latched <= prefetch_response_in;
 			end
@@ -119,13 +120,15 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			if(enabled) begin
 				if((|cu_configure)) begin
 					cu_configure_latched <= cu_configure;
+				end
 
-					if(cu_configure[39])begin
-						tlb_size            <= (TLB_SIZE >> cu_configure[32:35]);
-						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure[32:35]));
+				if((|cu_configure_latched)) begin
+					if(cu_configure_latched[39])begin
+						tlb_size            <= (TLB_SIZE >> cu_configure_latched[32:35]);
+						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure_latched[32:35]));
 					end else begin
-						tlb_size            <= (TLB_SIZE << cu_configure[32:35]);
-						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure[32:35]));
+						tlb_size            <= (TLB_SIZE << cu_configure_latched[32:35]);
+						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure_latched[32:35]));
 					end
 				end
 			end
@@ -138,10 +141,18 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			enabled          <= 0;
+			enabled <= 0;
+		end else begin
+			enabled <= write_enabled_in;
+		end
+	end
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			enabled_cmd      <= 0;
 			enabled_prefetch <= 0;
 		end else begin
-			enabled          <= write_enabled_in;
+			enabled_cmd      <= enabled;
 			enabled_prefetch <= prefetch_enabled_in && cu_configure_latched[31];
 		end
 	end
@@ -199,7 +210,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				next_state = WRITE_STREAM_IDLE;
 			end
 			WRITE_STREAM_IDLE : begin
-				if(wed_request_in.valid && enabled)
+				if(wed_request_in.valid && enabled_cmd)
 					next_state = WRITE_STREAM_SET;
 				else
 					next_state = WRITE_STREAM_IDLE;

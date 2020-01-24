@@ -144,13 +144,15 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			if(enabled) begin
 				if((|cu_configure)) begin
 					cu_configure_latched <= cu_configure;
+				end
 
-					if(cu_configure[39])begin
-						tlb_size            <= (TLB_SIZE >> cu_configure[32:35]);
-						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure[32:35]));
+				if((|cu_configure_latched)) begin
+					if(cu_configure_latched[39])begin
+						tlb_size            <= (TLB_SIZE >> cu_configure_latched[32:35]);
+						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure_latched[32:35]));
 					end else begin
-						tlb_size            <= (TLB_SIZE << cu_configure[32:35]);
-						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure[32:35]));
+						tlb_size            <= (TLB_SIZE << cu_configure_latched[32:35]);
+						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure_latched[32:35]));
 					end
 				end
 			end
