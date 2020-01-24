@@ -100,14 +100,10 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			cu_configure_latched         <= 0;
 			write_response_in_latched    <= 0;
 			prefetch_response_in_latched <= 0;
 		end else begin
 			if(enabled) begin
-				if((|cu_configure))
-					cu_configure_latched <= cu_configure;
-
 				write_response_in_latched    <= write_response_in;
 				prefetch_response_in_latched <= prefetch_response_in;
 			end
