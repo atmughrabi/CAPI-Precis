@@ -89,6 +89,13 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	ResponseBufferLine prefetch_write_response_in_latched;
 	CommandBufferLine  prefetch_write_command_out_latched;
 
+	// logic [0:63] tlb_size           ;
+	// logic [0:63] max_tlb_cl_requests;
+
+	// logic [0:63] tlb_size_latched           ;
+	// logic [0:63] max_tlb_cl_requests_latched;
+
+
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
@@ -331,6 +338,24 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			end
 		end
 	end
+
+
+	// always_ff @(posedge clock or negedge rstn) begin
+	// 	if(~rstn) begin
+	// 		tlb_size            <= TLB_SIZE;
+	// 		max_tlb_cl_requests <= MAX_TLB_CL_REQUESTS;
+	// 	end else begin
+	// 		if((|cu_configure_latched)) begin
+	// 			if(cu_configure_latched[39])begin
+	// 				tlb_size            <= (TLB_SIZE >> cu_configure_latched[32:35]);
+	// 				max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure_latched[32:35]));
+	// 			end else begin
+	// 				tlb_size            <= (TLB_SIZE << cu_configure_latched[32:35]);
+	// 				max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure_latched[32:35]));
+	// 			end
+	// 		end
+	// 	end
+	// end
 
 
 endmodule
