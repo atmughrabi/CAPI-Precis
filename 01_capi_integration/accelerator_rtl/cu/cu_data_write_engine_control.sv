@@ -71,6 +71,10 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	logic [0:63] tlb_size           ;
 	logic [0:63] max_tlb_cl_requests;
 
+	logic [0:63] tlb_size_latched           ;
+	logic [0:63] max_tlb_cl_requests_latched;
+
+
 
 	assign write_data_in_buffer_status = write_data_in_0_buffer_status;
 
@@ -114,27 +118,41 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
 			cu_configure_latched <= 0;
-			tlb_size             <= TLB_SIZE;
-			max_tlb_cl_requests  <= MAX_TLB_CL_REQUESTS;
 		end else begin
 			if(enabled) begin
 				if((|cu_configure)) begin
 					cu_configure_latched <= cu_configure;
 				end
-
-				if((|cu_configure_latched)) begin
-					if(cu_configure_latched[39])begin
-						tlb_size            <= (TLB_SIZE >> cu_configure_latched[32:35]);
-						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure_latched[32:35]));
-					end else begin
-						tlb_size            <= (TLB_SIZE << cu_configure_latched[32:35]);
-						max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure_latched[32:35]));
-					end
-				end
 			end
 		end
 	end
 
+	// always_ff @(posedge clock or negedge rstn) begin
+	// 	if(~rstn) begin
+	// 		tlb_size            <= TLB_SIZE;
+	// 		max_tlb_cl_requests <= MAX_TLB_CL_REQUESTS;
+	// 	end else begin
+	// 		if((|cu_configure_latched)) begin
+	// 			if(cu_configure_latched[39])begin
+	// 				tlb_size            <= (TLB_SIZE >> cu_configure_latched[32:35]);
+	// 				max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure_latched[32:35]));
+	// 			end else begin
+	// 				tlb_size            <= (TLB_SIZE << cu_configure_latched[32:35]);
+	// 				max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure_latched[32:35]));
+	// 			end
+	// 		end
+	// 	end
+	// end
+
+	// always_ff @(posedge clock or negedge rstn) begin
+	// 	if(~rstn) begin
+	// 		tlb_size_latched            <= 0;
+	// 		max_tlb_cl_requests_latched <= 0;
+	// 	end else begin
+	// 		tlb_size_latched            <= tlb_size;
+	// 		max_tlb_cl_requests_latched <= max_tlb_cl_requests;
+	// 	end
+	// end
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
@@ -156,7 +174,6 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			enabled_prefetch <= prefetch_enabled_in && cu_configure_latched[31];
 		end
 	end
-
 
 ////////////////////////////////////////////////////////////////////////////
 //response tracking logic
@@ -227,7 +244,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				next_state = PREFETCH_WRITE_STREAM_REQ;
 			end
 			PREFETCH_WRITE_STREAM_REQ : begin
-				if(prefetch_counter_send_latched >= (tlb_size-2) || ~(|wed_prefetch_in_latched.wed.size_recive))
+				if(prefetch_counter_send_latched >= (TLB_SIZE-2) || ~(|wed_prefetch_in_latched.wed.size_recive))
 					next_state = PREFETCH_WRITE_STREAM_PENDING;
 				else
 					next_state = PREFETCH_WRITE_STREAM_REQ;
@@ -242,7 +259,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				next_state = WRITE_STREAM_REQ;
 			end
 			WRITE_STREAM_REQ : begin
-				if(write_job_send_done_latched >= (max_tlb_cl_requests-2) || ~(|wed_request_in_latched.wed.size_recive))
+				if(write_job_send_done_latched >= (MAX_TLB_CL_REQUESTS-2) || ~(|wed_request_in_latched.wed.size_recive))
 					next_state = WRITE_STREAM_PENDING;
 				else
 					next_state = WRITE_STREAM_REQ;
