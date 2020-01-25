@@ -90,7 +90,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			enabled_prefetch <= 0;
 		end else begin
 			enabled_cmd      <= enabled;
-			enabled_prefetch <= prefetch_enabled_in && cu_configure_latched[30];
+			enabled_prefetch <= prefetch_enabled_in;
 		end
 	end
 
@@ -213,7 +213,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			READ_STREAM_SET : begin
 				if(wed_request_in_latched.valid && enabled_prefetch)
 					next_state = PREFETCH_READ_STREAM_START;
-				else if(wed_request_in_latched.valid && ~enabled_prefetch)
+				else if(wed_request_in_latched.valid)
 					next_state = READ_STREAM_START;
 				else
 					next_state = READ_STREAM_SET;
@@ -283,6 +283,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			end
 			PREFETCH_READ_STREAM_START : begin
 				cmd_setup                     <= 0;
+				send_cmd_prefetch             <= 0;
 				prefetch_counter_send_latched <= 0;
 				prefetch_counter_resp_latched <= 0;
 
@@ -300,6 +301,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
 			end
 			READ_STREAM_START : begin
+				cmd_setup                  <= 0;
 				send_cmd_read              <= 0;
 				read_job_resp_done_latched <= 0;
 				read_job_send_done_latched <= 0;
@@ -400,10 +402,12 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			next_prefetch_offest         <= 0;
 		end else begin
 
-			if(cmd_setup)
-				wed_prefetch_in_latched <= wed_request_in;
+			if(cmd_setup && enabled_prefetch) begin
+				wed_prefetch_in_latched                <= wed_request_in;
+				wed_prefetch_in_latched.wed.array_send <= (wed_request_in.wed.array_send & ADDRESS_PAGE_ALIGN_MASK);
+			end
 
-			if (~prefetch_command_buffer_status.alfull && send_to_write_engine && (|wed_prefetch_in_latched.wed.size_send) && send_cmd_prefetch) begin
+			if (~prefetch_command_buffer_status.alfull && send_to_write_engine && (|wed_prefetch_in_latched.wed.size_send) && send_cmd_prefetch && enabled_prefetch) begin
 
 				if(wed_prefetch_in_latched.wed.size_send > PAGE_ARRAY_NUM)begin
 					wed_prefetch_in_latched.wed.size_send      <= wed_prefetch_in_latched.wed.size_send - PAGE_ARRAY_NUM;

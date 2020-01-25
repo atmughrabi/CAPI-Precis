@@ -204,7 +204,7 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 
 export NUM_THREADS = 8
 LHS=32 
-RHS=2048
+RHS=1024
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
