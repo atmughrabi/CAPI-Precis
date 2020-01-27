@@ -354,11 +354,11 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 		end else begin
 			if((|cu_configure_latched)) begin
 				if(cu_configure_latched[39])begin
-					tlb_size            <= (TLB_SIZE >> cu_configure_latched[32:35]) - 3;
-					max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure_latched[32:35])) - 3;
+					tlb_size            <= (TLB_SIZE >> cu_configure_latched[32:35]);
+					max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS >> (cu_configure_latched[32:35]));
 				end else begin
-					tlb_size            <= (TLB_SIZE << cu_configure_latched[32:35]) - 3;
-					max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure_latched[32:35])) - 3;
+					tlb_size            <= (TLB_SIZE << cu_configure_latched[32:35]);
+					max_tlb_cl_requests <= (MAX_TLB_CL_REQUESTS << (cu_configure_latched[32:35]));
 				end
 			end
 		end

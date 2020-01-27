@@ -57,22 +57,22 @@ package GLOBALS_AFU_PKG;
 
 	parameter BURST_CMD_BUFFER_SIZE = 32; // size of command burst for PSL leave as is
 
-	parameter READ_CMD_BUFFER_SIZE           = 32;
-	parameter WRITE_CMD_BUFFER_SIZE          = 32;
-	parameter PREFETCH_READ_CMD_BUFFER_SIZE  = 32;
-	parameter PREFETCH_WRITE_CMD_BUFFER_SIZE = 32;
+	parameter READ_CMD_BUFFER_SIZE           = 256;
+	parameter WRITE_CMD_BUFFER_SIZE          = 256;
+	parameter PREFETCH_READ_CMD_BUFFER_SIZE  = 256;
+	parameter PREFETCH_WRITE_CMD_BUFFER_SIZE = 256;
 	parameter RESTART_CMD_BUFFER_SIZE        = 4 ;
 	parameter WED_CMD_BUFFER_SIZE            = 4 ;
 
-	parameter READ_RSP_BUFFER_SIZE           = 32;
-	parameter PREFETCH_READ_RSP_BUFFER_SIZE  = 32;
-	parameter PREFETCH_WRITE_RSP_BUFFER_SIZE = 32;
-	parameter WRITE_RSP_BUFFER_SIZE          = 32;
+	parameter READ_RSP_BUFFER_SIZE           = 256;
+	parameter PREFETCH_READ_RSP_BUFFER_SIZE  = 256;
+	parameter PREFETCH_WRITE_RSP_BUFFER_SIZE = 256;
+	parameter WRITE_RSP_BUFFER_SIZE          = 256;
 	parameter RESTART_RSP_BUFFER_SIZE        = 4 ;
 	parameter WED_RSP_BUFFER_SIZE            = 4 ;
 
-	parameter READ_DATA_BUFFER_SIZE    = 32;
-	parameter WRITE_DATA_BUFFER_SIZE   = 32;
+	parameter READ_DATA_BUFFER_SIZE    = 256;
+	parameter WRITE_DATA_BUFFER_SIZE   = 256;
 	parameter RESTART_DATA_BUFFER_SIZE = 4 ;
 	parameter WED_DATA_BUFFER_SIZE     = 4 ;
 
@@ -83,11 +83,12 @@ package GLOBALS_AFU_PKG;
 	parameter PRIORITY_RESTART = 0;
 	parameter PRIORITY_WED     = 1;
 
-	parameter PRIORITY_WRITE          = 2;
-	parameter PRIORITY_PREFTECH_WRITE = 3;
-
-	parameter PRIORITY_READ          = 4;
-	parameter PRIORITY_PREFETCH_READ = 5;
+	parameter PRIORITY_PREFTECH_WRITE = 2;
+	parameter PRIORITY_WRITE          = 3;
+	
+	parameter PRIORITY_PREFETCH_READ = 4;
+	parameter PRIORITY_READ          = 5;
+	
 
 ////////////////////////////////////////////////////////////////////////////
 // CU-Control  (Buffer size)
@@ -175,7 +176,7 @@ package GLOBALS_AFU_PKG;
 
 	parameter TLB_SIZE            = 2048                                            ;
 	parameter TLB_PAGE_BYTE_SIZE  = TLB_SIZE * PAGE_SIZE                            ;
-	parameter MAX_TLB_CL_REQUESTS = TLB_SIZE * (PAGE_SIZE >> $clog2(CACHELINE_SIZE));
+	parameter MAX_TLB_CL_REQUESTS = (PAGE_SIZE >> $clog2(CACHELINE_SIZE));
 ////////////////////////////////////////////////////////////////////////////
 //  AFU-Control CU IDs any compute unite that generate command must have an ID
 ////////////////////////////////////////////////////////////////////////////

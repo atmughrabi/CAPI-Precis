@@ -63,6 +63,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	CommandTagLine                cmd                        ;
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_resp_done_latched;
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_send_done_latched;
+	logic                         done_write_pending         ;
 
 	CommandBufferLine             prefetch_command_out_latched ;
 	WEDInterface                  wed_prefetch_in_latched      ;
@@ -72,7 +73,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	logic                         enabled_prefetch             ;
 	ResponseBufferLine            prefetch_response_in_latched ;
 	logic                         send_cmd_prefetch            ;
-
+	logic                         done_prefetch_pending        ;
 
 
 	logic [0:63] tlb_size_latched           ;
@@ -232,13 +233,10 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				next_state = PREFETCH_WRITE_STREAM_REQ;
 			end
 			PREFETCH_WRITE_STREAM_REQ : begin
-				if(prefetch_counter_send_latched >= (tlb_size_latched) || ~(|wed_prefetch_in_latched.wed.size_recive))
-					next_state = PREFETCH_WRITE_STREAM_PENDING;
-				else
-					next_state = PREFETCH_WRITE_STREAM_REQ;
+				next_state = PREFETCH_WRITE_STREAM_PENDING;
 			end
 			PREFETCH_WRITE_STREAM_PENDING : begin
-				if(prefetch_counter_send_latched == prefetch_counter_resp_latched)
+				if(done_prefetch_pending)
 					next_state = WRITE_STREAM_START;
 				else
 					next_state = PREFETCH_WRITE_STREAM_PENDING;
@@ -247,13 +245,13 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				next_state = WRITE_STREAM_REQ;
 			end
 			WRITE_STREAM_REQ : begin
-				if(write_job_send_done_latched >= (max_tlb_cl_requests_latched) || ~(|wed_request_in_latched.wed.size_recive))
-					next_state = WRITE_STREAM_PENDING;
-				else
+				if(send_cmd_write)
 					next_state = WRITE_STREAM_REQ;
+				else
+					next_state = WRITE_STREAM_PENDING;
 			end
 			WRITE_STREAM_PENDING : begin
-				if(write_job_send_done_latched == write_job_resp_done_latched)
+				if(done_write_pending)
 					next_state = WRITE_STREAM_DONE;
 				else
 					next_state = WRITE_STREAM_PENDING;
@@ -276,16 +274,13 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 		case (current_state)
 			WRITE_STREAM_RESET : begin
 
-				send_cmd_write    <= 0;
-				send_cmd_prefetch <= 0;
-				cmd_setup         <= 0;
-
-				write_job_resp_done_latched <= 0;
-				write_job_send_done_latched <= 0;
-
+				send_cmd_write                <= 0;
+				send_cmd_prefetch             <= 0;
+				cmd_setup                     <= 0;
+				done_prefetch_pending         <= 0;
+				done_write_pending            <= 0;
+				write_job_resp_done_latched   <= 0;
 				prefetch_counter_resp_latched <= 0;
-				prefetch_counter_send_latched <= 0;
-
 			end
 			WRITE_STREAM_IDLE : begin
 				cmd_setup <= 0;
@@ -295,34 +290,48 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			end
 			PREFETCH_WRITE_STREAM_START : begin
 				cmd_setup                     <= 0;
-				send_cmd_prefetch             <= 0;
-				prefetch_counter_send_latched <= 0;
+				send_cmd_prefetch             <= 1;
+				done_prefetch_pending         <= 0;
 				prefetch_counter_resp_latched <= 0;
 			end
 			PREFETCH_WRITE_STREAM_REQ : begin
-				send_cmd_prefetch             <= 1;
-				prefetch_counter_send_latched <= prefetch_counter_send_latched + prefetch_command_out_latched.valid;
+				send_cmd_prefetch             <= 0;
+				done_prefetch_pending         <= 0;
 				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
 			end
 			PREFETCH_WRITE_STREAM_PENDING : begin
-				send_cmd_prefetch             <= 0;
-				prefetch_counter_send_latched <= prefetch_counter_send_latched + prefetch_command_out_latched.valid;
+				send_cmd_prefetch <= 0;
+
+				if(prefetch_counter_send_latched == prefetch_counter_resp_latched)
+					done_prefetch_pending <= 1;
+				else
+					done_prefetch_pending <= 0;
+
 				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
 			end
 			WRITE_STREAM_START : begin
+				done_prefetch_pending       <= 0;
 				cmd_setup                   <= 0;
-				send_cmd_write              <= 0;
+				send_cmd_prefetch           <= 0;
+				send_cmd_write              <= 1;
 				write_job_resp_done_latched <= 0;
-				write_job_send_done_latched <= 0;
+				done_write_pending          <= 0;
 			end
 			WRITE_STREAM_REQ : begin
-				send_cmd_write              <= 1;
-				write_job_send_done_latched <= write_job_send_done_latched + write_command_out_latched.valid;
+				done_write_pending <= 0;
+				if(write_job_send_done_latched >= (MAX_TLB_CL_REQUESTS-1) || ~(|wed_request_in_latched.wed.size_recive))
+					send_cmd_write <= 0;
+				else
+					send_cmd_write <= 1;
 				write_job_resp_done_latched <= write_job_resp_done_latched + write_response_in_latched.valid;
 			end
 			WRITE_STREAM_PENDING : begin
-				send_cmd_write              <= 0;
-				write_job_send_done_latched <= write_job_send_done_latched + write_command_out_latched.valid;
+				send_cmd_write <= 0;
+				if(write_job_send_done_latched == write_job_resp_done_latched)
+					done_write_pending <= 1;
+				else
+					done_write_pending <= 0;
+
 				write_job_resp_done_latched <= write_job_resp_done_latched + write_response_in_latched.valid;
 			end
 			WRITE_STREAM_DONE : begin
@@ -340,10 +349,11 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			write_command_out_latched <= 0;
-			write_data_0_out_latched  <= 0;
-			write_data_1_out_latched  <= 0;
-			next_offest               <= 0;
+			write_command_out_latched   <= 0;
+			write_data_0_out_latched    <= 0;
+			write_data_1_out_latched    <= 0;
+			next_offest                 <= 0;
+			write_job_send_done_latched <= 0;
 		end else begin
 
 			if(cmd_setup)
@@ -352,6 +362,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			if (write_data_0_out_buffer.valid && write_data_1_out_buffer.valid && send_cmd_write)begin
 
 				write_command_out_latched.valid <= write_data_0_out_buffer.valid;
+				write_job_send_done_latched     <= write_job_send_done_latched + 1;
 
 				write_command_out_latched.address <= wed_request_in_latched.wed.array_receive + write_data_0_out_buffer.cmd.address_offest;
 				write_command_out_latched.size    <= cmd_size_calculate(write_data_0_out_buffer.cmd.real_size);
@@ -384,6 +395,10 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				write_data_0_out_latched  <= 0;
 				write_data_1_out_latched  <= 0;
 			end
+
+			if(done_write_pending)
+				write_job_send_done_latched <= 0;
+
 		end
 	end
 
@@ -393,9 +408,10 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			wed_prefetch_in_latched      <= 0;
-			prefetch_command_out_latched <= 0;
-			next_prefetch_offest         <= 0;
+			wed_prefetch_in_latched       <= 0;
+			prefetch_command_out_latched  <= 0;
+			next_prefetch_offest          <= 0;
+			prefetch_counter_send_latched <= 0;
 		end else begin
 
 			if(cmd_setup && enabled_prefetch) begin
@@ -427,6 +443,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 
 
 				prefetch_command_out_latched.valid <= 1'b1;
+				prefetch_counter_send_latched      <= prefetch_counter_send_latched +1;
 
 				prefetch_command_out_latched.address <= wed_prefetch_in_latched.wed.array_receive  + next_prefetch_offest;
 
@@ -435,6 +452,10 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			end else begin
 				prefetch_command_out_latched <= 0;
 			end
+
+			if(done_prefetch_pending)
+				prefetch_counter_send_latched <= 0;
+
 		end
 	end
 

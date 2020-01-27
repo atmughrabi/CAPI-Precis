@@ -132,7 +132,7 @@ export CU_CONFIG_MODE=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR
 # [36:39]
 
 # shift amount
-TLB_SHIFT=2
+TLB_SHIFT=0
 
 #0 left | #1 right | example (2048 >> 1) 
 TLB_SHIFT_DIRECTION=0
@@ -155,13 +155,13 @@ ENABLE_RD_WR=3
 # ENABLE_RD_WR=5
 
 #disable both PREFETCH
-# ENABLE_RD_WR_PREFETCH=0
+ENABLE_RD_WR_PREFETCH=0
 #enable write PREFETCH
 # ENABLE_RD_WR_PREFETCH=1
 #enable read PREFETCH
 # ENABLE_RD_WR_PREFETCH=2
 #enable both PREFETCH
-ENABLE_RD_WR_PREFETCH=3
+# ENABLE_RD_WR_PREFETCH=3
 
 #disable both page address based
 RD_WR_PREFETCH_MODE=0
@@ -184,7 +184,7 @@ RD_WR_PREFETCH_MODE=0
 # ROUND_ROBIN_ARB         [63]
 
 ROUND_ROBIN_ARB=0x1111000000000001
-FIXED_ARB=0x11FF000000000002
+FIXED_ARB=0x1111000000000002
 
 ##############################################
 # CAPI FPGA AFU/CU      CONFIG               #
@@ -204,7 +204,7 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 
 export NUM_THREADS = 8
 LHS=32 
-RHS=1024
+RHS=2048
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
