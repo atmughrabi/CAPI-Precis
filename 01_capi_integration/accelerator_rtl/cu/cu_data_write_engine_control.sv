@@ -302,7 +302,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			end
 			WRITE_STREAM_REQ : begin
 				done_write_pending <= 0;
-				if((write_job_send_done_latched >= MAX_TLB_CL_REQUESTS) || ~(|wed_request_in_latched.wed.size_recive))begin
+				if((write_job_send_done_latched >= (MAX_TLB_CL_REQUESTS-1)) || ~(|wed_request_in_latched.wed.size_recive))begin
 					send_cmd_write  <= 0;
 					leave_cmd_write <= 0;
 				end else begin

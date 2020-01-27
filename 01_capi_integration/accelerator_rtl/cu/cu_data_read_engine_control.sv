@@ -294,7 +294,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			end
 			READ_STREAM_REQ : begin
 				done_read_pending <= 0;
-				if((read_job_send_done_latched >= MAX_TLB_CL_REQUESTS) || ~(|wed_request_in_latched.wed.size_send)) begin
+				if((read_job_send_done_latched >= (MAX_TLB_CL_REQUESTS-1)) || ~(|wed_request_in_latched.wed.size_send)) begin
 					send_cmd_read  <= 0;
 					leave_cmd_read <= 0;
 				end else begin
