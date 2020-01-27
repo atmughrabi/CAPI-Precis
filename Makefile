@@ -54,7 +54,7 @@ export MAIN_DIR         = main
 
 # // 0b 00000 00000 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b00000000000000000000000000000000
-export CU_CONFIG_MODE=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)$(TLB_SHIFT)$(TLB_SHIFT_DIRECTION)
+export CU_CONFIG_MODE=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
@@ -123,19 +123,6 @@ export CU_CONFIG_MODE=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR
 # // 0b 11110 11101 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b11110111010000000000000000000000
 # export CU_CONFIG_MODE=0xF7400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
-
-##############################################
-# CAPI FPGA TLB PREFETCH CONFIG              #
-##############################################
-
-# [32:35]
-# [36:39]
-
-# shift amount
-TLB_SHIFT=0
-
-#0 left | #1 right | example (2048 >> 1) 
-TLB_SHIFT_DIRECTION=0
 
 ##############################################
 # CAPI FPGA AFU PREFETCH CONFIG              #
