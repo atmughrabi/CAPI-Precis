@@ -174,9 +174,9 @@ package GLOBALS_AFU_PKG;
 	parameter [0:63] ADDRESS_PAGE_MOD_MASK   = {{48{1'b0}},{16{1'b1}}};
 	parameter [0:63] ADDRESS_PAGE_ALIGN_MASK = {{48{1'b1}},{16{1'b0}}};
 
-	parameter TLB_SIZE            = 2048                                            ;
+	parameter TLB_SIZE            = 2048 * 2                                        ;
 	parameter TLB_PAGE_BYTE_SIZE  = TLB_SIZE * PAGE_SIZE                            ;
-	parameter MAX_TLB_CL_REQUESTS = (PAGE_SIZE >> $clog2(CACHELINE_SIZE));
+	parameter MAX_TLB_CL_REQUESTS = TLB_SIZE * (PAGE_SIZE >> $clog2(CACHELINE_SIZE));
 ////////////////////////////////////////////////////////////////////////////
 //  AFU-Control CU IDs any compute unite that generate command must have an ID
 ////////////////////////////////////////////////////////////////////////////

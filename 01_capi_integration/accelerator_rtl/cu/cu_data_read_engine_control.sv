@@ -32,6 +32,8 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	input  BufferStatus                  read_data_out_buffer_status   ,
 	input  ResponseBufferLine            prefetch_response_in          ,
 	input  BufferStatus                  prefetch_command_buffer_status,
+	input  logic [                 0:63] tlb_size                      ,
+	input  logic [                 0:63] max_tlb_cl_requests           ,
 	output CommandBufferLine             prefetch_command_out          ,
 	output CommandBufferLine             read_command_out              ,
 	output ReadWriteDataLine             read_data_0_out               ,
@@ -69,6 +71,10 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	ResponseBufferLine            prefetch_response_in_latched ;
 	logic                         send_cmd_prefetch            ;
 	logic                         done_prefetch_pending        ;
+	logic                         leave_cmd_prefetch           ;
+
+	logic [0:63] tlb_size_latched           ;
+	logic [0:63] max_tlb_cl_requests_latched;
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
@@ -149,6 +155,15 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 		end
 	end
 
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			tlb_size_latched            <= 0;
+			max_tlb_cl_requests_latched <= 0;
+		end else begin
+			tlb_size_latched            <= tlb_size;
+			max_tlb_cl_requests_latched <= max_tlb_cl_requests;
+		end
+	end
 
 ////////////////////////////////////////////////////////////////////////////
 //response tracking logic
@@ -209,13 +224,10 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				next_state = PREFETCH_READ_STREAM_REQ;
 			end
 			PREFETCH_READ_STREAM_REQ : begin
-				next_state = PREFETCH_READ_STREAM_PENDING;
-			end
-			PREFETCH_READ_STREAM_PENDING : begin
-				if(done_prefetch_pending)
-					next_state = READ_STREAM_START;
+				if(leave_cmd_prefetch)
+					next_state = PREFETCH_READ_STREAM_REQ;
 				else
-					next_state = PREFETCH_READ_STREAM_PENDING;
+					next_state = READ_STREAM_START;
 			end
 			READ_STREAM_START : begin
 				next_state = READ_STREAM_REQ;
@@ -252,6 +264,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				send_cmd_read                 <= 0;
 				leave_cmd_read                <= 0;
 				send_cmd_prefetch             <= 0;
+				leave_cmd_prefetch            <= 0;
 				cmd_setup                     <= 0;
 				done_prefetch_pending         <= 0;
 				done_read_pending             <= 0;
@@ -266,41 +279,45 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			end
 			PREFETCH_READ_STREAM_START : begin
 				cmd_setup                     <= 0;
-				send_cmd_prefetch             <= 1;
+				send_cmd_prefetch             <= 0;
+				leave_cmd_prefetch            <= 1;
 				done_prefetch_pending         <= 0;
 				prefetch_counter_resp_latched <= 0;
 			end
 			PREFETCH_READ_STREAM_REQ : begin
-				send_cmd_prefetch             <= 0;
-				done_prefetch_pending         <= 0;
-				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
-			end
-			PREFETCH_READ_STREAM_PENDING : begin
-				send_cmd_prefetch <= 0;
-				if(prefetch_counter_send_latched == prefetch_counter_resp_latched)
-					done_prefetch_pending <= 1;
-				else
-					done_prefetch_pending <= 0;
+				done_prefetch_pending <= 0;
+				if((prefetch_counter_send_latched >= (tlb_size_latched)) || ~(|wed_prefetch_in_latched.wed.size_send))begin
+					send_cmd_prefetch  <= 0;
+					leave_cmd_prefetch <= 0;
+				end else begin
+					send_cmd_prefetch  <= 1;
+					leave_cmd_prefetch <= 1;
+				end
 				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
 			end
 			READ_STREAM_START : begin
 				done_prefetch_pending      <= 0;
 				cmd_setup                  <= 0;
 				send_cmd_prefetch          <= 0;
+				leave_cmd_prefetch         <= 0;
 				send_cmd_read              <= 0;
 				leave_cmd_read             <= 1;
 				read_job_resp_done_latched <= 0;
 				done_read_pending          <= 0;
+				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
 			end
 			READ_STREAM_REQ : begin
 				done_read_pending <= 0;
-				if((read_job_send_done_latched >= (MAX_TLB_CL_REQUESTS-1)) || ~(|wed_request_in_latched.wed.size_send)) begin
+				done_prefetch_pending      <= 0;
+				if((read_job_send_done_latched >= (max_tlb_cl_requests_latched)) || ~(|wed_request_in_latched.wed.size_send)) begin
 					send_cmd_read  <= 0;
 					leave_cmd_read <= 0;
 				end else begin
 					send_cmd_read  <= 1;
 					leave_cmd_read <= 1;
 				end
+
+				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
 				read_job_resp_done_latched <= read_job_resp_done_latched + read_response_in_latched.valid;
 			end
 			READ_STREAM_PENDING : begin
@@ -309,6 +326,13 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 					done_read_pending <= 1;
 				else
 					done_read_pending <= 0;
+
+				if(prefetch_counter_send_latched == prefetch_counter_resp_latched)
+					done_prefetch_pending <= 1;
+				else
+					done_prefetch_pending <= 0;
+
+				prefetch_counter_resp_latched <= prefetch_counter_resp_latched + prefetch_response_in_latched.valid;
 				read_job_resp_done_latched <= read_job_resp_done_latched + read_response_in_latched.valid;
 			end
 			READ_STREAM_DONE : begin
