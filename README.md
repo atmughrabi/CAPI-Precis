@@ -66,6 +66,7 @@ export PSLSE_PARMS="${PSLSE_SERVER_DIR}/pslse.parms"
 export DEBUG_LOG_PATH="${PSLSE_SERVER_DIR}/debug.log"
 
 ```
+
 2. AFU Communication with PSL
   * please check [(CAPI User's Manual)](http://www.nallatech.com/wp-content/uploads/IBM_CAPI_Users_Guide_1-2.pdf).
 
@@ -143,11 +144,13 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-openmp
 
 ### Simulation
 
+* NOTE: You need three open terminals, for running vsim, pslse, and the application.
+
 1. (Optional) From the root directory go to benchmark directory:
 ```console
 CAPI@Precis:~CAPIPrecis$ cd 00_bench/
 ```
-2. Run [ModelSim vsim] for `simulation` this step is not needed when running on real hardware, this just simulates the AFU that resides on your (CAPI supported) FPGA  :
+2. On terminal 1. Run [ModelSim vsim] for `simulation` this step is not needed when running on real hardware, this just simulates the AFU that resides on your (CAPI supported) FPGA  :
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-vsim
 ```
@@ -156,21 +159,21 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-vsim
 ModelSim> r 
 ModelSim> c 
 ```
-4. Run [PSL Simulation Engine](https://github.com/ibm-capi/pslse) (PSLSE) for `simulation` this step is not needed when running on real hardware, this just emulates the PSL that resides on your (CAPI supported) IBM-PowerPC machine  :
+4. On Terminal 2. Run [PSL Simulation Engine](https://github.com/ibm-capi/pslse) (PSLSE) for `simulation` this step is not needed when running on real hardware, this just emulates the PSL that resides on your (CAPI supported) IBM-PowerPC machine  :
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-pslse
 ```
 
-##### Silent run with no stats output
+##### Option 1: Silent run with no stats output
 
-5. Runs algorithm that communicates with the PSLSE (simulation):
+5. On Terminal 3. Run the algorithm that communicates with the PSLSE (simulation):
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-sim
 ```
 
-##### Verbose run with stats output
+##### Option 2: Verbose run with stats output
 
-5. Runs algorithm that communicates with the PSLSE (simulation) printing out stats based on the responses received to the AFU-Control layer:
+5.  On Terminal 3. Run the algorithm that communicates with the PSLSE (simulation) printing out stats based on the responses received to the AFU-Control layer:
 ```console
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-sim-verbose
 ```
@@ -208,7 +211,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-sim-verbose
 
 #### Synthesize
 
-This step requires ALTERA Quartus synthesis tool, starting from release 15.0 of Quartus II should be fine.
+These steps require ALTERA Quartus synthesis tool, starting from release 15.0 of Quartus II should be fine.
 
 ##### Using terminal
 1. From the root directory (using terminal)
@@ -250,7 +253,7 @@ CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make gui
 ```console
 CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_bin/
 ```
-2. Flash the image to the corresponding `#define DEVICE` you can modify it according to your Power8 system from `00_bench/include/capienv.h`
+2. Flash the image to the corresponding `#define DEVICE` you can modify it according to your Power8 system from `00_bench/include/capi_utils/capienv.h`
 ```console
 CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-script capi-precis_GITCOMMIT#_DATETIME.rbf
 ```
@@ -271,7 +274,7 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga
 
 ##### Verbose run with stats output
 
-This run outputs different AFU-Control stats based on the response received from the PSL
+This run outputs different AFU-Control stats based on the responses received from the PSL
 
 2. Runs algorithm that communicates with the or PSL (real HW):
 ```console
