@@ -131,23 +131,23 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     enabled          <= job_out.running;
     response_latched <= response;
 
-    // if(restart_counter == 234)
-    //   response_latched.response <= PAGED;
+    if(restart_counter == 234)
+      response_latched.response <= PAGED;
 
-    // if(restart_counter > 235 && response.response != PAGED )
-    //   response_latched.response <= FLUSHED;
+    if(restart_counter > 235 && response.response != PAGED )
+      response_latched.response <= FLUSHED;
 
-    // if(restart_counter == 189)
-    //   response_latched.response <= PAGED;
+    if(restart_counter == 189)
+      response_latched.response <= PAGED;
 
-    // if(restart_counter > 190 && restart_counter < 200 && response.response != PAGED )
-    //   response_latched.response <= FAULT;
+    if(restart_counter > 190 && restart_counter < 200 && response.response != PAGED )
+      response_latched.response <= FAULT;
 
-    // if(restart_counter > 100 && restart_counter < 12 && response.response != PAGED )
-    //   response_latched.response <= AERROR;
+    if(restart_counter > 100 && restart_counter < 12 && response.response != PAGED )
+      response_latched.response <= AERROR;
 
-    // if(restart_counter > 30 && restart_counter < 45 && response.response != PAGED )
-    //   response_latched.response <= DERROR;
+    if(restart_counter > 30 && restart_counter < 45 && response.response != PAGED )
+      response_latched.response <= DERROR;
 
   end
 
@@ -158,7 +158,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 
   done_control done_control_instant (
     .clock                     (clock                     ),
-    .rstn                      (reset_afu_internal        ),
+    .rstn_in                   (reset_afu_internal        ),
     .soft_rstn                 (reset_afu_soft_internal   ),
     .enabled_in                (enabled                   ),
     .cu_return                 (cu_return                 ),
@@ -178,7 +178,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 
   error_control error_control_instant (
     .clock            (clock             ),
-    .rstn             (reset_afu_internal),
+    .rstn_in          (reset_afu_internal),
     .enabled_in       (enabled           ),
     .external_errors  (external_errors   ),
     .report_errors_ack(report_errors_ack ),
@@ -193,7 +193,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
   wed_control wed_control_instant (
     .clock                (clock                           ),
     .enabled_in           (enabled                         ),
-    .rstn                 (reset_afu_internal              ),
+    .rstn_in              (reset_afu_internal              ),
     .wed_address          (job_in.address                  ),
     .wed_data_0_in        (wed_data_0_out                  ),
     .wed_data_1_in        (wed_data_1_out                  ),
@@ -210,7 +210,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 
   afu_control afu_control_instant (
     .clock                      (clock                      ),
-    .rstn                       (reset_afu_internal         ),
+    .rstn_in                    (reset_afu_internal         ),
     .enabled_in                 (enabled                    ),
     .afu_configure              (afu_configure              ),
     .prefetch_read_command_in   (prefetch_read_command_out  ),
@@ -241,9 +241,6 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .command_out                (command_out                ),
     .command_buffer_status      (command_buffer_status      ),
     .response_statistics        (response_statistics        ),
-    .response_buffer_status     (response_buffer_status     ),
-    .read_data_buffer_status    (read_data_buffer_status    ),
-    .wed_data_buffer_status     (wed_data_buffer_status     ),
     .write_data_buffer_status   (write_data_buffer_status   )
   );
 
@@ -286,7 +283,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 
   mmio mmio_instant (
     .clock                 (clock                     ),
-    .rstn                  (reset_afu_internal        ),
+    .rstn_in               (reset_afu_internal        ),
     .report_errors         (report_errors             ),
     .cu_return             (cu_return                 ),
     .cu_return_done        (cu_return_done            ),
@@ -309,7 +306,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 
   job job_instant (
     .clock           (clock           ),
-    .rstn            (reset_afu       ),
+    .rstn_in         (reset_afu       ),
     .job_in          (job_in          ),
     .report_errors   (report_errors   ),
     .job_errors      (job_errors      ),

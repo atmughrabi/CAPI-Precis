@@ -188,6 +188,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 		cmd.cacheline_offest = write_data_0_out_buffer.payload.cmd.cacheline_offest;
 		cmd.address_offest   = write_data_0_out_buffer.payload.cmd.address_offest;
 		cmd.real_size        = write_data_0_out_buffer.payload.cmd.real_size;
+		cmd.real_size_bytes  = write_data_0_out_buffer.payload.cmd.real_size_bytes;
 		cmd.cu_id_x          = CU_WRITE_CONTROL_ID;
 		cmd.cu_id_y          = CU_WRITE_CONTROL_ID;
 		cmd.cmd_type         = CMD_WRITE;

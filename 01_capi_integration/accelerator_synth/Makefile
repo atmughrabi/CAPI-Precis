@@ -32,7 +32,12 @@ ACCEL_RTL_DIR = accelerator_rtl
 ACCEL_BIN_DIR = accelerator_bin
 SOURCE_FILES =  $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.sv)   \
 				$(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.sv)   \
-				$(wildcard ../$(ACCEL_RTL_DIR)/cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu/*.sv)
+				$(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_cu/*.sv)\
+				$(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_pkg/*.sv)\
+				$(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/memcpy/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/memcpy/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/memcpy/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/memcpy/*.sv)
+				
+				
+				
 				
 	
 

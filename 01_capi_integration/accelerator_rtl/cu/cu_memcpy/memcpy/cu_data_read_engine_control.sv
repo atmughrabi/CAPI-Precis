@@ -363,9 +363,10 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			if (~read_command_buffer_status.alfull && send_to_write_engine && (|wed_request_in_latched.payload.wed.size_send) && send_cmd_read)begin
 
 				if(wed_request_in_latched.payload.wed.size_send > CACHELINE_ARRAY_NUM)begin
-					wed_request_in_latched.payload.wed.size_send   <= wed_request_in_latched.payload.wed.size_send - CACHELINE_ARRAY_NUM;
-					read_command_out_latched.payload.cmd.real_size <= CACHELINE_ARRAY_NUM;
-					read_command_out_latched.payload.size          <= 12'h080;
+					wed_request_in_latched.payload.wed.size_send         <= wed_request_in_latched.payload.wed.size_send - CACHELINE_ARRAY_NUM;
+					read_command_out_latched.payload.cmd.real_size       <= CACHELINE_ARRAY_NUM;
+					read_command_out_latched.payload.size                <= 12'h080;
+					read_command_out_latched.payload.cmd.real_size_bytes <= 12'h080;
 
 					if (cu_configure_latched[3]) begin
 						read_command_out_latched.payload.command <= READ_CL_S;
@@ -378,11 +379,13 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 					read_command_out_latched.payload.cmd.real_size <= wed_request_in_latched.payload.wed.size_send;
 
 					if (cu_configure_latched[3]) begin
-						read_command_out_latched.payload.command <= READ_CL_S;
-						read_command_out_latched.payload.size    <= 12'h080;
+						read_command_out_latched.payload.command             <= READ_CL_S;
+						read_command_out_latched.payload.size                <= 12'h080;
+						read_command_out_latched.payload.cmd.real_size_bytes <= 12'h080;
 					end else begin
-						read_command_out_latched.payload.size    <= cmd_size_calculate(wed_request_in_latched.payload.wed.size_send);
-						read_command_out_latched.payload.command <= READ_PNA;
+						read_command_out_latched.payload.size                <= cmd_size_calculate(wed_request_in_latched.payload.wed.size_send);
+						read_command_out_latched.payload.cmd.real_size_bytes <= cmd_size_calculate(wed_request_in_latched.payload.wed.size_send);
+						read_command_out_latched.payload.command             <= READ_PNA;
 					end
 
 				end

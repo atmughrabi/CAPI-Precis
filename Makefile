@@ -164,13 +164,13 @@ ENABLE_RD_WR=3
 ENABLE_RD_WR_PREFETCH=3
 
 #disable both page address based
-RD_WR_PREFETCH_MODE=0
+# RD_WR_PREFETCH_MODE=0
 #cacheline-read page-wrtie address based
 # RD_WR_PREFETCH_MODE=1
 # cacheline-write page-read address based
 # RD_WR_PREFETCH_MODE=2
 # both cacheline address based
-# RD_WR_PREFETCH_MODE=3
+RD_WR_PREFETCH_MODE=3
 
 ##############################################
 # CAPI FPGA AFU ARBITER CONFIG               #
@@ -373,16 +373,16 @@ clean-sim:
 #           ACCEL SYNTHESIZE LEVEL RULES     #
 ##############################################
 
-.PHONY: run-capi-synth
-run-capi-synth:
+.PHONY: run-synth
+run-synth:
 	$(MAKE) all $(MAKE_ARGS_SYNTH)
 
-.PHONY: run-capi-gui
-run-capi-gui:
+.PHONY: run-synth-gui
+run-synth-gui:
 	$(MAKE) gui $(MAKE_ARGS_SYNTH)
 
-.PHONY: run-capi-sweep
-run-capi-sweep:
+.PHONY: run-synth-sweep
+run-synth-sweep:
 	$(MAKE) sweep $(MAKE_ARGS_SYNTH)
 
 .PHONY: map

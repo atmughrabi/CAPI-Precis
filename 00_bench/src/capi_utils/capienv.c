@@ -211,7 +211,7 @@ void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
 {
 
     uint64_t size_read  = (cmdResponseStats->DONE_READ_count);
-    uint64_t size_write = (cmdResponseStats->DONE_WRITE_count) / 16;
+    uint64_t size_write = (cmdResponseStats->DONE_WRITE_count);
     uint64_t size       = size_read + (size_write);
 
     uint64_t size_read_byte  = (cmdResponseStats->READ_BYTE_count);
