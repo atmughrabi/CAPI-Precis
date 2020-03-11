@@ -161,8 +161,6 @@ module afu_control #(
 	CommandBufferLine         burst_command_buffer_out       ;
 	CommandBufferLine         command_buffer_out             ;
 	CommandBufferLine         command_buffer_out_bypass      ;
-
-	logic command_write_valid      ;
 	logic command_write_valid_data0;
 	logic command_write_valid_data1;
 
@@ -185,7 +183,6 @@ module afu_control #(
 	logic [0:63] afu_configure_2_latched;
 
 	logic restart_command_flushed        ;
-	logic restart_command_flushed_latched;
 
 	genvar i;
 
