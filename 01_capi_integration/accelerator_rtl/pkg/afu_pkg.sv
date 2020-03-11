@@ -18,6 +18,25 @@ package AFU_PKG;
   import CAPI_PKG::*;
   import CU_PKG::*;
 
+////////////////////////////////////////////////////////////////////////////
+// CU return type
+////////////////////////////////////////////////////////////////////////////
+
+  typedef struct packed {
+    logic [0:63] var1;
+    logic [0:63] var2;
+  } cu_return_type;
+
+  typedef struct packed {
+    logic [0:63] var1;
+    logic [0:63] var2;
+  } cu_configure_type;
+
+  typedef struct packed {
+    logic [0:63] var1;
+    logic [0:63] var2;
+  } afu_configure_type;
+
   typedef enum int unsigned {
     CMD_INVALID,
     CMD_READ,
@@ -27,7 +46,6 @@ package AFU_PKG;
     CMD_WED,
     CMD_RESTART
   } command_type;
-
 
 ////////////////////////////////////////////////////////////////////////////
 // ERROR Control
@@ -77,12 +95,16 @@ package AFU_PKG;
   } tag_buffer_state;
 
   typedef struct packed {
-    cu_id_t                              cu_id           ; // Compute unit id generating the command for now we support four
+    cu_id_t                              cu_id_x         ; // Compute unit id
+    cu_id_t                              cu_id_y         ; // Compute unit id
     array_struct_type                    array_struct    ;
     command_type                         cmd_type        ; // The compute unit from the AFU SIDE will send the command type Rd/Wr/Prefetch
     logic [0:CACHELINE_INT_COUNTER_BITS] real_size       ;
+    logic [                         0:7] real_size_bytes ;
     logic [0:CACHELINE_INT_COUNTER_BITS] cacheline_offest;
     logic [                        0:63] address_offest  ;
+    logic [                        0:63] aux_data        ;
+    logic [                        0:11] size            ;
     logic [                         0:7] tag             ;
     trans_order_behavior_t               abt             ; // ah_cabt,        // Command ABT
   } CommandTagLine;
@@ -92,14 +114,23 @@ package AFU_PKG;
 ////////////////////////////////////////////////////////////////////////////
 
   typedef struct packed {
-    logic                  valid  ;
     CommandTagLine         cmd    ;
     afu_command_t          command; // ah_com,         // Command code
     logic [0:63]           address; // ah_cea,         // Command address
     logic [0:11]           size   ; // ah_csize,       // Command size
     trans_order_behavior_t abt    ; // ah_cabt,        // Command ABT
+  } CommandBufferLinePayload;
+
+  typedef struct packed {
+    logic                    valid  ;
+    CommandBufferLinePayload payload;
   } CommandBufferLine;
 
+
+  typedef struct packed {
+    logic             flushed;
+    CommandBufferLine cmd    ;
+  } CommandBufferLineRestart;
 
   typedef struct packed {
     logic full  ;
@@ -134,10 +165,14 @@ package AFU_PKG;
 ////////////////////////////////////////////////////////////////////////////
 
   typedef struct packed {
-    logic          valid           ; // ha_rvalid,     // Response valid
     CommandTagLine cmd             ;
     logic [0:8]    response_credits;
     psl_response_t response        ; // ha_response,   // Response
+  } ResponseBufferLinePayload;
+
+  typedef struct packed {
+    logic                     valid  ; // ha_rvalid,     // Response valid
+    ResponseBufferLinePayload payload;
   } ResponseBufferLine;
 
   typedef struct packed {
@@ -175,6 +210,10 @@ package AFU_PKG;
     logic [0:63] CYCLE_count              ;
     logic [0:63] DONE_READ_count          ;
     logic [0:63] DONE_WRITE_count         ;
+    logic [0:63] READ_BYTE_count          ;
+    logic [0:63] WRITE_BYTE_count         ;
+    logic [0:63] PREFETCH_READ_BYTE_count ;
+    logic [0:63] PREFETCH_WRITE_BYTE_count;
   } ResponseStatistcsInterface;
 
 ////////////////////////////////////////////////////////////////////////////
@@ -197,9 +236,13 @@ package AFU_PKG;
   } WriteDataControlInterface;
 
   typedef struct packed { // one cacheline is 128bytes each sent on separate 64bytes chunks
-    logic                                valid;
-    CommandTagLine                       cmd  ;
-    logic [0:(CACHELINE_SIZE_BITS_HF-1)] data ;
+    CommandTagLine                       cmd ;
+    logic [0:(CACHELINE_SIZE_BITS_HF-1)] data;
+  } ReadWriteDataLinePayload;
+
+  typedef struct packed { // one cacheline is 128bytes each sent on separate 64bytes chunks
+    logic                    valid  ;
+    ReadWriteDataLinePayload payload;
   } ReadWriteDataLine;
 
   typedef struct packed {
@@ -240,9 +283,9 @@ package AFU_PKG;
       NRES : begin
         cmd_response_error = 6'b010000;
       end
-      NLOCK : begin
-        cmd_response_error = 6'b100000;
-      end
+      // NLOCK : begin
+      //   cmd_response_error = 6'b100000;
+      // end
       default : begin
         cmd_response_error = 6'b000000;
       end

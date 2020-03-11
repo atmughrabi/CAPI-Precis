@@ -17,15 +17,14 @@ import CAPI_PKG::*;
 import AFU_PKG::*;
 
 module write_data_control (
-  input  logic                     clock              , // Clock
-  input  logic                     rstn               ,
-  input  logic                     enabled_in         ,
-  input  WriteDataControlInterface buffer_in          ,
-  input  logic                     command_write_valid,
-  input  logic [0:7]               command_tag_in     ,
-  input  ReadWriteDataLine         write_data_0_in    ,
-  input  ReadWriteDataLine         write_data_1_in    ,
-  output logic                     data_write_error   ,
+  input  logic                     clock           , // Clock
+  input  logic                     rstn            ,
+  input  logic                     enabled_in      ,
+  input  WriteDataControlInterface buffer_in       ,
+  input  logic [0:7]               command_tag_in  ,
+  input  ReadWriteDataLine         write_data_0_in ,
+  input  ReadWriteDataLine         write_data_1_in ,
+  output logic                     data_write_error,
   output BufferInterfaceOutput     buffer_out
 );
 
@@ -33,23 +32,25 @@ module write_data_control (
   logic tag_parity     ;
   logic tag_parity_link;
 
-  logic enable_errors   ;
-  logic detected_errors ;
-  logic tag_parity_error;
+  logic             enable_errors          ;
+  logic             detected_errors        ;
+  logic             tag_parity_error       ;
+  logic [0:3]       read_latency           ;
+  ReadWriteDataLine write_data_0_in_latched;
+  ReadWriteDataLine write_data_1_in_latched;
+  logic [0:7]       command_tag_in_latched ;
 
-  logic             command_write_valid_latched;
-  ReadWriteDataLine write_data_0_in_latched    ;
-  ReadWriteDataLine write_data_1_in_latched    ;
-  logic [0:7]       command_tag_in_latched     ;
+  logic [0:7] buffer_out_read_parity;
 
-  ReadWriteDataLine write_data_0_out;
-  ReadWriteDataLine write_data_1_out;
-  logic             enabled         ;
-  ReadWriteDataLine write_data      ;
+  ReadWriteDataLine                    write_data_0_out;
+  ReadWriteDataLine                    write_data_1_out;
+  logic                                enabled         ;
+  logic [0:(CACHELINE_SIZE_BITS_HF-1)] write_data      ;
 
-  logic       read_valid  ; // ha_brvalid,     // Buffer Read valid
-  logic [0:7] read_tag    ; // ha_brtag,       // Buffer Read tag
-  logic [0:5] read_address; // ha_brad,        // Buffer Read address
+  logic       read_valid_data ; // ha_brvalid,     // Buffer Read valid
+  logic       read_valid_error; // ha_brvalid,     // Buffer Read valid
+  logic [0:7] read_tag        ; // ha_brtag,       // Buffer Read tag
+  logic [0:5] read_address    ; // ha_brad,        // Buffer Read address
 
 ////////////////////////////////////////////////////////////////////////////
 //Drive input
@@ -60,17 +61,25 @@ module write_data_control (
 
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
-      command_write_valid_latched <= 0;
-      write_data_0_in_latched     <= 0;
-      write_data_1_in_latched     <= 0;
-      command_tag_in_latched      <= 0;
+      write_data_0_in_latched.valid <= 0;
+      write_data_1_in_latched.valid <= 0;
+      command_tag_in_latched        <= 0;
     end else begin
       if(enabled) begin
-        command_write_valid_latched <= command_write_valid;
-        write_data_0_in_latched     <= write_data_0_in;
-        write_data_1_in_latched     <= write_data_1_in;
-        command_tag_in_latched      <= command_tag_in;
+        write_data_0_in_latched.valid <= write_data_0_in.valid;
+        write_data_1_in_latched.valid <= write_data_1_in.valid;
+        command_tag_in_latched        <= command_tag_in;
       end
+    end
+  end
+
+  always_ff @(posedge clock or negedge rstn) begin
+    if(~rstn) begin
+      write_data_0_in_latched.payload <= ~0;
+      write_data_1_in_latched.payload <= ~0;
+    end else begin
+      write_data_0_in_latched.payload <= write_data_0_in.payload;
+      write_data_1_in_latched.payload <= write_data_1_in.payload;
     end
   end
 
@@ -92,18 +101,16 @@ module write_data_control (
 
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
-      read_valid   <= 0;
-      read_tag     <= 0;
-      read_address <= 0;
+      read_valid_data  <= 0;
+      read_valid_error <= 0;
+      read_tag         <= 0;
+      read_address     <= 0;
     end else begin
-      if(buffer_in.read_valid && enabled) begin
-        read_valid   <= buffer_in.read_valid;
-        read_tag     <= buffer_in.read_tag;
-        read_address <= buffer_in.read_address;
-      end else begin
-        read_valid   <= 0;
-        read_tag     <= 0;
-        read_address <= 0;
+      if(enabled) begin
+        read_valid_data  <= buffer_in.read_valid;
+        read_valid_error <= buffer_in.read_valid;
+        read_tag         <= buffer_in.read_tag;
+        read_address     <= buffer_in.read_address;
       end
     end
   end
@@ -112,10 +119,16 @@ module write_data_control (
 //Read Buffer out data parity check
 ////////////////////////////////////////////////////////////////////////////
 
+  // dw_parity #(.DOUBLE_WORDS(8)) write_data_parity_instant (
+  //   .data(buffer_out.read_data  ),
+  //   .odd (odd_parity            ),
+  //   .par (buffer_out.read_parity)
+  // );
+
   dw_parity #(.DOUBLE_WORDS(8)) write_data_parity_instant (
-    .data(buffer_out.read_data  ),
+    .data(write_data            ),
     .odd (odd_parity            ),
-    .par (buffer_out.read_parity)
+    .par (buffer_out_read_parity)
   );
 
 ////////////////////////////////////////////////////////////////////////////
@@ -126,10 +139,8 @@ module write_data_control (
     if(~rstn) begin
       tag_parity <= odd_parity;
     end else begin
-      if(enabled && buffer_in.read_valid) begin
+      if(enabled) begin
         tag_parity <= buffer_in.read_tag_parity;
-      end else begin
-        tag_parity <= odd_parity;
       end
     end
   end
@@ -143,48 +154,49 @@ module write_data_control (
 ////////////////////////////////////////////////////////////////////////////
 //Ram Data each hold half cache line
 ////////////////////////////////////////////////////////////////////////////
-// uncomment for latency 4 cycles
-  assign buffer_out.read_latency = 4'h3;
+// latency 4 cycles
+  assign read_latency = 4'h3;
 
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn)
       write_data <= ~0;
     else begin
-      if(~(|read_address) && read_valid)
-        write_data <= write_data_0_out.data;
-      else if((|read_address) && read_valid)
-        write_data <= write_data_1_out.data;
-      else
-        write_data <= ~0;
+      if(read_valid_data) begin
+        case (read_address)
+          6'h00 : begin
+            write_data <= write_data_0_out.payload.data;
+          end
+          6'h01 : begin
+            write_data <= write_data_1_out.payload.data;
+          end
+        endcase
+      end
     end
   end
 
-  always_ff @(posedge clock) begin
-    buffer_out.read_data <= write_data;
+  always_ff @(posedge clock or negedge rstn) begin
+    if(~rstn) begin
+      buffer_out.read_latency <= read_latency;
+      buffer_out.read_parity  <= odd_parity;
+      buffer_out.read_data    <= ~0;
+    end else begin
+      buffer_out.read_latency <= read_latency;
+      buffer_out.read_parity  <= buffer_out_read_parity;
+      buffer_out.read_data    <= write_data;
+    end
   end
-
-// uncomment for latency 1 cycles
-  // assign buffer_out.read_latency = 4'h1;
-  // always_comb begin
-  //   if(~(|read_address) && read_valid)
-  //     buffer_out.read_data = write_data_0_out.data;
-  //   else if((|read_address) && read_valid)
-  //     buffer_out.read_data = write_data_1_out.data;
-  //   else
-  //     buffer_out.read_data = ~0;
-  // end
 
   ram #(
     .WIDTH($bits(ReadWriteDataLine)),
     .DEPTH(256                     )
   ) write_data_0_ram_instant (
-    .clock   (clock                      ),
-    .we      (command_write_valid_latched),
-    .wr_addr (command_tag_in_latched     ),
-    .data_in (write_data_0_in_latched    ),
+    .clock   (clock                        ),
+    .we      (write_data_0_in_latched.valid),
+    .wr_addr (command_tag_in_latched       ),
+    .data_in (write_data_0_in_latched      ),
     
-    .rd_addr (buffer_in.read_tag         ),
-    .data_out(write_data_0_out           )
+    .rd_addr (buffer_in.read_tag           ),
+    .data_out(write_data_0_out             )
   );
 
 
@@ -192,13 +204,13 @@ module write_data_control (
     .WIDTH($bits(ReadWriteDataLine)),
     .DEPTH(256                     )
   ) write_data_1_ram_instant (
-    .clock   (clock                      ),
-    .we      (command_write_valid_latched),
-    .wr_addr (command_tag_in_latched     ),
-    .data_in (write_data_1_in_latched    ),
+    .clock   (clock                        ),
+    .we      (write_data_1_in_latched.valid),
+    .wr_addr (command_tag_in_latched       ),
+    .data_in (write_data_1_in_latched      ),
     
-    .rd_addr (buffer_in.read_tag         ),
-    .data_out(write_data_1_out           )
+    .rd_addr (buffer_in.read_tag           ),
+    .data_out(write_data_1_out             )
   );
 
 ////////////////////////////////////////////////////////////////////////////
@@ -210,7 +222,7 @@ module write_data_control (
       detected_errors  <= 1'b0;
     end else begin
 
-      if(read_valid)
+      if(read_valid_error)
         tag_parity_error <= tag_parity_link ^ tag_parity;
       else
         tag_parity_error <= 1'b0;

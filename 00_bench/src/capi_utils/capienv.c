@@ -76,6 +76,7 @@ void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 #endif
 }
 
+
 void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 {
 #ifdef  VERBOSE
@@ -104,7 +105,11 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 {
 
     struct CmdResponseStats cmdResponseStats = {0};
-
+#ifdef  VERBOSE_2
+    printf("*-----------------------------------------------------*\n");
+    printf("| (#) Data: %-14lu | %-24s |\n", afu_status->cu_stop, "(#) Data Processed");
+    printf(" -----------------------------------------------------\n");
+#endif
     do
     {
         // Poll for errors always
@@ -114,6 +119,13 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
         // read final return result
         cxl_mmio_read64((*afu), CU_RETURN_DONE, (uint64_t *) & (afu_status->cu_return_done));
 
+#ifdef  VERBOSE_2
+        cxl_mmio_read64((*afu), CU_RETURN, (uint64_t *) & (afu_status->cu_return));
+        cxl_mmio_read64((*afu), CU_RETURN_2, (uint64_t *) & (afu_status->cu_return_2));
+        if(afu_status->cu_return && afu_status->cu_return_2)
+            printf("\r| R: %-21lu | W: %-22lu|", afu_status->cu_return, afu_status->cu_return_2);
+        fflush(stdout);
+#endif
         // if((((afu_status->cu_return_done) << 32) >> 32) >= (afu_status->cu_stop))
         //     break;
 
@@ -123,9 +135,21 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
             cxl_mmio_write64((*afu), CU_RETURN_DONE_ACK, (uint64_t)afu_status->cu_return_done);
             break;
         }
-    }
-    while((!(afu_status->error)));
 
+        if(afu_status->error)
+        {
+            printMMIO_error(afu_status->error);
+            readCmdResponseStats(afu, &cmdResponseStats);
+            cxl_mmio_write64((*afu), ERROR_REG_ACK, (uint64_t)afu_status->error);
+            break;
+        }
+
+    }
+    while(1);
+
+#ifdef  VERBOSE_2
+    printf("\n*-----------------------------------------------------*\n");
+#endif
 #ifdef  VERBOSE
     printCmdResponseStats(&cmdResponseStats);
 
@@ -161,36 +185,86 @@ void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdRe
     cxl_mmio_read64((*afu), DONE_READ_COUNT_REG, (uint64_t *) & (cmdResponseStats->DONE_READ_count));
     cxl_mmio_read64((*afu), DONE_WRITE_COUNT_REG, (uint64_t *) & (cmdResponseStats->DONE_WRITE_count));
 
+    cxl_mmio_read64((*afu), READ_BYTE_COUNT_REG, (uint64_t *) & (cmdResponseStats->READ_BYTE_count));
+    cxl_mmio_read64((*afu), WRITE_BYTE_COUNT_REG, (uint64_t *) & (cmdResponseStats->WRITE_BYTE_count));
+    cxl_mmio_read64((*afu), PREFETCH_READ_BYTE_COUNT_REG, (uint64_t *) & (cmdResponseStats->PREFETCH_READ_BYTE_count));
+    cxl_mmio_read64((*afu), PREFETCH_WRITE_BYTE_COUNT_REG, (uint64_t *) & (cmdResponseStats->PREFETCH_WRITE_BYTE_count));
+
+}
+
+void printBandwidth(uint64_t size, double time_elapsed, uint64_t rep_bytes)
+{
+
+    double size_GB = (double)(size) * (double)rep_bytes / (double)(1024 * 1024 * 1024);
+    double size_MB = (double)(size) * (double)rep_bytes / (double)(1024 * 1024);
+    double bandwidth_GB = size_GB / time_elapsed; //GB/s
+    double bandwidth_MB = size_MB / time_elapsed; //MB/s
+
+    printf("| %-22s | %-27.20lf| \n", "Data MB", size_MB);
+    printf("| %-22s | %-27.20lf| \n", "Data GB", size_GB);
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
+    printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
 }
 
 void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats)
 {
 
     uint64_t size_read  = (cmdResponseStats->DONE_READ_count);
-    uint64_t size_write = (cmdResponseStats->DONE_WRITE_count);
-    uint64_t size       = size_read;
-    if(size_write > size_read)
-        size = size_write;
+    uint64_t size_write = (cmdResponseStats->DONE_WRITE_count) / 16;
+    uint64_t size       = size_read + (size_write);
+
+    uint64_t size_read_byte  = (cmdResponseStats->READ_BYTE_count);
+    uint64_t size_write_byte = (cmdResponseStats->WRITE_BYTE_count);
+    uint64_t size_byte       = size_read_byte + (size_write_byte);
+
     double time_elapsed = (double)(cmdResponseStats->CYCLE_count * 4) / 1e9;
-    double size_GB = (double)(size) / (double)(1024 * 1024 * 8);
-    double size_MB = (double)(size) / (double)(1024 * 8);
-    double bandwidth_GB = size_GB / time_elapsed; //GB/s
-    double bandwidth_MB = size_MB / time_elapsed; //MB/s
 
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-19s %-15s | \n", " ", "AFU Stats", " ");
     printf(" -----------------------------------------------------\n");
     printf("| %-22s | %-27lu| \n", "CYCLE_count ", cmdResponseStats->CYCLE_count);
-
     printf("| %-22s | %-27.20lf| \n", "Time (Seconds)", time_elapsed);
     printf(" -----------------------------------------------------\n");
-    printf("| %-22s | %-27.20lf| \n", "Data MB", size_MB);
-    printf("| %-22s | %-27.20lf| \n", "Data GB", size_GB);
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-15s %-19s %-15s | \n", " ", "Total BW", " ");
     printf(" -----------------------------------------------------\n");
-    printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
-    printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
+    printBandwidth(size, time_elapsed, 128);
 
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-15s %-19s %-15s | \n", " ", "Total Read BW", " ");
+    printf(" -----------------------------------------------------\n");
+    printBandwidth(size_read, time_elapsed, 128);
 
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-15s %-19s %-15s | \n", " ", "Total Write BW", " ");
+    printf(" -----------------------------------------------------\n");
+    printBandwidth(size_write, time_elapsed, 128);
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-15s %-19s %-15s | \n", " ", "Effective total BW", " ");
+    printf(" -----------------------------------------------------\n");
+    printBandwidth(size_byte, time_elapsed, 1);
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-15s %-19s %-15s | \n", " ", "Effective Read BW", " ");
+    printf(" -----------------------------------------------------\n");
+    printBandwidth(size_read_byte, time_elapsed, 1);
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-15s %-19s %-15s | \n", " ", "Effective Write BW", " ");
+    printf(" -----------------------------------------------------\n");
+    printBandwidth(size_write_byte, time_elapsed, 1);
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-12s %-25s %-12s | \n", " ", "Byte Transfer Stats", " ");
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27lu| \n", "READ_BYTE_count", cmdResponseStats->READ_BYTE_count);
+    printf("| %-22s | %-27lu| \n", "WRITE_BYTE_count", cmdResponseStats->WRITE_BYTE_count);
+    printf(" -----------------------------------------------------\n");
+    printf("| %-26s | %-23lu| \n", "PREFETCH_READ_BYTE_count", cmdResponseStats->PREFETCH_READ_BYTE_count);
+    printf("| %-26s | %-23lu| \n", "PREFETCH_WRITE_BYTE_count", cmdResponseStats->PREFETCH_WRITE_BYTE_count);
     printf("*-----------------------------------------------------*\n");
     printf("| %-15s %-19s %-15s | \n", " ", "Responses Stats", " ");
     printf(" -----------------------------------------------------\n");

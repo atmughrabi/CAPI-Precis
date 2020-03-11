@@ -47,6 +47,15 @@ foreach filename [glob ../accelerator_rtl/pkg/*.sv] {
 #     set_global_assignment -name SYSTEMVERILOG_FILE $filename
 # }
 
-foreach filename [glob ../accelerator_rtl/cu/*.sv] {
-    set_global_assignment -name SYSTEMVERILOG_FILE $filename
+
+foreach filename [glob ../accelerator_rtl/cu/cu_memcpy/global_pkg/*.sv] {
+	set_global_assignment -name SYSTEMVERILOG_FILE $filename
+}
+
+foreach filename [glob ../accelerator_rtl/cu/cu_memcpy/global_cu/*.sv] {
+	set_global_assignment -name SYSTEMVERILOG_FILE $filename
+}
+
+foreach filename [glob ../accelerator_rtl/cu/cu_memcpy/memcpy/*.sv] {
+	set_global_assignment -name SYSTEMVERILOG_FILE $filename
 }

@@ -50,18 +50,27 @@ package CU_PKG;
 		PREFETCH_DATA
 	} array_struct_type;
 
-	typedef struct packed {
-		logic                             valid;
 
+	typedef struct packed {
 		cu_id_t                           cu_id;
 		logic [0:(DATA_SIZE_READ_BITS-1)] data ;
+	} DataReadPayload;
+
+	typedef struct packed {
+		logic           valid  ;
+		DataReadPayload payload;
 	} DataRead;
 
 	typedef struct packed {
-		logic                              valid;
 		cu_id_t                            cu_id;
 		logic [     0:(ARRAY_SIZE_BITS-1)] index;
 		logic [0:(DATA_SIZE_WRITE_BITS-1)] data ;
+	} DataWritePayload;
+
+
+	typedef struct packed {
+		logic            valid  ;
+		DataWritePayload payload;
 	} DataWrite;
 
 

@@ -17,25 +17,32 @@ import CAPI_PKG::*;
 import AFU_PKG::*;
 
 module mmio (
-  input  logic                      clock              ,
-  input  logic                      rstn               ,
-  input  logic [0:63]               report_errors      ,
-  input  logic [0:63]               cu_return          ,
-  input  logic [0:63]               cu_return_done     ,
-  input  logic [0:63]               cu_status          ,
-  input  logic [0:63]               afu_status         ,
-  input  ResponseStatistcsInterface response_statistics,
-  output logic [0:63]               afu_configure      ,
-  output logic [0:63]               afu_configure_2    ,
-  output logic [0:63]               cu_configure       ,
-  output logic [0:63]               cu_configure_2     ,
-  input  MMIOInterfaceInput         mmio_in            ,
-  output MMIOInterfaceOutput        mmio_out           ,
-  output logic [ 0:1]               mmio_errors        ,
-  output logic                      report_errors_ack  , // each register has an ack
-  output logic                      cu_return_done_ack , // each register has an ack
-  output logic                      reset_mmio
+  input  logic                      clock                 ,
+  input  logic                      rstn                  ,
+  input  logic [0:63]               report_errors         ,
+  input  cu_return_type             cu_return             ,
+  input  logic [0:63]               cu_return_done        ,
+  input  logic [0:63]               cu_status             ,
+  input  logic [0:63]               afu_status            ,
+  input  ResponseStatistcsInterface response_statistics   ,
+  output afu_configure_type         afu_configure_out     ,
+  output cu_configure_type          cu_configure_out      ,
+  input  MMIOInterfaceInput         mmio_in               ,
+  output MMIOInterfaceOutput        mmio_out_out          ,
+  output logic [ 0:1]               mmio_errors_out       ,
+  output logic                      report_errors_ack_out , // each register has an ack
+  output logic                      cu_return_done_ack_out, // each register has an ack
+  output logic                      reset_mmio_out
 );
+
+  MMIOInterfaceOutput mmio_out          ;
+  logic [0:1]         mmio_errors       ;
+  logic               report_errors_ack ; // each register has an ack
+  logic               cu_return_done_ack; // each register has an ack
+  logic               reset_mmio        ;
+
+  afu_configure_type afu_configure;
+  cu_configure_type  cu_configure ;
 
   AFUDescriptor afu_desc  ;
   logic         odd_parity;
@@ -74,7 +81,7 @@ module mmio (
   logic              address_parity        ;
   logic              data_ack              ;
   logic [0:63]       report_errors_latched ;
-  logic [0:63]       cu_return_latched     ;
+  cu_return_type     cu_return_latched     ;
   logic [0:63]       cu_return_done_latched;
   logic [0:63]       afu_status_latched    ;
   logic [0:63]       cu_status_latched     ;
@@ -89,7 +96,7 @@ module mmio (
   assign afu_desc.num_of_processes         = 16'h0001;
   assign afu_desc.num_of_afu_crs           = 16'h0001;
   assign afu_desc.req_prog_model           = 16'h8010; // dedicated process
-  assign afu_desc.reserved_1               = 64'h0000_0000_0000_0000;
+  assign afu_desc.reserved_1               = 0;
   assign afu_desc.reserved_2               = 8'h00;
   assign afu_desc.afu_cr_len               = 56'h0000_0000_0000_01;
   assign afu_desc.afu_cr_offset            = 64'h0000_0000_0000_0100;
@@ -97,10 +104,10 @@ module mmio (
   assign afu_desc.psa_per_process_required = 1'b0;
   assign afu_desc.psa_required             = 1'b1;
   assign afu_desc.psa_length               = 56'h0000_0000_0000_00;
-  assign afu_desc.psa_offset               = 64'h0000_0000_0000_0000;
+  assign afu_desc.psa_offset               = 0;
   assign afu_desc.reserved_4               = 8'h00;
   assign afu_desc.afu_eb_len               = 56'h0000_0000_0000_00;
-  assign afu_desc.afu_eb_offset            = 64'h0000_0000_0000_0000;
+  assign afu_desc.afu_eb_offset            = 0;
 
   assign odd_parity    = 1'b1; // Odd parity
   assign enable_errors = 1'b1; // enable errors
@@ -109,12 +116,11 @@ module mmio (
   assign reset_mmio = 1;
 
 ////////////////////////////////////////////////////////////////////////////
-//latch the inputs from the PSL
+//latch the input/output from the PSL
 ////////////////////////////////////////////////////////////////////////////
 
 
-  always_ff @(posedge clock) begin
-
+  always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
       report_errors_latched           <= 0;
       cu_return_latched               <= 0;
@@ -122,16 +128,33 @@ module mmio (
       afu_status_latched              <= 0;
       cu_status_latched               <= 0;
       response_statistics_out_latched <= 0;
-
     end else  begin
-
       report_errors_latched           <= report_errors;
       cu_return_done_latched          <= cu_return_done;
       cu_return_latched               <= cu_return;
       afu_status_latched              <= afu_status;
       cu_status_latched               <= cu_status;
       response_statistics_out_latched <= response_statistics;
+    end
+  end
 
+  always_ff @(posedge clock or negedge rstn) begin
+    if(~rstn) begin
+      afu_configure_out      <= 0;
+      cu_configure_out       <= 0;
+      mmio_out_out           <= 0;
+      mmio_errors_out        <= 0;
+      report_errors_ack_out  <= 0;
+      cu_return_done_ack_out <= 0;
+      reset_mmio_out         <= 1;
+    end else  begin
+      afu_configure_out      <= afu_configure;
+      cu_configure_out       <= cu_configure;
+      mmio_out_out           <= mmio_out;
+      mmio_errors_out        <= mmio_errors;
+      report_errors_ack_out  <= report_errors_ack;
+      cu_return_done_ack_out <= cu_return_done_ack;
+      reset_mmio_out         <= reset_mmio;
     end
   end
 
@@ -175,12 +198,12 @@ module mmio (
 // data out to host logic
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
-      data_cfg <= 64'h0000_0000_0000_0000;
+      data_cfg <= 0;
     end else  begin
       if(cfg_read) begin
         data_cfg <= read_afu_descriptor(afu_desc, address[0:22]);
       end else begin
-        data_cfg <= 64'h0000_0000_0000_0000;
+        data_cfg <= 0;
       end
     end
   end
@@ -196,24 +219,24 @@ module mmio (
 // Write DATA LOGIC
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
-      cu_configure           <= 64'h0000_0000_0000_0000;
-      afu_configure          <= 64'h0000_0000_0000_0000;
-      cu_return_mmio_ack     <= 64'h0000_0000_0000_0000;
-      report_errors_mmio_ack <= 64'h0000_0000_0000_0000;
+      cu_configure           <= 0;
+      afu_configure          <= 0;
+      cu_return_mmio_ack     <= 0;
+      report_errors_mmio_ack <= 0;
     end else begin
       if (mmio_write_latched) begin
         case (address_latched)
           CU_CONFIGURE : begin
-            cu_configure <= data_in_latched;
+            cu_configure.var1 <= data_in_latched;
           end
           CU_CONFIGURE_2 : begin
-            cu_configure_2 <= data_in_latched;
+            cu_configure.var2 <= data_in_latched;
           end
           AFU_CONFIGURE : begin
-            afu_configure <= data_in_latched;
+            afu_configure.var1 <= data_in_latched;
           end
           AFU_CONFIGURE_2 : begin
-            afu_configure_2 <= data_in_latched;
+            afu_configure.var2 <= data_in_latched;
           end
           CU_RETURN_DONE_ACK : begin
             cu_return_mmio_ack <= data_in_latched;
@@ -222,17 +245,17 @@ module mmio (
             report_errors_mmio_ack <= data_in_latched;
           end
           default : begin
-            cu_configure           <= 64'h0000_0000_0000_0000;
-            afu_configure          <= 64'h0000_0000_0000_0000;
-            cu_return_mmio_ack     <= 64'h0000_0000_0000_0000;
-            report_errors_mmio_ack <= 64'h0000_0000_0000_0000;
+            cu_configure           <= 0;
+            afu_configure          <= 0;
+            cu_return_mmio_ack     <= 0;
+            report_errors_mmio_ack <= 0;
           end
         endcase
       end else begin
-        cu_configure           <= 64'h0000_0000_0000_0000;
-        afu_configure          <= 64'h0000_0000_0000_0000;
-        cu_return_mmio_ack     <= 64'h0000_0000_0000_0000;
-        report_errors_mmio_ack <= 64'h0000_0000_0000_0000;
+        cu_configure           <= 0;
+        afu_configure          <= 0;
+        cu_return_mmio_ack     <= 0;
+        report_errors_mmio_ack <= 0;
       end
     end
   end
@@ -240,7 +263,7 @@ module mmio (
   // Read DATA LOGIC
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
-      data_out <= 64'h0000_0000_0000_0000;
+      data_out <= 0;
     end else begin
       if(cfg_read_latched) begin
         if(doubleword_latched) begin
@@ -253,7 +276,10 @@ module mmio (
       end else if (mmio_read_latched) begin
         case (address_latched)
           CU_RETURN : begin
-            data_out <= cu_return_latched;
+            data_out <= cu_return_latched.var1;
+          end
+          CU_RETURN_2 : begin
+            data_out <= cu_return_latched.var2;
           end
           CU_RETURN_DONE : begin
             data_out <= cu_return_done_latched;
@@ -312,6 +338,18 @@ module mmio (
           DONE_PREFETCH_WRITE_COUNT_REG : begin
             data_out <= response_statistics_out_latched.DONE_PREFETCH_WRITE_count;
           end
+          READ_BYTE_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.READ_BYTE_count;
+          end
+          WRITE_BYTE_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.WRITE_BYTE_count;
+          end
+          PREFETCH_READ_BYTE_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.PREFETCH_READ_BYTE_count;
+          end
+          PREFETCH_WRITE_BYTE_COUNT_REG : begin
+            data_out <= response_statistics_out_latched.PREFETCH_WRITE_BYTE_count;
+          end
           default : begin
             data_out <= data_out;
           end
@@ -362,14 +400,14 @@ module mmio (
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
       data_in_parity <= odd_parity;
-      data_in        <= 64'h0000_0000_0000_0000;
+      data_in        <= 0;
     end else begin
       if(mmio_in_latched.valid && ~mmio_in_latched.read) begin
         data_in_parity <= mmio_in_latched.data_parity;
         data_in        <= mmio_in_latched.data;
       end else begin
         data_in_parity <= odd_parity;
-        data_in        <= 64'h0000_0000_0000_0000;
+        data_in        <= 0;
       end
     end
   end

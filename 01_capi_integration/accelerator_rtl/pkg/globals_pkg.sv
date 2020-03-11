@@ -80,16 +80,14 @@ package GLOBALS_AFU_PKG;
 // AFU-Control (Buffer Priorities) for Arbitration
 ////////////////////////////////////////////////////////////////////////////
 
-	parameter PRIORITY_RESTART = 0;
-	parameter PRIORITY_WED     = 1;
+	parameter PRIORITY_WED = 0;
 
-	parameter PRIORITY_PREFTECH_WRITE = 2;
-	parameter PRIORITY_WRITE          = 3;
-	
-	parameter PRIORITY_PREFETCH_READ = 4;
-	parameter PRIORITY_READ          = 5;
-	
+	parameter PRIORITY_PREFTECH_WRITE = 1;
+	parameter PRIORITY_WRITE          = 2;
 
+	parameter PRIORITY_PREFETCH_READ = 3;
+	parameter PRIORITY_READ          = 4;
+	
 ////////////////////////////////////////////////////////////////////////////
 // CU-Control  (Buffer size)
 ////////////////////////////////////////////////////////////////////////////
@@ -112,6 +110,7 @@ package GLOBALS_AFU_PKG;
 	parameter CU_STATUS      = 26'h 3FFFFE0 >> 2;
 
 	parameter CU_RETURN     = 26'h 3FFFFD8 >> 2; // algorithm status DONE/RUNNING HOST reads this address
+	parameter CU_RETURN_2   = 26'h 3FFFF10 >> 2;
 	parameter CU_RETURN_ACK = 26'h 3FFFFD0 >> 2;
 
 	parameter CU_RETURN_DONE     = 26'h 3FFFFC8 >> 2;
@@ -138,7 +137,10 @@ package GLOBALS_AFU_PKG;
 	parameter NLOCK_COUNT_REG   = 26'h 3FFFF40 >> 2;
 	parameter CYCLE_COUNT_REG   = 26'h 3FFFF38 >> 2;
 
-
+	parameter PREFETCH_READ_BYTE_COUNT_REG  = 26'h 3FFFF30 >> 2;
+	parameter PREFETCH_WRITE_BYTE_COUNT_REG = 26'h 3FFFF28 >> 2;
+	parameter READ_BYTE_COUNT_REG           = 26'h 3FFFF20 >> 2;
+	parameter WRITE_BYTE_COUNT_REG          = 26'h 3FFFF18 >> 2;
 
 
 ////////////////////////////////////////////////////////////////////////////

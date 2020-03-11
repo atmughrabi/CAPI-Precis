@@ -173,7 +173,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			write_job_counter_done <= 0;
 		else begin
 			if (write_response_in_latched.valid) begin
-				write_job_counter_done <= write_job_counter_done + write_response_in_latched.cmd.real_size;
+				write_job_counter_done <= write_job_counter_done + write_response_in_latched.payload.cmd.real_size;
 			end
 		end
 	end
@@ -185,10 +185,11 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	always_comb begin
 		cmd                  = 0;
 		cmd.array_struct     = WRITE_DATA;
-		cmd.cacheline_offest = write_data_0_out_buffer.cmd.cacheline_offest;
-		cmd.address_offest   = write_data_0_out_buffer.cmd.address_offest;
-		cmd.real_size        = write_data_0_out_buffer.cmd.real_size;
-		cmd.cu_id            = CU_WRITE_CONTROL_ID;
+		cmd.cacheline_offest = write_data_0_out_buffer.payload.cmd.cacheline_offest;
+		cmd.address_offest   = write_data_0_out_buffer.payload.cmd.address_offest;
+		cmd.real_size        = write_data_0_out_buffer.payload.cmd.real_size;
+		cmd.cu_id_x          = CU_WRITE_CONTROL_ID;
+		cmd.cu_id_y          = CU_WRITE_CONTROL_ID;
 		cmd.cmd_type         = CMD_WRITE;
 		cmd.abt              = STRICT;
 	end
@@ -254,9 +255,9 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 					next_state = WRITE_STREAM_PENDING;
 			end
 			WRITE_STREAM_DONE : begin
-				if((|wed_prefetch_in_latched.wed.size_recive) && enabled_prefetch)
+				if((|wed_prefetch_in_latched.payload.wed.size_recive) && enabled_prefetch)
 					next_state = PREFETCH_WRITE_STREAM_START;
-				else if((|wed_request_in_latched.wed.size_recive))
+				else if((|wed_request_in_latched.payload.wed.size_recive))
 					next_state = WRITE_STREAM_START;
 				else
 					next_state = WRITE_STREAM_FINAL;
@@ -295,7 +296,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			end
 			PREFETCH_WRITE_STREAM_REQ : begin
 				done_prefetch_pending <= 0;
-				if((prefetch_counter_send_latched >= (tlb_size_latched)) || ~(|wed_prefetch_in_latched.wed.size_recive))begin
+				if((prefetch_counter_send_latched >= (tlb_size_latched)) || ~(|wed_prefetch_in_latched.payload.wed.size_recive))begin
 					send_cmd_prefetch  <= 0;
 					leave_cmd_prefetch <= 0;
 				end else begin
@@ -318,7 +319,7 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			WRITE_STREAM_REQ : begin
 				done_write_pending    <= 0;
 				done_prefetch_pending <= 0;
-				if((write_job_send_done_latched >= (max_tlb_cl_requests_latched)) || ~(|wed_request_in_latched.wed.size_recive))begin
+				if((write_job_send_done_latched >= (max_tlb_cl_requests_latched)) || ~(|wed_request_in_latched.payload.wed.size_recive))begin
 					send_cmd_write  <= 0;
 					leave_cmd_write <= 0;
 				end else begin
@@ -373,31 +374,31 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				write_command_out_latched.valid <= write_data_0_out_buffer.valid;
 				write_job_send_done_latched     <= write_job_send_done_latched + 1;
 
-				write_command_out_latched.address <= wed_request_in_latched.wed.array_receive + write_data_0_out_buffer.cmd.address_offest;
-				write_command_out_latched.size    <= cmd_size_calculate(write_data_0_out_buffer.cmd.real_size);
-				write_command_out_latched.cmd     <= cmd;
+				write_command_out_latched.payload.address <= wed_request_in_latched.payload.wed.array_receive + write_data_0_out_buffer.payload.cmd.address_offest;
+				write_command_out_latched.payload.size    <= cmd_size_calculate(write_data_0_out_buffer.payload.cmd.real_size);
+				write_command_out_latched.payload.cmd     <= cmd;
 
 
-				write_data_0_out_latched.valid <= write_data_0_out_buffer.valid;
-				write_data_0_out_latched.cmd   <= cmd;
-				write_data_0_out_latched.data  <= write_data_0_out_buffer.data ;
+				write_data_0_out_latched.valid        <= write_data_0_out_buffer.valid;
+				write_data_0_out_latched.payload.cmd  <= cmd;
+				write_data_0_out_latched.payload.data <= write_data_0_out_buffer.payload.data ;
 
-				write_data_1_out_latched.valid <= write_data_1_out_buffer.valid;
-				write_data_1_out_latched.cmd   <= cmd;
-				write_data_1_out_latched.data  <= write_data_1_out_buffer.data ;
+				write_data_1_out_latched.valid        <= write_data_1_out_buffer.valid;
+				write_data_1_out_latched.payload.cmd  <= cmd;
+				write_data_1_out_latched.payload.data <= write_data_1_out_buffer.payload.data ;
 
-				write_data_1_out_latched.cmd.abt  <= map_CABT(cu_configure_latched[5:7]);
-				write_data_0_out_latched.cmd.abt  <= map_CABT(cu_configure_latched[5:7]);
-				write_command_out_latched.cmd.abt <= map_CABT(cu_configure_latched[5:7]);
-				write_command_out_latched.abt     <= map_CABT(cu_configure_latched[5:7]);
+				write_data_1_out_latched.payload.cmd.abt  <= map_CABT(cu_configure_latched[5:7]);
+				write_data_0_out_latched.payload.cmd.abt  <= map_CABT(cu_configure_latched[5:7]);
+				write_command_out_latched.payload.cmd.abt <= map_CABT(cu_configure_latched[5:7]);
+				write_command_out_latched.payload.abt     <= map_CABT(cu_configure_latched[5:7]);
 
 				if (cu_configure_latched[9]) begin
-					write_command_out_latched.command <= WRITE_MS;
+					write_command_out_latched.payload.command <= WRITE_MS;
 				end else begin
-					write_command_out_latched.command <= WRITE_NA;
+					write_command_out_latched.payload.command <= WRITE_NA;
 				end
 
-				wed_request_in_latched.wed.size_recive <= wed_request_in_latched.wed.size_recive - write_data_0_out_buffer.cmd.real_size;
+				wed_request_in_latched.payload.wed.size_recive <= wed_request_in_latched.payload.wed.size_recive - write_data_0_out_buffer.payload.cmd.real_size;
 
 			end else begin
 				write_command_out_latched <= 0;
@@ -424,37 +425,38 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 		end else begin
 
 			if(cmd_setup && enabled_prefetch) begin
-				wed_prefetch_in_latched                   <= wed_request_in;
-				wed_prefetch_in_latched.wed.array_receive <= (wed_request_in.wed.array_receive & ADDRESS_PAGE_ALIGN_MASK);
+				wed_prefetch_in_latched                           <= wed_request_in;
+				wed_prefetch_in_latched.payload.wed.array_receive <= (wed_request_in.payload.wed.array_receive & ADDRESS_PAGE_ALIGN_MASK);
 			end
 
-			if (~prefetch_command_buffer_status.alfull && (|wed_prefetch_in_latched.wed.size_recive) && send_cmd_prefetch && enabled_prefetch) begin
+			if (~prefetch_command_buffer_status.alfull && (|wed_prefetch_in_latched.payload.wed.size_recive) && send_cmd_prefetch && enabled_prefetch) begin
 
-				if(wed_prefetch_in_latched.wed.size_recive > PAGE_ARRAY_NUM)begin
-					wed_prefetch_in_latched.wed.size_recive    <= wed_prefetch_in_latched.wed.size_recive - PAGE_ARRAY_NUM;
-					prefetch_command_out_latched.cmd.real_size <= PAGE_ARRAY_NUM;
-				end else if (wed_prefetch_in_latched.wed.size_recive <= PAGE_ARRAY_NUM) begin
-					wed_prefetch_in_latched.wed.size_recive    <= 0;
-					prefetch_command_out_latched.cmd.real_size <= wed_prefetch_in_latched.wed.size_recive;
+				if(wed_prefetch_in_latched.payload.wed.size_recive > PAGE_ARRAY_NUM)begin
+					wed_prefetch_in_latched.payload.wed.size_recive    <= wed_prefetch_in_latched.payload.wed.size_recive - PAGE_ARRAY_NUM;
+					prefetch_command_out_latched.payload.cmd.real_size <= PAGE_ARRAY_NUM;
+				end else if (wed_prefetch_in_latched.payload.wed.size_recive <= PAGE_ARRAY_NUM) begin
+					wed_prefetch_in_latched.payload.wed.size_recive    <= 0;
+					prefetch_command_out_latched.payload.cmd.real_size <= wed_prefetch_in_latched.payload.wed.size_recive;
 				end
 
-				prefetch_command_out_latched.command <= TOUCH_I;
-				prefetch_command_out_latched.size    <= 12'h080;
+				prefetch_command_out_latched.payload.command <= TOUCH_I;
+				prefetch_command_out_latched.payload.size    <= 12'h080;
 
-				prefetch_command_out_latched.cmd.cu_id            <= CU_WRITE_CONTROL_ID;
-				prefetch_command_out_latched.cmd.cmd_type         <= CMD_PREFETCH_WRITE;
-				prefetch_command_out_latched.cmd.cacheline_offest <= 0;
-				prefetch_command_out_latched.cmd.address_offest   <= next_prefetch_offest;
-				prefetch_command_out_latched.cmd.array_struct     <= PREFETCH_DATA;
+				prefetch_command_out_latched.payload.cmd.cu_id_x          <= CU_WRITE_CONTROL_ID;
+				prefetch_command_out_latched.payload.cmd.cu_id_y          <= CU_WRITE_CONTROL_ID;
+				prefetch_command_out_latched.payload.cmd.cmd_type         <= CMD_PREFETCH_WRITE;
+				prefetch_command_out_latched.payload.cmd.cacheline_offest <= 0;
+				prefetch_command_out_latched.payload.cmd.address_offest   <= next_prefetch_offest;
+				prefetch_command_out_latched.payload.cmd.array_struct     <= PREFETCH_DATA;
 
-				prefetch_command_out_latched.cmd.abt <= STRICT;
-				prefetch_command_out_latched.abt     <= STRICT;
+				prefetch_command_out_latched.payload.cmd.abt <= STRICT;
+				prefetch_command_out_latched.payload.abt     <= STRICT;
 
 
 				prefetch_command_out_latched.valid <= 1'b1;
 				prefetch_counter_send_latched      <= prefetch_counter_send_latched +1;
 
-				prefetch_command_out_latched.address <= wed_prefetch_in_latched.wed.array_receive  + next_prefetch_offest;
+				prefetch_command_out_latched.payload.address <= wed_prefetch_in_latched.payload.wed.array_receive  + next_prefetch_offest;
 
 				next_prefetch_offest <= next_prefetch_offest + PAGE_SIZE;
 

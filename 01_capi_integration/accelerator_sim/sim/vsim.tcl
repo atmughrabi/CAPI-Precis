@@ -11,7 +11,7 @@ proc r  {} {
   vlog -quiet ../../accelerator_rtl/pkg/globals_pkg.sv
   vlog -quiet ../../accelerator_rtl/pkg/capi_pkg.sv
   vlog -quiet ../../accelerator_rtl/pkg/wed_pkg.sv
-  vlog -quiet ../../accelerator_rtl/pkg/cu_pkg.sv
+  vlog -quiet ../../accelerator_rtl/cu/cu_memcpy/global_pkg/cu_pkg.sv
   vlog -quiet ../../accelerator_rtl/pkg/credit_pkg.sv
   vlog -quiet ../../accelerator_rtl/pkg/afu_pkg.sv
 
@@ -34,7 +34,6 @@ proc r  {} {
   vlog -quiet ../../accelerator_rtl/afu/response_control.sv
   vlog -quiet ../../accelerator_rtl/afu/restart_control.sv
   vlog -quiet ../../accelerator_rtl/afu/command_control.sv
-  vlog -quiet ../../accelerator_rtl/afu/command_buffer_arbiter.sv
   vlog -quiet ../../accelerator_rtl/afu/tag_control.sv
   vlog -quiet ../../accelerator_rtl/afu/read_data_control.sv
   vlog -quiet ../../accelerator_rtl/afu/write_data_control.sv
@@ -50,10 +49,9 @@ proc r  {} {
   vlog -quiet ../../accelerator_rtl/afu/wed_control.sv
 
   echo "Compiling RTL CU control "
-  vlog -quiet ../../accelerator_rtl/cu/cu_prefetch_stream_engine_control.sv
-  vlog -quiet ../../accelerator_rtl/cu/cu_data_read_engine_control.sv
-  vlog -quiet ../../accelerator_rtl/cu/cu_data_write_engine_control.sv
-  vlog -quiet ../../accelerator_rtl/cu/cu_control.sv
+  vlog -quiet ../../accelerator_rtl/cu/cu_memcpy/memcpy/cu_data_read_engine_control.sv
+  vlog -quiet ../../accelerator_rtl/cu/cu_memcpy/memcpy/cu_data_write_engine_control.sv
+  vlog -quiet ../../accelerator_rtl/cu/cu_memcpy/global_cu/cu_control.sv
 
  
   echo "Compiling RTL AFU"

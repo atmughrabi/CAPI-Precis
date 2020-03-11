@@ -20,7 +20,7 @@ module done_control (
 	input  logic                      rstn                      ,
 	input  logic                      soft_rstn                 ,
 	input  logic                      enabled_in                ,
-	input  logic [0:63]               cu_return                 ,
+	input  cu_return_type             cu_return                 ,
 	input  ResponseStatistcsInterface response_statistics       ,
 	input  logic                      cu_done                   ,
 	input  logic                      cu_return_done_ack        ,
@@ -118,16 +118,16 @@ module done_control (
 	always_ff @(posedge clock) begin
 		case (current_state)
 			DONE_RESET : begin
-				cu_return_done                     <= 64'b0;
-				cu_return_done_latched             <= 64'b0;
+				cu_return_done                     <= 0;
+				cu_return_done_latched             <= 0;
 				report_response_statistics_latched <= 0;
 				report_response_statistics         <= 0;
 				reset_done                         <= 1'b1;
 			end
 			DONE_IDLE : begin
-				cu_return_done                     <= 64'b0;
-				report_response_statistics         <= 0;
-				cu_return_done_latched             <= cu_return;
+				cu_return_done                     <= 0;
+				cu_return_done_latched             <= cu_return.var1;
+				report_response_statistics 		   <= response_statistics;
 				report_response_statistics_latched <= response_statistics;
 				reset_done                         <= 1'b1;
 			end

@@ -334,6 +334,14 @@ run-capi-sim-verbose:
 run-capi-fpga-verbose:
 	$(MAKE) run-capi-fpga-verbose $(MAKE_ARGS)
 
+.PHONY: run-capi-sim-verbose2
+run-capi-sim-verbose2:
+	$(MAKE) run-capi-sim-verbose2 $(MAKE_ARGS)
+
+.PHONY: run-capi-fpga-verbose2
+run-capi-fpga-verbose2:
+	$(MAKE) run-capi-fpga-verbose2 $(MAKE_ARGS)
+
 .PHONY: capi
 capi:
 	$(MAKE) run-capi-fpga-verbose $(MAKE_ARGS) &&\

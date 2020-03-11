@@ -19,10 +19,9 @@ import WED_PKG::*;
 import AFU_PKG::*;
 import CU_PKG::*;
 
-
-module cu_control #(parameter NUM_REQUESTS = 2) (
+module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 	input  logic              clock                       , // Clock
-	input  logic              rstn                        ,
+	input  logic              rstn_in                     ,
 	input  logic              enabled_in                  ,
 	input  WEDInterface       wed_request_in              ,
 	input  ResponseBufferLine read_response_in            ,
@@ -35,9 +34,8 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	input  BufferStatus       prefetch_read_buffer_status ,
 	input  BufferStatus       prefetch_write_buffer_status,
 	input  BufferStatus       write_buffer_status         ,
-	input  logic [0:63]       cu_configure                ,
-	input  logic [0:63]       cu_configure_2              ,
-	output logic [0:63]       cu_return                   ,
+	input  cu_configure_type  cu_configure                ,
+	output cu_return_type     cu_return                   ,
 	output logic              cu_done                     ,
 	output logic [0:63]       cu_status                   ,
 	output CommandBufferLine  read_command_out            ,
@@ -47,10 +45,10 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	output ReadWriteDataLine  write_data_0_out            ,
 	output ReadWriteDataLine  write_data_1_out
 );
-
 	// vertex control variables
 
 	//output latched
+	logic             rstn                     ;
 	CommandBufferLine write_command_out_latched;
 	ReadWriteDataLine write_data_0_out_latched ;
 	ReadWriteDataLine write_data_1_out_latched ;
@@ -70,6 +68,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	BufferStatus       write_data_in_buffer_status;
 
 	logic [                 0:63] cu_return_latched     ;
+	logic [                 0:63] cu_return_latched_2   ;
 	logic [                 0:63] cu_configure_latched  ;
 	logic [                 0:63] cu_configure_2_latched;
 	logic                         done_algorithm        ;
@@ -95,6 +94,14 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
+
+	always_ff @(posedge clock or negedge rstn_in) begin
+		if(~rstn_in) begin
+			rstn <= 0;
+		end else begin
+			rstn <= rstn_in;
+		end
+	end
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
@@ -127,21 +134,26 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	assign cu_ready = (|cu_configure_latched) && wed_request_in_latched.valid;
 
 	always_comb begin
-		cu_return_latched = 0;
-		done_algorithm    = 0;
+		cu_return_latched   = 0;
+		done_algorithm      = 0;
+		cu_return_latched_2 = 0;
 		if(wed_request_in_latched.valid)begin
 			if((cu_configure_latched[21] || cu_configure_latched[22]) && cu_configure_latched[23]) begin
-				done_algorithm    = ((wed_request_in_latched.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.wed.size_send == read_job_counter_done));
-				cu_return_latched = {write_job_counter_done};
+				done_algorithm      = ((wed_request_in_latched.payload.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.payload.wed.size_send == read_job_counter_done));
+				cu_return_latched   = {write_job_counter_done};
+				cu_return_latched_2 = {read_job_counter_done};
 			end else if(cu_configure_latched[21] || cu_configure_latched[22]) begin
-				done_algorithm    = ((wed_request_in_latched.wed.size_recive == write_job_counter_done));
-				cu_return_latched = {write_job_counter_done};
+				done_algorithm      = ((wed_request_in_latched.payload.wed.size_recive == write_job_counter_done));
+				cu_return_latched   = {write_job_counter_done};
+				cu_return_latched_2 = {read_job_counter_done};
 			end else if(cu_configure_latched[23]) begin
-				done_algorithm    = (wed_request_in_latched.wed.size_send == read_job_counter_done);
-				cu_return_latched = {read_job_counter_done};
+				done_algorithm      = (wed_request_in_latched.payload.wed.size_send == read_job_counter_done);
+				cu_return_latched   = {read_job_counter_done};
+				cu_return_latched_2 = {write_job_counter_done};
 			end else begin
-				done_algorithm    = ((wed_request_in_latched.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.wed.size_send == read_job_counter_done));
-				cu_return_latched = {write_job_counter_done};
+				done_algorithm      = ((wed_request_in_latched.payload.wed.size_recive == write_job_counter_done) && (wed_request_in_latched.payload.wed.size_send == read_job_counter_done));
+				cu_return_latched   = {write_job_counter_done};
+				cu_return_latched_2 = {read_job_counter_done};
 			end
 		end
 	end
@@ -158,9 +170,10 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 			cu_done   <= 0;
 		end else begin
 			if(enabled)begin
-				cu_return <= cu_return_latched;
-				cu_done   <= done_algorithm;
-				cu_status <= cu_configure_latched;
+				cu_return.var1 <= cu_return_latched;
+				cu_return.var2 <= cu_return_latched_2;
+				cu_done        <= done_algorithm;
+				cu_status      <= cu_configure_latched;
 			end
 		end
 	end
@@ -204,11 +217,11 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 				read_data_0_in_latched    <= read_data_0_in;
 				read_data_1_in_latched    <= read_data_1_in;
 
-				if((|cu_configure))
-					cu_configure_latched <= cu_configure;
+				if((|cu_configure.var1))
+					cu_configure_latched <= cu_configure.var1;
 
-				if((|cu_configure_2))
-					cu_configure_2_latched <= cu_configure_2;
+				if((|cu_configure.var2))
+					cu_configure_2_latched <= cu_configure.var2;
 			end
 		end
 	end
@@ -341,7 +354,7 @@ module cu_control #(parameter NUM_REQUESTS = 2) (
 	end
 
 ////////////////////////////////////////////////////////////////////////////
-//Drive TLB SIZE 
+//Drive TLB SIZE
 ////////////////////////////////////////////////////////////////////////////
 
 	always_ff @(posedge clock or negedge rstn) begin

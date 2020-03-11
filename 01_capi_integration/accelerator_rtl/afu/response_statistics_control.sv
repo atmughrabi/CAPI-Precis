@@ -27,7 +27,10 @@ module response_statistics_control (
 
 
   ResponseInterface          response_latched               ;
+  ResponseInterface          response_latched_S2            ;
+  ResponseInterface          response_latched_S3            ;
   CommandTagLine             response_tag_id_latched        ;
+  CommandTagLine             response_tag_id_latched_S2     ;
   ResponseStatistcsInterface response_statistics_out_latched;
 
 
@@ -51,16 +54,62 @@ module response_statistics_control (
 
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
-      response_latched <= 0;
+      response_latched.valid <= 0;
     end else begin
-      if(enabled && response.valid) begin
-        response_latched <= response;
-      end else begin
-        response_latched <= 0;
+      if(enabled) begin
+        response_latched.valid <= response.valid;
       end
     end
   end
 
+  always_ff @(posedge clock) begin
+    response_latched.tag         <= response.tag;
+    response_latched.tag_parity  <= response.tag_parity;
+    response_latched.response    <= response.response;
+    response_latched.credits     <= response.credits;
+    response_latched.cache_state <= response.cache_state;
+    response_latched.cache_pos   <= response.cache_pos;
+  end
+
+  always_ff @(posedge clock or negedge rstn) begin
+    if(~rstn) begin
+      response_latched_S2.valid <= 0;
+    end else begin
+      if(enabled) begin
+        response_latched_S2.valid <= response_latched.valid;
+      end
+    end
+  end
+
+  always_ff @(posedge clock) begin
+    response_latched_S2.tag         <= response_latched.tag;
+    response_latched_S2.tag_parity  <= response_latched.tag_parity;
+    response_latched_S2.response    <= response_latched.response;
+    response_latched_S2.credits     <= response_latched.credits;
+    response_latched_S2.cache_state <= response_latched.cache_state;
+    response_latched_S2.cache_pos   <= response_latched.cache_pos;
+    response_tag_id_latched         <= response_tag_id_in;
+  end
+
+  always_ff @(posedge clock or negedge rstn) begin
+    if(~rstn) begin
+      response_latched_S3.valid <= 0;
+    end else begin
+      if(enabled) begin
+        response_latched_S3.valid <= response_latched_S2.valid ;
+      end
+    end
+  end
+
+  always_ff @(posedge clock) begin
+    response_latched_S3.tag         <= response_latched_S2.tag;
+    response_latched_S3.tag_parity  <= response_latched_S2.tag_parity;
+    response_latched_S3.response    <= response_latched_S2.response;
+    response_latched_S3.credits     <= response_latched_S2.credits;
+    response_latched_S3.cache_state <= response_latched_S2.cache_state;
+    response_latched_S3.cache_pos   <= response_latched_S2.cache_pos;
+    response_tag_id_latched_S2      <= response_tag_id_latched;
+  end
 
 ////////////////////////////////////////////////////////////////////////////
 //output latching Logic
@@ -72,8 +121,6 @@ module response_statistics_control (
     end else begin
       if(enabled) begin // cycle delay for responses to make sure data_out arrives and handled before
         response_statistics_out <= response_statistics_out_latched;
-      end else begin
-        response_statistics_out <= 0;
       end
     end
   end
@@ -87,23 +134,10 @@ module response_statistics_control (
       response_statistics_out_latched <= 0;
     end else begin
       if(enabled) begin // cycle delay for responses to make sure data_out arrives and handled before
-        if(response_latched.valid) begin
-          case(response_latched.response)
+        if(response_latched_S2.valid) begin
+          case(response_latched_S2.response)
             DONE : begin
-
-              if(response_tag_id_in.cmd_type == CMD_RESTART)
-                response_statistics_out_latched.DONE_RESTART_count <= response_statistics_out_latched.DONE_RESTART_count + 1;
-              else if (response_tag_id_in.cmd_type == CMD_PREFETCH_READ)
-                response_statistics_out_latched.DONE_PREFETCH_READ_count <= response_statistics_out_latched.DONE_PREFETCH_READ_count + 1;
-              else if (response_tag_id_in.cmd_type == CMD_PREFETCH_WRITE)
-                response_statistics_out_latched.DONE_PREFETCH_WRITE_count <= response_statistics_out_latched.DONE_PREFETCH_WRITE_count + 1;
-              else if (response_tag_id_in.cmd_type == CMD_READ)
-                response_statistics_out_latched.DONE_READ_count <= response_statistics_out_latched.DONE_READ_count + 1;
-              else if (response_tag_id_in.cmd_type == CMD_WRITE)
-                response_statistics_out_latched.DONE_WRITE_count <= response_statistics_out_latched.DONE_WRITE_count + 1;
-
               response_statistics_out_latched.DONE_count <= response_statistics_out_latched.DONE_count + 1;
-
             end
             FLUSHED : begin
               response_statistics_out_latched.FLUSHED_count <= response_statistics_out_latched.FLUSHED_count + 1;
@@ -137,7 +171,36 @@ module response_statistics_control (
 
         response_statistics_out_latched.CYCLE_count <= response_statistics_out_latched.CYCLE_count + 1;
       end
+
+      if(response_latched_S3.valid) begin
+        case(response_latched_S3.response)
+          DONE : begin
+            case(response_tag_id_latched_S2.cmd_type)
+              CMD_RESTART : begin
+                response_statistics_out_latched.DONE_RESTART_count <= response_statistics_out_latched.DONE_RESTART_count + 1;
+              end
+              CMD_PREFETCH_READ : begin
+                response_statistics_out_latched.DONE_PREFETCH_READ_count <= response_statistics_out_latched.DONE_PREFETCH_READ_count + 1;
+                response_statistics_out_latched.PREFETCH_READ_BYTE_count <= response_statistics_out_latched.PREFETCH_READ_BYTE_count + response_tag_id_latched_S2.real_size_bytes;
+              end
+              CMD_PREFETCH_WRITE : begin
+                response_statistics_out_latched.DONE_PREFETCH_WRITE_count <= response_statistics_out_latched.DONE_PREFETCH_WRITE_count + 1;
+                response_statistics_out_latched.PREFETCH_WRITE_BYTE_count <= response_statistics_out_latched.PREFETCH_WRITE_BYTE_count + response_tag_id_latched_S2.real_size_bytes;
+              end
+              CMD_READ : begin
+                response_statistics_out_latched.DONE_READ_count <= response_statistics_out_latched.DONE_READ_count + 1;
+                response_statistics_out_latched.READ_BYTE_count <= response_statistics_out_latched.READ_BYTE_count + response_tag_id_latched_S2.real_size_bytes;
+              end
+              CMD_WRITE : begin
+                response_statistics_out_latched.DONE_WRITE_count <= response_statistics_out_latched.DONE_WRITE_count + 1;
+                response_statistics_out_latched.WRITE_BYTE_count <= response_statistics_out_latched.WRITE_BYTE_count + response_tag_id_latched_S2.real_size_bytes;
+              end
+
+            endcase
+          end
+        endcase
+      end
+
     end
   end
-
 endmodule

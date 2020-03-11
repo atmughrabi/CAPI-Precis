@@ -10,16 +10,17 @@
 // ********************************************************************************************
 // ***************                  MMIO General                                 **************
 // ********************************************************************************************
-// 0x3fffff8 >> 2 = 0xfffffc
+// 0x3fffff8 >> 0x3FFFF10 used 
 #define AFU_CONFIGURE           0x3FFFFF8
 #define AFU_CONFIGURE_2         0x3FFFF30
-#define AFU_STATUS              0x3FFFFF0   
+#define AFU_STATUS              0x3FFFFF0
 
 #define CU_CONFIGURE            0x3FFFFE8
-#define CU_CONFIGURE_2          0x3FFFF28        
+#define CU_CONFIGURE_2          0x3FFFF28
 #define CU_STATUS               0x3FFFFE0
 
 #define CU_RETURN               0x3FFFFD8         // running counters that you can read continuosly     
+#define CU_RETURN_2             0x3FFFF10
 #define CU_RETURN_ACK           0x3FFFFD0
 
 #define  CU_RETURN_DONE         0x3FFFFC8
@@ -49,10 +50,15 @@
 #define  NLOCK_COUNT_REG                    0x3FFFF40
 #define  CYCLE_COUNT_REG                    0x3FFFF38
 
+#define PREFETCH_READ_BYTE_COUNT_REG        0x3FFFF30
+#define PREFETCH_WRITE_BYTE_COUNT_REG       0x3FFFF28
+#define READ_BYTE_COUNT_REG                 0x3FFFF20
+#define WRITE_BYTE_COUNT_REG                0x3FFFF18
 
 
 #ifdef  SIM
 #define DEVICE_1              "/dev/cxl/afu0.0d"
+#define DEVICE_2              "/dev/cxl/afu1.0d"
 #else
 #define DEVICE_1              "/dev/cxl/afu0.0d"
 #define DEVICE_2              "/dev/cxl/afu1.0d"
@@ -70,6 +76,7 @@ struct AFUStatus
     uint64_t afu_status;
     uint64_t error;
     uint64_t cu_return; // running return
+    uint64_t cu_return_2; // running return
     uint64_t cu_return_done; // final return when cu send done
 };
 
@@ -91,7 +98,12 @@ struct CmdResponseStats
     uint64_t NRES_count        ;
     uint64_t NLOCK_count       ;
     uint64_t CYCLE_count       ;
+    uint64_t PREFETCH_READ_BYTE_count;
+    uint64_t PREFETCH_WRITE_BYTE_count;
+    uint64_t READ_BYTE_count   ;
+    uint64_t WRITE_BYTE_count  ;
 };
+
 
 // ********************************************************************************************
 // ***************                      DataStructure                            **************
@@ -142,6 +154,7 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status);
 void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdResponseStats);
 void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats);
 void releaseAFU(struct cxl_afu_h **afu);
+void printBandwidth(uint64_t size, double time_elapsed, uint64_t rep_bytes);
 
 
 #endif
