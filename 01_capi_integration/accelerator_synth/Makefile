@@ -24,22 +24,25 @@
 ########################################################################
 
 
-PART=5SGXMA7H2F35C2
+ALTERA_PART?=5SGXMA7H2F35C2
 PROJECT ?= capi-precis
-VERION_GIT = $(shell python ./capi/scripts/version.py)
-TIME_STAMP = $(shell date +%Y_%m_%d_%H_%M_%S)
+CU_ALGORITHM 	?= memcpy
+NUM_THREADS  	?= 25
+SCRIPT_DIR   	?= ../../03_scripts
+
+
+SYNTH_DIR ?= synthesize_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)
+
+VERSION_GIT ?= $(shell python ./capi/scripts/version.py)
+TIME_STAMP ?= $(shell date +%Y_%m_%d_%H_%M_%S)
 ACCEL_RTL_DIR = accelerator_rtl
 ACCEL_BIN_DIR = accelerator_bin
-SOURCE_FILES =  $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu/*.sv)   \
-				$(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/pkg/*.sv)   \
-				$(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_cu/*.sv)\
-				$(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/global_pkg/*.sv)\
-				$(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/memcpy/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/memcpy/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/memcpy/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu/cu_memcpy/memcpy/*.sv)
-				
-				
-				
-				
-	
+SOURCE_FILES =  $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.sv)   \
+				$(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.sv)   \
+				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.sv)\
+				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.sv)\
+				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/*.sv)
+
 
 export LM_LICENSE_FILE := $(LM_LICENSE_FILE):$(shell pwd)/psl_fpga/psl/psl_A000_license.dat
 
@@ -58,15 +61,16 @@ ASSIGNMENT_FILES = $(PROJECT).qpf $(PROJECT).qsf
 ###################################################################
 
 default:rbf
-all: rbf smart.log $(PROJECT).asm.rpt $(PROJECT).sta.rpt
+all: rbf smart.log $(PROJECT).asm.rpt $(PROJECT).sta.rpt $(PROJECT).pow.rpt
 
 clean:
-	rm -rf *~ ./tcl/*~ *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db dse seed_rpt *.summary *.qpf *.qsf incremental_db *.smsg *.done *~ *.txt *.qxp *.bsf *.qarlog *.cmp *.v *.rbf nohup.out *.log hc_output reconfig_mif *.jdi *.qdf *.sld *.qws
+	rm -rf *~ ./tcl/*~ *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db dse seed_rpt *.summary *.qpf *.qsf incremental_db *.smsg *.done *~ *.txt *.qxp *.bsf *.qarlog *.cmp *.v *.rbf nohup.out *.log hc_output reconfig_mif *.jdi *.qdf *.sld *.qws .qsys_edit *.xml
 
 map: smart.log $(PROJECT).map.rpt
 fit: smart.log $(PROJECT).fit.rpt
 asm: smart.log $(PROJECT).asm.rpt
 sta: smart.log $(PROJECT).sta.rpt
+pow: smart.log $(PROJECT).pow.rpt
 qxp: smart.log $(PROJECT).qxp
 rbf: smart.log $(PROJECT).rbf
 
@@ -75,9 +79,10 @@ smart: smart.log
 ###################################################################
 # Executable Configuration
 ###################################################################
-MAP_ARGS = --family=StratixV --part=$(PART)
-FIT_ARGS = --part=$(PART)
+MAP_ARGS = --family=StratixV --part=$(ALTERA_PART)
+FIT_ARGS = --part=$(ALTERA_PART)
 ASM_ARGS =
+POW_ARGS =
 STA_ARGS = --do_report_timing
 
 ###################################################################
@@ -103,10 +108,12 @@ $(PROJECT).asm.rpt $(PROJECT).sof: asm.chg $(PROJECT).fit.rpt
 $(PROJECT).sta.rpt: sta.chg $(PROJECT).fit.rpt
 	quartus_sta --64bit $(STA_ARGS) $(PROJECT)
 
-$(PROJECT).rbf: $(PROJECT).asm.rpt $(PROJECT).sta.rpt
-	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
-	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT)_$(TIME_STAMP).rbf 
+$(PROJECT).pow.rpt: pow.chg $(PROJECT).asm.rpt
+	quartus_pow --64bit $(POW_ARGS) $(PROJECT)
 
+$(PROJECT).rbf: $(PROJECT).asm.rpt
+	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)_$(VERSION_GIT)_$(TIME_STAMP).rbf 
 
 smart.log: $(ASSIGNMENT_FILES)
 	quartus_sh --64bit --determine_smart_action $(PROJECT) > smart.log
@@ -124,7 +131,7 @@ $(PROJECT).qxp: $(PROJECT).map.rpt
 ###################################################################
 
 $(ASSIGNMENT_FILES): $(PROJECT).tcl ./capi/fpga/*.tcl
-	quartus_sh -t $(PROJECT).tcl
+	quartus_sh -t  $(PROJECT).tcl $(PROJECT) cu_$(CU_ALGORITHM) $(NUM_THREADS)
 	quartus_sh --prepare $(PROJECT)
 	#quartus_stp $(PROJECT) --enable --logic_analyzer_interface --lai_file=probes.lai
 
@@ -136,6 +143,8 @@ sta.chg:
 	$(STAMP) sta.chg
 asm.chg:
 	$(STAMP) asm.chg
+pow.chg:
+	$(STAMP) pow.chg
 merge.chg:
 	$(STAMP) merge.chg
 sweep.chg:
@@ -148,15 +157,11 @@ program: $(PROJECT).sof
 .PHONY:gen-rbf
 gen-rbf:
 	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
-	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT)_$(TIME_STAMP).rbf 
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)_$(VERSION_GIT)_$(TIME_STAMP).rbf 
 
 .PHONY:copy-rbf
 copy-rbf:
-	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_$(VERION_GIT)_$(TIME_STAMP).rbf 
-
-.PHONY:stats
-stats:
-	altera_stats.py $(PROJECT)
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)_$(VERSION_GIT)_$(TIME_STAMP).rbf 
 
 .PHONY:gui
 gui: $(ASSIGNMENT_FILES)
@@ -164,4 +169,4 @@ gui: $(ASSIGNMENT_FILES)
 
 .PHONY:sweep 
 sweep: sweep.chg $(PROJECT).merge.rpt
-	quartus_sh --64bit -t sweep.tcl
+	quartus_sh --64bit -t sweep.tcl $(PROJECT) cu_$(CU_ALGORITHM) $(NUM_THREADS)

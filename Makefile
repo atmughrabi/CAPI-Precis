@@ -9,7 +9,9 @@ export APP_TEST         = test_capi-precis
 
 
 # dirs Root app 
-export APP_DIR          = .
+export APP_DIR         		= .
+export CAPI_INTEG_DIR      	= 01_capi_integration
+export SCRIPT_DIR          	= 03_scripts
 
 #dir root/managed_folders
 export SRC_DIR           = src
@@ -132,10 +134,10 @@ export CU_CONFIG_MODE=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR
 # [36:39]
 
 # shift amount
-TLB_SHIFT=b
+export TLB_SHIFT=b
 
 #0 left | #1 right | example (2048 >> 1) 
-TLB_SHIFT_DIRECTION=1
+export TLB_SHIFT_DIRECTION=1
 
 ##############################################
 # CAPI FPGA AFU PREFETCH CONFIG              #
@@ -150,7 +152,7 @@ TLB_SHIFT_DIRECTION=1
 # enable write engine independent
 # ENABLE_RD_WR=4
 # enable both engines  dependent
-ENABLE_RD_WR=3
+export ENABLE_RD_WR=3
 #enable both engines independent
 # ENABLE_RD_WR=5
 
@@ -161,7 +163,7 @@ ENABLE_RD_WR=3
 #enable read PREFETCH
 # ENABLE_RD_WR_PREFETCH=2
 #enable both PREFETCH
-ENABLE_RD_WR_PREFETCH=3
+export ENABLE_RD_WR_PREFETCH=3
 
 #disable both page address based
 # RD_WR_PREFETCH_MODE=0
@@ -170,7 +172,7 @@ ENABLE_RD_WR_PREFETCH=3
 # cacheline-write page-read address based
 # RD_WR_PREFETCH_MODE=2
 # both cacheline address based
-RD_WR_PREFETCH_MODE=3
+export RD_WR_PREFETCH_MODE=3
 
 ##############################################
 # CAPI FPGA AFU ARBITER CONFIG               #
@@ -183,8 +185,8 @@ RD_WR_PREFETCH_MODE=3
 # FIXED_ARB               [62]
 # ROUND_ROBIN_ARB         [63]
 
-ROUND_ROBIN_ARB=0x1111000000000001
-FIXED_ARB=0x1111000000000002
+export ROUND_ROBIN_ARB=0x1111000000000001
+export FIXED_ARB=0x1111000000000002
 
 ##############################################
 # CAPI FPGA AFU/CU      CONFIG               #
@@ -308,11 +310,42 @@ cache-perf-openmp:
 clean: 
 	$(MAKE) clean $(MAKE_ARGS)
 
+.PHONY: clean-obj
+clean-obj: 
+	$(MAKE) clean-obj $(MAKE_ARGS)
+
 .PHONY: clean-all
-clean-all: clean clean-sim clean-synth
+clean-all: clean clean-sim
+
+.PHONY: scrub
+scrub: clean clean-sim clean-synth-all clean-nohup clean-stats
+
+.PHONY: clean-stats
+clean-stats:
+	$(MAKE) clean-stats $(MAKE_ARGS)
+
+.PHONY: clean-nohup
+clean-nohup: 
+	@rm -f $(APP_DIR)/nohup.out
+
 
 ##################################################
 ##################################################
+
+##############################################
+# Simulation/Synthesis CONFIG 						     #
+##############################################
+# put your design in 01_capi_integration/accelerator_rtl/cu/$CU(algorithm name)
+# 
+
+export PART=5SGXMA7H2F35C2
+export PROJECT = capi-precis
+export CU_ALGORITHM = memcpy
+
+export VERSION_GIT = $(shell python ./$(SCRIPT_DIR)/version.py)
+export TIME_STAMP = $(shell date +%Y_%m_%d_%H_%M_%S)
+
+export SYNTH_DIR = synthesize_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)
 
 ##############################################
 #           ACCEL CAPI TOP LEVEL RULES      #
@@ -374,67 +407,76 @@ clean-sim:
 ##############################################
 
 .PHONY: run-synth
-run-synth:
+run-synth: synth-directories
 	$(MAKE) all $(MAKE_ARGS_SYNTH)
 
 .PHONY: run-synth-gui
-run-synth-gui:
+run-synth-gui: synth-directories
 	$(MAKE) gui $(MAKE_ARGS_SYNTH)
 
 .PHONY: run-synth-sweep
-run-synth-sweep:
+run-synth-sweep: synth-directories
 	$(MAKE) sweep $(MAKE_ARGS_SYNTH)
 
 .PHONY: map
-map:
+map: synth-directories
 	$(MAKE) map $(MAKE_ARGS_SYNTH)
 
 .PHONY: fit
-fit:
+fit: synth-directories
 	$(MAKE) fit $(MAKE_ARGS_SYNTH)
 
 .PHONY: asm
-asm:
+asm: synth-directories
 	$(MAKE) asm $(MAKE_ARGS_SYNTH)
 
 .PHONY: sta
-sta:
+sta: synth-directories
 	$(MAKE) sta $(MAKE_ARGS_SYNTH)
 
 .PHONY: qxp
-qxp:
+qxp: synth-directories
 	$(MAKE) qxp $(MAKE_ARGS_SYNTH)
 
 .PHONY: rbf
-rbf:
+rbf: synth-directories
 	$(MAKE) rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY: smart
-smart:
+smart: synth-directories
 	$(MAKE) smart $(MAKE_ARGS_SYNTH)
 
 .PHONY: program
-program:
+program: synth-directories
 	$(MAKE) program $(MAKE_ARGS_SYNTH)
 
 .PHONY: timing
-timing:
+timing: synth-directories
 	$(MAKE) timing $(MAKE_ARGS_SYNTH)
 
-.PHONY: stats
-stats:
-	$(MAKE) stats $(MAKE_ARGS_SYNTH)
-
 .PHONY: gen-rbf
-gen-rbf:
+gen-rbf: synth-directories
 	$(MAKE) gen-rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY:copy-rbf
-copy-rbf:
+copy-rbf: synth-directories
 	$(MAKE) copy-rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY: clean-synth
-clean-synth:
+clean-synth: 
 	$(MAKE) clean $(MAKE_ARGS_SYNTH)
+
+.PHONY: clean-synth-all
+clean-synth-all: 
+	@rm -rf $(APP_DIR)/$(CAPI_INTEG_DIR)/synthesize_*
+
+.PHONY: synth-directories
+synth-directories : $(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR)
+
+.PHONY: $(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR)
+$(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR) :	
+	@mkdir -p $(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR)
+	@cp  -a $(APP_DIR)/$(CAPI_INTEG_DIR)/accelerator_synth/* $(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR)
+
 ##################################################
 ##################################################

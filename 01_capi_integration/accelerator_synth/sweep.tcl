@@ -1,21 +1,45 @@
+#!/usr/bin/tclsh
 # By Boon Seong https://almost-a-technocrat.blogspot.com/2013/07/run-quartus-ii-fitter-and-timequest_3.html
 # This tcl is used to sweep seed by running fitter and STA, the timing report will be stored in seed_rpt directory
 load_package flow
 load_package report
 # Specify project name and revision name
-set PROJECT capi-precis
 
 
 set PART 5SGXMA7H2F35C2
 set FAMILY StratixV
 set LIBCAPI  ./capi
 set VERSION   [binary format A24 [exec ${LIBCAPI}/scripts/version.py]]
-set project_revision capi-precis
+
+
+if { $argc != 3 } {
+	puts "SET Project to DEFAULT"
+	set my_project "capi-precis"
+	set algorithm  "cu_memcpy"
+	set cu_count   "20"
+} else {
+	puts "SET Project to ARGV"
+	set my_project "[lindex $argv 0]"
+	set algorithm  "[lindex $argv 1]"
+	set cu_count   "[lindex $argv 2]"
+}
+
+
+puts "Project   $my_project"
+puts "Algorithm $algorithm"
+puts "CU Count  $cu_count"
+
+set PROJECT $my_project
+set project_revision $my_project
 set INPUT_SOF ${PROJECT}.sof
 
 # Set seeds
-set seedList { 2 3 5 7 11 13 17 19 23 29 31 37 41 43 }
-# set seedList { 2 }
+set seedList { 16 1 2 5 7 3 11 12 13 14 15 17 41 30 18 19 20 21 23 25 29 31 32 33 34 37 39 43 45 47 49 51 53 55 6 9 }
+# set seedList { 1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59 61 63 65 67 69 71 73 75 77 79 81 83 85 87 89 91 93 95 97 99 }
+# set seedList { 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64 66 68 70 72 74 76 78 80 82 84 86 88 90 92 94 96 98 100 }
+# set seedList { 12 13 14 15 16 30 1 7 17 18 19 20 21 23 25 29 6 9 }
+# set seedList { 31 32 33 34 37 39 41 43 45 47 49 51 53 55 2 3 5 11 }
+# set seedList { 30 }
 
 set timetrynum [llength $seedList]
 puts "Total compiles: $timetrynum"
@@ -28,8 +52,8 @@ set trynum 0
 while { $timetrynum > $trynum } {
 	set CURRENTSEED [lindex $seedList $trynum]
 	set TIMESTAMP [exec "date" "+%Y_%m_%d_%H_%M_%S"]
-	set OUTPUT_RBF ${PROJECT}_${CURRENTSEED}.rbf
-	set outdir $rptdir/output_seed${CURRENTSEED}
+	set OUTPUT_RBF ${algorithm}_CU${cu_count}_SEED${CURRENTSEED}.rbf
+	set outdir $rptdir/${algorithm}_CU${cu_count}_SEED${CURRENTSEED}
 	file mkdir $outdir
 
 	set_global_assignment -name SEED ${CURRENTSEED}
@@ -57,6 +81,15 @@ if {[catch {execute_module -tool asm -args "--64bit"} result]} {
 	} else {
 		puts "\nInfo: Assembler was successful.\n"
 	}
+# # Power Analyzer
+if {[catch {execute_module -tool pow -args "--64bit"} result]} {
+	puts "\nResult: $result\n"
+	puts "ERROR: Power Analyzer failed. See the report file.\n"
+	qexit -error
+	} else {
+		puts "\nInfo: Power Analyzer was successful.\n"
+	}
+
 # rbf generation
 if {[catch {execute_module -tool cpf -args "--64bit -c ${INPUT_SOF} ${OUTPUT_RBF}"} result]} {
 	puts "\nResult: $result\n"
@@ -71,9 +104,11 @@ if {[catch {execute_module -tool cpf -args "--64bit -c ${INPUT_SOF} ${OUTPUT_RBF
 		puts "\nInfo: rbf gen was successful.\n"
 	}
 # Store compile results
+file copy -force ./${project_revision}.fit.rpt $outdir/${PROJECT}.fit.rpt
 file copy -force ./${project_revision}.fit.summary $outdir/${PROJECT}.fit.summary
 file copy -force ./${project_revision}.sta.rpt $outdir/${PROJECT}.sta.rpt
 file copy -force ./${project_revision}.sta.summary $outdir/${PROJECT}.sta.summary
+file copy -force ./${project_revision}.pow.summary $outdir/${PROJECT}.pow.summary
 
 	incr trynum
 }

@@ -4,13 +4,15 @@
 #########################################################
 # globals binaary /bin/capi-precis name doesn't need to match main/capi-precis.c
   APP               ?= capi-precis
-
+  CU_ALGORITHM 	 	?= memcpy
 # test name needs to match the file name test/test_capi-precis.c
   APP_TEST          = test_afu
 #   APP_TEST          ?= test_capi-precis
 
 # dirs Root app 
 APP_DIR             ?= .
+CAPI_INTEG_DIR      ?= 01_capi_integration
+SCRIPT_DIR          ?= 03_scripts
 
 #dir root/managed_folders
 SRC_DIR             ?= src
@@ -37,26 +39,171 @@ MAIN_DIR            ?= main
 ##################################################
 ##################################################
 
-#########################################################
-#                RUN  ARGUMENTS                         #
-#########################################################
+##############################################
+# CAPI FPGA AFU PERFORMANCE CONFIG           #
+##############################################
 
-NUM_THREADS     ?= 4
+# STRICT 0b000
+# ABORT  0b001
+# PAGE   0b010
+# PREF   0b011
+# SPEC   0b111
 
-SIZE ?= 256
+# READ_CL_S    0b1
+# READ_CL_NA   0b0
+# WRITE_MS     0b1
+# WRITE_NA     0b0
 
-# // cu_read_engine_control          5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [27:31] [4] [3] [0:2]
-# // cu_write_engine_control         5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [22:26] [9] [8] [5:7]
+# // cu_read_engine_control            5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
 
-CU_CONFIG_MODE?=0x01 
+# // 0b 00000 00000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b00000000000000000000000000000000
+CU_CONFIG_MODE?=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)$(TLB_SHIFT)$(TLB_SHIFT_DIRECTION)
+
+# // cu_read_engine_control            5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 10000 10000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b10000100000000000000000000000000
+# export CU_CONFIG_MODE=0x84000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
+
+# // cu_read_engine_control            5-bits PREF | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11000 11000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b11000110000000000000000000000000
+# export CU_CONFIG_MODE=0xC6000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
+
+# // cu_read_engine_control            5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11000 11000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b01000010000000000000000000000000
+# export CU_CONFIG_MODE=0x42000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
+
+# // cu_read_engine_control            5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_NA 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11000 11000 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b11100111000000000000000000000000
+# export CU_CONFIG_MODE=0xE7000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
+
+##############################################
+# With caches                                #
+##############################################
+
+# // cu_read_engine_control            5-bits STRICT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits STRICT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# export CU_CONFIG_MODE=0x10400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
+# // 0b 00010 00001 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b00010000010000000000000000000000
+# export CU_CONFIG_MODE=0x21000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH) 
+
+# // cu_read_engine_control            5-bits ABORT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 10010 10001 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b10010100010000000000000000000000
+# export CU_CONFIG_MODE=0x94400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
+
+# // cu_read_engine_control            5-bits PREF | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PREF | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11010 11001 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b11010110010000000000000000000000
+# export CU_CONFIG_MODE=0xD6400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
+
+# // cu_read_engine_control            5-bits PAGE | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits PAGE | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 01010 01001 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b01010010010000000000000000000000
+# export CU_CONFIG_MODE=0x52400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
+
+# // cu_read_engine_control            5-bits SPEC | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
+# // cu_write_engine_control           5-bits SPEC | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
+
+# // 0b 11110 11101 00000 00000 00000 00000 00
+# export CU_CONFIG_MODE=0b11110111010000000000000000000000
+# export CU_CONFIG_MODE=0xF7400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
+
+##############################################
+# CAPI FPGA TLB PREFETCH CONFIG              #
+##############################################
+
+# [32:35]
+# [36:39]
+
+# shift amount
+TLB_SHIFT?=b
+
+#0 left | #1 right | example (2048 >> 1) 
+TLB_SHIFT_DIRECTION?=1
+
+##############################################
+# CAPI FPGA AFU PREFETCH CONFIG              #
+##############################################
+
+#disable both engines
+# ENABLE_RD_WR=0
+#enable read engine
+# ENABLE_RD_WR=1
+# enable write engine dependent (nothing to write)
+# ENABLE_RD_WR=2
+# enable write engine independent
+# ENABLE_RD_WR=4
+# enable both engines  dependent
+ENABLE_RD_WR?=3
+#enable both engines independent
+# ENABLE_RD_WR=5
+
+#disable both PREFETCH
+# ENABLE_RD_WR_PREFETCH=0
+#enable write PREFETCH
+# ENABLE_RD_WR_PREFETCH=1
+#enable read PREFETCH
+# ENABLE_RD_WR_PREFETCH=2
+#enable both PREFETCH
+ENABLE_RD_WR_PREFETCH?=3
+
+#disable both page address based
+# RD_WR_PREFETCH_MODE=0
+#cacheline-read page-wrtie address based
+# RD_WR_PREFETCH_MODE=1
+# cacheline-write page-read address based
+# RD_WR_PREFETCH_MODE=2
+# both cacheline address based
+RD_WR_PREFETCH_MODE?=3
+
+##############################################
+# CAPI FPGA AFU ARBITER CONFIG               #
+##############################################
+# shift credits >> 
+# read_credits            [0:3]
+# write_credits           [4:7]
+# prefetch_read_credits   [8:11]
+# prefetch_write_credits  [12:15]
+# FIXED_ARB               [62]
+# ROUND_ROBIN_ARB         [63]
+
+ROUND_ROBIN_ARB?=0x1111000000000001
+FIXED_ARB?=0x1111000000000002
+
+##############################################
+# CAPI FPGA AFU/CU      CONFIG               #
+##############################################
+
+AFU_CONFIG_MODE?=$(ROUND_ROBIN_ARB)
+# AFU_CONFIG_MODE=$(FIXED_ARB)
+
 CU_CONFIG_GENERIC?=$(CU_CONFIG_MODE)
+AFU_CONFIG_GENERIC?=$(AFU_CONFIG_MODE))
 
-AFU_CONFIG_MODE?=0x01
 
-AFU_CONFIG_GENERIC?=$(AFU_CONFIG_MODE)
-
-ARGS ?= -n $(NUM_THREADS) -s $(SIZE) -a $(AFU_CONFIG_GENERIC) -c $(CU_CONFIG_GENERIC)
-
+##################################################
+ARGS ?= -n $(NUM_THREADS) -s $(SIZE) -a $(AFU_CONFIG_GENERIC) -c $(CU_CONFIG_GENERIC) -m $(ENABLE_RD_WR)
 ##################################################
 ##################################################
 
@@ -102,11 +249,11 @@ FAIL = \033[91mFAIL\033[0m
 
 ARCHITECTURE = $(shell uname -p) # store the output of the command in a variable if on intel run simulation if power8 run fpga
 
-PSLSE_DIR         = ../01_capi_integration/pslse
-LIBCXL_DIR        = ../01_capi_integration/libcxl
-CAPI_UTILS_DIR    = ../01_capi_integration/capi-utils
-CAPI_ACCEL        = ../01_capi_integration/accelerator_rtl
-CAPI_COMMON       = ../01_capi_integration/accelerator_sim
+PSLSE_DIR         = ../$(CAPI_INTEG_DIR)/pslse
+LIBCXL_DIR        = ../$(CAPI_INTEG_DIR)/libcxl
+CAPI_UTILS_DIR    = ../$(CAPI_INTEG_DIR)/capi-utils
+CAPI_ACCEL		  = ../$(CAPI_INTEG_DIR)/accelerator_rtl
+CAPI_COMMON		  = ../$(CAPI_INTEG_DIR)/accelerator_sim
 
 CAPI_SIM          = $(CAPI_COMMON)/sim
 CAPI_SERVER       = $(CAPI_COMMON)/server
@@ -255,9 +402,11 @@ clean-sim:
 	@rm -f $(CAPI_SIM)/vsim_stacktrace.vstf
 	@rm -f $(CAPI_SIM)/vish_stacktrace.vstf
 	@rm -f $(CAPI_SIM)/vsim.wlf
+	@rm -f $(CAPI_SIM)/*.vcd
 	@rm -rf $(CAPI_SIM)/work
+	@rm -rf $(CAPI_SIM)/libraries
 	@rm -f $(CAPI_SERVER)/debug.log
-	@rm -f $(CAPI_SIM)/gmon.out  
+	@rm -f $(CAPI_SIM)/gmon.out
 	@cd $(PSLSE_DIR)/afu_driver/src && make clean
 	@cd $(PSLSE_DIR)/libcxl && make clean
 	@cd $(PSLSE_DIR)/pslse && make  clean
@@ -381,7 +530,7 @@ run-test-capi: test-capi
 
 .PHONY: run-vsim
 run-vsim: build-libdpi
-	cd $(CAPI_SIM) && vsim -do vsim.tcl
+	cd $(CAPI_SIM) && vsim -do cu_$(CU_ALGORITHM).tcl
 
 .PHONY: run-pslse
 run-pslse: build-pslse
