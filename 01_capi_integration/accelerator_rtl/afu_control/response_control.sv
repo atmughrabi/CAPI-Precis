@@ -20,7 +20,7 @@ import CU_PKG::*;
 
 module response_control (
   input  logic                       clock               , // Clock
-  input  logic                       rstn                ,
+  input  logic                       rstn_in             ,
   input  logic                       enabled_in          ,
   input  ResponseInterface           response            ,
   input  CommandTagLine              response_tag_id_in  ,
@@ -39,14 +39,24 @@ module response_control (
   logic [0:6] detected_errors   ;
   logic [0:5] cmd_response_error;
   logic       tag_parity_error  ;
+  logic       rstn              ;
+  logic       enabled           ;
 
   assign odd_parity    = 1'b1; // Odd parity
   assign enable_errors = 1'b1; // enable errors
-  logic enabled;
+
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
 ////////////////////////////////////////////////////////////////////////////
+
+  always_ff @(posedge clock or negedge rstn_in) begin
+    if(~rstn_in) begin
+      rstn <= 0;
+    end else begin
+      rstn <= rstn_in;
+    end
+  end
 
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
@@ -100,8 +110,11 @@ module response_control (
     end
   end
 
-  always_ff @(posedge clock) begin
-    response_control_out.response.payload <= response_control_out_latched.response.payload;
+  always_ff @(posedge clock or negedge rstn) begin
+    if(~rstn)
+      response_control_out.response.payload <= 0;
+    else
+      response_control_out.response.payload <= response_control_out_latched.response.payload;
   end
 
 ////////////////////////////////////////////////////////////////////////////
@@ -204,11 +217,15 @@ module response_control (
     end
   end
 
-  always_ff @(posedge clock) begin
-    response_control_out_latched.response.payload.cmd              <= response_tag_id_in;
-    response_control_out_latched.response.payload.cmd.tag          <= response_in.tag;
-    response_control_out_latched.response.payload.response         <= response_in.response;
-    response_control_out_latched.response.payload.response_credits <= response_in.credits;
+  always_ff @(posedge clock or negedge rstn) begin
+    if(~rstn) begin
+      response_control_out_latched.response.payload <= 0;
+    end else begin
+      response_control_out_latched.response.payload.cmd              <= response_tag_id_in;
+      response_control_out_latched.response.payload.cmd.tag          <= response_in.tag;
+      response_control_out_latched.response.payload.response         <= response_in.response;
+      response_control_out_latched.response.payload.response_credits <= response_in.credits;
+    end
   end
 
 ////////////////////////////////////////////////////////////////////////////

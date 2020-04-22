@@ -23,7 +23,7 @@ source $LIBCAPI/fpga/build_version.tcl
 #     set_global_assignment -name SYSTEMVERILOG_FILE $filename
 # }
 
-foreach filename [glob ../accelerator_rtl/afu/*.sv] {
+foreach filename [glob ../accelerator_rtl/afu_control/*.sv] {
     set_global_assignment -name SYSTEMVERILOG_FILE $filename
 }
 

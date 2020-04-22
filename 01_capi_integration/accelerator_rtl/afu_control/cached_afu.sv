@@ -109,50 +109,6 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
   end
 
 ////////////////////////////////////////////////////////////////////////////
-//restart test logic
-////////////////////////////////////////////////////////////////////////////
-
-  // logic [0:7] restart_counter;
-
-  // always_ff @(posedge clock or negedge reset_cu) begin
-  //   if(~reset_cu) begin
-  //     restart_counter <= 0;
-  //   end else begin
-  //     if(response.valid)
-  //       restart_counter <= restart_counter + 1;
-  //   end
-  // end
-
-////////////////////////////////////////////////////////////////////////////
-//enabled logic
-////////////////////////////////////////////////////////////////////////////
-
-  // always_ff @(posedge clock) begin
-  //   enabled          <= job_out.running;
-  //   response_latched <= response;
-
-  //   if(restart_counter == 234)
-  //     response_latched.response <= PAGED;
-
-  //   if(restart_counter > 235 && response.response != PAGED )
-  //     response_latched.response <= FLUSHED;
-
-  //   if(restart_counter == 189)
-  //     response_latched.response <= PAGED;
-
-  //   if(restart_counter > 190 && restart_counter < 200 && response.response != PAGED )
-  //     response_latched.response <= FAULT;
-
-  //   if(restart_counter > 100 && restart_counter < 12 && response.response != PAGED )
-  //     response_latched.response <= AERROR;
-
-  //   if(restart_counter > 30 && restart_counter < 45 && response.response != PAGED )
-  //     response_latched.response <= DERROR;
-
-  // end
-
-
-////////////////////////////////////////////////////////////////////////////
 //DONE
 ////////////////////////////////////////////////////////////////////////////
 
@@ -212,7 +168,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
     .clock                      (clock                      ),
     .rstn_in                    (reset_afu_internal         ),
     .enabled_in                 (enabled                    ),
-    .afu_configure              (afu_configure              ),
+    .afu_configure_in           (afu_configure              ),
     .prefetch_read_command_in   (prefetch_read_command_out  ),
     .prefetch_write_command_in  (prefetch_write_command_out ),
     .read_command_in            (read_command_out           ),
