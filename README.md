@@ -180,29 +180,114 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-sim-verbose
 6. Example output: please check [(CAPI User's Manual)](http://www.nallatech.com/wp-content/uploads/IBM_CAPI_Users_Guide_1-2.pdf), for each response explanation. The stats are labeled `RESPONSE_COMMANADTYPE_count`.
 ```
 *-----------------------------------------------------*
-|                 AFU Stats                          | 
+|                 WEDStruct structure                 | 
  -----------------------------------------------------
-| CYCLE_count        : #Cycles                       |
+| wed                    | 0x557ba26c1600             | 
+| wed->size_send         | 131072                     | 
+| wed->size_recive       | 131072                     | 
+| wed->array_send        | 0x7fc19b290080             | 
+| wed->array_receive     | 0x7fc19b20f080             | 
+ -----------------------------------------------------
 *-----------------------------------------------------*
-|                 Responses Stats                    | 
+|               AFU configuration START               | 
  -----------------------------------------------------
-| DONE_count               : (#) Commands successful |
+| status                 | 0                          | 
+*-----------------------------------------------------*
+|               AFU configuration DONE                | 
  -----------------------------------------------------
-| DONE_READ_count          : (#) Reads successful    |
-| DONE_WRITE_count         : (#) Writes successful   |
+| status                 | 1111000000000001           | 
+*-----------------------------------------------------*
+*-----------------------------------------------------*
+|               CU configuration START                | 
  -----------------------------------------------------
-| DONE_RESTART_count       : (#) Bus Restart         |
+| status                 | 0                          | 
+*-----------------------------------------------------*
+|               CU configuration DONE                 | 
  -----------------------------------------------------
-| DONE_PREFETCH_READ_count : (#) Read Prefetches     |
-| DONE_PREFETCH_WRITE_count: (#) Write Prefetches    |
+| status                 | 333b1000008                | 
+*-----------------------------------------------------*
+*-----------------------------------------------------*
+|                 AFU Stats                           | 
  -----------------------------------------------------
-| PAGED_count        : 0                             |
-| FLUSHED_count      : 0                             |
-| AERROR_count       : 0                             |
-| DERROR_count       : 0                             |
-| FAILED_count       : 0                             |
-| NRES_count         : 0                             |
-| NLOCK_count        : 0                             |
+| CYCLE_count            | 55060                      | 
+| Time (Seconds)         | 0.00022023999999999999     | 
+ -----------------------------------------------------
+*-----------------------------------------------------*
+|                 Total BW                            | 
+ -----------------------------------------------------
+| Data MB                | 1.00000000000000000000     | 
+| Data GB                | 0.00097656250000000000     | 
+ -----------------------------------------------------
+| BandWidth MB/s         | 4540.50127134035574272275  | 
+| BandWidth GB/s         | 4.43408327279331615500     | 
+*-----------------------------------------------------*
+|                 Total Read BW                       | 
+ -----------------------------------------------------
+| Data MB                | 0.50000000000000000000     | 
+| Data GB                | 0.00048828125000000000     | 
+ -----------------------------------------------------
+| BandWidth MB/s         | 2270.25063567017787136137  | 
+| BandWidth GB/s         | 2.21704163639665807750     | 
+*-----------------------------------------------------*
+|                 Total Write BW                      | 
+ -----------------------------------------------------
+| Data MB                | 0.50000000000000000000     | 
+| Data GB                | 0.00048828125000000000     | 
+ -----------------------------------------------------
+| BandWidth MB/s         | 2270.25063567017787136137  | 
+| BandWidth GB/s         | 2.21704163639665807750     | 
+*-----------------------------------------------------*
+|                 Effective total BW                  | 
+ -----------------------------------------------------
+| Data MB                | 1.00000000000000000000     | 
+| Data GB                | 0.00097656250000000000     | 
+ -----------------------------------------------------
+| BandWidth MB/s         | 4540.50127134035574272275  | 
+| BandWidth GB/s         | 4.43408327279331615500     | 
+*-----------------------------------------------------*
+|                 Effective Read BW                   | 
+ -----------------------------------------------------
+| Data MB                | 0.50000000000000000000     | 
+| Data GB                | 0.00048828125000000000     | 
+ -----------------------------------------------------
+| BandWidth MB/s         | 2270.25063567017787136137  | 
+| BandWidth GB/s         | 2.21704163639665807750     | 
+*-----------------------------------------------------*
+|                 Effective Write BW                  | 
+ -----------------------------------------------------
+| Data MB                | 0.50000000000000000000     | 
+| Data GB                | 0.00048828125000000000     | 
+ -----------------------------------------------------
+| BandWidth MB/s         | 2270.25063567017787136137  | 
+| BandWidth GB/s         | 2.21704163639665807750     | 
+*-----------------------------------------------------*
+|              Byte Transfer Stats                    | 
+ -----------------------------------------------------
+| READ_BYTE_count        | 524288                     | 
+| WRITE_BYTE_count       | 524288                     | 
+ -----------------------------------------------------
+| PREFETCH_READ_BYTE_count   | 0                      | 
+| PREFETCH_WRITE_BYTE_count  | 0                      | 
+*-----------------------------------------------------*
+|                 Responses Stats                     | 
+ -----------------------------------------------------
+| DONE_count             | 8415                       | 
+ -----------------------------------------------------
+| DONE_READ_count        | 4096                       | 
+| DONE_WRITE_count       | 4096                       | 
+ -----------------------------------------------------
+| DONE_RESTART_count     | 206                        | 
+ -----------------------------------------------------
+| DONE_PREFETCH_READ_count   | 8                      | 
+| DONE_PREFETCH_WRITE_count  | 8                      | 
+ -----------------------------------------------------
+| PAGED_count            | 206                        | 
+| FLUSHED_count          | 0                          | 
+| AERROR_count           | 0                          | 
+| DERROR_count           | 0                          | 
+| FAILED_count           | 0                          | 
+| NRES_count             | 0                          | 
+| NLOCK_count            | 0                          | 
 *-----------------------------------------------------*
 
 ```
@@ -216,35 +301,37 @@ These steps require ALTERA Quartus synthesis tool, starting from release 15.0 of
 ##### Using terminal
 1. From the root directory (using terminal)
 ```console
-CAPI@Precis:~CAPIPrecis$ make run-capi-synth
+CAPI@Precis:~CAPIPrecis$ make run-synth
 ```
+or
+```console
+CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_synth/
+CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make
+```
+
 2. Check CAPIPrecis.sta.rpt for timing requirements violations
 
 ##### Using Quartus GUI
 1. From the root directory (using terminal)
 ```console
-CAPI@Precis:~CAPIPrecis$ make run-capi-gui
+CAPI@Precis:~CAPIPrecis$ make run-synth-gui
+```
+or
+```console
+CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_synth/
+CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make gui
 ```
 2. Synthesize using Quartus GUI
 
-##### Another way (using terminal)
-1. From the root directory go to CAPI integration directory -> CAPIPrecis synthesis folder
+##### Using terminal (sweep seeds)
+1. From the root directory (using terminal) runs a list of seeds synthesizing for each.
+```console
+CAPI@Precis:~CAPIPrecis$ make run-synth-sweep
+```
+or
 ```console
 CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_synth/
-```
-2. invoke synthesis from terminal
-```console
-CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make
-```
-
-##### Another way (using Quartus GUI)
-1. From the root directory go to CAPI integration directory -> CAPIPrecis synthesis folder
-```console
-CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_synth/
-```
-2. invoke synthesis from terminal
-```console
-CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make gui
+CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make sweep
 ```
 
 #### Flashing image
@@ -281,35 +368,46 @@ This run outputs different AFU-Control stats based on the responses received fro
 CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
 ```
 
-3. Example output: please check [(CAPI User's Manual)](http://www.nallatech.com/wp-content/uploads/IBM_CAPI_Users_Guide_1-2.pdf), for each response explanation. The stats are labeled `RESPONSE_COMMANADTYPE_count`.
-```
-*-----------------------------------------------------*
-|                 AFU Stats                          | 
- -----------------------------------------------------
-| CYCLE_count        : 106804                        |
-*-----------------------------------------------------*
-|                 Responses Stats                    | 
- -----------------------------------------------------
-| DONE_count               : 16764                   |
- -----------------------------------------------------
-| DONE_READ_count          : 8192                    |
-| DONE_WRITE_count         : 8192                    |
- -----------------------------------------------------
-| DONE_RESTART_count       : 355                     |
- -----------------------------------------------------
-| DONE_PREFETCH_READ_count : 12                      |
-| DONE_PREFETCH_WRITE_count: 12                      |
- -----------------------------------------------------
-| PAGED_count        : 355                           |
-| FLUSHED_count      : 0                             |
-| AERROR_count       : 0                             |
-| DERROR_count       : 0                             |
-| FAILED_count       : 0                             |
-| NRES_count         : 0                             |
-| NLOCK_count        : 0                             |
-*-----------------------------------------------------*
+# CAPI-Precis Options 
 
 ```
+Usage: capi-precis-openmp [OPTION...]
+            -s <size> -n [num threads] -a [afu config] -c [cu config]  
+
+CAPIPrecis is an open source CAPI enabled FPGA processing framework, it is
+designed to abstract the PSL layer for a faster development cycles
+
+  -a, --afu-config=[DEFAULT:0x1]   
+                             AFU-Control buffers(read/write/prefetcher)
+                             arbitration 0x01 round robin 0x10 fixed priority
+  -b, --afu-config2=[DEFAULT:0x0]
+                             
+                             AFU-Control MMIO register for extensible features
+  -c, --cu-config=[DEFAULT:0x01]   
+                             CU configurations for requests cached/non
+                             cached/prefetcher active or not check Makefile for
+                             more examples
+  -d, --cu-config2=[DEFAULT:0x00]
+                             
+                             CU-Control MMIO register for extensible features
+  -m, --cu-mode=[DEFAULT:0x03]   
+                             CU configurations for read/write engines.
+                             disable-both-engines-[0] write-engine-[1]
+                             read-engine-[2] enable-both-engines-[3]
+  -n, --num-threads=[DEFAULT:MAX]
+                             
+                             Default: MAX number of threads the system has
+  -s, --size=SIZE:512        
+                             Size of array to be sent and copied back 
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+
+Mandatory or optional arguments to long options are also mandatory or optional
+for any corresponding short options.
+
+```
+
 
 # CAPIPrecis Structure:
 <p align="center"><img src="./02_slides/fig/CAPIPrecis_chipplanner.png" width="600" ></p>
@@ -369,9 +467,9 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
   * *`Makefile`* - This makefile handles the compilation/and simulation of CAPIPrecis 
 * `01_capi_integration` - The SW side that runs on the Device(FPGA)/ModelSim
   * `accelerator_rtl` 
-    * `cu` - CU Units reside in this folder (read/write engines)
-    * `pkg` - global packages 
-    * `afu` - AFU Control units in this folder
+    * `cu_control` - CU Units reside in this folder (read/write engines)
+    * `afu_pkgs` - global packages 
+    * `afu_control` - AFU Control units in this folder
   * `accelerator_bin` - Binary images of CAPIPrecis (passed time requirements)
     * `capi-precis_GITCOMMIT#_DATETIME.rbf` - flash binary image 
     * `synthesis_reports_capi-precis_GITCOMMIT#_DATETIME` - synthesis reports for that binary image
