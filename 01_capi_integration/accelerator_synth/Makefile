@@ -35,9 +35,9 @@ SYNTH_DIR ?= synthesize_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)
 
 VERSION_GIT ?= $(shell python ./capi/scripts/version.py)
 TIME_STAMP ?= $(shell date +%Y_%m_%d_%H_%M_%S)
-ACCEL_RTL_DIR = accelerator_rtl
-ACCEL_BIN_DIR = accelerator_bin
-SOURCE_FILES =  $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.sv)   \
+ACCEL_RTL_DIR ?= accelerator_rtl
+ACCEL_BIN_DIR ?= accelerator_bin
+SOURCE_FILES ?=  $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.sv)   \
 				$(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.sv)   \
 				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.sv)\
 				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.sv)\
