@@ -240,7 +240,8 @@ export ARGS = -n $(NUM_THREADS) -s $(SIZE) -a $(AFU_CONFIG_GENERIC) -c $(CU_CONF
 
 APP_DIR                 = .
 MAKE_DIR                = 00_bench
-MAKE_DIR_SYNTH          = 01_capi_integration/accelerator_synth
+# MAKE_DIR_SYNTH          = 01_capi_integration/accelerator_synth
+MAKE_DIR_SYNTH          = $(CAPI_INTEG_DIR)/$(SYNTH_DIR)
 
 MAKE_NUM_THREADS        = $(shell grep -c ^processor /proc/cpuinfo)
 MAKE_ARGS               = -w -C $(APP_DIR)/$(MAKE_DIR) -j$(MAKE_NUM_THREADS)
