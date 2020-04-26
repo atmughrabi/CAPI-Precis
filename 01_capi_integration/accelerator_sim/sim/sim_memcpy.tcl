@@ -5,12 +5,14 @@ proc r  {} {
 
   # compile libs
   echo "Compiling libs"
-  
+
   # compile packages
   echo "Compiling Packages"
-  vlog -quiet ../../accelerator_rtl/afu_pkgs/globals_pkg.sv
+  vlog -quiet ../../accelerator_rtl/afu_pkgs/globals_afu_pkg.sv
+  vlog -quiet ../../accelerator_rtl/cu_control/cu_memcpy/memcpy/pkg/globals_cu_pkg.sv
+
   vlog -quiet ../../accelerator_rtl/afu_pkgs/capi_pkg.sv
-  vlog -quiet ../../accelerator_rtl/afu_pkgs/wed_pkg.sv
+  vlog -quiet ../../accelerator_rtl/cu_control/cu_memcpy/global_pkg/wed_pkg.sv
   vlog -quiet ../../accelerator_rtl/cu_control/cu_memcpy/global_pkg/cu_pkg.sv
   vlog -quiet ../../accelerator_rtl/afu_pkgs/credit_pkg.sv
   vlog -quiet ../../accelerator_rtl/afu_pkgs/afu_pkg.sv
@@ -44,21 +46,21 @@ proc r  {} {
 
   echo "Compiling RTL MMIO"
   vlog -quiet ../../accelerator_rtl/afu_control/mmio.sv
-  
+
   echo "Compiling RTL WED_control"
   vlog -quiet ../../accelerator_rtl/afu_control/wed_control.sv
 
   echo "Compiling RTL CU control "
-  vlog -quiet ../../accelerator_rtl/cu_control/cu_memcpy/memcpy/cu_data_read_engine_control.sv
-  vlog -quiet ../../accelerator_rtl/cu_control/cu_memcpy/memcpy/cu_data_write_engine_control.sv
+  vlog -quiet ../../accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv
+  vlog -quiet ../../accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv
   vlog -quiet ../../accelerator_rtl/cu_control/cu_memcpy/global_cu/cu_control.sv
 
- 
+
   echo "Compiling RTL AFU"
   vlog -quiet ../../accelerator_rtl/afu_control/afu.sv
   vlog -quiet ../../accelerator_rtl/afu_control/cached_afu.sv
-  
-  
+
+
   # compile top level
   echo "Compiling top level"
   # vlog -quiet       pslse/afu_driver/verilog/top.v
@@ -80,7 +82,7 @@ proc c {} {
   do watch_command_interface.do
   do watch_buffer_interface.do
   do watch_response_interface.do
-  
+
   view structure
   view signals
   view wave

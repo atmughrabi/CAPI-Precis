@@ -41,7 +41,8 @@ SOURCE_FILES ?=  $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.vhdl) $(wildcard .
 				$(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.sv)   \
 				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.sv)\
 				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.sv)\
-				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/*.sv)
+				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/cu/*.sv)\
+				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/pkg/*.sv)
 
 
 export LM_LICENSE_FILE := $(LM_LICENSE_FILE):$(shell pwd)/psl_fpga/psl/psl_A000_license.dat
@@ -113,7 +114,7 @@ $(PROJECT).pow.rpt: pow.chg $(PROJECT).asm.rpt
 
 $(PROJECT).rbf: $(PROJECT).asm.rpt
 	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
-	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)_$(VERSION_GIT)_$(TIME_STAMP).rbf 
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)_$(VERSION_GIT)_$(TIME_STAMP).rbf
 
 smart.log: $(ASSIGNMENT_FILES)
 	quartus_sh --64bit --determine_smart_action $(PROJECT) > smart.log
@@ -131,7 +132,7 @@ $(PROJECT).qxp: $(PROJECT).map.rpt
 ###################################################################
 
 $(ASSIGNMENT_FILES): $(PROJECT).tcl ./capi/fpga/*.tcl
-	quartus_sh -t  $(PROJECT).tcl $(PROJECT) cu_$(CU_ALGORITHM) $(NUM_THREADS)
+	quartus_sh -t  $(PROJECT).tcl $(PROJECT) $(CU_ALGORITHM) $(NUM_THREADS)
 	quartus_sh --prepare $(PROJECT)
 	#quartus_stp $(PROJECT) --enable --logic_analyzer_interface --lai_file=probes.lai
 
@@ -153,20 +154,20 @@ sweep.chg:
 .PHONY:program
 program: $(PROJECT).sof
 	quartus_pgm -c "USB-Blaster on cgy1-flash.pmc-sierra.internal" -m jtag -o S\;EPM2210 -o P\;$<
-	
+
 .PHONY:gen-rbf
 gen-rbf:
 	quartus_cpf --64bit -c $(PROJECT).sof $(PROJECT).rbf &&\
-	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)_$(VERSION_GIT)_$(TIME_STAMP).rbf 
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)_$(VERSION_GIT)_$(TIME_STAMP).rbf
 
 .PHONY:copy-rbf
 copy-rbf:
-	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)_$(VERSION_GIT)_$(TIME_STAMP).rbf 
+	cp $(PROJECT).rbf ../$(ACCEL_BIN_DIR)/$(PROJECT)_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)_$(VERSION_GIT)_$(TIME_STAMP).rbf
 
 .PHONY:gui
 gui: $(ASSIGNMENT_FILES)
-	quartus $(PROJECT).qpf 
+	quartus $(PROJECT).qpf
 
-.PHONY:sweep 
+.PHONY:sweep
 sweep: sweep.chg $(PROJECT).merge.rpt
-	quartus_sh --64bit -t sweep.tcl $(PROJECT) cu_$(CU_ALGORITHM) $(NUM_THREADS)
+	quartus_sh --64bit -t sweep.tcl $(PROJECT) $(CU_ALGORITHM) $(NUM_THREADS)

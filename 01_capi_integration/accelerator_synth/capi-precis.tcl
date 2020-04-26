@@ -4,15 +4,15 @@ set LIBCAPI  ./capi
 set VERSION   [binary format A24 [exec $LIBCAPI/scripts/version.py]]
 
 if { $argc != 3 } {
-	puts "SET Project to DEFAULT"
-	set my_project "capi-precis"
-	set algorithm  "cu_memcpy"
-	set cu_count   "20"
+    puts "SET Project to DEFAULT"
+    set my_project "capi-precis"
+    set algorithm  "memcpy"
+    set cu_count   "20"
 } else {
-	puts "SET Project to ARGV"
-	set my_project "[lindex $argv 0]"
-	set algorithm  "[lindex $argv 1]"
-	set cu_count   "[lindex $argv 2]"
+    puts "SET Project to ARGV"
+    set my_project "[lindex $argv 0]"
+    set algorithm  "[lindex $argv 1]"
+    set cu_count   "[lindex $argv 2]"
 }
 
 puts "Project   $my_project"
@@ -66,14 +66,18 @@ foreach filename [glob ../accelerator_rtl/afu_pkgs/*.sv] {
 # }
 
 
-foreach filename [glob ../accelerator_rtl/cu_control/$algorithm/global_pkg/*.sv] {
-	set_global_assignment -name SYSTEMVERILOG_FILE $filename
+foreach filename [glob ../accelerator_rtl/cu_control/cu_$algorithm/global_pkg/*.sv] {
+    set_global_assignment -name SYSTEMVERILOG_FILE $filename
 }
 
-foreach filename [glob ../accelerator_rtl/cu_control/$algorithm//global_cu/*.sv] {
-	set_global_assignment -name SYSTEMVERILOG_FILE $filename
+foreach filename [glob ../accelerator_rtl/cu_control/cu_$algorithm/global_cu/*.sv] {
+    set_global_assignment -name SYSTEMVERILOG_FILE $filename
 }
 
-foreach filename [glob ../accelerator_rtl/cu_control/$algorithm//memcpy/*.sv] {
-	set_global_assignment -name SYSTEMVERILOG_FILE $filename
+foreach filename [glob ../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/cu/*.sv] {
+    set_global_assignment -name SYSTEMVERILOG_FILE $filename
+}
+
+foreach filename [glob ../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/pkg/*.sv] {
+    set_global_assignment -name SYSTEMVERILOG_FILE $filename
 }

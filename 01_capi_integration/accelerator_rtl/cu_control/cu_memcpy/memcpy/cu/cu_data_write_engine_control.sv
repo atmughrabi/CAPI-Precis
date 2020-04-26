@@ -13,6 +13,7 @@
 // -----------------------------------------------------------------------------
 
 import GLOBALS_AFU_PKG::*;
+import GLOBALS_CU_PKG::*;
 import CAPI_PKG::*;
 import WED_PKG::*;
 import AFU_PKG::*;
@@ -485,12 +486,12 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	) cu_write_data_0_buffer_fifo_instant (
 		.clock   (clock                               ),
 		.rstn    (rstn                                ),
-		
+
 		.push    (write_data_0_in.valid               ),
 		.data_in (write_data_0_in                     ),
 		.full    (write_data_in_0_buffer_status.full  ),
 		.alFull  (write_data_in_0_buffer_status.alfull),
-		
+
 		.pop     (write_data_buffer_pop               ),
 		.valid   (write_data_in_0_buffer_status.valid ),
 		.data_out(write_data_0_out_buffer             ),
@@ -505,12 +506,12 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 	) cu_write_data_1_buffer_fifo_instant (
 		.clock   (clock                               ),
 		.rstn    (rstn                                ),
-		
+
 		.push    (write_data_1_in.valid               ),
 		.data_in (write_data_1_in                     ),
 		.full    (write_data_in_1_buffer_status.full  ),
 		.alFull  (write_data_in_1_buffer_status.alfull),
-		
+
 		.pop     (write_data_buffer_pop               ),
 		.valid   (write_data_in_1_buffer_status.valid ),
 		.data_out(write_data_1_out_buffer             ),

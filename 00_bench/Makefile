@@ -9,7 +9,7 @@
   APP_TEST          = test_afu
 #   APP_TEST          ?= test_capi-precis
 
-# dirs Root app 
+# dirs Root app
 APP_DIR             ?= .
 CAPI_INTEG_DIR      ?= 01_capi_integration
 SCRIPT_DIR          ?= 03_scripts
@@ -99,7 +99,7 @@ CU_CONFIG_MODE?=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFE
 # export CU_CONFIG_MODE=0x10400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 # // 0b 00010 00001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b00010000010000000000000000000000
-# export CU_CONFIG_MODE=0x21000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH) 
+# export CU_CONFIG_MODE=0x21000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits ABORT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
@@ -139,7 +139,7 @@ CU_CONFIG_MODE?=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFE
 # shift amount
 TLB_SHIFT?=b
 
-#0 left | #1 right | example (2048 >> 1) 
+#0 left | #1 right | example (2048 >> 1)
 TLB_SHIFT_DIRECTION?=1
 
 ##############################################
@@ -180,7 +180,7 @@ RD_WR_PREFETCH_MODE?=3
 ##############################################
 # CAPI FPGA AFU ARBITER CONFIG               #
 ##############################################
-# shift credits >> 
+# shift credits >>
 # read_credits            [0:3]
 # write_credits           [4:7]
 # prefetch_read_credits   [8:11]
@@ -215,25 +215,25 @@ ARGS ?= -n $(NUM_THREADS) -s $(SIZE) -a $(AFU_CONFIG_GENERIC) -c $(CU_CONFIG_GEN
 #each implementation is contained in a separate folder. when you compile for openmp for example the files in openmp folder gets included
 SRC_FILES_ALGO_OPENMP       =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/openmp/*.c)
 
-SRC_FILES_UTIL      =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/*.c) 
+SRC_FILES_UTIL      =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/*.c)
 SRC_FILES_MAIN      =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/*.c)
 SRC_FILES_TEST      =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/*.c)
 
 #create object file rules for the final binary target
-OBJ_FILES_ALGO_OPENMP       = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/openmp/%.c,$(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/openmp/%.o,$(SRC_FILES_ALGO_OPENMP)) 
+OBJ_FILES_ALGO_OPENMP       = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/openmp/%.c,$(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/openmp/%.o,$(SRC_FILES_ALGO_OPENMP))
 
-OBJ_FILES_UTIL      = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(UTIL_DIR)/%.o,$(SRC_FILES_UTIL)) 
-OBJ_FILES_MAIN      = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/%.o,$(SRC_FILES_MAIN)) 
-OBJ_FILES_TEST      = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/%.o,$(SRC_FILES_TEST)) 
+OBJ_FILES_UTIL      = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(UTIL_DIR)/%.o,$(SRC_FILES_UTIL))
+OBJ_FILES_MAIN      = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/%.o,$(SRC_FILES_MAIN))
+OBJ_FILES_TEST      = $(patsubst $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/%.o,$(SRC_FILES_TEST))
 
-CC                = gcc 
+CC                = gcc
 
 OPENMP_INC =    -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/openmp  \
-				-I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) 
+				-I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR)
 
 # flags
-CFLAGS   =  -O3 -Wall -m64 -fopenmp -g 
-LFLAGS = -lm 
+CFLAGS   =  -O3 -Wall -m64 -fopenmp -g
+LFLAGS = -lm
 
 
 # TEST PASS OR FAIL
@@ -263,17 +263,17 @@ PSLSE_COMMON_DIR  = $(PSLSE_DIR)/common
 # PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 
 
-SRC_FILES_ALGO_CAPI         =  $(wildcard $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/*.c) 
+SRC_FILES_ALGO_CAPI         =  $(wildcard $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/*.c)
 OBJ_FILES_ALGO_CAPI         =  $(patsubst $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/%.c,$(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/capi/%.o,$(SRC_FILES_ALGO_CAPI))
 
 SRC_FILES_CAPI_UTIL     =   $(wildcard $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/*.c)
-OBJ_FILES_CAPI_UTIL     =   $(patsubst $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(CAPI_UTIL_DIR)/%.o,$(SRC_FILES_CAPI_UTIL)) 
+OBJ_FILES_CAPI_UTIL     =   $(patsubst $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/%.c,$(APP_DIR)/$(OBJ_DIR)/$(CAPI_UTIL_DIR)/%.o,$(SRC_FILES_CAPI_UTIL))
 
 
 CAPI_LINKFLAGS = -lrt -lpthread
 
 # CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
-# CAPI_FLAGS = -DSIM -DVERBOSE 
+# CAPI_FLAGS = -DSIM -DVERBOSE
 
 ##################################################
 ##################################################
@@ -296,7 +296,7 @@ test-openmp : directories directories-openmp $(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-o
 	@echo " ****************************************************************************** \n"
 
 .PHONY: directories
-directories : 
+directories :
 	@mkdir -p $(APP_DIR)/$(BIN_DIR)
 	@mkdir -p $(APP_DIR)/$(OBJ_DIR)
 	@mkdir -p $(APP_DIR)/$(OBJ_DIR)/$(UTIL_DIR)
@@ -307,16 +307,16 @@ directories :
 directories-openmp :
 	@mkdir -p $(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/openmp
 
-$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp : $(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/$(APP).o $(OBJ_FILES_UTIL) $(OBJ_FILES_ALGO_OPENMP) 
+$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp : $(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/$(APP).o $(OBJ_FILES_UTIL) $(OBJ_FILES_ALGO_OPENMP)
 	@$(CC) $(CFLAGS) -o $@ $^  $(LFLAGS)
-	
+
 $(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-openmp : $(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/$(APP_TEST).o $(OBJ_FILES_UTIL) $(OBJ_FILES_ALGO_OPENMP)
 	@$(CC) $(CFLAGS) -o $@ $^  $(LFLAGS)
 
 $(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/$(APP).o : $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/capi-precis.c
 	$(CC) $(CFLAGS) $(OPENMP_INC) -c -o $@ $<
 
-$(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/$(APP_TEST).o : $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/$(APP_TEST).c 
+$(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/$(APP_TEST).o : $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/$(APP_TEST).c
 	$(CC) $(CFLAGS) $(OPENMP_INC) -c -o $@ $<
 
 $(APP_DIR)/$(OBJ_DIR)/$(UTIL_DIR)/%.o : $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/%.c
@@ -327,7 +327,7 @@ $(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/openmp/%.o : $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)
 
 
 .PHONY: clean
-clean: 
+clean:
 	@rm -fr $(APP_DIR)/$(OBJ_DIR)
 	@rm -fr $(APP_DIR)/$(BIN_DIR)
 
@@ -379,11 +379,11 @@ build-libcxl: $(PSLSE_LIBCXL_DIR)/libcxl.a
 
 .PHONY: build-pslse
 build-pslse: $(PSLSE_DIR)/pslse/pslse
-	
-$(APP_DIR)/$(BIN_DIR)/$(APP)-capi : $(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/$(APP).o $(OBJ_FILES_UTIL) $(OBJ_FILES_ALGO_CAPI) $(OBJ_FILES_CAPI_UTIL) 
-	@$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS) $(PSLSE_LIBCXL_DIR)/libcxl.a $(CAPI_LINKFLAGS) 
 
-$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-capi : $(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/$(APP_TEST)-capi.o $(OBJ_FILES_UTIL) $(OBJ_FILES_ALGO_CAPI) $(OBJ_FILES_CAPI_UTIL)  
+$(APP_DIR)/$(BIN_DIR)/$(APP)-capi : $(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/$(APP).o $(OBJ_FILES_UTIL) $(OBJ_FILES_ALGO_CAPI) $(OBJ_FILES_CAPI_UTIL)
+	@$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS) $(PSLSE_LIBCXL_DIR)/libcxl.a $(CAPI_LINKFLAGS)
+
+$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-capi : $(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/$(APP_TEST)-capi.o $(OBJ_FILES_UTIL) $(OBJ_FILES_ALGO_CAPI) $(OBJ_FILES_CAPI_UTIL)
 	@$(CC) $(CFLAGS) -o $@ $^ $(PSLSE_LIBCXL_DIR)/libcxl.a $(LFLAGS) $(CAPI_LINKFLAGS)
 
 $(APP_DIR)/$(OBJ_DIR)/$(CAPI_UTIL_DIR)/%.o : $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/%.c build-libcxl
@@ -392,7 +392,7 @@ $(APP_DIR)/$(OBJ_DIR)/$(CAPI_UTIL_DIR)/%.o : $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_D
 $(APP_DIR)/$(OBJ_DIR)/$(ALGO_DIR)/capi/%.o : $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/%.c
 	$(CC) $(CFLAGS) $(OPENMP_INC) $(CAPI_INC) -c -o $@ $< $(CAPI_FLAGS)
 
-$(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/$(APP_TEST)-capi.o : $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/$(APP_TEST).c 
+$(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/$(APP_TEST)-capi.o : $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/$(APP_TEST).c
 	$(CC) $(CFLAGS) $(OPENMP_INC) $(CAPI_INC) -c -o $@ $< $(CAPI_FLAGS)
 
 .PHONY: clean-sim
@@ -430,11 +430,11 @@ run-openmp: app-openmp
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 .PHONY: debug-openmp
-debug-openmp: app-openmp    
+debug-openmp: app-openmp
 	gdb -ex=r --args ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 .PHONY: debug-memory-openmp
-debug-memory-openmp: app-openmp 
+debug-memory-openmp: app-openmp
 	valgrind --leak-check=full --show-leak-kinds=all ./$(APP_DIR)/$(BIN_DIR)/$(APP)-openmp  $(ARGS)
 
 .PHONY: test-verbose
@@ -447,7 +447,7 @@ test:
 	@if $(MAKE) run-test -C $(APP_DIR) | grep FAIL > /dev/null; \
 		then exit 1; \
 	fi
-	
+
 .PHONY: run-test
 run-test: run-test-openmp
 
@@ -456,11 +456,11 @@ run-test-openmp: test-openmp
 	./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-openmp
 
 .PHONY: debug-test-openmp
-debug-test-openmp: test-openmp  
+debug-test-openmp: test-openmp
 	gdb ./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-openmp
 
 .PHONY: debug-memory-test-openmp
-debug-memory-test-openmp: test-openmp   
+debug-memory-test-openmp: test-openmp
 	valgrind --leak-check=full --show-leak-kinds=all ./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-openmp
 # cache performance
 .PHONY: cachegrind-perf-openmp
@@ -486,7 +486,7 @@ run-capi-sim: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-sim-verbose
-run-capi-sim-verbose: CAPI_FLAGS = -DSIM -DVERBOSE 
+run-capi-sim-verbose: CAPI_FLAGS = -DSIM -DVERBOSE
 run-capi-sim-verbose: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim-verbose: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-sim-verbose: app-capi
@@ -500,14 +500,14 @@ run-capi-sim-verbose2: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga
-run-capi-fpga: CAPI_FLAGS = 
+run-capi-fpga: CAPI_FLAGS =
 run-capi-fpga: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-fpga: app-capi
 	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga-verbose
-run-capi-fpga-verbose: CAPI_FLAGS = -DVERBOSE 
+run-capi-fpga-verbose: CAPI_FLAGS = -DVERBOSE
 run-capi-fpga-verbose: PSLSE_LIBCXL_DIR  = $(LIBCXL_DIR)
 run-capi-fpga-verbose: CAPI_INC = -I$(LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-fpga-verbose: app-capi
@@ -522,19 +522,19 @@ run-capi-fpga-verbose2: app-capi
 
 
 .PHONY: run-test-capi
-run-test-capi: CAPI_FLAGS = -DSIM -DVERBOSE 
+run-test-capi: CAPI_FLAGS = -DSIM -DVERBOSE
 run-test-capi: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-test-capi: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-test-capi: test-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-capi 
+	./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-capi
 
 .PHONY: run-vsim
 run-vsim: build-libdpi
-	cd $(CAPI_SIM) && vsim -do cu_$(CU_ALGORITHM).tcl
+	cd $(CAPI_SIM) && vsim -do sim_$(CU_ALGORITHM).tcl
 
 .PHONY: run-pslse
 run-pslse: build-pslse
 	cd $(CAPI_SIM) && ./../../pslse/pslse/pslse
-	  
+
 ##################################################
 ##################################################

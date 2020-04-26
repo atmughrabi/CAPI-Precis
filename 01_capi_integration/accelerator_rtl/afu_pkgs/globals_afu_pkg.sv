@@ -14,27 +14,12 @@
 
 package GLOBALS_AFU_PKG;
 
-
 	parameter CREDITS_READ  = 32                          ;
 	parameter CREDITS_WRITE = 32                          ;
 	parameter CREDITS_TOTAL = CREDITS_READ + CREDITS_WRITE; // MUST be 64 credits max
 
-
 ////////////////////////////////////////////////////////////////////////////
-// CU-Control CU Globals
-////////////////////////////////////////////////////////////////////////////
-
-// How many compute unites you want : each 1  contains N read/write engines
-// TOTAL CUS = NUM_DATA_READ_CU_GLOBAL + NUM_DATA_WRITE_CU_GLOBAL
-////////////////////////////////////////////////////////////////////////////
-
-	parameter NUM_DATA_READ_CU_GLOBAL  = 8;
-	parameter NUM_DATA_WRITE_CU_GLOBAL = 8;
-
-	parameter CU_JOB_BUFFER_SIZE = 256;
-
-////////////////////////////////////////////////////////////////////////////
-//   CU-Control/AFU-Control CAPI Globals
+//  AFU-Control CAPI Globals
 ////////////////////////////////////////////////////////////////////////////
 	parameter PAGE_SIZE              = 65536                  ; // Pagesize default  is 64KB
 	parameter PAGE_SIZE_BITS         = (PAGE_SIZE * 8)        ;
@@ -55,26 +40,17 @@ package GLOBALS_AFU_PKG;
 	parameter TAG_COUNT   = 256  ;
 	parameter INVALID_TAG = 8'h00;
 
-	parameter BURST_CMD_BUFFER_SIZE = 32; // size of command burst for PSL leave as is
+	parameter BURST_CMD_BUFFER_SIZE = 64; // size of command burst for PSL leave as is
 
 	parameter READ_CMD_BUFFER_SIZE           = 64;
 	parameter WRITE_CMD_BUFFER_SIZE          = 64;
 	parameter PREFETCH_READ_CMD_BUFFER_SIZE  = 64;
 	parameter PREFETCH_WRITE_CMD_BUFFER_SIZE = 64;
-	parameter RESTART_CMD_BUFFER_SIZE        = 4 ;
 	parameter WED_CMD_BUFFER_SIZE            = 4 ;
 
-	parameter READ_RSP_BUFFER_SIZE           = 64;
-	parameter PREFETCH_READ_RSP_BUFFER_SIZE  = 64;
-	parameter PREFETCH_WRITE_RSP_BUFFER_SIZE = 64;
-	parameter WRITE_RSP_BUFFER_SIZE          = 64;
-	parameter RESTART_RSP_BUFFER_SIZE        = 4 ;
-	parameter WED_RSP_BUFFER_SIZE            = 4 ;
-
-	parameter READ_DATA_BUFFER_SIZE    = 64;
-	parameter WRITE_DATA_BUFFER_SIZE   = 64;
-	parameter RESTART_DATA_BUFFER_SIZE = 4 ;
-	parameter WED_DATA_BUFFER_SIZE     = 4 ;
+	parameter READ_DATA_BUFFER_SIZE  = 64; // not needed since data read in a non blocking manner
+	parameter WRITE_DATA_BUFFER_SIZE = 64;
+	parameter WED_DATA_BUFFER_SIZE   = 4 ;
 
 ////////////////////////////////////////////////////////////////////////////
 // AFU-Control (Buffer Priorities) for Arbitration
@@ -87,7 +63,7 @@ package GLOBALS_AFU_PKG;
 
 	parameter PRIORITY_PREFETCH_READ = 3;
 	parameter PRIORITY_READ          = 4;
-	
+
 ////////////////////////////////////////////////////////////////////////////
 // CU-Control  (Buffer size)
 ////////////////////////////////////////////////////////////////////////////
@@ -147,32 +123,7 @@ package GLOBALS_AFU_PKG;
 // CU-Control CU Globals
 ////////////////////////////////////////////////////////////////////////////
 
-//  Sturctue sizes
-////////////////////////////////////////////////////////////////////////////
-
-	parameter ARRAY_SIZE           = 8                  ; // array size is n bytes
-	parameter ARRAY_SIZE_BITS      = ARRAY_SIZE * 8     ; // array size is n*8 Bits
-	parameter DATA_SIZE_READ       = 4                  ; // data size is n bytes
-	parameter DATA_SIZE_READ_BITS  = DATA_SIZE_READ * 8 ; // data size is n*8 Bits
-	parameter DATA_SIZE_WRITE      = 4                  ; // data size is n bytes
-	parameter DATA_SIZE_WRITE_BITS = DATA_SIZE_WRITE * 8; // data size is n*8 Bits
-
-// aligenment to cacheline 128-BYTES
-	parameter [0:63] ADDRESS_ARRAY_ALIGN_MASK = {{57{1'b1}},{7{1'b0}}};
-	parameter [0:63] ADDRESS_ARRAY_MOD_MASK   = {{57{1'b0}},{7{1'b1}}};
-
-	parameter [0:63] ADDRESS_DATA_READ_ALIGN_MASK = {{57{1'b1}},{7{1'b0}}};
-	parameter [0:63] ADDRESS_DATA_READ_MOD_MASK   = {{57{1'b0}},{7{1'b1}}};
-
-	parameter [0:63] ADDRESS_DATA_WRITE_ALIGN_MASK = {{57{1'b1}},{7{1'b0}}};
-	parameter [0:63] ADDRESS_DATA_WRITE_MOD_MASK   = {{57{1'b0}},{7{1'b1}}};
-
-	parameter CACHELINE_INT_COUNTER_BITS = $clog2((DATA_SIZE_READ_BITS < CACHELINE_SIZE_BITS_HF) ? (2 * CACHELINE_SIZE_BITS_HF)/DATA_SIZE_READ_BITS : 2);
-
-	parameter CACHELINE_ARRAY_NUM = (CACHELINE_SIZE >> $clog2(DATA_SIZE_READ)); // number of  in one cacheline
-	parameter PAGE_ARRAY_NUM      = (PAGE_SIZE >> $clog2(DATA_SIZE_READ))     ; // number of  in one page
-
-// aligenment to page 64K-BYTES
+// alignment to page 64K-BYTES
 	parameter [0:63] ADDRESS_PAGE_MOD_MASK   = {{48{1'b0}},{16{1'b1}}};
 	parameter [0:63] ADDRESS_PAGE_ALIGN_MASK = {{48{1'b1}},{16{1'b0}}};
 
@@ -192,14 +143,6 @@ package GLOBALS_AFU_PKG;
 ////////////////////////////////////////////////////////////////////////////
 //  CU-Control CU IDs any compute unite that generate command must have an ID
 ////////////////////////////////////////////////////////////////////////////
-
-	parameter PREFETCH_READ_CONTROL_ID  = (RESTART_ID - 1)              ;
-	parameter PREFETCH_WRITE_CONTROL_ID = (PREFETCH_READ_CONTROL_ID - 1);
-
-
-	parameter DATA_READ_CONTROL_ID  = (PREFETCH_WRITE_CONTROL_ID - 1);
-	parameter DATA_WRITE_CONTROL_ID = (DATA_READ_CONTROL_ID - 1)     ;
-
 
 	typedef logic [0:(CU_ID_RANGE-1)] cu_id_t;
 

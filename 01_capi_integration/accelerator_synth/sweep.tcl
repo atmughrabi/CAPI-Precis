@@ -15,7 +15,7 @@ set VERSION   [binary format A24 [exec ${LIBCAPI}/scripts/version.py]]
 if { $argc != 3 } {
 	puts "SET Project to DEFAULT"
 	set my_project "capi-precis"
-	set algorithm  "cu_memcpy"
+	set algorithm  "memcpy"
 	set cu_count   "20"
 } else {
 	puts "SET Project to ARGV"
@@ -52,8 +52,8 @@ set trynum 0
 while { $timetrynum > $trynum } {
 	set CURRENTSEED [lindex $seedList $trynum]
 	set TIMESTAMP [exec "date" "+%Y_%m_%d_%H_%M_%S"]
-	set OUTPUT_RBF ${algorithm}_CU${cu_count}_SEED${CURRENTSEED}.rbf
-	set outdir $rptdir/${algorithm}_CU${cu_count}_SEED${CURRENTSEED}
+	set OUTPUT_RBF cu_${algorithm}_CU${cu_count}_SEED${CURRENTSEED}.rbf
+	set outdir $rptdir/cu_${algorithm}_CU${cu_count}_SEED${CURRENTSEED}
 	file mkdir $outdir
 
 	set_global_assignment -name SEED ${CURRENTSEED}
