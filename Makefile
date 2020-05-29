@@ -3,12 +3,12 @@
 #########################################################
 # globals binary S
 export APP              = capi-precis
-
+export CU_ALGORITHM 	= memcpy
 # test name
 export APP_TEST         = test_capi-precis
 
 
-# dirs Root app 
+# dirs Root app
 export APP_DIR         		= .
 export CAPI_INTEG_DIR      	= 01_capi_integration
 export SCRIPT_DIR          	= 03_scripts
@@ -96,7 +96,7 @@ export CU_CONFIG_MODE=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR
 # export CU_CONFIG_MODE=0x10400$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 # // 0b 00010 00001 00000 00000 00000 00000 00
 # export CU_CONFIG_MODE=0b00010000010000000000000000000000
-# export CU_CONFIG_MODE=0x21000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH) 
+# export CU_CONFIG_MODE=0x21000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR_PREFETCH)
 
 # // cu_read_engine_control            5-bits ABORT | READ_CL_S | WRITE_NA 00000 [0:4] [4] [3] [0:2]
 # // cu_write_engine_control           5-bits ABORT | READ_CL_NA | WRITE_MS 00000 [5:9] [9] [8] [5:7]
@@ -136,7 +136,7 @@ export CU_CONFIG_MODE=0x00000$(ENABLE_RD_WR)$(RD_WR_PREFETCH_MODE)$(ENABLE_RD_WR
 # shift amount
 export TLB_SHIFT=b
 
-#0 left | #1 right | example (2048 >> 1) 
+#0 left | #1 right | example (2048 >> 1)
 export TLB_SHIFT_DIRECTION=1
 
 ##############################################
@@ -177,7 +177,7 @@ export RD_WR_PREFETCH_MODE=3
 ##############################################
 # CAPI FPGA AFU ARBITER CONFIG               #
 ##############################################
-# shift credits >> 
+# shift credits >>
 # read_credits            [0:3]
 # write_credits           [4:7]
 # prefetch_read_credits   [8:11]
@@ -205,12 +205,12 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #1-128byte cacheline equal to 32 unsigned int type
 
 export NUM_THREADS = 8
-LHS=32 
+LHS=32
 RHS=4096
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
-#32 GB 
+#32 GB
 # export SIZE = 8589934592
 
 #16 GB
@@ -267,24 +267,24 @@ run-openmp:
 	$(MAKE) run-openmp $(MAKE_ARGS)
 
 .PHONY: debug-openmp
-debug-openmp: 
+debug-openmp:
 	$(MAKE) debug-openmp $(MAKE_ARGS)
 
 .PHONY: debug-memory-openmp
-debug-memory-openmp: 
+debug-memory-openmp:
 	$(MAKE) debug-memory-openmp $(MAKE_ARGS)
 
 .PHONY: test-verbose
 test-verbose:
 	$(MAKE) test-verbose $(MAKE_ARGS)
-	
+
 # test files
 .PHONY: test
 test:
 	$(MAKE) test $(MAKE_ARGS)
-	
+
 .PHONY: run-test
-run-test: 
+run-test:
 	$(MAKE) run-test $(MAKE_ARGS)
 
 .PHONY: run-test-openmp
@@ -292,11 +292,11 @@ run-test-openmp:
 	$(MAKE) run-test-openmp $(MAKE_ARGS)
 
 .PHONY: debug-test-openmp
-debug-test-openmp: 
+debug-test-openmp:
 	$(MAKE) debug-test-openmp $(MAKE_ARGS)
 
 .PHONY: debug-memory-test-openmp
-debug-memory-test-openmp:   
+debug-memory-test-openmp:
 	$(MAKE) debug-memory-test-openmp $(MAKE_ARGS)
 # cache performance
 .PHONY: cachegrind-perf-openmp
@@ -304,15 +304,15 @@ cachegrind-perf-openmp:
 	$(MAKE) cachegrind-perf-openmp $(MAKE_ARGS)
 
 .PHONY: cache-perf
-cache-perf-openmp: 
+cache-perf-openmp:
 	$(MAKE) cache-perf-openmp $(MAKE_ARGS)
 
 .PHONY: clean
-clean: 
+clean:
 	$(MAKE) clean $(MAKE_ARGS)
 
 .PHONY: clean-obj
-clean-obj: 
+clean-obj:
 	$(MAKE) clean-obj $(MAKE_ARGS)
 
 .PHONY: clean-all
@@ -326,7 +326,7 @@ clean-stats:
 	$(MAKE) clean-stats $(MAKE_ARGS)
 
 .PHONY: clean-nohup
-clean-nohup: 
+clean-nohup:
 	@rm -f $(APP_DIR)/nohup.out
 
 
@@ -337,7 +337,7 @@ clean-nohup:
 # Simulation/Synthesis CONFIG 						     #
 ##############################################
 # put your design in 01_capi_integration/accelerator_rtl/cu/$CU(algorithm name)
-# 
+#
 
 export PART=5SGXMA7H2F35C2
 export PROJECT = capi-precis
@@ -464,18 +464,18 @@ copy-rbf: synth-directories
 	$(MAKE) copy-rbf $(MAKE_ARGS_SYNTH)
 
 .PHONY: clean-synth
-clean-synth: 
+clean-synth:
 	$(MAKE) clean $(MAKE_ARGS_SYNTH)
 
 .PHONY: clean-synth-all
-clean-synth-all: 
+clean-synth-all:
 	@rm -rf $(APP_DIR)/$(CAPI_INTEG_DIR)/synthesize_*
 
 .PHONY: synth-directories
 synth-directories : $(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR)
 
 .PHONY: $(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR)
-$(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR) :	
+$(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR) :
 	@mkdir -p $(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR)
 	@cp  -a $(APP_DIR)/$(CAPI_INTEG_DIR)/accelerator_synth/* $(APP_DIR)/$(CAPI_INTEG_DIR)/$(SYNTH_DIR)
 

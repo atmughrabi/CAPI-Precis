@@ -26,7 +26,7 @@
 #include "timer.h"
 
 #include "config.h"
-#include "algorithm.h"
+#include "memcpy.h"
 
 int numThreads;
 mt19937state *mt19937var;
@@ -168,7 +168,7 @@ main (int argc, char **argv)
     copyDataArrays(dataArrays, &arguments);
     Stop(timer);
     printf("| %-22s | %-27.20lf| \n","Time (Seconds)", Seconds(timer));
-       
+
     double bandwidth_GB = (double)((double)(dataArrays->size)/(double)(1024*1024*256))/Seconds(timer);  //GB/s
     double bandwidth_MB = (double)((double)(dataArrays->size)/(double)(1024*256))/Seconds(timer); //MB/s
 

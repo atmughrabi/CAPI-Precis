@@ -29,7 +29,7 @@
 #include "libcxl.h"
 #include "capienv.h"
 
-#include "algorithm.h"
+#include "memcpy.h"
 
 struct DataArrays *newDataArrays(struct Arguments *arguments)
 {
