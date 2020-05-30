@@ -6,7 +6,7 @@
 
   CU_ALGORITHM 	 	?= memcpy
 
-  APP               ?= capi-precis-$(CU_ALGORITHM)
+  APP               ?= capi-precis-memcpy
 # test name needs to match the file name test/test_capi-precis.c
   APP_TEST          ?= test_afu
 #   APP_TEST          ?= test_capi-precis

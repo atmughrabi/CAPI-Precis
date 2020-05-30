@@ -6,7 +6,7 @@
 # export CU_ALGORITHM 	= memcpy
 export CU_ALGORITHM 	= mmtiled
 
-export APP              = capi-precis-$(CU_ALGORITHM)
+export APP              = capi-precis-mmtiled
 # test name
 export APP_TEST         = test_capi-precis
 
