@@ -17,12 +17,14 @@ struct __attribute__((__packed__)) MatrixArrays
     uint32_t *C;            // 8-Bytes pointer
 };
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
 
 struct MatrixArrays *newMatrixArrays(struct Arguments *arguments);
 void freeMatrixArrays(struct MatrixArrays *matrixArrays);
 void initializeMatrixArrays(struct MatrixArrays *matrixArrays);
 uint64_t compareMatrixArrays(struct MatrixArrays *matrixArrays1, struct MatrixArrays *matrixArrays2);
-void matrixMultiplyStandard(struct MatrixArrays *matrixArrays, struct Arguments *arguments);
-void matrixMultiplyTiled(struct MatrixArrays *matrixArrays, struct Arguments *arguments);
+uint64_t checksumMatrixArrays(struct MatrixArrays *matrixArrays);
+void matrixMultiplyStandard(struct MatrixArrays *matrixArrays);
+void matrixMultiplyTiled(struct MatrixArrays *matrixArrays);
 
 #endif

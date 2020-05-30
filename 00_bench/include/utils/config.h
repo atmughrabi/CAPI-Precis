@@ -17,7 +17,6 @@ struct Arguments
     uint64_t cu_config;
     uint64_t cu_config_2;
     uint32_t cu_mode;
-    uint64_t size_t; // added for tiled matrix multiply TILE size
 };
 
 #endif

@@ -26,7 +26,7 @@
 #include "timer.h"
 
 #include "config.h"
-#include "memcpy.h"
+#include "mmtiled.h"
 
 int numThreads;
 mt19937state *mt19937var;
@@ -51,7 +51,7 @@ static struct argp_option options[] =
     },
     {
         "size",                  's', "SIZE:512",      0,
-        "\nSize of array to be sent and copied back "
+        "\n[Matrix Size] n of n*n Matrix"
     },
     {
         "afu-config",            'a', "[DEFAULT:0x1]",      0,
@@ -67,11 +67,11 @@ static struct argp_option options[] =
     },
     {
         "cu-config2",            'd', "[DEFAULT:0x00]",      0,
-        "\nCU-Control MMIO register for extensible features"
+        "\n[Tile size] CU-Control MMIO register for extensible features"
     },
     {
         "cu-mode",               'm', "[DEFAULT:0x03]",      0,
-        "\nCU configurations for read/write engines. disable-both-engines-[0] write-engine-[1] read-engine-[2] enable-both-engines-[3]"
+        "\nCU configurations use Tiled or non Tiled iteration"
     },
     { 0 }
 };
@@ -131,9 +131,10 @@ main (int argc, char **argv)
     arguments.size = 512;
     arguments.afu_config = 0x01;
     arguments.cu_config  = 0x01;
-    arguments.cu_mode    = 0x03;
+    arguments.cu_mode    = 0x01;
+    arguments.cu_config_2  = 128;
 
-     argp_parse (&argp, argc, argv, 0, 0, &arguments);
+    argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
     struct Timer *timer = (struct Timer *) my_malloc(sizeof(struct Timer));
     numThreads = arguments.numThreads;
@@ -149,44 +150,49 @@ main (int argc, char **argv)
 
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20lu | \n", "Allocating Matrix Arrays (SIZE)", arguments.size);
+    printf("| %-35s %-15lu | \n", "Allocating Matrix Arrays (SIZE)", arguments.size);
     printf(" -----------------------------------------------------\n");
 
-    struct DataArrays *dataArrays = newDataArrays(&arguments);
+    struct MatrixArrays *matrixArrays = newMatrixArrays(&arguments);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20u | \n", "Populating Matrix Arrays (Seed)", 27491095);
+    printf("| %-35s %-15u | \n", "Populating Matrix Arrays (Seed)", 27491095);
     printf(" -----------------------------------------------------\n");
 
-    initializeDataArrays(dataArrays);
+    initializeMatrixArrays(matrixArrays);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s %-20lu | \n", "Multiply Matrix C=A*B (TILE SIZE)", arguments.size);
+    printf("| %-35s %-15lu | \n", "Multiply Matrix C=A*B (TILE SIZE)", arguments.cu_config_2);
     printf(" -----------------------------------------------------\n");
 
     Start(timer);
-    copyDataArrays(dataArrays, &arguments);
+    if(arguments.cu_mode)
+        matrixMultiplyTiled(matrixArrays);
+    else
+        matrixMultiplyStandard(matrixArrays);
     Stop(timer);
-    printf("| %-22s | %-27.20lf| \n","Time (Seconds)", Seconds(timer));
 
-    double bandwidth_GB = (double)((double)(dataArrays->size)/(double)(1024*1024*256))/Seconds(timer);  //GB/s
-    double bandwidth_MB = (double)((double)(dataArrays->size)/(double)(1024*256))/Seconds(timer); //MB/s
+    printf("| %-22s | %-27.20lf| \n", "Time (Seconds)", Seconds(timer));
 
-    printf("| %-22s | %-27.20lf| \n","BandWidth MB/s", bandwidth_MB);
-    printf("| %-22s | %-27.20lf| \n","BandWidth GB/s", bandwidth_GB);
+    double bandwidth_GB = (double)((double)(matrixArrays->size_n*matrixArrays->size_n) / (double)(1024 * 1024 * 256)) / Seconds(timer); //GB/s
+    double bandwidth_MB = (double)((double)(matrixArrays->size_n*matrixArrays->size_n) / (double)(1024 * 256)) / Seconds(timer); //MB/s
 
-    uint64_t missmatch = 0;
-    missmatch = compareDataArrays(dataArrays);
+    printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
+    printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
+
+    uint64_t checksum = 0;
+    checksum = checksumMatrixArrays(matrixArrays);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s | %-18lu | \n", "Data Missmatched (#)", missmatch);
+    printf("| %-30s | %-18lu | \n", "Data checksum (#)", checksum);
     printf(" -----------------------------------------------------\n");
+
 
     printf("*-----------------------------------------------------*\n");
     printf("| %-30s %-20lu | \n", "Freeing Data Arrays (SIZE)", arguments.size);
     printf(" -----------------------------------------------------\n");
 
-    freeDataArrays(dataArrays);
+    freeMatrixArrays(matrixArrays);
     free(timer);
     exit (0);
 }
