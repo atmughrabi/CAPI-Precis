@@ -3,10 +3,12 @@
 #                GENERAL DIRECTOIRES                    #
 #########################################################
 # globals binaary /bin/capi-precis name doesn't need to match main/capi-precis.c
-  APP               ?= capi-precis
+
   CU_ALGORITHM 	 	?= memcpy
+
+  APP               ?= capi-precis-$(CU_ALGORITHM)
 # test name needs to match the file name test/test_capi-precis.c
-  APP_TEST          = test_afu
+  APP_TEST          ?= test_afu
 #   APP_TEST          ?= test_capi-precis
 
 # dirs Root app
@@ -313,7 +315,7 @@ $(APP_DIR)/$(BIN_DIR)/$(APP)-openmp : $(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/$(APP).o
 $(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-openmp : $(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/$(APP_TEST).o $(OBJ_FILES_UTIL) $(OBJ_FILES_ALGO_OPENMP)
 	@$(CC) $(CFLAGS) -o $@ $^  $(LFLAGS)
 
-$(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/$(APP).o : $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/capi-precis.c
+$(APP_DIR)/$(OBJ_DIR)/$(MAIN_DIR)/$(APP).o : $(APP_DIR)/$(SRC_DIR)/$(MAIN_DIR)/capi-precis-$(CU_ALGORITHM).c
 	$(CC) $(CFLAGS) $(OPENMP_INC) -c -o $@ $<
 
 $(APP_DIR)/$(OBJ_DIR)/$(TEST_DIR)/$(APP_TEST).o : $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/$(APP_TEST).c

@@ -2,8 +2,11 @@
 #              GENERAL DIRECTOIRES                      #
 #########################################################
 # globals binary S
-export APP              = capi-precis
-export CU_ALGORITHM 	= memcpy
+
+# export CU_ALGORITHM 	= memcpy
+export CU_ALGORITHM 	= mmtiled
+
+export APP              = capi-precis-$(CU_ALGORITHM)
 # test name
 export APP_TEST         = test_capi-precis
 

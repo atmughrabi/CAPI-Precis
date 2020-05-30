@@ -1,5 +1,5 @@
-#ifndef ALGORITHM_H
-#define ALGORITHM_H
+#ifndef MEMCPY_H
+#define MEMCPY_H
 
 #include <stdint.h>
 #include "config.h"
@@ -13,7 +13,7 @@ struct __attribute__((__packed__)) DataArrays
     uint64_t size;                      // 4-Bytes
     uint32_t *array_send;               // 8-Bytes pointer
     uint32_t *array_receive;             // 8-Bytes pointer
-}; 
+};
 
 
 struct DataArrays *newDataArrays(struct Arguments *arguments);

@@ -5,12 +5,13 @@
 #include "myMalloc.h"
 #include "libcxl.h"
 
-#include "algorithm.h"
+#include "memcpy.h"
+#include "mmtiled.h"
 
 // ********************************************************************************************
 // ***************                  MMIO General                                 **************
 // ********************************************************************************************
-// 0x3fffff8 >> 0x3FFFF10 used 
+// 0x3fffff8 >> 0x3FFFF10 used
 #define AFU_CONFIGURE           0x3FFFFF8
 #define AFU_CONFIGURE_2         0x3FFFF30
 #define AFU_STATUS              0x3FFFFF0
@@ -19,7 +20,7 @@
 #define CU_CONFIGURE_2          0x3FFFF28
 #define CU_STATUS               0x3FFFFE0
 
-#define CU_RETURN               0x3FFFFD8         // running counters that you can read continuosly     
+#define CU_RETURN               0x3FFFFD8         // running counters that you can read continuosly
 #define CU_RETURN_2             0x3FFFF10
 #define CU_RETURN_ACK           0x3FFFFD0
 

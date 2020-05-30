@@ -7,7 +7,7 @@
 // -----------------------------------------------------------------------------
 // Author : Abdullah Mughrabi
 // Email  : atmughra@ncsu.edu||atmughrabi@gmail.com
-// File   : algorithm.c
+// File   : memcpy.c
 // Create : 2019-09-28 14:41:30
 // Revise : 2019-11-29 11:17:40
 // Editor : Abdullah Mughrabi

@@ -21,7 +21,7 @@
 #include "libcxl.h"
 #include "capienv.h"
 
-#include "algorithm.h"
+#include "memcpy.h"
 
 // ********************************************************************************************
 // ***************                  AFU General                                  **************
