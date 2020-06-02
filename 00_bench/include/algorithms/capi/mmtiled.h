@@ -24,10 +24,7 @@ void freeMatrixArrays(struct MatrixArrays *matrixArrays);
 void initializeMatrixArrays(struct MatrixArrays *matrixArrays);
 uint64_t compareMatrixArrays(struct MatrixArrays *matrixArrays1, struct MatrixArrays *matrixArrays2);
 uint64_t checksumMatrixArrays(struct MatrixArrays *matrixArrays);
-void matrixTranspose(struct MatrixArrays *matrixArrays);
 void matrixMultiplyStandard(struct MatrixArrays *matrixArrays);
-void matrixMultiplyStandardTransposed(struct MatrixArrays *matrixArrays);
 void matrixMultiplyTiled(struct MatrixArrays *matrixArrays);
-void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays);
 
 #endif

@@ -140,6 +140,7 @@ main (int argc, char **argv)
     numThreads = arguments.numThreads;
     mt19937var = (mt19937state *) my_malloc(sizeof(mt19937state));
     initializeMersenneState (mt19937var, 27491095);
+    uint64_t checksum = 0;
 
     omp_set_nested(1);
     omp_set_num_threads(numThreads);
@@ -166,27 +167,73 @@ main (int argc, char **argv)
     printf(" -----------------------------------------------------\n");
 
     Start(timer);
-    if(arguments.cu_mode)
-        matrixMultiplyTiled(matrixArrays);
-    else
-        matrixMultiplyStandard(matrixArrays);
+    matrixMultiplyStandard(matrixArrays);
     Stop(timer);
 
+    checksum = 0;
+    checksum = checksumMatrixArrays(matrixArrays);
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s | %-18lu | \n", "Standard MM checksum (#)", checksum);
+    printf(" -----------------------------------------------------\n");
+
+    double bandwidth_GB = (double)((double)(matrixArrays->size_n * matrixArrays->size_n) / (double)(1024 * 1024 * 256)) / Seconds(timer); //GB/s
+    double bandwidth_MB = (double)((double)(matrixArrays->size_n * matrixArrays->size_n) / (double)(1024 * 256)) / Seconds(timer); //MB/s
     printf("| %-22s | %-27.20lf| \n", "Time (Seconds)", Seconds(timer));
-
-    double bandwidth_GB = (double)((double)(matrixArrays->size_n*matrixArrays->size_n) / (double)(1024 * 1024 * 256)) / Seconds(timer); //GB/s
-    double bandwidth_MB = (double)((double)(matrixArrays->size_n*matrixArrays->size_n) / (double)(1024 * 256)) / Seconds(timer); //MB/s
-
     printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
     printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
 
-    uint64_t checksum = 0;
-    checksum = checksumMatrixArrays(matrixArrays);
 
+    Start(timer);
+    matrixMultiplyTiled(matrixArrays);
+    Stop(timer);
+
+    checksum = 0;
+    checksum = checksumMatrixArrays(matrixArrays);
     printf("*-----------------------------------------------------*\n");
-    printf("| %-30s | %-18lu | \n", "Data checksum (#)", checksum);
+    printf("| %-30s | %-18lu | \n", "Tiled MM checksum (#)", checksum);
     printf(" -----------------------------------------------------\n");
 
+    bandwidth_GB = (double)((double)(matrixArrays->size_n * matrixArrays->size_n) / (double)(1024 * 1024 * 256)) / Seconds(timer); //GB/s
+    bandwidth_MB = (double)((double)(matrixArrays->size_n * matrixArrays->size_n) / (double)(1024 * 256)) / Seconds(timer); //MB/s
+    printf("| %-22s | %-27.20lf| \n", "Time (Seconds)", Seconds(timer));
+    printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
+    printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
+
+
+    matrixTranspose(matrixArrays);
+
+    Start(timer);
+    matrixMultiplyStandardTransposed(matrixArrays);
+    Stop(timer);
+
+    checksum = 0;
+    checksum = checksumMatrixArrays(matrixArrays);
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s | %-18lu | \n", "StandardTrans MM checksum (#)", checksum);
+    printf(" -----------------------------------------------------\n");
+
+    bandwidth_GB = (double)((double)(matrixArrays->size_n * matrixArrays->size_n) / (double)(1024 * 1024 * 256)) / Seconds(timer); //GB/s
+    bandwidth_MB = (double)((double)(matrixArrays->size_n * matrixArrays->size_n) / (double)(1024 * 256)) / Seconds(timer); //MB/s
+    printf("| %-22s | %-27.20lf| \n", "Time (Seconds)", Seconds(timer));
+    printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
+    printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
+
+
+    Start(timer);
+    matrixMultiplyTiledTransposed(matrixArrays);
+    Stop(timer);
+
+    checksum = 0;
+    checksum = checksumMatrixArrays(matrixArrays);
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-30s | %-18lu | \n", "TiledTrans MM checksum (#)", checksum);
+    printf(" -----------------------------------------------------\n");
+
+    bandwidth_GB = (double)((double)(matrixArrays->size_n * matrixArrays->size_n) / (double)(1024 * 1024 * 256)) / Seconds(timer); //GB/s
+    bandwidth_MB = (double)((double)(matrixArrays->size_n * matrixArrays->size_n) / (double)(1024 * 256)) / Seconds(timer); //MB/s
+    printf("| %-22s | %-27.20lf| \n", "Time (Seconds)", Seconds(timer));
+    printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
+    printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
 
     printf("*-----------------------------------------------------*\n");
     printf("| %-30s %-20lu | \n", "Freeing Data Arrays (SIZE)", arguments.size);
