@@ -208,8 +208,8 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #1-128byte cacheline equal to 32 unsigned int type
 
 export NUM_THREADS = 8
-LHS=64
-RHS=64
+LHS=32
+RHS=32
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 
