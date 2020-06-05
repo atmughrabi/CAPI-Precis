@@ -11,7 +11,7 @@
 struct __attribute__((__packed__)) MatrixArrays
 {
     uint64_t size_n; // nxn matrix size
-    uint64_t size_t; // tile size
+    uint64_t size_tile; // tile size
     uint32_t *A;
     uint32_t *B;
     uint32_t *C;            // 8-Bytes pointer

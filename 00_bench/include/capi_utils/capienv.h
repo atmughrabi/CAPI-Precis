@@ -139,6 +139,37 @@ struct WEDStruct *mapDataArraysToWED(struct DataArrays *dataArrays);
 void printWEDPointers(struct  WEDStruct *wed);
 
 // ********************************************************************************************
+// ***************                      DataStructure                            **************
+// ********************************************************************************************
+
+struct __attribute__((__packed__)) WEDStructMM
+{
+    uint64_t size_n;                // 8-Bytes
+    uint64_t size_tile;             // 8-Bytes
+    void *A;                        // 8-Bytes
+    void *B;                        // 8-Bytes
+    void *C;                        // 8-Bytes
+    void *pointer3;                 // 8-Bytes
+    void *pointer4;                 // 8-Bytes
+    //---------------------------------------------------//--// 64bytes
+    void *pointer5;                 // 8-Bytes
+    void *pointer6;                 // 8-Bytes
+    void *pointer7;                 // 8-Bytes
+    void *pointer8;                 // 8-Bytes
+    void *pointer9;                 // 8-Bytes
+    void *pointer10;                // 8-Bytes
+    void *pointer11;                // 8-Bytes
+    void *pointer12;                // 8-Bytes
+}; // 32-bytes used from 128-Bytes WED;
+
+// ********************************************************************************************
+// ***************                        afu_config BIT-MAPPING                 **************
+// ********************************************************************************************
+
+struct WEDStructMM *mapDataMatrixArraysToWED(struct MatrixArrays *dataArrays);
+void printMatrixWEDPointers(struct  WEDStructMM *wed);
+
+// ********************************************************************************************
 // ***************                  MMIO General                                 **************
 // ********************************************************************************************
 

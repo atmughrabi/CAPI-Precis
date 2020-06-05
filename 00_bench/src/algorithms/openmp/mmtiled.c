@@ -32,7 +32,7 @@ struct MatrixArrays *newMatrixArrays(struct Arguments *arguments)
     struct MatrixArrays *matrixArrays = (struct MatrixArrays *) my_malloc(sizeof(struct MatrixArrays));
 
     matrixArrays->size_n = arguments->size;
-    matrixArrays->size_t = arguments->cu_config_2;
+    matrixArrays->size_tile = arguments->cu_config_2;
 
     matrixArrays->A = (uint32_t *) my_malloc(sizeof(uint32_t) * (matrixArrays->size_n) * (matrixArrays->size_n));
     matrixArrays->B = (uint32_t *) my_malloc(sizeof(uint32_t) * (matrixArrays->size_n) * (matrixArrays->size_n));
@@ -202,19 +202,19 @@ void matrixMultiplyTiled(struct MatrixArrays *matrixArrays)
     uint32_t sum;
 
     #pragma omp parallel for private(j,k,ii,jj,kk,sum) schedule(dynamic)
-    for(i = 0; i < matrixArrays->size_n; i += matrixArrays->size_t)
+    for(i = 0; i < matrixArrays->size_n; i += matrixArrays->size_tile)
     {
-        for(j = 0; j < matrixArrays->size_n; j += matrixArrays->size_t)
+        for(j = 0; j < matrixArrays->size_n; j += matrixArrays->size_tile)
         {
-            for(k = 0; k < matrixArrays->size_n; k += matrixArrays->size_t)
+            for(k = 0; k < matrixArrays->size_n; k += matrixArrays->size_tile)
             {
-                for (ii = i; ii < MIN(i + matrixArrays->size_t,  matrixArrays->size_n); ii++)
+                for (ii = i; ii < MIN(i + matrixArrays->size_tile,  matrixArrays->size_n); ii++)
                 {
-                    for (jj = j; jj < MIN(j + matrixArrays->size_t,  matrixArrays->size_n); jj++)
+                    for (jj = j; jj < MIN(j + matrixArrays->size_tile,  matrixArrays->size_n); jj++)
                     {
                         sum = 0;
                         //#pragma omp parallel for reduction(+:sum)
-                        for (kk = k; kk < MIN(k + matrixArrays->size_t,  matrixArrays->size_n); kk++)
+                        for (kk = k; kk < MIN(k + matrixArrays->size_tile,  matrixArrays->size_n); kk++)
                         {
                             sum += matrixArrays->A[(ii * matrixArrays->size_n) + kk] * matrixArrays->B[(kk * matrixArrays->size_n) + jj];
                         }
@@ -239,19 +239,19 @@ void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays)
     uint32_t sum;
 
     #pragma omp parallel for private(j,k,ii,jj,kk,sum) schedule(dynamic)
-    for(i = 0; i < matrixArrays->size_n; i += matrixArrays->size_t)
+    for(i = 0; i < matrixArrays->size_n; i += matrixArrays->size_tile)
     {
-        for(j = 0; j < matrixArrays->size_n; j += matrixArrays->size_t)
+        for(j = 0; j < matrixArrays->size_n; j += matrixArrays->size_tile)
         {
-            for(k = 0; k < matrixArrays->size_n; k += matrixArrays->size_t)
+            for(k = 0; k < matrixArrays->size_n; k += matrixArrays->size_tile)
             {
-                for (ii = i; ii < MIN(i + matrixArrays->size_t,  matrixArrays->size_n); ii++)
+                for (ii = i; ii < MIN(i + matrixArrays->size_tile,  matrixArrays->size_n); ii++)
                 {
-                    for (jj = j; jj < MIN(j + matrixArrays->size_t,  matrixArrays->size_n); jj++)
+                    for (jj = j; jj < MIN(j + matrixArrays->size_tile,  matrixArrays->size_n); jj++)
                     {
                         sum = 0;
                         //#pragma omp parallel for reduction(+:sum)
-                        for (kk = k; kk < MIN(k + matrixArrays->size_t,  matrixArrays->size_n); kk++)
+                        for (kk = k; kk < MIN(k + matrixArrays->size_tile,  matrixArrays->size_n); kk++)
                         {
                             sum += matrixArrays->A[(ii * matrixArrays->size_n) + kk] * matrixArrays->B[(jj * matrixArrays->size_n) + kk];
                         }

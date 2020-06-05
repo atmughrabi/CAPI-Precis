@@ -413,3 +413,43 @@ void printWEDPointers(struct  WEDStruct *wed)
     printf(" -----------------------------------------------------\n");
 
 }
+
+
+struct WEDStructMM *mapDataMatrixArraysToWED(struct MatrixArrays *dataArrays)
+{
+
+    struct WEDStructMM *wed = my_malloc(sizeof(struct WEDStructMM));
+
+    wed->size_n     = dataArrays->size_n;
+    wed->size_tile  = dataArrays->size_tile;
+    wed->A          = dataArrays->A;
+    wed->B          = dataArrays->B;
+    wed->C          = dataArrays->C;
+
+
+#ifdef  VERBOSE
+    printMatrixWEDPointers(wed);
+#endif
+
+    return wed;
+
+}
+
+
+
+void printMatrixWEDPointers(struct  WEDStructMM *wed)
+{
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-15s %-18s %-15s | \n", " ", "WEDStructMM structure", " ");
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27p| \n", "wed",   wed);
+    printf("| %-22s | %-27lu| \n", "wed->size_n", wed->size_n);
+    printf("| %-22s | %-27lu| \n", "wed->size_tile", wed->size_tile);
+    printf("| %-22s | %-27p| \n", "wed->A", wed->A);
+    printf("| %-22s | %-27p| \n", "wed->B", wed->B);
+    printf("| %-22s | %-27p| \n", "wed->C", wed->C);
+    printf(" -----------------------------------------------------\n");
+
+
+}
