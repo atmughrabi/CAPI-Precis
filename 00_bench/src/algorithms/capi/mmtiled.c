@@ -81,6 +81,23 @@ void initializeMatrixArrays(struct MatrixArrays *matrixArrays)
 
 }
 
+void resetMatrixArrays(struct MatrixArrays *matrixArrays)
+{
+
+    uint64_t i;
+    uint64_t j;
+
+    #pragma omp parallel for private(j)
+    for(i = 0; i < matrixArrays->size_n; i++)
+    {
+        for(j = 0; j < matrixArrays->size_n; j++)
+        {
+            matrixArrays->C[(i * matrixArrays->size_n) + j] = 0;
+        }
+    }
+
+}
+
 uint64_t compareMatrixArrays(struct MatrixArrays *matrixArrays1, struct MatrixArrays *matrixArrays2)
 {
     uint64_t missmatch = 0;
@@ -230,39 +247,74 @@ void matrixMultiplyTiled(struct MatrixArrays *matrixArrays)
 
 }
 
-void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays)
+void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays, struct Arguments *arguments)
 {
 
-    uint64_t i;
-    uint64_t j;
-    uint64_t k;
-    uint64_t ii;
-    uint64_t jj;
-    uint64_t kk;
-    uint32_t sum;
+    uint32_t i;
+    uint32_t j;
+    uint32_t k;
 
-    #pragma omp parallel for private(j,k,ii,jj,kk,sum) schedule(dynamic)
+    struct cxl_afu_h *afu;
+
+    // ********************************************************************************************
+    // ***************                  MAP CSR DataStructure                        **************
+    // ********************************************************************************************
+
+    struct WEDStructMM *wed = mapDataMatrixArraysToWED(matrixArrays);
+
+    // ********************************************************************************************
+    // ***************                 Setup AFU                                     **************
+    // ********************************************************************************************
+
+    setupAFUMM(&afu, wed);
+
+    struct AFUStatus afu_status = {0};
+    afu_status.afu_config = arguments->afu_config;
+    afu_status.afu_config_2 = arguments->afu_config_2;
+    afu_status.cu_config = 0; // non zero CU triggers the AFU to work
+    afu_status.cu_config = ((afu_status.cu_config << 32) | (arguments->numThreads));
+    afu_status.cu_config_2 = 0;
+    afu_status.cu_stop = wed->size_tile;
+
+    // ********************************************************************************************
+    // ***************                 START AFU                                     **************
+    // ********************************************************************************************
+
+
+    startAFU(&afu, &afu_status);
+
+
+
     for(i = 0; i < matrixArrays->size_n; i += matrixArrays->size_tile)
     {
         for(j = 0; j < matrixArrays->size_n; j += matrixArrays->size_tile)
         {
             for(k = 0; k < matrixArrays->size_n; k += matrixArrays->size_tile)
             {
-                for (ii = i; ii < MIN(i + matrixArrays->size_tile,  matrixArrays->size_n); ii++)
-                {
-                    for (jj = j; jj < MIN(j + matrixArrays->size_tile,  matrixArrays->size_n); jj++)
-                    {
-                        sum = 0;
-                        //#pragma omp parallel for reduction(+:sum)
-                        for (kk = k; kk < MIN(k + matrixArrays->size_tile,  matrixArrays->size_n); kk++)
-                        {
-                            sum += matrixArrays->A[(ii * matrixArrays->size_n) + kk] * matrixArrays->B[(jj * matrixArrays->size_n) + kk];
-                        }
-                        matrixArrays->C[(ii * matrixArrays->size_n) + jj] += sum;
-                    }
-                }
+
+                // ********************************************************************************************
+                // ***************                 START CU                                      **************
+                // ********************************************************************************************
+                afu_status.cu_config = i; // non zero CU triggers the AFU to work
+                afu_status.cu_config = ((afu_status.cu_config << 32) | (arguments->numThreads));
+                afu_status.cu_config_2 = j;
+                afu_status.cu_config_2 = ((afu_status.cu_config_2 << 32) | (k));
+                startCU(&afu, &afu_status);
+
+                // ********************************************************************************************
+                // ***************                 WAIT AFU                                      **************
+                // ********************************************************************************************
+
+                waitAFU(&afu, &afu_status);
+
+                printMMIO_error(afu_status.error);
+
             }
         }
     }
+
+    releaseAFU(&afu);
+    free(wed);
+
 
 }

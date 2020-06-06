@@ -180,6 +180,8 @@ void printMMIO_error( uint64_t error );
 // ********************************************************************************************
 
 int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed);
+int setupAFUMM(struct cxl_afu_h **afu, struct WEDStructMM *wed);
+
 void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status);
 void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status);
 void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status);

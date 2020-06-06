@@ -186,6 +186,7 @@ main (int argc, char **argv)
     printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
     printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
 
+    resetMatrixArrays(matrixArrays);
 
     Start(timer);
     matrixMultiplyTiled(matrixArrays);
@@ -203,6 +204,8 @@ main (int argc, char **argv)
     printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
     printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
     printf("*-----------------------------------------------------*\n");
+
+    resetMatrixArrays(matrixArrays);
 
     Start(timer);
     matrixTranspose(matrixArrays);
@@ -230,9 +233,10 @@ main (int argc, char **argv)
     printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
     printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
 
+    resetMatrixArrays(matrixArrays);
 
     Start(timer);
-    matrixMultiplyTiledTransposed(matrixArrays);
+    matrixMultiplyTiledTransposed(matrixArrays, &arguments);
     Stop(timer);
 
     checksum = 0;

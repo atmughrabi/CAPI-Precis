@@ -21,6 +21,8 @@
 #include "libcxl.h"
 #include "capienv.h"
 
+
+#include "mmtiled.h"
 #include "memcpy.h"
 
 // ********************************************************************************************
@@ -28,6 +30,29 @@
 // ********************************************************************************************
 
 int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed)
+{
+
+    (*afu) = cxl_afu_open_dev(DEVICE_1);
+    if(!afu)
+    {
+        printf("Failed to open AFU: %m\n");
+        return 1;
+    }
+
+    cxl_afu_attach((*afu), (uint64_t)wed);
+    int base_address = cxl_mmio_map ((*afu), CXL_MMIO_BIG_ENDIAN);
+
+    if (base_address < 0)
+    {
+        printf("fail cxl_mmio_map %d", base_address);
+        return 1;
+    }
+
+    return 0;
+
+}
+
+int setupAFUMM(struct cxl_afu_h **afu, struct WEDStructMM *wed)
 {
 
     (*afu) = cxl_afu_open_dev(DEVICE_1);

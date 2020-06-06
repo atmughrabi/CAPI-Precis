@@ -57,6 +57,7 @@ void freeMatrixArrays(struct MatrixArrays *matrixArrays)
     }
 
 }
+
 void initializeMatrixArrays(struct MatrixArrays *matrixArrays)
 {
 
@@ -72,6 +73,23 @@ void initializeMatrixArrays(struct MatrixArrays *matrixArrays)
             // matrixArrays->B[(i * matrixArrays->size_n) + j] = generateRandInt(mt19937var) % 512;
             matrixArrays->A[(i * matrixArrays->size_n) + j] = (i * matrixArrays->size_n) + j;
             matrixArrays->B[(i * matrixArrays->size_n) + j] = (i * matrixArrays->size_n) + j;
+            matrixArrays->C[(i * matrixArrays->size_n) + j] = 0;
+        }
+    }
+
+}
+
+void resetMatrixArrays(struct MatrixArrays *matrixArrays)
+{
+
+    uint64_t i;
+    uint64_t j;
+
+    #pragma omp parallel for private(j)
+    for(i = 0; i < matrixArrays->size_n; i++)
+    {
+        for(j = 0; j < matrixArrays->size_n; j++)
+        {
             matrixArrays->C[(i * matrixArrays->size_n) + j] = 0;
         }
     }
@@ -227,7 +245,7 @@ void matrixMultiplyTiled(struct MatrixArrays *matrixArrays)
 
 }
 
-void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays)
+void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays, struct Arguments *arguments)
 {
 
     uint64_t i;
