@@ -3,12 +3,10 @@
 #                GENERAL DIRECTOIRES                    #
 #########################################################
 # globals binaary /bin/capi-precis name doesn't need to match main/capi-precis.c
-
-  CU_ALGORITHM 	 	?= memcpy
-
-  APP               ?= capi-precis-memcpy
+CU_ALGORITHM 	 	?= memcpy
+APP               ?= capi-precis-$(CU_ALGORITHM)
 # test name needs to match the file name test/test_capi-precis.c
-  APP_TEST          ?= test_afu
+APP_TEST          ?= test_afu
 #   APP_TEST          ?= test_capi-precis
 
 # dirs Root app
@@ -532,7 +530,7 @@ run-test-capi: test-capi
 
 .PHONY: run-vsim
 run-vsim: build-libdpi
-	cd $(CAPI_SIM) && vsim -do sim_$(CU_ALGORITHM).tcl
+	cd $(CAPI_SIM) && vsim -do "set algorithm $(CU_ALGORITHM);source sim_$(CU_ALGORITHM).tcl"
 
 .PHONY: run-pslse
 run-pslse: build-pslse

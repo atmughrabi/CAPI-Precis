@@ -3,10 +3,10 @@
 #########################################################
 # globals binary S
 
-# export CU_ALGORITHM 	= memcpy
-export CU_ALGORITHM 	= mmtiled
+export CU_ALGORITHM 	= memcpy
+# export CU_ALGORITHM 	= mmtiled
 
-export APP              = capi-precis-mmtiled
+export APP              = capi-precis-$(CU_ALGORITHM)
 # test name
 export APP_TEST         = test_capi-precis
 
@@ -344,7 +344,6 @@ clean-nohup:
 
 export PART=5SGXMA7H2F35C2
 export PROJECT = capi-precis
-export CU_ALGORITHM = memcpy
 
 export VERSION_GIT = $(shell python ./$(SCRIPT_DIR)/version.py)
 export TIME_STAMP = $(shell date +%Y_%m_%d_%H_%M_%S)
