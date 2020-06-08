@@ -149,11 +149,11 @@ main (int argc, char **argv)
     printf("| %-20s %-30u | \n", "Number of Threads :", numThreads);
     printf(" -----------------------------------------------------\n");
 
-    double size_GB = (double)((double)(arguments.size* arguments.size) / (double)(1024 * 1024 * 256)); //GB/s
-    double size_MB = (double)((double)(arguments.size* arguments.size) / (double)(1024 * 256)); //MB/s
+    double size_GB = (double)((double)(arguments.size * arguments.size) / (double)(1024 * 1024 * 256)); //GB/s
+    double size_MB = (double)((double)(arguments.size * arguments.size) / (double)(1024 * 256)); //MB/s
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-35s %-15lu | \n", " Matrix Arrays (SIZE Elements) |", arguments.size*arguments.size);
+    printf("| %-35s %-15lu | \n", " Matrix Arrays (SIZE Elements) |", arguments.size * arguments.size);
     printf("| %-35s %-15lf | \n", "               (SIZE MB)       |", size_MB);
     printf("| %-35s %-15lf | \n", "               (SIZE GB)       |", size_GB);
     printf(" -----------------------------------------------------\n");
@@ -212,7 +212,7 @@ main (int argc, char **argv)
     Stop(timer);
 
     printf("*-----------------------------------------------------*\n");
-    printf("| %-35s %-15lu | \n", "Transpose Matrix B (SIZE)", arguments.size*arguments.size);
+    printf("| %-35s %-15lu | \n", "Transpose Matrix B (SIZE)", arguments.size * arguments.size);
     printf(" -----------------------------------------------------\n");
     printf("| %-22s | %-27.20lf| \n", " Time (Seconds)", Seconds(timer));
     printf(" -----------------------------------------------------\n");

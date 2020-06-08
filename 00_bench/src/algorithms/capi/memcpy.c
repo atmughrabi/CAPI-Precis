@@ -25,9 +25,9 @@
 #include "myMalloc.h"
 #include "config.h"
 
-
 #include "libcxl.h"
 #include "capienv.h"
+
 
 #include "memcpy.h"
 
@@ -67,7 +67,7 @@ void initializeDataArrays(struct DataArrays *dataArrays)
     #pragma omp parallel for
     for(i = 0; i < dataArrays->size; i++)
     {
-        dataArrays->array_send[i] = generateRandInt(mt19937var);
+        dataArrays->array_send[i] = i;
         dataArrays->array_receive[i] = 0;
     }
 }

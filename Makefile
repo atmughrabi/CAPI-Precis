@@ -3,8 +3,9 @@
 #########################################################
 # globals binary S
 
-export CU_ALGORITHM 	= memcpy
+# export CU_ALGORITHM 	= memcpy
 # export CU_ALGORITHM 	= mmtiled
+export CU_ALGORITHM 	= helloAFU
 
 export APP              = capi-precis-$(CU_ALGORITHM)
 # test name
