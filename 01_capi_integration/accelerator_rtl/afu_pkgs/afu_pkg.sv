@@ -31,6 +31,8 @@ package AFU_PKG;
   typedef struct packed {
     logic [0:63] var1;
     logic [0:63] var2;
+    logic [0:63] var3;
+    logic [0:63] var4;
   } cu_configure_type;
 
   typedef struct packed {

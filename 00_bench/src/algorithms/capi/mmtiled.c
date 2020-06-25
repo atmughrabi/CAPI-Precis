@@ -75,7 +75,7 @@ void initializeMatrixArrays(struct MatrixArrays *matrixArrays)
             // matrixArrays->B[(i * matrixArrays->size_n) + j] = generateRandInt(mt19937var) % 512;
             matrixArrays->A[(i * matrixArrays->size_n) + j] = (i * matrixArrays->size_n) + j;
             matrixArrays->B[(i * matrixArrays->size_n) + j] = (i * matrixArrays->size_n) + j;
-            matrixArrays->C[(i * matrixArrays->size_n) + j] = 0;
+            matrixArrays->C[(i * matrixArrays->size_n) + j] = (i * matrixArrays->size_n) + j;
         }
     }
 
@@ -92,7 +92,7 @@ void resetMatrixArrays(struct MatrixArrays *matrixArrays)
     {
         for(j = 0; j < matrixArrays->size_n; j++)
         {
-            matrixArrays->C[(i * matrixArrays->size_n) + j] = 0;
+            matrixArrays->C[(i * matrixArrays->size_n) + j] = (i * matrixArrays->size_n) + j;
         }
     }
 
@@ -274,7 +274,7 @@ void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays, struct Arg
     afu_status.cu_config = 0; // non zero CU triggers the AFU to work
     afu_status.cu_config = ((afu_status.cu_config << 32) | (arguments->numThreads));
     afu_status.cu_config_2 = 0;
-    afu_status.cu_stop = wed->size_tile;
+    afu_status.cu_stop = wed->size_tile * wed->size_tile;
 
     // ********************************************************************************************
     // ***************                 START AFU                                     **************
@@ -295,10 +295,11 @@ void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays, struct Arg
                 // ********************************************************************************************
                 // ***************                 START CU                                      **************
                 // ********************************************************************************************
-                afu_status.cu_config = i; // non zero CU triggers the AFU to work
+                afu_status.cu_config = arguments->cu_config; // non zero CU triggers the AFU to work
                 afu_status.cu_config = ((afu_status.cu_config << 32) | (arguments->numThreads));
-                afu_status.cu_config_2 = j;
-                afu_status.cu_config_2 = ((afu_status.cu_config_2 << 32) | (k));
+                afu_status.cu_config_2 = ((i << 1) | 1);
+                afu_status.cu_config_3 = ((j << 1) | 1);
+                afu_status.cu_config_4 = ((k << 1) | 1);
                 startCU(&afu, &afu_status);
 
                 // ********************************************************************************************

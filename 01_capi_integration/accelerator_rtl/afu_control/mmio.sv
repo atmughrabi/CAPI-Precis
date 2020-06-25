@@ -242,6 +242,12 @@ module mmio (
           CU_CONFIGURE_2 : begin
             cu_configure.var2 <= data_in_latched;
           end
+          CU_CONFIGURE_3 : begin
+            cu_configure.var3 <= data_in_latched;
+          end
+          CU_CONFIGURE_4 : begin
+            cu_configure.var4 <= data_in_latched;
+          end
           AFU_CONFIGURE : begin
             afu_configure.var1 <= data_in_latched;
           end

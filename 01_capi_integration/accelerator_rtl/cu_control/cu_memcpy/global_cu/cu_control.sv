@@ -72,6 +72,8 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 	logic [                 0:63] cu_return_latched_2   ;
 	logic [                 0:63] cu_configure_latched  ;
 	logic [                 0:63] cu_configure_2_latched;
+    logic [                 0:63] cu_configure_3_latched;
+    logic [                 0:63] cu_configure_4_latched;
 	logic                         done_algorithm        ;
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done;
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done ;
@@ -174,7 +176,7 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 				cu_return.var1 <= cu_return_latched;
 				cu_return.var2 <= cu_return_latched_2;
 				cu_done        <= done_algorithm;
-				cu_status      <= cu_configure_latched;
+				cu_status      <= (|cu_configure_latched) && (|cu_configure_3_latched) && (|cu_configure_4_latched);
 			end
 		end
 	end
@@ -210,6 +212,8 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 			read_data_1_in_latched    <= 0;
 			cu_configure_latched      <= 0;
 			cu_configure_2_latched    <= 0;
+            cu_configure_3_latched    <= 0;
+            cu_configure_4_latched    <= 0;
 		end else begin
 			if(enabled)begin
 				wed_request_in_latched    <= wed_request_in;
@@ -223,6 +227,12 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 
 				if((|cu_configure.var2))
 					cu_configure_2_latched <= cu_configure.var2;
+
+                if((|cu_configure.var3))
+                    cu_configure_3_latched <= cu_configure.var3;
+
+                if((|cu_configure.var4))
+                    cu_configure_4_latched <= cu_configure.var4;
 			end
 		end
 	end

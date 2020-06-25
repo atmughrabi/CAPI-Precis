@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
 //
-//      "ACCEL-GRAPH Shared Memory Accelerator Project"
+//      Shared Memory Accelerator Project"
 //
 // -----------------------------------------------------------------------------
 // Copyright (c) 2014-2019 All rights reserved
@@ -54,14 +54,26 @@ module cu_control #(
     logic                         rstn_internal                                         ;
     logic                         rstn_output                                           ;
     logic                         rstn_input                                            ;
-    logic [ 0:(ARRAY_SIZE_BITS-1)] matrix_C_job_counter_filtered                         ;
+    logic [0:(ARRAY_SIZE_BITS-1)] matrix_C_job_counter_filtered                         ;
     logic [NUM_READ_REQUESTS-1:0] submit                                                ;
     logic [NUM_READ_REQUESTS-1:0] requests                                              ;
     logic [NUM_READ_REQUESTS-1:0] ready                                                 ;
     CommandBufferLine             read_command_buffer_arbiter_in [0:NUM_READ_REQUESTS-1];
     CommandBufferLine             read_command_buffer_arbiter_out                       ;
 
-    // vertex control variables
+
+
+    // matrix_C control variables
+
+    // logic [0:(ARRAY_SIZE_BITS-1)] ii_reg_start;
+    // logic [0:(ARRAY_SIZE_BITS-1)] jj_reg_start;
+    // logic [0:(ARRAY_SIZE_BITS-1)] kk_reg_start;
+    // logic [0:(ARRAY_SIZE_BITS-1)] ii_reg_end  ;
+    // logic [0:(ARRAY_SIZE_BITS-1)] jj_reg_end  ;
+    // logic [0:(ARRAY_SIZE_BITS-1)] kk_reg_end  ;
+    // logic [0:(ARRAY_SIZE_BITS-1)] ii_reg_limit;
+    // logic [0:(ARRAY_SIZE_BITS-1)] jj_reg_limit;
+    // logic [0:(ARRAY_SIZE_BITS-1)] kk_reg_limit;
 
     //output latched
     CommandBufferLine write_command_out_matrix_A_B;
@@ -87,24 +99,28 @@ module cu_control #(
     ReadWriteDataLine read_data_1_in_matrix_C_job;
     ReadWriteDataLine read_data_1_in_matrix_A_B  ;
 
+
+
     cu_return_type cu_return_latched     ;
     logic [0:63]   cu_configure_latched  ;
     logic [0:63]   cu_configure_2_latched;
+    logic [0:63]   cu_configure_3_latched;
+    logic [0:63]   cu_configure_4_latched;
 
-    logic                        done_algorithm                    ;
-    logic [0:(ARRAY_SIZE_BITS-1)] matrix_C_job_counter_done         ;
+    logic                         done_algorithm                     ;
+    logic [0:(ARRAY_SIZE_BITS-1)] matrix_C_job_counter_done          ;
     logic [0:(ARRAY_SIZE_BITS-1)] matrix_A_B_job_counter_done        ;
-    logic [0:(ARRAY_SIZE_BITS-1)] matrix_C_job_counter_done_latched ;
+    logic [0:(ARRAY_SIZE_BITS-1)] matrix_C_job_counter_done_latched  ;
     logic [0:(ARRAY_SIZE_BITS-1)] matrix_A_B_job_counter_done_latched;
-    logic [0:(ARRAY_SIZE_BITS-1)] matrix_C_job_counter_total_latched;
+    logic [0:(ARRAY_SIZE_BITS-1)] matrix_C_job_counter_total_latched ;
 
-    logic           enabled                  ;
-    logic           enabled_cmd              ;
-    logic           enabled_matrix_C_job     ;
-    logic           enabled_matrix_A_B       ;
-    logic           cu_ready                 ;
-    VertexInterface vertex_unfiltered        ;
-    logic           vertex_request_unfiltered;
+    logic            enabled                    ;
+    logic            enabled_cmd                ;
+    logic            enabled_matrix_C_job       ;
+    logic            enabled_matrix_A_B         ;
+    logic            cu_ready                   ;
+    MatrixCInterface matrix_C_unfiltered        ;
+    logic            matrix_C_request_unfiltered;
 
     ResponseBufferLine prefetch_read_response_in_latched;
     CommandBufferLine  prefetch_read_command_out_latched;
@@ -122,11 +138,11 @@ module cu_control #(
 // logic
 ////////////////////////////////////////////////////////////////////////////
 
-    assign  write_command_out_matrix_A_B = 0;
-    assign  write_data_0_out_matrix_A_B = 0;
-    assign  write_data_1_out_matrix_A_B = 0;
-    assign  read_command_buffer_arbiter_in[1] = 0;
-    assign  write_command_bus_request = 0;
+    assign write_command_out_matrix_A_B      = 0;
+    assign write_data_0_out_matrix_A_B       = 0;
+    assign write_data_1_out_matrix_A_B       = 0;
+    assign read_command_buffer_arbiter_in[1] = 0;
+    assign write_command_bus_request         = 0;
 
 
     always_ff @(posedge clock or negedge rstn_in) begin
@@ -174,14 +190,12 @@ module cu_control #(
     always_ff @(posedge clock or negedge rstn_input) begin
         if(~rstn_input) begin
             enabled                <= 0;
-            enabled_matrix_C_job   <= 0;
+            cu_ready               <= 0;
             enabled_prefetch_read  <= 0;
             enabled_prefetch_write <= 0;
         end else begin
-            enabled              <= enabled_in;
-            enabled_matrix_C_job <= cu_ready;
-            enabled_matrix_A_B   <= cu_ready;
-            enabled_cmd          <= cu_ready;
+            enabled  <= enabled_in;
+            cu_ready <= (|cu_configure_latched) && (cu_configure_2_latched[63]) && (cu_configure_3_latched[63]) && (cu_configure_4_latched[63]) && wed_request_in_latched.valid;
             // enabled_prefetch_read  <= cu_ready && cu_configure_latched[30];
             // enabled_prefetch_write <= cu_ready && cu_configure_latched[31];
 
@@ -189,8 +203,6 @@ module cu_control #(
             enabled_prefetch_write <= 0;
         end
     end
-
-    assign cu_ready = (|cu_configure_latched) && wed_request_in_latched.valid;
 
 ////////////////////////////////////////////////////////////////////////////
 //Done signal
@@ -206,27 +218,41 @@ module cu_control #(
             if(enabled_matrix_C_job)begin
                 cu_return_latched.var1 <= matrix_C_job_counter_total_latched;
                 cu_return_latched.var2 <= matrix_A_B_job_counter_done_latched;
-                done_algorithm         <= (wed_request_in_latched.payload.wed.num_vertices == matrix_C_job_counter_total_latched) && (wed_request_in_latched.payload.wed.num_edges == matrix_A_B_job_counter_done_latched);
+                done_algorithm         <= (wed_request_in_latched.payload.wed.size_n == matrix_C_job_counter_total_latched) && (wed_request_in_latched.payload.wed.size_tile == matrix_A_B_job_counter_done_latched);
             end
         end
     end
 
     always_ff @(posedge clock or negedge rstn) begin
         if(~rstn) begin
-            cu_return                          <= 0;
-            cu_status                          <= 0;
-            cu_done                            <= 0;
-            matrix_C_job_counter_done_latched  <= 0;
+            cu_return                           <= 0;
+            cu_done                             <= 0;
+            matrix_C_job_counter_done_latched   <= 0;
             matrix_A_B_job_counter_done_latched <= 0;
-            matrix_C_job_counter_total_latched <= 0;
+            matrix_C_job_counter_total_latched  <= 0;
         end else begin
             if(enabled)begin
-                cu_return                          <= cu_return_latched;
-                cu_done                            <= done_algorithm;
-                cu_status                          <= cu_configure_latched;
-                matrix_C_job_counter_done_latched  <= matrix_C_job_counter_done;
+                cu_return                           <= cu_return_latched;
+                cu_done                             <= done_algorithm;
+                matrix_C_job_counter_done_latched   <= matrix_C_job_counter_done;
                 matrix_A_B_job_counter_done_latched <= matrix_A_B_job_counter_done;
-                matrix_C_job_counter_total_latched <= matrix_C_job_counter_done_latched + matrix_C_job_counter_filtered;
+                matrix_C_job_counter_total_latched  <= matrix_C_job_counter_done_latched;
+            end
+        end
+    end
+
+    always_ff @(posedge clock or negedge rstn) begin
+        if(~rstn) begin
+            cu_status            <= 0;
+            enabled_matrix_C_job <= 0;
+            enabled_matrix_A_B   <= 0;
+            enabled_cmd          <= 0;
+        end else begin
+            if(cu_ready) begin
+                cu_status            <= cu_configure_latched;
+                enabled_matrix_C_job <= 1;
+                enabled_matrix_A_B   <= 1;
+                enabled_cmd          <= 1;
             end
         end
     end
@@ -314,6 +340,8 @@ module cu_control #(
         if(~rstn_input) begin
             cu_configure_latched   <= 0;
             cu_configure_2_latched <= 0;
+            cu_configure_3_latched <= 0;
+            cu_configure_4_latched <= 0;
         end else begin
             if(enabled)begin
                 if((|cu_configure.var1))
@@ -321,9 +349,45 @@ module cu_control #(
 
                 if((|cu_configure.var2))
                     cu_configure_2_latched <= cu_configure.var2;
+
+                if((|cu_configure.var3))
+                    cu_configure_3_latched <= cu_configure.var3;
+
+                if((|cu_configure.var4))
+                    cu_configure_4_latched <= cu_configure.var4;
             end
         end
     end
+
+    // assign ii_reg_limit = (cu_configure_2_latched[0:62]) + wed_request_in_latched.payload.wed.size_tile;
+    // assign jj_reg_limit = (cu_configure_3_latched[0:62]) + wed_request_in_latched.payload.wed.size_tile;
+    // assign kk_reg_limit = (cu_configure_4_latched[0:62]) + wed_request_in_latched.payload.wed.size_tile;
+
+    // always_ff @(posedge clock or negedge rstn_input) begin
+    //     if(~rstn_input) begin
+    //         ii_reg_start         <= 0;
+    //         jj_reg_start         <= 0;
+    //         kk_reg_start         <= 0;
+    //         ii_reg_end           <= 0;
+    //         jj_reg_end           <= 0;
+    //         kk_reg_end           <= 0;
+    //         enabled_matrix_C_job <= 0;
+    //         enabled_matrix_A_B   <= 0;
+    //         enabled_cmd          <= 0;
+    //     end else begin
+    //         if(cu_ready) begin
+    //             ii_reg_start         <= (cu_configure_2_latched[0:62]);
+    //             jj_reg_start         <= (cu_configure_3_latched[0:62]);
+    //             kk_reg_start         <= (cu_configure_4_latched[0:62]);
+    //             ii_reg_end           <= (ii_reg_limit  < wed_request_in_latched.payload.wed.size_n) ? ii_reg_limit : wed_request_in_latched.payload.wed.size_n;
+    //             jj_reg_end           <= (jj_reg_limit  < wed_request_in_latched.payload.wed.size_n) ? jj_reg_limit : wed_request_in_latched.payload.wed.size_n;
+    //             kk_reg_end           <= (kk_reg_limit  < wed_request_in_latched.payload.wed.size_n) ? kk_reg_limit : wed_request_in_latched.payload.wed.size_n;
+    //             enabled_matrix_C_job <= 1;
+    //             enabled_matrix_A_B   <= 1;
+    //             enabled_cmd          <= 1;
+    //         end
+    //     end
+    // end
 
 ////////////////////////////////////////////////////////////////////////////
 //Drive Read Prefetch
@@ -368,7 +432,7 @@ module cu_control #(
     end
 
 ////////////////////////////////////////////////////////////////////////////
-//cu_vertex_control - graph algorithm compute units arbitration
+//cu_matrix_C_control - graph algorithm compute units arbitration
 //read commands / data read commands / read reponses
 ////////////////////////////////////////////////////////////////////////////
 
@@ -383,7 +447,7 @@ module cu_control #(
         end else begin
             if(enabled && read_response_in_latched.valid) begin
                 case (read_response_in_latched.payload.cmd.cu_id_x)
-                    VERTEX_CONTROL_ID : begin
+                    MATRIX_C_CONTROL_ID : begin
                         read_response_in_matrix_C_job.valid <= read_response_in_latched.valid;
                         read_response_in_matrix_A_B.valid   <= 0;
                     end
@@ -415,7 +479,7 @@ module cu_control #(
         end else begin
             if(enabled && read_data_0_in_latched.valid) begin
                 case (read_data_0_in_latched.payload.cmd.cu_id_x)
-                    VERTEX_CONTROL_ID : begin
+                    MATRIX_C_CONTROL_ID : begin
                         read_data_0_in_matrix_C_job.valid <= read_data_0_in_latched.valid;
                         read_data_0_in_matrix_A_B.valid   <= 0;
                     end
@@ -444,7 +508,7 @@ module cu_control #(
         end else begin
             if(enabled && read_data_1_in_latched.valid) begin
                 case (read_data_1_in_latched.payload.cmd.cu_id_x)
-                    VERTEX_CONTROL_ID : begin
+                    MATRIX_C_CONTROL_ID : begin
                         read_data_1_in_matrix_C_job.valid <= read_data_1_in_latched.valid;
                         read_data_1_in_matrix_A_B.valid   <= 0;
                     end
@@ -469,8 +533,9 @@ module cu_control #(
 //read Buffer arbitration logic
 ////////////////////////////////////////////////////////////////////////////
 
-    assign submit[0] = read_command_buffer_arbiter_in[0].valid;
-    assign submit[1] = read_command_buffer_arbiter_in[1].valid;
+    assign submit[0]   = read_command_buffer_arbiter_in[0].valid;
+    assign submit[1]   = read_command_buffer_arbiter_in[1].valid;
+    assign requests[1] = 0;
 
     round_robin_priority_arbiter_N_input_1_ouput #(
         .NUM_REQUESTS(NUM_READ_REQUESTS       ),
@@ -487,26 +552,40 @@ module cu_control #(
     );
 
 ////////////////////////////////////////////////////////////////////////////
-//cu_vertex_control - vertex job queue generation
+//cu_matrix_C_control - matrix_C job queue generation
 ////////////////////////////////////////////////////////////////////////////
+
+    assign matrix_C_request_unfiltered = 1'b1;
 
     cu_matrix_C_job_control cu_matrix_C_job_control_instant (
         .clock                   (clock                            ),
         .rstn                    (rstn                             ),
         .enabled_in              (enabled_matrix_C_job             ),
-        .cu_configure            (cu_configure_latched             ),
+        .cu_configure_2          (cu_configure_2_latched           ),
+        .cu_configure_3          (cu_configure_3_latched           ),
         .wed_request_in          (wed_request_in_latched           ),
         .read_response_in        (read_response_in_matrix_C_job    ),
         .read_data_0_in          (read_data_0_in_matrix_C_job      ),
         .read_data_1_in          (read_data_1_in_matrix_C_job      ),
         .read_buffer_status      (read_buffer_status_latched       ),
-        .vertex_request          (vertex_request_unfiltered        ),
         .read_command_bus_grant  (ready[0]                         ),
         .read_command_bus_request(requests[0]                      ),
         .read_command_out        (read_command_buffer_arbiter_in[0]),
-        .vertex                  (vertex_unfiltered                )
+        .matrix_C_request        (matrix_C_request_unfiltered      ),
+        .matrix_C_job_out        (matrix_C_unfiltered              )
     );
 
 
+    always_ff @(posedge clock or negedge rstn) begin
+        if(~rstn) begin
+            matrix_A_B_job_counter_done <= 0;
+            matrix_C_job_counter_done   <= 0;
+        end else begin
+            if(matrix_C_unfiltered.valid) begin
+                matrix_A_B_job_counter_done <= matrix_A_B_job_counter_done + 1;
+                matrix_C_job_counter_done   <= matrix_C_job_counter_done + 1;
+            end
+        end
+    end
 
 endmodule

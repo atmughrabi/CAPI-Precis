@@ -114,6 +114,8 @@ void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
     {
         cxl_mmio_write64((*afu), CU_CONFIGURE, (uint64_t)afu_status->cu_config);
         cxl_mmio_write64((*afu), CU_CONFIGURE_2, (uint64_t)afu_status->cu_config_2);
+        cxl_mmio_write64((*afu), CU_CONFIGURE_3, (uint64_t)afu_status->cu_config_3);
+        cxl_mmio_write64((*afu), CU_CONFIGURE_4, (uint64_t)afu_status->cu_config_4);
         cxl_mmio_read64((*afu), CU_STATUS, (uint64_t *) & (afu_status->cu_status));
     }
     while(!((afu_status->cu_status)));

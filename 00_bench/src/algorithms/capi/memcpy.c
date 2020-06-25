@@ -115,6 +115,8 @@ void copyDataArrays(struct DataArrays *dataArrays, struct Arguments *arguments)
     afu_status.cu_config = arguments->cu_config; // non zero CU triggers the AFU to work
     afu_status.cu_config = ((afu_status.cu_config << 24) | (arguments->numThreads));
     afu_status.cu_config_2 = afu_status.cu_config_2;
+    afu_status.cu_config_3 = 1 ;
+    afu_status.cu_config_4 = 1 ;
     afu_status.cu_stop = wed->size_send;
 
     startAFU(&afu, &afu_status);

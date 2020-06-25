@@ -4,8 +4,9 @@
 # globals binary S
 
 # export CU_ALGORITHM 	= memcpy
-# export CU_ALGORITHM 	= mmtiled
-export CU_ALGORITHM 	= helloAFU
+export CU_ALGORITHM 	= mmtiled
+# export CU_ALGORITHM 	= helloAFU
+# export CU_ALGORITHM 	= tutorial
 
 export APP              = capi-precis-$(CU_ALGORITHM)
 # test name
@@ -160,14 +161,14 @@ export ENABLE_RD_WR=3
 #enable both engines independent
 # ENABLE_RD_WR=5
 
-#disable both PREFETCH
-# ENABLE_RD_WR_PREFETCH=0
+# disable both PREFETCH
+ENABLE_RD_WR_PREFETCH=0
 #enable write PREFETCH
 # ENABLE_RD_WR_PREFETCH=1
 #enable read PREFETCH
 # ENABLE_RD_WR_PREFETCH=2
 #enable both PREFETCH
-export ENABLE_RD_WR_PREFETCH=3
+# export ENABLE_RD_WR_PREFETCH=3
 
 #disable both page address based
 # RD_WR_PREFETCH_MODE=0
@@ -209,8 +210,8 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #1-128byte cacheline equal to 32 unsigned int type
 
 export NUM_THREADS = 8
-LHS=32
-RHS=32
+LHS=16
+RHS=16
 #test
 export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
 

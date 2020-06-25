@@ -18,6 +18,7 @@ struct __attribute__((__packed__)) MatrixArrays
 };
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
+#define IS_ZERO(a) (((a==0))?(1):(a))
 
 struct MatrixArrays *newMatrixArrays(struct Arguments *arguments);
 void freeMatrixArrays(struct MatrixArrays *matrixArrays);
