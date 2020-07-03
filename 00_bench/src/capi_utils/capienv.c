@@ -24,6 +24,7 @@
 
 #include "mmtiled.h"
 #include "memcpy.h"
+#include "memcpy-tutorial.h"
 
 // ********************************************************************************************
 // ***************                  AFU General                                  **************
@@ -53,6 +54,29 @@ int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed)
 }
 
 int setupAFUMM(struct cxl_afu_h **afu, struct WEDStructMM *wed)
+{
+
+    (*afu) = cxl_afu_open_dev(DEVICE_1);
+    if(!afu)
+    {
+        printf("Failed to open AFU: %m\n");
+        return 1;
+    }
+
+    cxl_afu_attach((*afu), (uint64_t)wed);
+    int base_address = cxl_mmio_map ((*afu), CXL_MMIO_BIG_ENDIAN);
+
+    if (base_address < 0)
+    {
+        printf("fail cxl_mmio_map %d", base_address);
+        return 1;
+    }
+
+    return 0;
+
+}
+
+int setupAFUTut(struct cxl_afu_h **afu, struct WEDStructTut *wed)
 {
 
     (*afu) = cxl_afu_open_dev(DEVICE_1);
@@ -478,5 +502,37 @@ void printMatrixWEDPointers(struct  WEDStructMM *wed)
     printf("| %-22s | %-27p| \n", "wed->C", wed->C);
     printf(" -----------------------------------------------------\n");
 
+
+}
+
+
+struct WEDStructTut *mapDataArraysTutToWED(struct DataArraysTut *dataArraysTut){
+
+    struct WEDStructTut *wed = my_malloc(sizeof(struct WEDStructTut));
+
+    wed->size_send    = dataArraysTut->size;
+    wed->size_recive  = dataArraysTut->size;
+    wed->array_send     = dataArraysTut->array_send;
+    wed->array_receive  = dataArraysTut->array_receive;
+
+
+#ifdef  VERBOSE
+    printWEDPointersTut(wed);
+#endif
+
+    return wed;
+
+}
+void printWEDPointersTut(struct  WEDStructTut *wed){
+
+    printf("*-----------------------------------------------------*\n");
+    printf("| %-15s %-18s %-15s | \n", " ", "WEDStruct structure", " ");
+    printf(" -----------------------------------------------------\n");
+    printf("| %-22s | %-27p| \n", "wed",   wed);
+    printf("| %-22s | %-27lu| \n", "wed->size_send", wed->size_send);
+    printf("| %-22s | %-27lu| \n", "wed->size_recive", wed->size_recive);
+    printf("| %-22s | %-27p| \n", "wed->array_send", wed->array_send);
+    printf("| %-22s | %-27p| \n", "wed->array_receive", wed->array_receive);
+    printf(" -----------------------------------------------------\n");
 
 }

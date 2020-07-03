@@ -4,9 +4,10 @@
 # globals binary S
 
 # export CU_ALGORITHM 	= memcpy
-export CU_ALGORITHM 	= mmtiled
+# export CU_ALGORITHM 	= mmtiled
 # export CU_ALGORITHM 	= helloAFU
 # export CU_ALGORITHM 	= tutorial
+export CU_ALGORITHM 	= memcpy-tutorial
 
 export APP              = capi-precis-$(CU_ALGORITHM)
 # test name
@@ -210,10 +211,12 @@ export AFU_CONFIG_GENERIC=$(AFU_CONFIG_MODE)
 #1-128byte cacheline equal to 32 unsigned int type
 
 export NUM_THREADS = 8
-LHS=16
-RHS=16
-#test
-export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
+# LHS=16
+# RHS=16
+# #test
+# export SIZE = $(shell echo $(LHS)\*$(RHS) | bc)
+
+export SIZE = 1024
 
 #32 GB
 # export SIZE = 8589934592

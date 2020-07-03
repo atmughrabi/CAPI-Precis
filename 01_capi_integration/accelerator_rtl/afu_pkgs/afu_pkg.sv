@@ -15,7 +15,7 @@
 package AFU_PKG;
 
   import GLOBALS_AFU_PKG::*;
-  import GLOBALS_CU_PKG::*;
+  // import GLOBALS_CU_PKG::*;
   import CAPI_PKG::*;
   import CU_PKG::*;
 
@@ -98,18 +98,18 @@ package AFU_PKG;
   } tag_buffer_state;
 
   typedef struct packed {
-    cu_id_t                              cu_id_x         ; // Compute unit id
-    cu_id_t                              cu_id_y         ; // Compute unit id
-    array_struct_type                    array_struct    ;
-    command_type                         cmd_type        ; // The compute unit from the AFU SIDE will send the command type Rd/Wr/Prefetch
-    logic [0:CACHELINE_INT_COUNTER_BITS] real_size       ;
-    logic [                         0:7] real_size_bytes ;
-    logic [0:CACHELINE_INT_COUNTER_BITS] cacheline_offest;
-    logic [                        0:63] address_offest  ;
-    logic [                        0:63] aux_data        ;
-    logic [                        0:11] size            ;
-    logic [                         0:7] tag             ;
-    trans_order_behavior_t               abt             ; // ah_cabt,        // Command ABT
+    cu_id_t                cu_id_x         ; // Compute unit id
+    cu_id_t                cu_id_y         ; // Compute unit id
+    array_struct_type      array_struct    ;
+    command_type           cmd_type        ; // The compute unit from the AFU SIDE will send the command type Rd/Wr/Prefetch
+    logic [ 0:7]           real_size       ;
+    logic [ 0:7]           real_size_bytes ;
+    logic [ 0:7]           cacheline_offest;
+    logic [0:63]           address_offest  ;
+    logic [0:63]           aux_data        ;
+    logic [0:11]           size            ;
+    logic [ 0:7]           tag             ;
+    trans_order_behavior_t abt             ; // ah_cabt,        // Command ABT
   } CommandTagLine;
 
 ////////////////////////////////////////////////////////////////////////////
