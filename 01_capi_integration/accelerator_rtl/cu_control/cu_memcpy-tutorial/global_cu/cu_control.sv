@@ -48,14 +48,70 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 );
 
 
-	assign cu_return                  = 0;
-	assign cu_done                    = 0;
-	assign cu_status                  = 0;
+	logic [0:63] cu_configure_1_latched;
+	logic [0:63] cu_configure_2_latched;
+	logic [0:63] cu_configure_3_latched;
+	logic [0:63] cu_configure_4_latched;
+
 	assign read_command_out           = 0;
 	assign prefetch_read_command_out  = 0;
 	assign prefetch_write_command_out = 0;
 	assign write_command_out          = 0;
 	assign write_data_0_out           = 0;
 	assign write_data_1_out           = 0;
+
+////////////////////////////////////////////////////////////////////////////
+//enable logic
+////////////////////////////////////////////////////////////////////////////
+
+	// drive outputs
+	always_ff @(posedge clock or negedge rstn_in) begin
+		if(~rstn_in) begin
+			cu_return.var1 <= 0; //CU_RETURN
+			cu_return.var2 <= 0;  //CU_RETURN_2
+			cu_done        <= 0;
+		end else begin
+			if(enabled_in)begin
+				cu_return.var1 <= wed_request_in.payload.wed.size_send;
+				cu_return.var2 <= wed_request_in.payload.wed.size_recive;
+				cu_done        <= wed_request_in.valid;
+			end
+		end
+	end
+
+	always_ff @(posedge clock or negedge rstn_in) begin
+		if(~rstn_in) begin
+			cu_configure_1_latched <= 0;
+			cu_configure_2_latched <= 0;
+			cu_configure_3_latched <= 0;
+			cu_configure_4_latched <= 0;
+		end else begin
+			if(enabled_in)begin
+				if((|cu_configure.var1))
+					cu_configure_1_latched <= cu_configure.var1;
+
+				if((|cu_configure.var2))
+					cu_configure_2_latched <= cu_configure.var2;
+
+				if((|cu_configure.var3))
+					cu_configure_3_latched <= cu_configure.var3;
+
+				if((|cu_configure.var4))
+					cu_configure_4_latched <= cu_configure.var4;
+			end
+		end
+	end
+
+	always_ff @(posedge clock or negedge rstn_in) begin
+		if(~rstn_in) begin
+			cu_status <= 0;
+		end else begin
+			if(enabled_in)begin
+				cu_status <= (cu_configure_1_latched);
+			end
+		end
+	end
+
+
 
 endmodule
