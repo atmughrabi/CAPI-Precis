@@ -84,7 +84,7 @@ module cu_matrix_C_job_control (
     // internal registers to track logic
     // Read/write commands require the size to be a power of 2 (1, 2, 4, 8, 16, 32,64, 128).
     logic                             send_request_ready          ;
-    logic [                     0:63] matrix_C_next_offest        ;
+    logic [                     0:63] matrix_C_next_offset        ;
     logic [    0:(ARRAY_SIZE_BITS-1)] matrix_C_num_counter_jj_dec ;
     logic [    0:(ARRAY_SIZE_BITS-1)] matrix_C_num_counter_ii_dec ;
     logic [    0:(ARRAY_SIZE_BITS-1)] matrix_C_num_counter_jj_inc ;
@@ -429,9 +429,9 @@ module cu_matrix_C_job_control (
             read_command_matrix_C_job_latched_S2.payload.cmd.cu_id_x          <= MATRIX_C_CONTROL_ID;
             read_command_matrix_C_job_latched_S2.payload.cmd.cu_id_y          <= MATRIX_C_CONTROL_ID;
             read_command_matrix_C_job_latched_S2.payload.cmd.cmd_type         <= CMD_READ;
-            read_command_matrix_C_job_latched_S2.payload.cmd.address_offest   <= matrix_C_num_counter_ii_inc;
+            read_command_matrix_C_job_latched_S2.payload.cmd.address_offset   <= matrix_C_num_counter_ii_inc;
             read_command_matrix_C_job_latched_S2.payload.cmd.aux_data         <= matrix_C_num_counter_jj_inc;
-            read_command_matrix_C_job_latched_S2.payload.cmd.cacheline_offest <= 0;
+            read_command_matrix_C_job_latched_S2.payload.cmd.cacheline_offset <= 0;
             read_command_matrix_C_job_latched_S2.payload.cmd.abt              <= STRICT;
             read_command_matrix_C_job_latched_S2.payload.cmd.size             <= 12'h080;
             read_command_matrix_C_job_latched_S2.payload.cmd.tag              <= 0;

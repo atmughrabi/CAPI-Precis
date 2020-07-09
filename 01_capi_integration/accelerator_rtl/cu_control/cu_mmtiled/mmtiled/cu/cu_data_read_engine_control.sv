@@ -59,7 +59,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_send_done_latched   ;
 	logic                         enabled                      ;
 	logic                         enabled_cmd                  ;
-	logic [                 0:63] next_offest                  ;
+	logic [                 0:63] next_offset                  ;
 	logic                         done_read_pending            ;
 
 
@@ -67,7 +67,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	WEDInterface                  wed_prefetch_in_latched      ;
 	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_counter_resp_latched;
 	logic [0:(ARRAY_SIZE_BITS-1)] prefetch_counter_send_latched;
-	logic [                 0:63] next_prefetch_offest         ;
+	logic [                 0:63] next_prefetch_offset         ;
 	logic                         enabled_prefetch             ;
 	ResponseBufferLine            prefetch_response_in_latched ;
 	logic                         send_cmd_prefetch            ;
@@ -353,7 +353,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
 			read_command_out_latched   <= 0;
-			next_offest                <= 0;
+			next_offset                <= 0;
 			wed_request_in_latched     <= 0;
 			read_job_send_done_latched <= 0;
 		end else begin
@@ -394,8 +394,8 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				read_command_out_latched.payload.cmd.cu_id_x          <= CU_READ_CONTROL_ID;
 				read_command_out_latched.payload.cmd.cu_id_y          <= CU_READ_CONTROL_ID;
 				read_command_out_latched.payload.cmd.cmd_type         <= CMD_READ;
-				read_command_out_latched.payload.cmd.cacheline_offest <= 0;
-				read_command_out_latched.payload.cmd.address_offest   <= next_offest;
+				read_command_out_latched.payload.cmd.cacheline_offset <= 0;
+				read_command_out_latched.payload.cmd.address_offset   <= next_offset;
 				read_command_out_latched.payload.cmd.array_struct     <= READ_DATA;
 
 				read_command_out_latched.payload.cmd.abt <= map_CABT(cu_configure_latched[0:2]);
@@ -404,9 +404,9 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				read_command_out_latched.valid <= 1'b1;
 				read_job_send_done_latched     <= read_job_send_done_latched + 1;
 
-				read_command_out_latched.payload.address <= wed_request_in_latched.payload.wed.array_send + next_offest;
+				read_command_out_latched.payload.address <= wed_request_in_latched.payload.wed.array_send + next_offset;
 
-				next_offest <= next_offest + CACHELINE_SIZE;
+				next_offset <= next_offset + CACHELINE_SIZE;
 
 			end else begin
 				read_command_out_latched <= 0;
@@ -427,7 +427,7 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 		if(~rstn) begin
 			wed_prefetch_in_latched       <= 0;
 			prefetch_command_out_latched  <= 0;
-			next_prefetch_offest          <= 0;
+			next_prefetch_offset          <= 0;
 			prefetch_counter_send_latched <= 0;
 		end else begin
 
@@ -452,8 +452,8 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				prefetch_command_out_latched.payload.cmd.cu_id_x          <= CU_READ_CONTROL_ID;
 				prefetch_command_out_latched.payload.cmd.cu_id_y          <= CU_READ_CONTROL_ID;
 				prefetch_command_out_latched.payload.cmd.cmd_type         <= CMD_PREFETCH_READ;
-				prefetch_command_out_latched.payload.cmd.cacheline_offest <= 0;
-				prefetch_command_out_latched.payload.cmd.address_offest   <= next_prefetch_offest;
+				prefetch_command_out_latched.payload.cmd.cacheline_offset <= 0;
+				prefetch_command_out_latched.payload.cmd.address_offset   <= next_prefetch_offset;
 				prefetch_command_out_latched.payload.cmd.array_struct     <= PREFETCH_DATA;
 
 				prefetch_command_out_latched.payload.cmd.abt <= STRICT;
@@ -463,9 +463,9 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				prefetch_command_out_latched.valid <= 1'b1;
 				prefetch_counter_send_latched      <= prefetch_counter_send_latched +1;
 
-				prefetch_command_out_latched.payload.address <= wed_prefetch_in_latched.payload.wed.array_send  + next_prefetch_offest;
+				prefetch_command_out_latched.payload.address <= wed_prefetch_in_latched.payload.wed.array_send  + next_prefetch_offset;
 
-				next_prefetch_offest <= next_prefetch_offest + PAGE_SIZE;
+				next_prefetch_offset <= next_prefetch_offset + PAGE_SIZE;
 
 			end else begin
 				prefetch_command_out_latched <= 0;

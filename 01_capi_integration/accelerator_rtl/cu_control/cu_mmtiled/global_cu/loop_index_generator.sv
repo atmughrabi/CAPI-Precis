@@ -135,7 +135,7 @@ module loop_index_generator (
         case (current_state)
             SEND_READ_MATRIX_C_RESET : begin
                 read_command_matrix_C_job_latched.valid <= 0;
-                matrix_C_next_offest                    <= 0;
+                matrix_C_next_offset                    <= 0;
                 generate_read_command                   <= 0;
                 setup_read_command                      <= 0;
                 clear_data_ready                        <= 1;

@@ -118,8 +118,8 @@ module wed_control (
         command_out.payload.cmd.array_struct     <= STRUCT_INVALID;
         command_out.payload.cmd.real_size        <= 32;
         command_out.payload.cmd.real_size_bytes  <= 128;
-        command_out.payload.cmd.cacheline_offest <= 0;
-        command_out.payload.cmd.address_offest   <= 0;
+        command_out.payload.cmd.cacheline_offset <= 0;
+        command_out.payload.cmd.address_offset   <= 0;
         command_out.payload.cmd.tag              <= 0;
         command_out.payload.cmd.abt              <= STRICT;
 
