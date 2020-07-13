@@ -5,6 +5,7 @@
 #include <string.h>
 #include <math.h>
 #include <omp.h>
+#include <stdint.h>
 
 #include "timer.h"
 #include "myMalloc.h"
@@ -62,7 +63,7 @@ int my_main_call(int argc, char *argv[])
     printf("  example->parity: %p\n", example->parity);
     printf("  &(example->done): %p\n", &(example->done));
 
-    cxl_afu_attach(afu, (__u64)example);
+    cxl_afu_attach(afu, (uint64_t)example);
     printf("Attached to AFU\n");
 
     printf("Waiting for completion by AFU\n");
