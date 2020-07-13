@@ -10,7 +10,7 @@ proc r  {} {
   # compile packages
   echo "Compiling Packages"
   vlog -quiet ../../accelerator_rtl/afu_pkgs/globals_afu_pkg.sv
-  # vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/pkg/globals_cu_pkg.sv
+  vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/pkg/globals_cu_pkg.sv
 
   vlog -quiet ../../accelerator_rtl/afu_pkgs/capi_pkg.sv
   vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/global_pkg/wed_pkg.sv
@@ -52,7 +52,7 @@ proc r  {} {
   vlog -quiet ../../accelerator_rtl/afu_control/wed_control.sv
 
   echo "Compiling RTL CU control "
-  # vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/cu/cu_data_read_engine_control.sv
+  vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/cu/read_engine.sv
   # vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/cu/cu_data_write_engine_control.sv
   vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/global_cu/cu_control.sv
 

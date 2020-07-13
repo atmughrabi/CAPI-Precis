@@ -14,7 +14,7 @@
 
 
 import GLOBALS_AFU_PKG::*;
- import GLOBALS_CU_PKG::*;
+// import GLOBALS_CU_PKG::*;
 import CAPI_PKG::*;
 import WED_PKG::*;
 import AFU_PKG::*;
@@ -147,7 +147,7 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 ////////////////////////////////////////////////////////////////////////////
 
  	read_engine #(
-			.CU_READ_CONTROL_ID(DATA_READ_CONTROL_ID)
+			.CU_READ_CONTROL_ID(CU_READ_CONTROL_ID)
 		) inst_read_engine (
 			.clock                      (clock),
 			.rstn                       (rstn),

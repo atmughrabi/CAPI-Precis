@@ -253,7 +253,7 @@ void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays, struct Arg
     uint64_t k;
     uint64_t ii;
     uint64_t jj;
-    uint64_t kk;
+    // uint64_t kk;
     uint32_t sum;
 
     // #pragma omp parallel for private(j,k,ii,jj,kk,sum) schedule(dynamic)
