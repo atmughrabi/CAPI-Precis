@@ -14,7 +14,7 @@
 
 
 import GLOBALS_AFU_PKG::*;
- import GLOBALS_CU_PKG::*;
+import GLOBALS_CU_PKG::*;
 import CAPI_PKG::*;
 import WED_PKG::*;
 import AFU_PKG::*;
@@ -53,14 +53,27 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 	logic [0:63] cu_configure_3_latched;
 	logic [0:63] cu_configure_4_latched;
 
-	WEDInterface       wed_request_in_latched;
 
-	assign read_command_out           = 0;
+	ResponseBufferLine read_response_in_latched;
+	ReadWriteDataLine  read_data_0_in_latched  ;
+	ReadWriteDataLine  read_data_1_in_latched  ;
+	CommandBufferLine  read_command_out_latched;
+	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done_internal;
+	logic cu_done_internal;
+
+	WEDInterface wed_request_in_latched;
+
+
+	logic read_engine_enable;
+
+	// assign read_command_out           = 0;
 	assign prefetch_read_command_out  = 0;
 	assign prefetch_write_command_out = 0;
 	assign write_command_out          = 0;
 	assign write_data_0_out           = 0;
 	assign write_data_1_out           = 0;
+
+	assign cu_done_internal = (read_job_counter_done_internal == wed_request_in.payload.wed.size_recive) && read_engine_enable;
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
@@ -69,14 +82,14 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 	// drive outputs
 	always_ff @(posedge clock or negedge rstn_in) begin
 		if(~rstn_in) begin
-			cu_return.var1 <= 0; //CU_RETURN
+			cu_return.var1 <= 0;  //CU_RETURN
 			cu_return.var2 <= 0;  //CU_RETURN_2
 			cu_done        <= 0;
 		end else begin
 			if(enabled_in)begin
-				cu_return.var1 <= wed_request_in.payload.wed.size_send;
-				cu_return.var2 <= wed_request_in.payload.wed.size_recive;
-				cu_done        <= wed_request_in.valid;
+				cu_return.var1 <= read_job_counter_done_internal; // running/final value
+				cu_return.var2 <= read_job_counter_done_internal; // running value
+				cu_done        <= cu_done_internal; // var1 => cxl_mmio_read64((*afu), CU_RETURN_DONE, (uint64_t *) & (afu_status->cu_return_done));
 			end
 		end
 	end
@@ -107,9 +120,11 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 	always_ff @(posedge clock or negedge rstn_in) begin
 		if(~rstn_in) begin
 			cu_status <= 0;
+			read_engine_enable <= 0;
 		end else begin
 			if(enabled_in)begin
 				cu_status <= (cu_configure_1_latched);
+				read_engine_enable <= (|cu_configure_1_latched) && wed_request_in_latched.valid ;
 			end
 		end
 	end
@@ -122,17 +137,26 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 	// drive input
 	always_ff @(posedge clock or negedge rstn_in) begin
 		if(~rstn_in) begin
-			wed_request_in_latched.valid <= 0; //CU_RETURN
+			wed_request_in_latched.valid   <= 0; //CU_RETURN
+			read_response_in_latched.valid <= 0;
+			read_data_0_in_latched.valid   <= 0;
+			read_data_1_in_latched.valid   <= 0;
 		end else begin
 			if(enabled_in) begin
-				wed_request_in_latched.valid  <= wed_request_in.valid;
+				wed_request_in_latched.valid   <= wed_request_in.valid;
+				read_response_in_latched.valid <= read_response_in.valid;
+				read_data_0_in_latched.valid   <= read_data_0_in.valid;
+				read_data_1_in_latched.valid   <= read_data_1_in.valid;
 			end
 		end
 	end
 
 	// drive input
 	always_ff @(posedge clock) begin
-			wed_request_in_latched.payload <= wed_request_in.payload;
+		wed_request_in_latched.payload   <= wed_request_in.payload;
+		read_response_in_latched.payload <= read_response_in.payload;
+		read_data_0_in_latched.payload   <= read_data_0_in.payload;
+		read_data_1_in_latched.payload   <= read_data_1_in.payload;
 	end
 
 
@@ -140,26 +164,32 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 //drive out logic
 ////////////////////////////////////////////////////////////////////////////
 
-
+	always_ff @(posedge clock or negedge rstn_in) begin 
+		if(~rstn_in) begin
+			read_command_out <= 0;
+		end else begin
+			if(enabled_in) begin
+			 read_command_out <= read_command_out_latched;
+			end
+		end
+	end
 
 ////////////////////////////////////////////////////////////////////////////
 //read engine
 ////////////////////////////////////////////////////////////////////////////
 
- 	read_engine #(
-			.CU_READ_CONTROL_ID(DATA_READ_CONTROL_ID)
-		) inst_read_engine (
-			.clock                      (clock),
-			.rstn                       (rstn),
-			.read_enabled_in            (read_enabled_in),
-			.wed_request_in             (wed_request_in_latched),
-			.read_response_in           (read_response_in),
-			.read_data_0_in             (read_data_0_in),
-			.read_data_1_in             (read_data_1_in),
-			.read_command_buffer_status (read_command_buffer_status),
-			.read_command_out           (read_command_out),
-			.read_job_counter_done      (read_job_counter_done)
-		);
+	read_engine #(.CU_READ_CONTROL_ID(DATA_READ_CONTROL_ID)) read_engine_instant (
+		.clock                     (clock                     ),
+		.rstn                      (rstn_in                   ),
+		.read_enabled_in           (read_engine_enable        ),
+		.wed_request_in            (wed_request_in_latched    ),
+		.read_response_in          (read_response_in_latched  ),
+		.read_data_0_in            (read_data_0_in_latched    ),
+		.read_data_1_in            (read_data_1_in_latched    ),
+		.read_command_buffer_status(read_buffer_status        ),
+		.read_command_out          (read_command_out_latched  ),
+		.read_job_counter_done     (read_job_counter_done_internal     )
+	);
 
 
 ////////////////////////////////////////////////////////////////////////////
