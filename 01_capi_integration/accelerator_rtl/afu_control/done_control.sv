@@ -25,15 +25,15 @@ module done_control (
 	input  logic                      cu_done                   ,
 	input  logic                      cu_return_done_ack        ,
 	output logic                      reset_done                ,
-	output logic [0:63]               cu_return_done            ,
+	output cu_return_type             cu_return_done            ,
 	output ResponseStatistcsInterface report_response_statistics
 );
 
-	logic                      rstn                              ;
-	done_state                 current_state, next_state;
-	logic                      done_flag                         ;
-	logic                      enabled                           ;
-	logic [0:63]               cu_return_done_latched            ;
+	logic      rstn         ;
+	done_state current_state, next_state;
+	logic      done_flag    ;
+	logic      enabled      ;
+	cu_return_type             cu_return_done_latched            ;
 	logic                      prev_soft_rstn                    ;
 	logic                      next_soft_rstn                    ;
 	logic                      done_soft_rstn                    ;
@@ -132,7 +132,7 @@ module done_control (
 			end
 			DONE_IDLE : begin
 				cu_return_done                     <= 0;
-				cu_return_done_latched             <= cu_return.var1;
+				cu_return_done_latched             <= cu_return;
 				report_response_statistics         <= response_statistics;
 				report_response_statistics_latched <= response_statistics;
 				reset_done                         <= 1'b1;

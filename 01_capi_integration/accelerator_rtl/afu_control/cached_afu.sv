@@ -45,7 +45,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
   logic [                   0:63] external_errors        ;
   logic [                   0:63] report_errors          ;
   cu_return_type                  cu_return              ;
-  logic [                   0:63] cu_return_done         ;
+  cu_return_type                  cu_return_done         ;
   cu_configure_type               cu_configure           ;
   afu_configure_type              afu_configure          ;
   logic                           report_errors_ack      ;

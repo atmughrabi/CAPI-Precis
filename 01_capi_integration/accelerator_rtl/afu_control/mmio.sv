@@ -21,7 +21,7 @@ module mmio (
   input  logic                      rstn_in               ,
   input  logic [0:63]               report_errors         ,
   input  cu_return_type             cu_return             ,
-  input  logic [0:63]               cu_return_done        ,
+  input  cu_return_type             cu_return_done        ,
   input  logic [0:63]               cu_status             ,
   input  logic [0:63]               afu_status            ,
   input  ResponseStatistcsInterface response_statistics   ,
@@ -84,7 +84,7 @@ module mmio (
   logic              data_ack              ;
   logic [0:63]       report_errors_latched ;
   cu_return_type     cu_return_latched     ;
-  logic [0:63]       cu_return_done_latched;
+  cu_return_type     cu_return_done_latched;
   logic [0:63]       afu_status_latched    ;
   logic [0:63]       cu_status_latched     ;
   logic [0:63]       cu_return_mmio_ack    ;
@@ -298,7 +298,10 @@ module mmio (
             data_out <= cu_return_latched.var2;
           end
           CU_RETURN_DONE : begin
-            data_out <= cu_return_done_latched;
+            data_out <= cu_return_done_latched.var1;
+          end
+          CU_RETURN_DONE_2 : begin
+            data_out <= cu_return_done_latched.var2;
           end
           ERROR_REG : begin
             data_out <= report_errors_latched;

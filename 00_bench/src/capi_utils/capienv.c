@@ -169,6 +169,7 @@ void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status)
 
         // read final return result
         cxl_mmio_read64((*afu), CU_RETURN_DONE, (uint64_t *) & (afu_status->cu_return_done));
+        cxl_mmio_read64((*afu), CU_RETURN_DONE_2, (uint64_t *) & (afu_status->cu_return_done_2));
 
 #ifdef  VERBOSE_2
         cxl_mmio_read64((*afu), CU_RETURN, (uint64_t *) & (afu_status->cu_return));

@@ -95,10 +95,11 @@ package GLOBALS_AFU_PKG;
     parameter CU_RETURN_ACK = 26'h 3FFFFA8 >> 2;
 
     parameter CU_RETURN_DONE     = 26'h 3FFFFA0 >> 2;
-    parameter CU_RETURN_DONE_ACK = 26'h 3FFFF98 >> 2;
+    parameter CU_RETURN_DONE_2   = 26'h 3FFFF98 >> 2;
+    parameter CU_RETURN_DONE_ACK = 26'h 3FFFF90 >> 2;
 
-    parameter ERROR_REG     = 26'h 3FFFF90 >> 2;
-    parameter ERROR_REG_ACK = 26'h 3FFFF88 >> 2;
+    parameter ERROR_REG     = 26'h 3FFFF88 >> 2;
+    parameter ERROR_REG_ACK = 26'h 3FFFF80 >> 2;
 
 // ********************************************************************************************
 // ***************                  AFU  Stats                                   **************
