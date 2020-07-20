@@ -128,8 +128,11 @@ module read_engine #(parameter CU_READ_CONTROL_ID = DATA_READ_CONTROL_ID) (
 				next_state = READ_STREAM_START;
 			end
 			READ_STREAM_START : begin
+				next_state = READ_STREAM_REQ;
+			end
+			READ_STREAM_REQ : begin
 				if(|wed_request_in_driver.payload.wed.size_send)
-					next_state = READ_STREAM_START;
+					next_state = READ_STREAM_REQ;
 				else
 					next_state = READ_STREAM_FINAL;
 			end
@@ -154,6 +157,9 @@ module read_engine #(parameter CU_READ_CONTROL_ID = DATA_READ_CONTROL_ID) (
 			READ_STREAM_START : begin
 				cmd_setup     <= 0;
 				send_cmd_read <= 1;
+			end
+			READ_STREAM_REQ : begin
+
 			end
 			READ_STREAM_FINAL : begin
 				send_cmd_read <= 0;

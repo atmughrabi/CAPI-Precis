@@ -23,6 +23,7 @@ package CU_PKG;
         READ_STREAM_IDLE,
         READ_STREAM_SET,
         READ_STREAM_START,
+        READ_STREAM_REQ,
         READ_STREAM_FINAL
     } read_state;
 
