@@ -6,25 +6,23 @@ import AFU_PKG::*;
 import CU_PKG::*;
 
 module read_engine #(parameter CU_READ_CONTROL_ID = DATA_READ_CONTROL_ID) (
-	input  logic                         clock                     , // Clock
-	input  logic                         rstn                      ,
-	input  logic                         read_enabled_in           ,
-	input  WEDInterface                  wed_request_in            ,
-	input  ResponseBufferLine            read_response_in          ,
-	input  ReadWriteDataLine             read_data_0_in            ,
-	input  ReadWriteDataLine             read_data_1_in            ,
-	input  BufferStatus                  read_command_buffer_status,
-	output CommandBufferLine             read_command_out          ,
+	input  logic                         clock                      , // Clock
+	input  logic                         rstn                       ,
+	input  logic                         read_enabled_in            ,
+	input  WEDInterface                  wed_request_in             ,
+	input  ResponseBufferLine            read_response_in           ,
+	input  BufferStatus                  read_command_buffer_status ,
+	input  BufferStatus                  write_command_buffer_status,
+	output CommandBufferLine             read_command_out           ,
 	output logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done
 );
 
-	logic              enabled_in                        ;
-	WEDInterface       wed_request_in_latched            ;
-	WEDInterface       wed_request_in_driver             ;
-	ResponseBufferLine read_response_in_latched          ;
-	ReadWriteDataLine  read_data_0_in_latched            ;
-	ReadWriteDataLine  read_data_1_in_latched            ;
-	BufferStatus       read_command_buffer_status_latched;
+	logic              enabled_in                         ;
+	WEDInterface       wed_request_in_latched             ;
+	WEDInterface       wed_request_in_driver              ;
+	ResponseBufferLine read_response_in_latched           ;
+	BufferStatus       read_command_buffer_status_latched ;
+	BufferStatus       write_command_buffer_status_latched;
 
 	CommandBufferLine             read_command_out_latched     ;
 	logic [0:(ARRAY_SIZE_BITS-1)] read_job_counter_done_latched;
@@ -49,19 +47,18 @@ module read_engine #(parameter CU_READ_CONTROL_ID = DATA_READ_CONTROL_ID) (
 	// drive input
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			wed_request_in_latched.valid             <= 0;
-			read_response_in_latched.valid           <= 0;
-			read_data_0_in_latched.valid             <= 0;
-			read_data_1_in_latched.valid             <= 0;
-			read_command_buffer_status_latched       <= 0;
-			read_command_buffer_status_latched.empty <= 1;
+			wed_request_in_latched.valid              <= 0;
+			read_response_in_latched.valid            <= 0;
+			read_command_buffer_status_latched        <= 0;
+			read_command_buffer_status_latched.empty  <= 1;
+			write_command_buffer_status_latched       <= 0;
+			write_command_buffer_status_latched.empty <= 1;
 		end else begin
 			if(enabled_in) begin
-				wed_request_in_latched.valid       <= wed_request_in.valid;
-				read_response_in_latched.valid     <= read_response_in.valid;
-				read_data_0_in_latched.valid       <= read_data_0_in.valid;
-				read_data_1_in_latched.valid       <= read_data_1_in.valid;
-				read_command_buffer_status_latched <= read_command_buffer_status;
+				wed_request_in_latched.valid        <= wed_request_in.valid;
+				read_response_in_latched.valid      <= read_response_in.valid;
+				read_command_buffer_status_latched  <= read_command_buffer_status;
+				write_command_buffer_status_latched <= write_command_buffer_status;
 			end
 		end
 	end
@@ -70,8 +67,6 @@ module read_engine #(parameter CU_READ_CONTROL_ID = DATA_READ_CONTROL_ID) (
 	always_ff @(posedge clock) begin
 		wed_request_in_latched.payload   <= wed_request_in.payload;
 		read_response_in_latched.payload <= read_response_in.payload;
-		read_data_0_in_latched.payload   <= read_data_0_in.payload;
-		read_data_1_in_latched.payload   <= read_data_1_in.payload;
 	end
 
 
@@ -195,7 +190,7 @@ module read_engine #(parameter CU_READ_CONTROL_ID = DATA_READ_CONTROL_ID) (
 			if(cmd_setup)
 				wed_request_in_driver <= wed_request_in_latched;
 
-			if (~read_command_buffer_status_latched.alfull && (|wed_request_in_driver.payload.wed.size_send) && send_cmd_read)begin
+			if (~read_command_buffer_status_latched.alfull && ~write_command_buffer_status_latched.alfull && (|wed_request_in_driver.payload.wed.size_send) && send_cmd_read)begin
 
 				if(wed_request_in_driver.payload.wed.size_send > CACHELINE_ARRAY_NUM)begin
 					wed_request_in_driver.payload.wed.size_send          <= wed_request_in_driver.payload.wed.size_send - CACHELINE_ARRAY_NUM;
