@@ -33,7 +33,7 @@ SCRIPT_DIR   	?= ../../03_scripts
 
 SYNTH_DIR ?= synthesize_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)
 
-VERSION_GIT ?= $(shell python ./capi/scripts/version.py)
+VERSION_GIT ?= $(shell python3 ./capi/scripts/version.py)
 TIME_STAMP ?= $(shell date +%Y_%m_%d_%H_%M_%S)
 ACCEL_RTL_DIR ?= accelerator_rtl
 ACCEL_BIN_DIR ?= accelerator_bin

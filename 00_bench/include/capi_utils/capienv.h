@@ -226,6 +226,7 @@ int setupAFUTut(struct cxl_afu_h **afu, struct WEDStructTut *wed);
 void startAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status);
 void startCU(struct cxl_afu_h **afu, struct AFUStatus *afu_status);
 void waitAFU(struct cxl_afu_h **afu, struct AFUStatus *afu_status);
+int waitAFUMemory(volatile uint64_t *done, const char *phase);
 void readCmdResponseStats(struct cxl_afu_h **afu, struct CmdResponseStats *cmdResponseStats);
 void printCmdResponseStats(struct CmdResponseStats *cmdResponseStats);
 void releaseAFU(struct cxl_afu_h **afu);

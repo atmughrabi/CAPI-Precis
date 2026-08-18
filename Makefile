@@ -291,6 +291,29 @@ test-verbose:
 test:
 	$(MAKE) test $(MAKE_ARGS)
 
+.PHONY: accelerator-verification
+accelerator-verification:
+	$(MAKE) accelerator-verification $(MAKE_ARGS)
+
+.PHONY: accelerator_verification
+accelerator_verification: accelerator-verification
+
+.PHONY: benchmark-verification
+benchmark-verification:
+	$(MAKE) benchmark-verification $(MAKE_ARGS)
+
+.PHONY: integration-verification
+integration-verification:
+	$(MAKE) integration-verification $(MAKE_ARGS)
+
+.PHONY: integration-compile
+integration-compile:
+	$(MAKE) integration-compile $(MAKE_ARGS)
+
+.PHONY: verify
+verify:
+	$(MAKE) verify $(MAKE_ARGS)
+
 .PHONY: run-test
 run-test:
 	$(MAKE) run-test $(MAKE_ARGS)
@@ -350,7 +373,7 @@ clean-nohup:
 export PART=5SGXMA7H2F35C2
 export PROJECT = capi-precis
 
-export VERSION_GIT = $(shell python ./$(SCRIPT_DIR)/version.py)
+export VERSION_GIT = $(shell python3 ./$(SCRIPT_DIR)/version.py)
 export TIME_STAMP = $(shell date +%Y_%m_%d_%H_%M_%S)
 
 export SYNTH_DIR = synthesize_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)

@@ -26,7 +26,7 @@
 #include "timer.h"
 
 #include "config.h"
-#include "algorithm.h"
+#include "memcpy.h"
 
 int numThreads;
 mt19937state *mt19937var;
@@ -174,9 +174,8 @@ main (int argc, char **argv)
 
     freeDataArrays(dataArrays);
     free(timer);
-    exit (0);
+    exit(missmatch ? EXIT_FAILURE : EXIT_SUCCESS);
 }
-
 
 
 

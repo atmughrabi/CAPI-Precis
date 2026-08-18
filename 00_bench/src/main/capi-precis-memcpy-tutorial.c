@@ -182,5 +182,5 @@ main (int argc, char **argv)
     printf(" -----------------------------------------------------\n");
     freeDataArraysTut(dataArraysTut);
     free(timer);
-    exit (0);
+    exit(missmatch ? EXIT_FAILURE : EXIT_SUCCESS);
  }

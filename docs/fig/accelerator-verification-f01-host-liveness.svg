@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1540" height="760" viewBox="30 20 1540 760" role="img" aria-labelledby="title desc" fill="#3A414A">
+  <title id="title">CAPI-Precis accelerator verification</title>
+  <desc id="desc">The host validates setup, bounds AFU and CU configuration, observes execution progress, drains completion reset, and fails explicitly on MMIO errors, device errors, stalls, or timeouts.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 13 11" markerWidth="13" markerHeight="11" refX="13" refY="5.5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0 0 L13 5.5 L0 11 Z" fill="#3A414A"/>
+    </marker>
+    <style>
+      :root { color-scheme: light dark; }
+      @media (prefers-color-scheme: dark) {
+        [fill="#3A414A"]{fill:#E7E2D9}[stroke="#3A414A"]{stroke:#E7E2D9}
+        [fill="#F7F4E4"]{fill:#24282B}[fill="#C1E4F7"]{fill:#29363B}
+        [fill="#D7FAF5"]{fill:#28392C}[fill="#FFDDA6"]{fill:#3D3526}
+        [fill="#A7A6FF"]{fill:#332F39}[fill="#FFBBB1"]{fill:#402B2D}
+        [stroke="#000000"]{stroke:#E7E2D9}
+      }
+      .sans{font-family:Inter,Helvetica,Arial,sans-serif}.mono{font-family:"SFMono-Regular",Consolas,monospace}
+      .title{font-size:44px;font-weight:700}.pane{font-size:28px;font-weight:700}
+      .block{font-size:21px;font-weight:700}.body{font-size:20px}.small{font-size:18px}
+    </style>
+  </defs>
+  <text x="70" y="76" class="sans title">CAPI-Precis accelerator verification</text>
+  <text x="70" y="112" class="sans body">Every host-to-AFU phase is bounded, observable, and safe for the next launch</text>
+  <line x1="70" y1="138" x2="1530" y2="138" stroke="#3A414A" stroke-width="2"/>
+
+  <g class="sans">
+    <rect x="70" y="210" width="240" height="170" rx="8" fill="#F7F4E4" stroke="#000000" stroke-width="2"/>
+    <text x="190" y="250" text-anchor="middle" class="block">Host preflight</text>
+    <text x="95" y="292" class="body">watchdog + open</text>
+    <text x="95" y="320" class="body">attach WED</text>
+    <text x="95" y="348" class="body">map MMIO</text>
+
+    <rect x="365" y="210" width="240" height="170" rx="8" fill="#FFDDA6" stroke="#000000" stroke-width="2"/>
+    <text x="485" y="250" text-anchor="middle" class="block">AFU / CU start</text>
+    <text x="390" y="292" class="body">idempotent config pulse</text>
+    <text x="390" y="320" class="body">bounded status poll</text>
+    <text x="390" y="348" class="small">10 s default</text>
+
+    <rect x="660" y="210" width="240" height="170" rx="8" fill="#C1E4F7" stroke="#000000" stroke-width="2"/>
+    <text x="780" y="250" text-anchor="middle" class="block">CU execution</text>
+    <text x="685" y="292" class="body">running counters</text>
+    <text x="685" y="320" class="body">error register</text>
+    <text x="685" y="348" class="small">stall + run deadline</text>
+
+    <rect x="955" y="210" width="240" height="170" rx="8" fill="#A7A6FF" stroke="#000000" stroke-width="2"/>
+    <text x="1075" y="250" text-anchor="middle" class="block">Completion drain</text>
+    <text x="980" y="292" class="body">ACK done count</text>
+    <text x="980" y="320" class="body">wait registers clear</text>
+    <text x="980" y="348" class="body">wait CU status clear</text>
+
+    <rect x="1250" y="210" width="240" height="170" rx="8" fill="#D7FAF5" stroke="#000000" stroke-width="3"/>
+    <text x="1370" y="250" text-anchor="middle" class="pane">Result</text>
+    <text x="1275" y="298" class="body">release AFU</text>
+    <text x="1275" y="326" class="body">compare output</text>
+    <text x="1275" y="354" class="small">next launch is safe</text>
+  </g>
+
+  <g fill="none" stroke="#3A414A" stroke-width="3" marker-end="url(#arrow)">
+    <path d="M310 295 H365"/>
+    <path d="M605 295 H660"/>
+    <path d="M900 295 H955"/>
+    <path d="M1195 295 H1250"/>
+  </g>
+
+  <rect x="300" y="500" width="940" height="150" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/>
+  <text x="770" y="540" text-anchor="middle" class="sans pane">Explicit failure path</text>
+  <text x="350" y="585" class="sans body">MMIO failure</text>
+  <text x="555" y="585" class="sans body">device error</text>
+  <text x="755" y="585" class="sans body">no progress</text>
+  <text x="950" y="585" class="sans body">run timeout</text>
+  <text x="770" y="625" text-anchor="middle" class="mono small">phase + reason + elapsed + idle + progress + target + status + error</text>
+
+  <g fill="none" stroke="#3A414A" stroke-width="2" stroke-dasharray="6 8" marker-end="url(#arrow)">
+    <path d="M190 380 V450 H430 V500"/>
+    <path d="M485 380 V450 H620 V500"/>
+    <path d="M780 380 V500"/>
+    <path d="M1075 380 V450 H920 V500"/>
+  </g>
+
+  <text x="70" y="720" class="sans body">A healthy run proves completion and reset; a failed run terminates with actionable evidence.</text>
+  <text x="1530" y="720" text-anchor="end" class="mono small">bounded wait - progress witness - reset custody</text>
+</svg>

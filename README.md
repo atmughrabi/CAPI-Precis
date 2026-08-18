@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/atmughrabi/CAPIPrecis.svg?token=L3reAtGHdEVVPvzcVqQ6&branch=master)](https://travis-ci.com/atmughrabi/CAPIPrecis)
+[![verification](https://github.com/atmughrabi/CAPI-Precis/actions/workflows/verification.yml/badge.svg)](https://github.com/atmughrabi/CAPI-Precis/actions/workflows/verification.yml)
 <p align="center"><img src="./02_slides/fig/logo3.png" width="650" ></p>
 
 #  CAPIPrecis Coherent Accelerator Processor Interface (CAPI) Abstract Layer
@@ -17,6 +17,16 @@ CAPIPrecis is an abstraction layer (AFU-Control) that simplifies communication a
 * You will only be concerned with sending PSL supported commands, for example you can send reads/writes without the need to check parity, error reporting, and latency requirements. Just push commands to their corresponding buffers, and wait for the response.
 * Each sent command can be coupled with meta-data (for example CU_ID, request_size, etc.), and then receive data or responses coupled with those elements for an easier multi-CU design.
 * Open-source and minimalistic design.
+
+## Deployment stability
+
+<p align="center"><img src="./docs/fig/accelerator-verification-f01-host-liveness.svg" width="760"></p>
+
+AFU setup, configuration, execution, error handling, and completion reset are
+bounded by the host verification layer. Run `make verify` before simulator or
+FPGA deployment. The timeout contract and failure evidence
+are documented in the [accelerator verification guide](docs/wiki/Accelerator-Verification.md);
+the [documentation index](docs/README.md) is the source of truth.
 
 # Installation 
 
@@ -74,7 +84,7 @@ export DEBUG_LOG_PATH="${PSLSE_SERVER_DIR}/debug.log"
 
 1. Clone CAPIPrecis.
 ```console
-CAPI@Precis:~$ git clone https://github.com/atmughrabi/CAPIPrecis.git
+CAPI@Precis:~$ git clone https://github.com/atmughrabi/CAPI-Precis.git
 ```
 2. From the home directory go to the CAPIPrecis directory:
 ```console

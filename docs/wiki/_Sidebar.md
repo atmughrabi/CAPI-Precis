@@ -1,0 +1,5 @@
+- [Home](Home.md)
+- [Architecture](Architecture.md)
+- [Accelerator verification](Accelerator-Verification.md)
+- [Deployment runbook](Deployment-Runbook.md)
+- [Stabilization plan](https://github.com/atmughrabi/CAPI-Precis/blob/master/docs/stabilization-plan.md)

@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <inttypes.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <string.h>
@@ -12,31 +14,62 @@
 
 #include "libcxl.h"
 #include "capienv.h"
+#include "accelerator_verification.h"
 
 
 #include "tutorial.h"
 
+static int initializeAcceleratorWatchdog(void)
+{
+    struct AcceleratorVerificationConfig config;
+
+    return acceleratorVerificationLoadConfig(&config) ||
+           acceleratorVerificationWatchdogInitialize(config.call_timeout_ms);
+}
+
+static void freeTutorialAFU(struct cxl_afu_h *afu)
+{
+    if(!afu)
+        return;
+
+    if(acceleratorVerificationWatchdogArm("free tutorial AFU"))
+        _exit(EXIT_FAILURE);
+
+    cxl_afu_free(afu);
+
+    if(acceleratorVerificationWatchdogDisarm())
+        _exit(EXIT_FAILURE);
+}
 
 int tutorial_main_call(int argc, char *argv[])
 {
     struct cxl_afu_h *afu;
+    int attach_status;
 
     parity_request *example;
-    size_t size = 128, alignment = 128;
+    size_t size = 128;
 
+
+    if(initializeAcceleratorWatchdog() ||
+       acceleratorVerificationWatchdogArm("open tutorial AFU"))
+        return 1;
 
     afu = cxl_afu_open_dev("/dev/cxl/afu0.0d");
+
+    if(acceleratorVerificationWatchdogDisarm())
+        _exit(EXIT_FAILURE);
+
     if(!afu)
     {
         printf("Failed to open AFU: %m\n");
         return 1;
     }
 
-    example = aligned_alloc(alignment, sizeof(*example));
+    example = aligned_malloc(sizeof(*example));
     example->size = size;
-    example->stripe1 = aligned_alloc(alignment, size);
-    example->stripe2 = aligned_alloc(alignment, size);
-    example->parity = aligned_alloc(alignment, size);
+    example->stripe1 = aligned_malloc(size);
+    example->stripe2 = aligned_malloc(size);
+    example->parity = aligned_malloc(size);
 
     memcpy(example->stripe1,
            "asfb190jwqsefx0amxAqa1nlkaf78sa0g&0ha8dngj3t21078fnajl38n32j3np2"
@@ -59,24 +92,51 @@ int tutorial_main_call(int argc, char *argv[])
 
     printf("[example structure\n");
     printf("  example: %p\n", example);
-    printf("  example->size: %llu\n", example->size);
+    printf("  example->size: %" PRIu64 "\n", example->size);
     printf("  example->stripe1: %p\n", example->stripe1);
     printf("  example->stripe2: %p\n", example->stripe2);
     printf("  example->parity: %p\n", example->parity);
     printf("  &(example->done): %p\n", &(example->done));
 
-    cxl_afu_attach(afu, (uint64_t)example);
+    if(acceleratorVerificationWatchdogArm("attach tutorial WED"))
+        return 1;
+
+    attach_status = cxl_afu_attach(afu, (uint64_t)example);
+
+    if(acceleratorVerificationWatchdogDisarm())
+        _exit(EXIT_FAILURE);
+
+    if(attach_status)
+    {
+        fprintf(stderr, "Failed to attach AFU: %s\n", strerror(errno));
+        freeTutorialAFU(afu);
+        free(example->stripe1);
+        free(example->stripe2);
+        free(example->parity);
+        free(example);
+        return 1;
+    }
     printf("Attached to AFU\n");
 
     printf("Waiting for completion by AFU\n");
-    while(!example->done){
-        sleep(1);
+    if(waitAFUMemory(&(example->done), "tutorial completion"))
+    {
+        freeTutorialAFU(afu);
+        free(example->stripe1);
+        free(example->stripe2);
+        free(example->parity);
+        free(example);
+        return 1;
     }
 
     printf("PARITY:\n%s\n", (char *)example->parity);
 
     printf("Releasing AFU\n");
-    cxl_afu_free(afu);
+    freeTutorialAFU(afu);
+    free(example->stripe1);
+    free(example->stripe2);
+    free(example->parity);
+    free(example);
 
     return 0;
 }

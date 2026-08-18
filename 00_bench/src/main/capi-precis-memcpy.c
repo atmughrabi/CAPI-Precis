@@ -188,9 +188,8 @@ main (int argc, char **argv)
 
     freeDataArrays(dataArrays);
     free(timer);
-    exit (0);
+    exit(missmatch ? EXIT_FAILURE : EXIT_SUCCESS);
 }
-
 
 
 

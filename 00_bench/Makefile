@@ -199,7 +199,7 @@ AFU_CONFIG_MODE?=$(ROUND_ROBIN_ARB)
 # AFU_CONFIG_MODE=$(FIXED_ARB)
 
 CU_CONFIG_GENERIC?=$(CU_CONFIG_MODE)
-AFU_CONFIG_GENERIC?=$(AFU_CONFIG_MODE))
+AFU_CONFIG_GENERIC?=$(AFU_CONFIG_MODE)
 
 
 ##################################################
@@ -271,6 +271,9 @@ OBJ_FILES_CAPI_UTIL     =   $(patsubst $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/%.
 
 
 CAPI_LINKFLAGS = -lrt -lpthread
+ACCELERATOR_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_accelerator_verification
+MATRIX_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_matrix_verification
+CAPIENV_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_capienv_verification
 
 # CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 # CAPI_FLAGS = -DSIM -DVERBOSE
@@ -444,9 +447,36 @@ test-verbose:
 # test files
 .PHONY: test
 test:
-	@if $(MAKE) run-test -C $(APP_DIR) | grep FAIL > /dev/null; \
-		then exit 1; \
-	fi
+	$(MAKE) run-test -C $(APP_DIR)
+
+.PHONY: accelerator-verification
+accelerator-verification: $(ACCELERATOR_VERIFICATION_TEST)
+	./$(ACCELERATOR_VERIFICATION_TEST)
+
+$(ACCELERATOR_VERIFICATION_TEST): $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/test_accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.h | directories
+	$(CC) $(CFLAGS) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -o $@ $(word 1,$^) $(word 2,$^) -lrt
+
+.PHONY: benchmark-verification
+benchmark-verification: $(MATRIX_VERIFICATION_TEST)
+	./$(MATRIX_VERIFICATION_TEST)
+
+$(MATRIX_VERIFICATION_TEST): $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/test_matrix_verification.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/openmp/mmtiled.c $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/myMalloc.c | directories
+	$(CC) $(CFLAGS) $(OPENMP_INC) -o $@ $^ -lm
+
+.PHONY: integration-verification
+integration-verification: $(CAPIENV_VERIFICATION_TEST)
+	./$(CAPIENV_VERIFICATION_TEST)
+
+$(CAPIENV_VERIFICATION_TEST): $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/test_capienv_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/myMalloc.c | directories
+	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections -I$(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/fake -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -o $@ $^ -Wl,--gc-sections -lrt
+
+.PHONY: integration-compile
+integration-compile:
+	$(CC) $(CFLAGS) -fsyntax-only -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -I../$(CAPI_INTEG_DIR)/libcxl $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/helloAFU.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/tutorial.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/mmtiled.c
+	$(CC) $(CFLAGS) -DSIM -fsyntax-only -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -I../$(CAPI_INTEG_DIR)/libcxl $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/helloAFU.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/tutorial.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/mmtiled.c
+
+.PHONY: verify
+verify: accelerator-verification benchmark-verification integration-verification integration-compile test
 
 .PHONY: run-test
 run-test: run-test-openmp
@@ -477,27 +507,32 @@ cache-perf-openmp: app-openmp
 #         APP CAPI TOP LEVEL RULES           #
 ##############################################
 
+SIM_ACCELERATOR_START_TIMEOUT_MS ?= 300000
+SIM_ACCELERATOR_STALL_TIMEOUT_MS ?= 900000
+SIM_ACCELERATOR_RUN_TIMEOUT_MS ?= 7200000
+SIM_ACCELERATOR_CALL_TIMEOUT_MS ?= 300000
+SIM_ACCELERATOR_ENV = ACCELERATOR_START_TIMEOUT_MS=$(SIM_ACCELERATOR_START_TIMEOUT_MS) ACCELERATOR_STALL_TIMEOUT_MS=$(SIM_ACCELERATOR_STALL_TIMEOUT_MS) ACCELERATOR_RUN_TIMEOUT_MS=$(SIM_ACCELERATOR_RUN_TIMEOUT_MS) ACCELERATOR_CALL_TIMEOUT_MS=$(SIM_ACCELERATOR_CALL_TIMEOUT_MS)
 
 .PHONY: run-capi-sim
 run-capi-sim: CAPI_FLAGS = -DSIM
 run-capi-sim: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-sim: app-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
+	$(SIM_ACCELERATOR_ENV) ./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-sim-verbose
 run-capi-sim-verbose: CAPI_FLAGS = -DSIM -DVERBOSE
 run-capi-sim-verbose: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim-verbose: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-sim-verbose: app-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
+	$(SIM_ACCELERATOR_ENV) ./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-sim-verbose2
 run-capi-sim-verbose2: CAPI_FLAGS = -DSIM -DVERBOSE -DVERBOSE_2
 run-capi-sim-verbose2: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-capi-sim-verbose2: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-capi-sim-verbose2: app-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
+	$(SIM_ACCELERATOR_ENV) ./$(APP_DIR)/$(BIN_DIR)/$(APP)-capi  $(ARGS)
 
 .PHONY: run-capi-fpga
 run-capi-fpga: CAPI_FLAGS =
@@ -526,7 +561,7 @@ run-test-capi: CAPI_FLAGS = -DSIM -DVERBOSE
 run-test-capi: PSLSE_LIBCXL_DIR  = $(PSLSE_DIR)/libcxl
 run-test-capi: CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 run-test-capi: test-capi
-	./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-capi
+	$(SIM_ACCELERATOR_ENV) ./$(APP_DIR)/$(BIN_DIR)/$(APP_TEST)-capi
 
 .PHONY: run-vsim
 run-vsim: build-libdpi

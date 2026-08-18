@@ -141,6 +141,8 @@ main (int argc, char **argv)
     mt19937var = (mt19937state *) my_malloc(sizeof(mt19937state));
     initializeMersenneState (mt19937var, 27491095);
     uint64_t checksum = 0;
+    uint64_t checksum_reference = 0;
+    uint32_t checksum_mismatch = 0;
 
     omp_set_nested(1);
     omp_set_num_threads(numThreads);
@@ -176,6 +178,7 @@ main (int argc, char **argv)
 
     checksum = 0;
     checksum = checksumMatrixArrays(matrixArrays);
+    checksum_reference = checksum;
     printf("*-----------------------------------------------------*\n");
     printf("| %-30s | %-18lu | \n", "Standard MM checksum (#)", checksum);
     printf(" -----------------------------------------------------\n");
@@ -194,6 +197,7 @@ main (int argc, char **argv)
 
     checksum = 0;
     checksum = checksumMatrixArrays(matrixArrays);
+    checksum_mismatch += checksum != checksum_reference;
     printf("*-----------------------------------------------------*\n");
     printf("| %-30s | %-18lu | \n", "Tiled MM checksum (#)", checksum);
     printf(" -----------------------------------------------------\n");
@@ -223,6 +227,7 @@ main (int argc, char **argv)
 
     checksum = 0;
     checksum = checksumMatrixArrays(matrixArrays);
+    checksum_mismatch += checksum != checksum_reference;
     printf("*-----------------------------------------------------*\n");
     printf("| %-30s | %-18lu | \n", "StandardTrans MM checksum (#)", checksum);
     printf(" -----------------------------------------------------\n");
@@ -241,6 +246,7 @@ main (int argc, char **argv)
 
     checksum = 0;
     checksum = checksumMatrixArrays(matrixArrays);
+    checksum_mismatch += checksum != checksum_reference;
     printf("*-----------------------------------------------------*\n");
     printf("| %-30s | %-18lu | \n", "TiledTrans MM checksum (#)", checksum);
     printf(" -----------------------------------------------------\n");
@@ -250,6 +256,7 @@ main (int argc, char **argv)
     printf("| %-22s | %-27.20lf| \n", "Time (Seconds)", Seconds(timer));
     printf("| %-22s | %-27.20lf| \n", "BandWidth MB/s", bandwidth_MB);
     printf("| %-22s | %-27.20lf| \n", "BandWidth GB/s", bandwidth_GB);
+    printf("| %-22s | %-27u| \n", "Checksum mismatches", checksum_mismatch);
 
     printf("*-----------------------------------------------------*\n");
     printf("| %-30s %-20lu | \n", "Freeing Data Arrays (SIZE)", arguments.size);
@@ -257,9 +264,8 @@ main (int argc, char **argv)
 
     freeMatrixArrays(matrixArrays);
     free(timer);
-    exit (0);
+    exit(checksum_mismatch ? EXIT_FAILURE : EXIT_SUCCESS);
 }
-
 
 
 
