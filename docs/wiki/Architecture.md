@@ -29,7 +29,7 @@
 7. The host acknowledges completion, waits for CU reset, and compares output.
 
 The bounded host protocol is defined in
-[Accelerator verification](Accelerator-Verification.md).
+[Accelerator verification](https://github.com/atmughrabi/CAPI-Precis/wiki/Accelerator-Verification).
 
 ## Diagram blocks
 

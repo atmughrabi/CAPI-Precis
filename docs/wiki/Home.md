@@ -8,11 +8,13 @@ CAPI-Precis provides the AFU-control layer, host runtime, simulator integration,
 and FPGA build flow. This wiki is the canonical source for the shared
 host/AFU protocol used by AccelGraph.
 
-- [Architecture](Architecture.md) maps the host, WED, AFU-control, CU-control,
+- [Architecture](https://github.com/atmughrabi/CAPI-Precis/wiki/Architecture) maps the host, WED, AFU-control, CU-control,
   simulation, and synthesis boundaries.
-- [Accelerator verification](Accelerator-Verification.md) defines the bounded
+- [Accelerator verification](https://github.com/atmughrabi/CAPI-Precis/wiki/Accelerator-Verification) defines the bounded
   host/accelerator contract.
-- [Deployment runbook](Deployment-Runbook.md) covers launch, failure triage,
+- [Deployment runbook](https://github.com/atmughrabi/CAPI-Precis/wiki/Deployment-Runbook) covers launch, failure triage,
   and evidence collection.
-- [Stabilization plan](https://github.com/atmughrabi/CAPI-Precis/blob/master/docs/stabilization-plan.md)
+- [Verification infrastructure](https://github.com/atmughrabi/CAPI-Precis/wiki/Verification-Infrastructure)
+  defines the module, BFM, scoreboard, backpressure, and coverage roadmap.
+- [Stabilization plan](https://github.com/atmughrabi/CAPI-Precis/wiki/Stabilization-Plan)
   records acceptance criteria and rollout stages.

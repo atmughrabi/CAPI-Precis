@@ -7,6 +7,10 @@
 
 ## Overview 
 
+<p align="center">
+  <img src="./docs/fig/capi-precis-architecture.png" width="900" alt="CAPI-Precis accelerator architecture">
+</p>
+
 CAPI-Precis is an AFU-control abstraction layer that simplifies communication
 and buffering with the IBM CAPI Power Service Layer (PSL). Its control units
 separate command, response, buffering, error, and data-path responsibilities
@@ -29,10 +33,15 @@ streaming-only frameworks, CAPI-Precis retains PSL cache support.
 AFU setup, configuration, execution, error handling, and completion reset are
 bounded by the host verification layer. Run `make verify` before simulator or
 FPGA deployment. The timeout contract and failure evidence
-are documented in the [accelerator verification guide](docs/wiki/Accelerator-Verification.md);
-the [architecture guide](docs/wiki/Architecture.md) includes the supplied
-system figures, and the [documentation index](docs/README.md) is the source of
-truth.
+are documented in the
+[accelerator verification guide](https://github.com/atmughrabi/CAPI-Precis/wiki/Accelerator-Verification);
+the [architecture guide](https://github.com/atmughrabi/CAPI-Precis/wiki/Architecture)
+explains the supplied system figures, and the
+[verification roadmap](https://github.com/atmughrabi/CAPI-Precis/wiki/Verification-Infrastructure)
+defines the planned module-level infrastructure.
+
+The editable documentation source is the
+[`docs` index](docs/README.md); the GitHub wiki is its published mirror.
 
 # Installation 
 
@@ -428,8 +437,9 @@ for any corresponding short options.
 # Architecture
 
 The maintained architecture description is in the
-[architecture guide](docs/wiki/Architecture.md). Historical chip-planner and
-presentation figures remain under `02_slides` for reference.
+[architecture guide](https://github.com/atmughrabi/CAPI-Precis/wiki/Architecture).
+Historical chip-planner and presentation figures remain under `02_slides` for
+reference.
 
 # Organization 
 
