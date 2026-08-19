@@ -21,7 +21,12 @@ source manifests under `rtl/manifests`.
 | `rtl/manifests/monitor.f` | Stable consumer-facing monitor core |
 | `rtl/manifests/monitor-capi-bind.f` | Canonical CAPI-Precis bind |
 | `rtl/manifests/rtl-inventory.json` | Every RTL path, declaration, hash, status, membership, unit, and evidence |
+| `rtl/manifests/coverage-plan.json` | Family strategies and 100% reachable-coverage closure policy |
+| `rtl/manifests/module-test-matrix.json` | Generated one-row-per-active-module test ownership |
 | `rtl/scripts/verify_manifests.py` | G0 source-set and inventory gate |
+| `rtl/scripts/verify_module_plan.py` | Canonical exact module-plan validator |
+| `rtl/scripts/test_verify_module_plan.py` | Mutation regressions for plan/schema enforcement |
+| `rtl/scripts/lint_cached_afu_bind.sh` | Real-CU elaboration and interface gate |
 
 Run:
 
@@ -29,6 +34,10 @@ Run:
 make rtl-manifest-verification
 make rtl-real-elaboration
 ```
+
+The module matrix currently maps all 43 active production modules across 32
+source hashes to 23 test families. A mapped test is not considered implemented
+until its executable target and coverage evidence exist.
 
 After an intentional RTL change, review the diff and refresh hashes with:
 

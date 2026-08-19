@@ -317,10 +317,13 @@ rtl-verification:
 .PHONY: rtl-manifest-verification
 rtl-manifest-verification:
 	./01_capi_integration/accelerator_verification/rtl/scripts/verify_manifests.py
+	./01_capi_integration/accelerator_verification/rtl/scripts/verify_module_plan.py --repo-root . --inventory 01_capi_integration/accelerator_verification/rtl/manifests/rtl-inventory.json --plan 01_capi_integration/accelerator_verification/rtl/manifests/coverage-plan.json --output 01_capi_integration/accelerator_verification/rtl/manifests/module-test-matrix.json
+	./01_capi_integration/accelerator_verification/rtl/scripts/test_verify_module_plan.py
 
 .PHONY: rtl-manifest-update
 rtl-manifest-update:
 	./01_capi_integration/accelerator_verification/rtl/scripts/verify_manifests.py --write
+	./01_capi_integration/accelerator_verification/rtl/scripts/verify_module_plan.py --repo-root . --inventory 01_capi_integration/accelerator_verification/rtl/manifests/rtl-inventory.json --plan 01_capi_integration/accelerator_verification/rtl/manifests/coverage-plan.json --output 01_capi_integration/accelerator_verification/rtl/manifests/module-test-matrix.json --write
 
 .PHONY: rtl-real-elaboration
 rtl-real-elaboration: rtl-manifest-verification

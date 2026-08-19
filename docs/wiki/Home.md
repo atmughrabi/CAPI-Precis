@@ -16,6 +16,8 @@ host/AFU protocol used by AccelGraph.
   host/accelerator contract.
 - [Deployment runbook](https://github.com/atmughrabi/CAPI-Precis/wiki/Deployment-Runbook) covers launch, failure triage,
   and evidence collection.
+- [Repository structure](https://github.com/atmughrabi/CAPI-Precis/wiki/Repository-Structure)
+  defines directory ownership, migration order, and compatibility gates.
 - [Verification infrastructure](https://github.com/atmughrabi/CAPI-Precis/wiki/Verification-Infrastructure)
   defines the module, BFM, scoreboard, backpressure, and coverage roadmap.
 - [Stabilization plan](https://github.com/atmughrabi/CAPI-Precis/wiki/Stabilization-Plan)

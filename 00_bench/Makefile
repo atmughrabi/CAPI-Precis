@@ -501,6 +501,8 @@ rtl-verification: rtl-manifest-verification
 .PHONY: rtl-manifest-verification
 rtl-manifest-verification:
 	$(CAPI_VERIFICATION_DIR)/rtl/scripts/verify_manifests.py
+	$(CAPI_VERIFICATION_DIR)/rtl/scripts/verify_module_plan.py --repo-root .. --inventory 01_capi_integration/accelerator_verification/rtl/manifests/rtl-inventory.json --plan 01_capi_integration/accelerator_verification/rtl/manifests/coverage-plan.json --output 01_capi_integration/accelerator_verification/rtl/manifests/module-test-matrix.json
+	$(CAPI_VERIFICATION_DIR)/rtl/scripts/test_verify_module_plan.py
 
 .PHONY: rtl-verification-run
 rtl-verification-run: directories

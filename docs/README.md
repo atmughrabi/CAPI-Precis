@@ -11,6 +11,7 @@ is a published mirror; wiki-side edits are overwritten by the publisher.
 - [Architecture](wiki/Architecture.md)
 - [Environment harness](wiki/Environment-Harness.md)
 - [Deployment runbook](wiki/Deployment-Runbook.md)
+- [Repository structure](wiki/Repository-Structure.md)
 - [Verification infrastructure roadmap](wiki/Verification-Infrastructure.md)
 - [Stabilization plan](wiki/Stabilization-Plan.md)
 - [Accelerator verification files](../01_capi_integration/accelerator_verification/README.md)

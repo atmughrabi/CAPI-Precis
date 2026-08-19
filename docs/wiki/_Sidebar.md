@@ -3,5 +3,6 @@
 - [Environment harness](https://github.com/atmughrabi/CAPI-Precis/wiki/Environment-Harness)
 - [Accelerator verification](https://github.com/atmughrabi/CAPI-Precis/wiki/Accelerator-Verification)
 - [Deployment runbook](https://github.com/atmughrabi/CAPI-Precis/wiki/Deployment-Runbook)
+- [Repository structure](https://github.com/atmughrabi/CAPI-Precis/wiki/Repository-Structure)
 - [Verification infrastructure](https://github.com/atmughrabi/CAPI-Precis/wiki/Verification-Infrastructure)
 - [Stabilization plan](https://github.com/atmughrabi/CAPI-Precis/wiki/Stabilization-Plan)

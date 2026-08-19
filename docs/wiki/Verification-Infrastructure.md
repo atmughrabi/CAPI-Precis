@@ -20,7 +20,7 @@ module-level infrastructure is built.
 | Real bind | Real `cached_afu` elaboration for `memcpy`, `memcpy-tutorial`, and `mmtiled`, with implicit nets rejected and no CU stub | Licensed ModelSim and Quartus analysis/elaboration evidence |
 | Algorithms | CPU memory-copy and matrix references | Cycle-accurate CU scoreboards and memory-system integration tests |
 | Simulation | PSLSE/ModelSim scripts and wave groups | Reusable BFMs, deterministic channel backpressure, replayable seeds, and automatic scoreboards |
-| CI | Host, monitor, real-CU bind, exact source manifests/inventory, and OpenMP checks | Per-module matrix, coverage thresholds, JUnit, and failure artifacts |
+| CI | Host, monitor, real-CU bind, exact source/inventory/module-plan gates, and OpenMP checks | Executable family suites, measured coverage, JUnit, and failure artifacts |
 
 ### Phase 0 manifest gate
 
@@ -48,6 +48,31 @@ make rtl-real-elaboration
 G0 and portable G1 are active merge gates. Licensed ModelSim and Quartus
 analysis/elaboration remain required release evidence before Phase 0 is marked
 closed on supported hardware.
+
+### Exact module coverage plan
+
+`coverage-plan.json` defines reusable test strategies, family-specific
+scenarios, backpressure, assertions, oracles, artifacts, and closure rules.
+`module-test-matrix.json` is generated from the RTL inventory and must map every
+active production module exactly once.
+
+Current planning baseline:
+
+| Measure | Value |
+| --- | ---: |
+| Active production module declarations | 43 |
+| Distinct active source hashes | 32 |
+| Active package declarations | 13 |
+| Module/build context executions | 113 |
+| Test families | 23 |
+| Modules mapped to one family | 43/43 |
+| Executable family suites complete | 0/23 |
+
+Coverage closure requires 100% of reachable statements, branches, FSM
+states/transitions, functional bins, assertion goals, and reachable control
+toggles. A waiver must record reason, owner, issue, affected items/metric,
+approval, and expiry; waived logic remains visible and is not counted as
+silently covered.
 
 ### Inventory
 
@@ -348,19 +373,17 @@ Initial budget model:
 
 ### Coverage policy
 
-- 100% of version-controlled mandatory functional bins.
-- 100% of mandatory cross bins for command/response/ABT, queue boundary,
-  credit boundary, tag wrap, data-half order, reset phase, mode, and named
-  backpressure profile.
-- 100% pass rate for enabled assertions; zero unexplained assertion disables.
-- P0 unit floors on a coverage-capable backend: statement >= 90%, branch >=
-  85%, toggle >= 80%. FSM state/transition coverage is 100% for legal states
-  and mandatory transitions.
-- A nondecreasing ratchet raises each floor when the measured baseline is
-  higher.
-- Every exclusion or waiver is version-controlled with reason, owner, approval,
-  affected bins/lines, issue, and expiry.
-- “No coverage data” is a failure for a tier that requires coverage.
+`accelerator_verification/rtl/manifests/coverage-plan.json` is normative:
+
+- 100% of reachable statements, branches, FSM states/transitions, functional
+  bins, assertion goals, and reachable control toggles;
+- 100% execution of every mapped module context;
+- zero unexplained assertion disables or scoreboard mismatches;
+- only versioned, approved, expiring waivers with an owner and issue;
+- missing required coverage data fails the tier.
+
+Partial percentages may be reported while suites are under construction, but
+they are progress measurements, not release floors.
 
 | Metric | Backend | Earliest required tier |
 | --- | --- | --- |
@@ -581,7 +604,7 @@ command.
 **Gate:** old entry points produce equivalent source lists and clean worktrees.
 
 Legacy and wrapper entry points run in dual mode during the one-release
-compatibility window. Any G5/G6 failure reverts the wrapper/migration commit
+compatibility window. Any G6/G7 failure reverts the wrapper/migration commit
 before further cleanup.
 
 ### Phase 7 - documentation/archive migration
@@ -598,9 +621,10 @@ before further cleanup.
 | G1 compile | Every active variant elaborates without stubs or implicit nets |
 | G2 unit | Every P0 unit passes; mandatory functional bins are complete |
 | G3 integration | Every modern CU passes lifecycle and named backpressure profiles |
-| G4 reproducibility | Failure artifacts reproduce by test, seed, profile, and manifest hash |
-| G5 compatibility | Existing Make, ModelSim, PSLSE, and Quartus entry points remain valid |
-| G6 migration | Links validate, generated files are ignored, and `git status` remains clean |
+| G4 coverage | All reachable closure targets are 100%; every waiver is valid and unexpired |
+| G5 reproducibility | Failure artifacts reproduce by test, seed, profile, and manifest hash |
+| G6 compatibility | Existing Make, ModelSim, PSLSE, and Quartus entry points remain valid |
+| G7 migration | Links validate, generated files are ignored, and `git status` remains clean |
 
 ## Known P0 decisions
 

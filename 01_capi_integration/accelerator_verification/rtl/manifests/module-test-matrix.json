@@ -1,0 +1,968 @@
+{
+  "schema_version": 1,
+  "plan_id": "capi-precis-rtl-coverage-v1",
+  "coverage_plan_sha256": "7ef5025bac834f7f3fe7852c90a353d0de0b49edae2e82de55af278eb1eadd46",
+  "rtl_inventory_sha256": "74d029a644d887778a57e313056491038dc9a372e684bb36d3b81152a7c18a65",
+  "inventory_schema_version": 2,
+  "summary": {
+    "module_declarations": 43,
+    "distinct_source_hashes": 32,
+    "families": 23,
+    "package_declarations": 13,
+    "non_module_suites": 1,
+    "context_executions": 113,
+    "status_counts": {
+      "planned": 43
+    },
+    "family_status_counts": {
+      "planned": 23
+    },
+    "family_module_counts": {
+      "afu-arbiter-wrappers": 4,
+      "afu-control": 1,
+      "afu-wrapper": 1,
+      "cached-afu": 1,
+      "command": 1,
+      "completion-error": 2,
+      "credit": 1,
+      "job": 1,
+      "memcpy-cu": 3,
+      "mmio": 1,
+      "mmtiled-cu": 2,
+      "parity": 2,
+      "primitive-arbiters": 7,
+      "read-data": 1,
+      "reset": 2,
+      "response": 1,
+      "response-statistics": 1,
+      "restart": 1,
+      "storage": 4,
+      "tag": 1,
+      "tutorial-cu": 3,
+      "wed": 1,
+      "write-data": 1
+    }
+  },
+  "modules": [
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/afu.sv",
+      "module": "afu",
+      "sha256": "a6fdf6c3ec1b7c99c81efcb6ba9f640d3736effd6fa681db19d1b06e943d197e",
+      "verification_unit": "afu",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "afu-wrapper",
+      "test_id": "capi-integration-afu-wrapper",
+      "priority": "P1",
+      "strategy_profile": "integration",
+      "oracle_id": "psl-wrapper-interface-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/afu_control.sv",
+      "module": "afu_control",
+      "sha256": "1e4c26e5d7e07bf111856a3a5e11d3b5cf96008870afc2b01460149f8cb8b46b",
+      "verification_unit": "afu_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "afu-control",
+      "test_id": "capi-integration-afu-control",
+      "priority": "P0",
+      "strategy_profile": "integration",
+      "oracle_id": "capi-transaction-scoreboard-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/cached_afu.sv",
+      "module": "cached_afu",
+      "sha256": "8daf254fceabb239e85e8f2b9fe7a529babd2837a44477376621d3eaeb39967b",
+      "verification_unit": "cached_afu",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "cached-afu",
+      "test_id": "capi-integration-cached-afu",
+      "priority": "P0",
+      "strategy_profile": "integration",
+      "oracle_id": "cached-afu-lifecycle-scoreboard-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/command_control.sv",
+      "module": "command_control",
+      "sha256": "84da3b252eaeec8813c748831b2bea60c5da2539278c4f5df045fd64204e1045",
+      "verification_unit": "command_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "command",
+      "test_id": "capi-unit-command",
+      "priority": "P0",
+      "strategy_profile": "protocol_control",
+      "oracle_id": "capi-command-encoder-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/credit_control.sv",
+      "module": "credit_control",
+      "sha256": "8d83456ef231546f6bc3550402e8066adc8294e621742df8c0ea580806871b1a",
+      "verification_unit": "credit_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "credit",
+      "test_id": "capi-unit-credit",
+      "priority": "P0",
+      "strategy_profile": "protocol_control",
+      "oracle_id": "credit-ledger-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/done_control.sv",
+      "module": "done_control",
+      "sha256": "3ee14c84d463f7233303f545eb5cd280349109b78cdb3eb829c0825d8675ee3c",
+      "verification_unit": "done_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "completion-error",
+      "test_id": "capi-unit-completion-error",
+      "priority": "P0",
+      "strategy_profile": "state_lifecycle",
+      "oracle_id": "completion-error-lifecycle-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/error_control.sv",
+      "module": "error_control",
+      "sha256": "b9982894d5e546633118fca46b5dc92f9ddc4e64949ecfce0874a252e6c6fb7d",
+      "verification_unit": "error_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "completion-error",
+      "test_id": "capi-unit-completion-error",
+      "priority": "P0",
+      "strategy_profile": "state_lifecycle",
+      "oracle_id": "completion-error-lifecycle-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/fifo.sv",
+      "module": "fifo",
+      "sha256": "668d2e99baa673d860e54408a2448dda1ac3b13cf21640bd1783b8a7894ec407",
+      "verification_unit": "fifo",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "storage",
+      "test_id": "capi-unit-storage",
+      "priority": "P0",
+      "strategy_profile": "storage",
+      "oracle_id": "storage-independent-queue-memory-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/fixed_priority_arbiter.sv",
+      "module": "fixed_priority_arbiter_1_input_N_ouput",
+      "sha256": "145c68697a9ec51ac8117fa00852dd6ce3de22fe54810569d1128c8aec49669f",
+      "verification_unit": "fixed_priority_arbiter",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "afu-arbiter-wrappers",
+      "test_id": "capi-unit-afu-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-wrapper-routing-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/fixed_priority_arbiter.sv",
+      "module": "fixed_priority_arbiter_N_input_1_ouput",
+      "sha256": "145c68697a9ec51ac8117fa00852dd6ce3de22fe54810569d1128c8aec49669f",
+      "verification_unit": "fixed_priority_arbiter",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "afu-arbiter-wrappers",
+      "test_id": "capi-unit-afu-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-wrapper-routing-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/job.sv",
+      "module": "job",
+      "sha256": "fa2c554c17b23744063ac24f0ba006b8edf1492e0e0e06249b6eaf590f49a906",
+      "verification_unit": "job",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "job",
+      "test_id": "capi-unit-job",
+      "priority": "P0",
+      "strategy_profile": "protocol_control",
+      "oracle_id": "job-command-state-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/mmio.sv",
+      "module": "mmio",
+      "sha256": "4f6739fec76dab3fb6f05f37b83a28c5f37678e69f6b6aeb3175afb2d7bb8b22",
+      "verification_unit": "mmio",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "mmio",
+      "test_id": "capi-unit-mmio",
+      "priority": "P0",
+      "strategy_profile": "register_control",
+      "oracle_id": "mmio-register-map-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/parity.sv",
+      "module": "dw_parity",
+      "sha256": "a7825e03c1299896fe0302be6781af04cbbb4c2a7c3ddb41e851720aec7002cc",
+      "verification_unit": "parity",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "parity",
+      "test_id": "capi-unit-parity",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "parity-independent-bitcount-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/parity.sv",
+      "module": "parity",
+      "sha256": "a7825e03c1299896fe0302be6781af04cbbb4c2a7c3ddb41e851720aec7002cc",
+      "verification_unit": "parity",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "parity",
+      "test_id": "capi-unit-parity",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "parity-independent-bitcount-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
+      "module": "vc_FixedArb",
+      "sha256": "44887dfcb207dcdf73dfc758c550add93675b36942347d1f09d3f5272290d10e",
+      "verification_unit": "priority_arbiters",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "primitive-arbiters",
+      "test_id": "capi-unit-primitive-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-priority-rotation-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
+      "module": "vc_FixedArbChain",
+      "sha256": "44887dfcb207dcdf73dfc758c550add93675b36942347d1f09d3f5272290d10e",
+      "verification_unit": "priority_arbiters",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "primitive-arbiters",
+      "test_id": "capi-unit-primitive-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-priority-rotation-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
+      "module": "vc_RoundRobinArb",
+      "sha256": "44887dfcb207dcdf73dfc758c550add93675b36942347d1f09d3f5272290d10e",
+      "verification_unit": "priority_arbiters",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "primitive-arbiters",
+      "test_id": "capi-unit-primitive-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-priority-rotation-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
+      "module": "vc_RoundRobinArbChain",
+      "sha256": "44887dfcb207dcdf73dfc758c550add93675b36942347d1f09d3f5272290d10e",
+      "verification_unit": "priority_arbiters",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "primitive-arbiters",
+      "test_id": "capi-unit-primitive-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-priority-rotation-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
+      "module": "vc_RoundRobinArb_V2",
+      "sha256": "44887dfcb207dcdf73dfc758c550add93675b36942347d1f09d3f5272290d10e",
+      "verification_unit": "priority_arbiters",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "primitive-arbiters",
+      "test_id": "capi-unit-primitive-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-priority-rotation-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
+      "module": "vc_VariableArb",
+      "sha256": "44887dfcb207dcdf73dfc758c550add93675b36942347d1f09d3f5272290d10e",
+      "verification_unit": "priority_arbiters",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "primitive-arbiters",
+      "test_id": "capi-unit-primitive-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-priority-rotation-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
+      "module": "vc_VariableArbChain",
+      "sha256": "44887dfcb207dcdf73dfc758c550add93675b36942347d1f09d3f5272290d10e",
+      "verification_unit": "priority_arbiters",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "primitive-arbiters",
+      "test_id": "capi-unit-primitive-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-priority-rotation-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
+      "module": "mixed_width_ram",
+      "sha256": "103ac9e5f2f0d1703420956feca18d3a8c682986721b20b880d5a81987bab431",
+      "verification_unit": "ram",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "storage",
+      "test_id": "capi-unit-storage",
+      "priority": "P0",
+      "strategy_profile": "storage",
+      "oracle_id": "storage-independent-queue-memory-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
+      "module": "ram",
+      "sha256": "103ac9e5f2f0d1703420956feca18d3a8c682986721b20b880d5a81987bab431",
+      "verification_unit": "ram",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "storage",
+      "test_id": "capi-unit-storage",
+      "priority": "P0",
+      "strategy_profile": "storage",
+      "oracle_id": "storage-independent-queue-memory-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
+      "module": "ram_2xrd",
+      "sha256": "103ac9e5f2f0d1703420956feca18d3a8c682986721b20b880d5a81987bab431",
+      "verification_unit": "ram",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "storage",
+      "test_id": "capi-unit-storage",
+      "priority": "P0",
+      "strategy_profile": "storage",
+      "oracle_id": "storage-independent-queue-memory-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/read_data_control.sv",
+      "module": "read_data_control",
+      "sha256": "a1ac601b7bf4fe11513cd6bbbd0d75420b2dbce288609260bf6e6c9be90cac9a",
+      "verification_unit": "read_data_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "read-data",
+      "test_id": "capi-unit-read-data",
+      "priority": "P0",
+      "strategy_profile": "protocol_data",
+      "oracle_id": "read-half-association-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/reset_control.sv",
+      "module": "reset_control",
+      "sha256": "f19a3092b6aa64dadfe2f5bc9a4fa1a47103a61e5382bec33de82f52530ac04d",
+      "verification_unit": "reset_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "reset",
+      "test_id": "capi-unit-reset",
+      "priority": "P0",
+      "strategy_profile": "state_lifecycle",
+      "oracle_id": "reset-cycle-model-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/reset_filter.sv",
+      "module": "reset_filter",
+      "sha256": "b900d51997664afb3de8b745cbf735f13839accc4f2d9572f2fc37d6b44b8fd3",
+      "verification_unit": "reset_filter",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "reset",
+      "test_id": "capi-unit-reset",
+      "priority": "P0",
+      "strategy_profile": "state_lifecycle",
+      "oracle_id": "reset-cycle-model-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/response_control.sv",
+      "module": "response_control",
+      "sha256": "8259dae491a015bac8e2e12dd3dc921c88cc2f2b6fcaa0b44ce579b5e5fd6bb0",
+      "verification_unit": "response_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "response",
+      "test_id": "capi-unit-response",
+      "priority": "P0",
+      "strategy_profile": "protocol_control",
+      "oracle_id": "outstanding-tag-response-router-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/response_statistics_control.sv",
+      "module": "response_statistics_control",
+      "sha256": "2001002b312d6b200d7b84b0ffcd0d6aca475d6b026cc55935bf575fa5019696",
+      "verification_unit": "response_statistics_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "response-statistics",
+      "test_id": "capi-unit-response-statistics",
+      "priority": "P1",
+      "strategy_profile": "protocol_control",
+      "oracle_id": "journal-derived-response-counters-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/restart_control.sv",
+      "module": "restart_control",
+      "sha256": "dd73a0e6a08182c84f17b3e05586d7fe3faf2c1c447979159237ca7c7072c734",
+      "verification_unit": "restart_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "restart",
+      "test_id": "capi-unit-restart",
+      "priority": "P0",
+      "strategy_profile": "protocol_control",
+      "oracle_id": "restart-replay-ledger-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/round_robin_priority_arbiter.sv",
+      "module": "round_robin_priority_arbiter_1_input_N_ouput",
+      "sha256": "7ee55dbd9422011fea9f0dda50098f826234beda23531f575db1186d4eb1a599",
+      "verification_unit": "round_robin_priority_arbiter",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "afu-arbiter-wrappers",
+      "test_id": "capi-unit-afu-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-wrapper-routing-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/round_robin_priority_arbiter.sv",
+      "module": "round_robin_priority_arbiter_N_input_1_ouput",
+      "sha256": "7ee55dbd9422011fea9f0dda50098f826234beda23531f575db1186d4eb1a599",
+      "verification_unit": "round_robin_priority_arbiter",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "afu-arbiter-wrappers",
+      "test_id": "capi-unit-afu-arbiters",
+      "priority": "P0",
+      "strategy_profile": "arbitration",
+      "oracle_id": "arbiter-wrapper-routing-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/tag_control.sv",
+      "module": "tag_control",
+      "sha256": "2f92862bf404514319318b4a04c37a224c58b62cb225589df66afe78975e43da",
+      "verification_unit": "tag_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "tag",
+      "test_id": "capi-unit-tag",
+      "priority": "P0",
+      "strategy_profile": "protocol_control",
+      "oracle_id": "tag-metadata-ledger-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/wed_control.sv",
+      "module": "wed_control",
+      "sha256": "e4e6d72f1d8cd491290781212ffc5c306c3075d6f076292fed2cec8861309ace",
+      "verification_unit": "wed_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "wed",
+      "test_id": "capi-unit-wed",
+      "priority": "P0",
+      "strategy_profile": "protocol_data",
+      "oracle_id": "wed-byte-layout-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/write_data_control.sv",
+      "module": "write_data_control",
+      "sha256": "a7d113a1a4de2f7db459b472e3e4089c798e4c8aa1028cc8abfd5d13b47d1c87",
+      "verification_unit": "write_data_control",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "family": "write-data",
+      "test_id": "capi-unit-write-data",
+      "priority": "P0",
+      "strategy_profile": "protocol_data",
+      "oracle_id": "write-address-mask-data-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_cu/cu_control.sv",
+      "module": "cu_control",
+      "sha256": "9fdfd4f573e22f27b81316e99270b9c4a946ed87148e3a22a75f706c2b872a65",
+      "verification_unit": "memcpy-tutorial-cu",
+      "contexts": [
+        "memcpy-tutorial"
+      ],
+      "family": "tutorial-cu",
+      "test_id": "capi-unit-tutorial-cu",
+      "priority": "P1",
+      "strategy_profile": "cu_engine",
+      "oracle_id": "tutorial-parity-golden-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/read_engine.sv",
+      "module": "read_engine",
+      "sha256": "cf548ab7b902d4009c0ce401b0c391879f4fb790f46159e9b29bdf120e2e6a8b",
+      "verification_unit": "memcpy-tutorial-cu",
+      "contexts": [
+        "memcpy-tutorial"
+      ],
+      "family": "tutorial-cu",
+      "test_id": "capi-unit-tutorial-cu",
+      "priority": "P1",
+      "strategy_profile": "cu_engine",
+      "oracle_id": "tutorial-parity-golden-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/write_engine.sv",
+      "module": "write_engine",
+      "sha256": "e31617c67e28e16fc8c12155f65beeb6b39c49ce414f21c5cb31944484c8d694",
+      "verification_unit": "memcpy-tutorial-cu",
+      "contexts": [
+        "memcpy-tutorial"
+      ],
+      "family": "tutorial-cu",
+      "test_id": "capi-unit-tutorial-cu",
+      "priority": "P1",
+      "strategy_profile": "cu_engine",
+      "oracle_id": "tutorial-parity-golden-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_cu/cu_control.sv",
+      "module": "cu_control",
+      "sha256": "a8803ee5a49db83952349afebcc14a6e465997d41ee2a363882e2a76ffedce79",
+      "verification_unit": "memcpy-cu",
+      "contexts": [
+        "memcpy"
+      ],
+      "family": "memcpy-cu",
+      "test_id": "capi-unit-memcpy-cu",
+      "priority": "P0",
+      "strategy_profile": "cu_engine",
+      "oracle_id": "byte-copy-golden-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv",
+      "module": "cu_data_read_engine_control",
+      "sha256": "cb1e55d6430f88a10841f5c078c571862fae0c84ac07f975cee7209ec8218678",
+      "verification_unit": "memcpy-cu",
+      "contexts": [
+        "memcpy"
+      ],
+      "family": "memcpy-cu",
+      "test_id": "capi-unit-memcpy-cu",
+      "priority": "P0",
+      "strategy_profile": "cu_engine",
+      "oracle_id": "byte-copy-golden-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv",
+      "module": "cu_data_write_engine_control",
+      "sha256": "4bcd3407dec482f2411172b369bbfb690a644e9d689b5596a95a559253ac1b0e",
+      "verification_unit": "memcpy-cu",
+      "contexts": [
+        "memcpy"
+      ],
+      "family": "memcpy-cu",
+      "test_id": "capi-unit-memcpy-cu",
+      "priority": "P0",
+      "strategy_profile": "cu_engine",
+      "oracle_id": "byte-copy-golden-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_control.sv",
+      "module": "cu_control",
+      "sha256": "88e1a9e71daf15ab0adefe2ec243793f5fff4a2f2d7811699c1454a41498451e",
+      "verification_unit": "mmtiled-cu",
+      "contexts": [
+        "mmtiled"
+      ],
+      "family": "mmtiled-cu",
+      "test_id": "capi-unit-mmtiled-cu",
+      "priority": "P0",
+      "strategy_profile": "cu_engine",
+      "oracle_id": "tiled-matrix-independent-golden-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
+      "module": "cu_matrix_C_job_control",
+      "sha256": "cf29b19e8ef33dad76f90bda09f54f3786a98a85b6be714a6a9141ceb5fa5d94",
+      "verification_unit": "mmtiled-cu",
+      "contexts": [
+        "mmtiled"
+      ],
+      "family": "mmtiled-cu",
+      "test_id": "capi-unit-mmtiled-cu",
+      "priority": "P0",
+      "strategy_profile": "cu_engine",
+      "oracle_id": "tiled-matrix-independent-golden-v1",
+      "implementation_status": "planned"
+    }
+  ],
+  "non_module_declarations": [
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_pkgs/afu_pkg.sv",
+      "package": "AFU_PKG",
+      "sha256": "d63c8c3bce7bd5af9aa6e8569add897000018b46880e9a3a65a8afa7b0d0dd6d",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_pkgs/capi_pkg.sv",
+      "package": "CAPI_PKG",
+      "sha256": "d8293a7c827033e1d019ab6e1a0504d5c600a9a812bc3acedb109c6bf93d4630",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_pkgs/credit_pkg.sv",
+      "package": "CREDIT_PKG",
+      "sha256": "f911d9714c99953f87803d35a37491bca68dc6e88e7e0da36fafd4dafb3276ae",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_pkgs/globals_afu_pkg.sv",
+      "package": "GLOBALS_AFU_PKG",
+      "sha256": "ecefdf05b329b9bb4a3f3da066aff3df18e1e606f2464009f13419b3cc33ae92",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy",
+        "memcpy-tutorial",
+        "mmtiled"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_pkg/cu_pkg.sv",
+      "package": "CU_PKG",
+      "sha256": "05fc0beb852b07ff62c77dd552f2ec9ccb9cbe5ada6097d3e5e9825050f70a4e",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy-tutorial"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_pkg/wed_pkg.sv",
+      "package": "WED_PKG",
+      "sha256": "327d5eaa535629b8528eb8a9ec2afb35314cd8a16aeec02a074a4e979501716b",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy-tutorial"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/pkg/globals_cu_pkg.sv",
+      "package": "GLOBALS_CU_PKG",
+      "sha256": "d5843fc94eb0bb535f8dca8de15ea2f6277924586cc92803a109ea641cf67029",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy-tutorial"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/cu_pkg.sv",
+      "package": "CU_PKG",
+      "sha256": "9ca48a82fe342b61154181d79e6c626f7557385094555afccd3e019b68f7bf4e",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/wed_pkg.sv",
+      "package": "WED_PKG",
+      "sha256": "08c5bccf08dce6a48f44c593ca9a69b2608ba4ac656093df1b962187e91baa4d",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/pkg/globals_cu_pkg.sv",
+      "package": "GLOBALS_CU_PKG",
+      "sha256": "ac10c437255458f3f51238c1d70265eb6c0147b873f5d76546c518c01721ee10",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "memcpy"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/cu_pkg.sv",
+      "package": "CU_PKG",
+      "sha256": "dc0668ba87797f92f6dbbf6c2dddec953646b252488ecf8b769f4d9d9dee2696",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "mmtiled"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/wed_pkg.sv",
+      "package": "WED_PKG",
+      "sha256": "2da43613ecae76f26ffed76367ba3433f6b9436445b9bc3fa2a21017cdae9b05",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "mmtiled"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/pkg/globals_cu_pkg.sv",
+      "package": "GLOBALS_CU_PKG",
+      "sha256": "73a591bef82a82f9d287b48e09eaa693a8812740589b5ec6bfd5c5ef73c980fe",
+      "verification_unit": "package-contracts",
+      "contexts": [
+        "mmtiled"
+      ],
+      "suite": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "priority": "P0",
+      "strategy_profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned"
+    }
+  ]
+}

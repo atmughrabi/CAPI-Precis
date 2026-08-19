@@ -1,0 +1,365 @@
+{
+  "schema_version": 1,
+  "plan_id": "capi-precis-rtl-coverage-v1",
+  "inventory_schema_version": 2,
+  "module_scope": {
+    "active_path_prefixes": [
+      "01_capi_integration/accelerator_rtl/"
+    ],
+    "expected_inventory_roots": [
+      "01_capi_integration/accelerator_rtl",
+      "01_capi_integration/accelerator_verification/rtl"
+    ],
+    "expected_inventory_generator": "01_capi_integration/accelerator_verification/rtl/scripts/verify_manifests.py",
+    "expected_module_declarations": 43,
+    "expected_distinct_source_hashes": 32,
+    "expected_package_declarations": 13,
+    "expected_family_plans": 23,
+    "expected_non_module_suites": 1,
+    "expected_context_executions": 113
+  },
+  "coverage_policy": {
+    "execution_granularity": "module_declaration",
+    "closure_targets": {
+      "module_mapping_percent": 100,
+      "reachable_statement_percent": 100,
+      "reachable_branch_percent": 100,
+      "fsm_state_percent": 100,
+      "fsm_transition_percent": 100,
+      "functional_bin_percent": 100,
+      "assertion_goal_percent": 100,
+      "reachable_control_toggle_percent": 100,
+      "context_execution_percent": 100
+    },
+    "waiver_required_fields": [
+      "reason",
+      "owner",
+      "issue",
+      "affected_metric",
+      "affected_items",
+      "expiry",
+      "approval"
+    ],
+    "closure_rule": "No family closes until every mapped module context passes its required scenarios and every reachable target is covered or has an approved expiring waiver."
+  },
+  "waivers": [],
+  "cross_family_hash_exceptions": [],
+  "strategy_profiles": {
+    "combinational": {
+      "stimulus": ["exhaustive feasible widths", "boundary vectors", "fixed random vectors"],
+      "oracle": ["independent mathematical reference"],
+      "assertions": ["same-cycle output relation", "known output for known input"],
+      "backpressure": ["not applicable; prove no hidden state"],
+      "coverage": ["input classes", "parameter modes", "output classes"],
+      "failure_artifacts": ["seed/vector", "parameters", "expected/actual"]
+    },
+    "state_lifecycle": {
+      "stimulus": ["asynchronous assertion", "synchronous release", "overlap", "repetition"],
+      "oracle": ["cycle-accurate state model"],
+      "assertions": ["safe reset value", "bounded transition", "no premature release"],
+      "backpressure": ["hold dependent enables in every reset phase"],
+      "coverage": ["every state", "every transition", "reset source crosses"],
+      "failure_artifacts": ["state trace", "reset sources", "first failing cycle"]
+    },
+    "storage": {
+      "stimulus": ["every address", "wraparound", "simultaneous operations", "read-during-write"],
+      "oracle": ["independent queue or memory model"],
+      "assertions": ["no underflow/overflow", "status consistency", "latency contract"],
+      "backpressure": ["full", "almost-full", "empty", "consumer stalls"],
+      "coverage": ["occupancy 0..depth", "pointer wrap", "operation crosses"],
+      "failure_artifacts": ["operation journal", "model contents", "expected/actual"]
+    },
+    "arbitration": {
+      "stimulus": ["none/single/all requests", "held requests", "rotating contention"],
+      "oracle": ["independent priority and rotation model"],
+      "assertions": ["one-hot grant", "grant implies request", "payload alignment"],
+      "backpressure": ["destination stalls before and after grant"],
+      "coverage": ["every requester wins", "priority order", "fairness bounds"],
+      "failure_artifacts": ["request/grant history", "arbiter state", "winner diff"]
+    },
+    "protocol_control": {
+      "stimulus": ["all legal commands/responses", "boundary sizes", "fault injection", "repeat jobs"],
+      "oracle": ["transaction ledger and protocol encoder"],
+      "assertions": ["conservation", "bounded progress", "stable publication", "legal sequencing"],
+      "backpressure": ["zero credits", "command stalls", "response reorder", "ACK delay", "reset"],
+      "coverage": ["command/response classes", "error classes", "lifecycle crosses"],
+      "failure_artifacts": ["transaction journal", "ledger", "register/state snapshot"]
+    },
+    "protocol_data": {
+      "stimulus": ["aligned/misaligned boundaries", "lower/upper halves", "mask and size sweep"],
+      "oracle": ["byte-addressable memory and half-association model"],
+      "assertions": ["tag/data association", "address/size/mask coupling", "no loss/duplication"],
+      "backpressure": ["read-data delays", "half reorder", "write-buffer stalls", "response reorder"],
+      "coverage": ["half order", "alignment", "size", "mask", "tag crosses"],
+      "failure_artifacts": ["memory diff", "transaction journal", "tag metadata"]
+    },
+    "register_control": {
+      "stimulus": ["all addresses", "read/write legality", "configuration pulses", "invalid accesses"],
+      "oracle": ["independent register and descriptor map"],
+      "assertions": ["address decode", "write mask", "stable status", "error acknowledgement"],
+      "backpressure": ["request gaps", "delayed acknowledgement", "reset during access"],
+      "coverage": ["all registers", "read/write/error crosses", "configuration words"],
+      "failure_artifacts": ["MMIO journal", "register diff", "configuration snapshot"]
+    },
+    "cu_engine": {
+      "stimulus": ["zero/single/boundary workload", "repeated launch", "prefetch modes", "edge tile"],
+      "oracle": ["independent byte-copy or tiled-matrix model"],
+      "assertions": ["counter monotonicity", "command legality", "exact completion", "clean restart"],
+      "backpressure": ["read/write/prefetch stalls", "response reorder", "reset at each phase"],
+      "coverage": ["engine modes", "workload boundaries", "completion/reset crosses"],
+      "failure_artifacts": ["WED/config", "memory diff", "command journal", "counters"]
+    },
+    "integration": {
+      "stimulus": ["complete job lifecycle", "repeat jobs", "all configuration modes", "faults"],
+      "oracle": ["composed protocol scoreboards and workload golden"],
+      "assertions": ["no leaked credits/tags/state", "bounded liveness", "completion stability"],
+      "backpressure": ["named channel profiles", "risk pairs", "reset/ACK timing"],
+      "coverage": ["all subunit responsibilities", "cross-channel lifecycle bins"],
+      "failure_artifacts": ["full replay bundle", "waveform", "journal", "memory/register diff"]
+    }
+  },
+  "families": [
+    {
+      "id": "parity",
+      "test_id": "capi-unit-parity",
+      "oracle_id": "parity-independent-bitcount-v1",
+      "priority": "P0",
+      "profile": "combinational",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["parity"]},
+      "required_scenarios": ["odd/even parity", "per-doubleword parity", "parameter width sweep"]
+    },
+    {
+      "id": "reset",
+      "test_id": "capi-unit-reset",
+      "oracle_id": "reset-cycle-model-v1",
+      "priority": "P0",
+      "profile": "state_lifecycle",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["reset_filter", "reset_control"]},
+      "required_scenarios": ["asynchronous assertion", "filtered release", "overlapping reset sources"]
+    },
+    {
+      "id": "storage",
+      "test_id": "capi-unit-storage",
+      "oracle_id": "storage-independent-queue-memory-v1",
+      "priority": "P0",
+      "profile": "storage",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["ram", "fifo"]},
+      "required_scenarios": ["all addresses", "full/empty/wrap", "simultaneous read/write or push/pop", "dual-read coherence", "mixed-width ratios", "read-during-write"]
+    },
+    {
+      "id": "primitive-arbiters",
+      "test_id": "capi-unit-primitive-arbiters",
+      "oracle_id": "arbiter-priority-rotation-v1",
+      "priority": "P0",
+      "profile": "arbitration",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["priority_arbiters"]},
+      "required_scenarios": ["fixed priority", "variable priority", "round-robin rotation", "N=1 and non-power-of-two"]
+    },
+    {
+      "id": "afu-arbiter-wrappers",
+      "test_id": "capi-unit-afu-arbiters",
+      "oracle_id": "arbiter-wrapper-routing-v1",
+      "priority": "P0",
+      "profile": "arbitration",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["fixed_priority_arbiter", "round_robin_priority_arbiter"]},
+      "required_scenarios": ["fan-in", "fan-out", "payload/grant alignment", "stalled destination"]
+    },
+    {
+      "id": "credit",
+      "test_id": "capi-unit-credit",
+      "oracle_id": "credit-ledger-v1",
+      "priority": "P0",
+      "profile": "protocol_control",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["credit_control"]},
+      "required_scenarios": ["zero credit then release", "issue/return same cycle", "overflow detection"]
+    },
+    {
+      "id": "command",
+      "test_id": "capi-unit-command",
+      "oracle_id": "capi-command-encoder-v1",
+      "priority": "P0",
+      "profile": "protocol_control",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["command_control"]},
+      "required_scenarios": ["every command class", "address/size boundaries", "command-room stalls", "parity"]
+    },
+    {
+      "id": "response",
+      "test_id": "capi-unit-response",
+      "oracle_id": "outstanding-tag-response-router-v1",
+      "priority": "P0",
+      "profile": "protocol_control",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["response_control"]},
+      "required_scenarios": ["every response class", "out-of-order tags", "parity error", "unknown tag"]
+    },
+    {
+      "id": "response-statistics",
+      "test_id": "capi-unit-response-statistics",
+      "oracle_id": "journal-derived-response-counters-v1",
+      "priority": "P1",
+      "profile": "protocol_control",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["response_statistics_control"]},
+      "required_scenarios": ["every response counter", "byte counters", "rollover", "bursty responses"]
+    },
+    {
+      "id": "restart",
+      "test_id": "capi-unit-restart",
+      "oracle_id": "restart-replay-ledger-v1",
+      "priority": "P0",
+      "profile": "protocol_control",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["restart_control"]},
+      "required_scenarios": ["PAGED/AERROR/DERROR by ABT mode", "credit starvation during restart", "flush", "replay once", "no duplicate completion"]
+    },
+    {
+      "id": "tag",
+      "test_id": "capi-unit-tag",
+      "oracle_id": "tag-metadata-ledger-v1",
+      "priority": "P0",
+      "profile": "protocol_control",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["tag_control"]},
+      "required_scenarios": ["allocation exhaustion", "metadata retention", "out-of-order release", "safe reuse"]
+    },
+    {
+      "id": "read-data",
+      "test_id": "capi-unit-read-data",
+      "oracle_id": "read-half-association-v1",
+      "priority": "P0",
+      "profile": "protocol_data",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["read_data_control"]},
+      "required_scenarios": ["lower/upper order", "destination routing", "tag association", "parity fault"]
+    },
+    {
+      "id": "write-data",
+      "test_id": "capi-unit-write-data",
+      "oracle_id": "write-address-mask-data-v1",
+      "priority": "P0",
+      "profile": "protocol_data",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["write_data_control"]},
+      "required_scenarios": ["buffer request timing", "lower/upper halves", "mask/address/size coupling"]
+    },
+    {
+      "id": "wed",
+      "test_id": "capi-unit-wed",
+      "oracle_id": "wed-byte-layout-v1",
+      "priority": "P0",
+      "profile": "protocol_data",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["wed_control"]},
+      "required_scenarios": ["128-byte fetch", "half reorder", "decode once", "repeat job"]
+    },
+    {
+      "id": "mmio",
+      "test_id": "capi-unit-mmio",
+      "oracle_id": "mmio-register-map-v1",
+      "priority": "P0",
+      "profile": "register_control",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["mmio"]},
+      "required_scenarios": ["all register addresses", "config/status", "invalid access", "address/data parity faults", "ACK/reset"]
+    },
+    {
+      "id": "job",
+      "test_id": "capi-unit-job",
+      "oracle_id": "job-command-state-v1",
+      "priority": "P0",
+      "profile": "protocol_control",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["job"]},
+      "required_scenarios": ["START", "RESET", "invalid command", "parity", "command gaps"]
+    },
+    {
+      "id": "completion-error",
+      "test_id": "capi-unit-completion-error",
+      "oracle_id": "completion-error-lifecycle-v1",
+      "priority": "P0",
+      "profile": "state_lifecycle",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["done_control", "error_control"]},
+      "required_scenarios": ["snapshot/publish/ACK/reset", "sticky error/ACK", "overlapping completion and error"]
+    },
+    {
+      "id": "afu-control",
+      "test_id": "capi-integration-afu-control",
+      "oracle_id": "capi-transaction-scoreboard-v1",
+      "priority": "P0",
+      "profile": "integration",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["afu_control"]},
+      "required_scenarios": ["all command classes", "credit/tag conservation", "data/response routing", "always_ready", "zero_credit", "response_reorder", "half_reorder", "reset_phase", "restart risk triples"]
+    },
+    {
+      "id": "cached-afu",
+      "test_id": "capi-integration-cached-afu",
+      "oracle_id": "cached-afu-lifecycle-scoreboard-v1",
+      "priority": "P0",
+      "profile": "integration",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["cached_afu"]},
+      "required_scenarios": ["full job lifecycle", "repeat jobs", "error path", "completion drain"]
+    },
+    {
+      "id": "afu-wrapper",
+      "test_id": "capi-integration-afu-wrapper",
+      "oracle_id": "psl-wrapper-interface-v1",
+      "priority": "P1",
+      "profile": "integration",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["afu"]},
+      "required_scenarios": ["PSL interface pass-through", "timebase/parity", "reset"]
+    },
+    {
+      "id": "memcpy-cu",
+      "test_id": "capi-unit-memcpy-cu",
+      "oracle_id": "byte-copy-golden-v1",
+      "priority": "P0",
+      "profile": "cu_engine",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["memcpy-cu"]},
+      "required_scenarios": ["read-only", "write-only", "copy", "cache/CABT modes", "prefetch", "address/mask/request sequence", "counter checks", "backpressured repeat"]
+    },
+    {
+      "id": "tutorial-cu",
+      "test_id": "capi-unit-tutorial-cu",
+      "oracle_id": "tutorial-parity-golden-v1",
+      "priority": "P1",
+      "profile": "cu_engine",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["memcpy-tutorial-cu"]},
+      "required_scenarios": ["read/write parity operation", "zero/single/boundary length", "address/mask/request sequence", "counter checks", "repeat"]
+    },
+    {
+      "id": "mmtiled-cu",
+      "test_id": "capi-unit-mmtiled-cu",
+      "oracle_id": "tiled-matrix-independent-golden-v1",
+      "priority": "P0",
+      "profile": "cu_engine",
+      "implementation_status": "planned",
+      "match": {"verification_units": ["mmtiled-cu"]},
+      "required_scenarios": ["full tile", "edge tile", "transpose/reference", "address/mask/request sequence", "counter checks", "read/write stalls", "repeat"]
+    }
+  ],
+  "non_module_suites": [
+    {
+      "id": "package-contracts",
+      "test_id": "capi-unit-package-contracts",
+      "declaration_kind": "package",
+      "priority": "P0",
+      "profile": "combinational",
+      "oracle_id": "c-sv-abi-endian-descriptor-v1",
+      "implementation_status": "planned",
+      "required_scenarios": ["struct widths and offsets", "C/SystemVerilog WED ABI", "endian functions", "CABT mapping", "descriptor and error constants"]
+    }
+  ]
+}
