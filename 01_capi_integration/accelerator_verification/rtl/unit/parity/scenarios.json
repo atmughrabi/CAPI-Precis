@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "family": "parity",
+  "oracle_id": "parity-independent-bitcount-v1",
+  "instances": {
+    "parity_bits": [1, 8, 17, 64, 65],
+    "double_words": [2, 4]
+  },
+  "stimulus": {
+    "exhaustive": ["BITS=8, all 256 values, even and odd mode"],
+    "boundary": ["all zero", "all one", "alternating 10", "alternating 01"],
+    "deterministic_samples": 1024
+  },
+  "required_bins": {
+    "parity_modes": 2,
+    "data_parity_classes_by_width": 10,
+    "doubleword_lane_parity_classes": 12,
+    "boundary_classes": 4,
+    "total": 28
+  },
+  "sensitivity": {
+    "mutations": [
+      "invert the parity module output equation",
+      "remove odd-mode contribution from parity",
+      "invert the dw_parity lane output equation",
+      "reverse dw_parity output-lane assignment"
+    ],
+    "expected_result": "test process exits nonzero"
+  }
+}

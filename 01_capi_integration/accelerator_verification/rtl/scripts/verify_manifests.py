@@ -129,6 +129,8 @@ def sha256(path):
 def verification_unit(source, found_declarations):
     if "/afu_pkgs/" in source or "/global_pkg/" in source or "/pkg/" in source:
         return "package-contracts"
+    if "/accelerator_verification/rtl/unit/" in source:
+        return "unit-" + source.split("/rtl/unit/", 1)[1].split("/", 1)[0]
     if "/accelerator_verification/" in source:
         return "rtl-lifecycle"
     if "/afu_control/" in source:
@@ -323,6 +325,27 @@ def build_inventory(manifests):
             evidence = ", ".join(
                 item["manifest"] for item in memberships[source]
             )
+        elif source.startswith(
+            "01_capi_integration/accelerator_verification/rtl/unit/"
+        ):
+            status = "active"
+            suite = source.split("/rtl/unit/", 1)[1].split("/", 1)[0]
+            suite_root = VERIFICATION_RTL_ROOT / "unit" / suite
+            for required in (
+                suite_root / f"run_{suite}.py",
+                suite_root / "scenarios.json",
+                suite_root / "coverage.json",
+            ):
+                if not required.is_file():
+                    fail(
+                        "unit testbench lacks executable evidence: "
+                        f"{relative(required)}"
+                    )
+            memberships[source].append({
+                "manifest": f"unit-{suite}",
+                "order": 0,
+            })
+            evidence = f"executable unit testbench: {suite}"
         elif source.startswith(LEGACY_PREFIXES):
             status = "legacy-supported"
             evidence = "Classified legacy tree; excluded from modern manifests."

@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 import sys
 from collections import Counter
 from datetime import date
@@ -190,18 +191,58 @@ def validate_status(owner, repo_root):
     if status not in VALID_STATUSES:
         fail(f"{owner['id']} has invalid status")
     if status in {"planned", "blocked"}:
-        return
+        return None
     evidence = owner.get("evidence")
     required = {
         "test_target",
+        "runner",
         "test_sources",
         "scenario_manifest",
         "coverage_manifest",
     }
     if not isinstance(evidence, dict) or set(evidence) != required:
         fail(f"{owner['id']} status {status} lacks executable evidence")
-    if not evidence["test_target"] or not evidence["test_sources"]:
+    if (
+        not evidence["test_target"] or
+        not evidence["runner"] or
+        not evidence["test_sources"]
+    ):
         fail(f"{owner['id']} evidence is incomplete")
+    if evidence["runner"] not in evidence["test_sources"]:
+        fail(f"{owner['id']} runner is not hashed as a test source")
+    target = subprocess.run(
+        [
+            "make",
+            "-s",
+            "-n",
+            "--no-print-directory",
+            "-C",
+            str(repo_root),
+            evidence["test_target"],
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if target.returncode:
+        fail(f"{owner['id']} Make target does not resolve: {evidence['test_target']}")
+    normalized_target = target.stdout.replace("./", "")
+    if evidence["runner"] not in normalized_target:
+        fail(f"{owner['id']} Make target does not invoke its hashed runner")
+    verify = subprocess.run(
+        [
+            "make",
+            "-s",
+            "-n",
+            "--no-print-directory",
+            "-C",
+            str(repo_root),
+            "verify",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if verify.returncode or evidence["runner"] not in verify.stdout.replace("./", ""):
+        fail(f"{owner['id']} is not reachable from make verify")
     for field in ("test_sources",):
         for source in evidence[field]:
             if not (repo_root / source).is_file():
@@ -209,6 +250,19 @@ def validate_status(owner, repo_root):
     for field in ("scenario_manifest", "coverage_manifest"):
         if not (repo_root / evidence[field]).is_file():
             fail(f"{owner['id']} evidence path does not exist: {evidence[field]}")
+    digest = hashlib.sha256()
+    evidence_paths = [
+        *evidence["test_sources"],
+        evidence["scenario_manifest"],
+        evidence["coverage_manifest"],
+    ]
+    for relative_path in sorted(evidence_paths):
+        path = repo_root / relative_path
+        digest.update(relative_path.encode())
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
 
 
 def validate_non_module_suites(plan, packages, profiles, repo_root):
@@ -239,7 +293,7 @@ def validate_non_module_suites(plan, packages, profiles, repo_root):
             fail(f"{suite['id']} has invalid priority")
         if not suite["required_scenarios"] or not suite["oracle_id"]:
             fail(f"{suite['id']} lacks scenarios or oracle")
-        validate_status(suite, repo_root)
+        suite["_evidence_sha256"] = validate_status(suite, repo_root)
         package_owners.append(suite)
     if len(package_owners) != 1 and packages:
         fail("active packages must have exactly one contract-suite owner")
@@ -252,6 +306,7 @@ def validate_non_module_suites(plan, packages, profiles, repo_root):
             "strategy_profile": package_owners[0]["profile"],
             "oracle_id": package_owners[0]["oracle_id"],
             "implementation_status": package_owners[0]["implementation_status"],
+            "evidence_sha256": package_owners[0]["_evidence_sha256"],
         }
         for package in packages
     ]
@@ -304,13 +359,14 @@ def build_matrix(inventory, plan, repo_root, inventory_sha256, plan_sha256):
             f"coverage family count {len(families)} != "
             f"{scope.get('expected_family_plans')}"
         )
+    family_evidence = {}
     for family in families:
         for field in REQUIRED_FAMILY_FIELDS:
             if field not in family:
                 fail(f"coverage family is missing {field}: {family}")
         if family["priority"] not in VALID_PRIORITIES:
             fail(f"family {family['id']} has invalid priority")
-        validate_status(family, repo_root)
+        family_evidence[family["id"]] = validate_status(family, repo_root)
         if family["profile"] not in profiles:
             fail(f"family {family['id']} references unknown profile")
         if not family["required_scenarios"] or not family["oracle_id"]:
@@ -335,6 +391,7 @@ def build_matrix(inventory, plan, repo_root, inventory_sha256, plan_sha256):
             "strategy_profile": family["profile"],
             "oracle_id": family["oracle_id"],
             "implementation_status": family["implementation_status"],
+            "evidence_sha256": family_evidence[family["id"]],
         })
 
     empty_families = sorted(set(family_ids) - set(family_counts))

@@ -125,9 +125,22 @@
       "oracle_id": "parity-independent-bitcount-v1",
       "priority": "P0",
       "profile": "combinational",
-      "implementation_status": "planned",
+      "implementation_status": "implemented",
       "match": {"verification_units": ["parity"]},
-      "required_scenarios": ["odd/even parity", "per-doubleword parity", "parameter width sweep"]
+      "required_scenarios": ["odd/even parity", "per-doubleword parity", "parameter width sweep"],
+      "evidence": {
+        "test_target": "rtl-unit-parity",
+        "runner": "01_capi_integration/accelerator_verification/rtl/unit/parity/run_parity.py",
+        "test_sources": [
+          "Makefile",
+          "00_bench/Makefile",
+          "01_capi_integration/accelerator_verification/rtl/unit/parity/parity_tb.sv",
+          "01_capi_integration/accelerator_verification/rtl/unit/parity/parity_main.cpp",
+          "01_capi_integration/accelerator_verification/rtl/unit/parity/run_parity.py"
+        ],
+        "scenario_manifest": "01_capi_integration/accelerator_verification/rtl/unit/parity/scenarios.json",
+        "coverage_manifest": "01_capi_integration/accelerator_verification/rtl/unit/parity/coverage.json"
+      }
     },
     {
       "id": "reset",

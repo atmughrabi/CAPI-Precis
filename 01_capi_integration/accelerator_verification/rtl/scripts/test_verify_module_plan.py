@@ -73,8 +73,14 @@ def main():
 
         mutation = json.loads(json.dumps(plan_payload))
         mutation["families"][0]["implementation_status"] = "implemented"
+        mutation["families"][0].pop("evidence", None)
         plan.write_text(json.dumps(mutation))
         expect_failure(run(inventory, plan, output, True), "status without evidence")
+
+        mutation = json.loads(json.dumps(plan_payload))
+        mutation["families"][0]["evidence"]["test_target"] = "no-such-target"
+        plan.write_text(json.dumps(mutation))
+        expect_failure(run(inventory, plan, output, True), "missing Make target")
 
         mutation_inventory = json.loads(json.dumps(inventory_payload))
         mutation_inventory["schema_version"] = 1

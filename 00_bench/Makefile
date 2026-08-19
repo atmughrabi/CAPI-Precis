@@ -483,7 +483,7 @@ integration-compile:
 	$(CC) $(CFLAGS) -DSIM -fsyntax-only -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -I../$(CAPI_INTEG_DIR)/libcxl $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/helloAFU.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/tutorial.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/mmtiled.c
 
 .PHONY: rtl-verification
-rtl-verification: rtl-manifest-verification
+rtl-verification: rtl-manifest-verification rtl-unit-parity
 	@if command -v $(VERILATOR) >/dev/null 2>&1; then \
 		major=`$(VERILATOR) --version | sed -E 's/[^0-9]*([0-9]+).*/\1/'`; \
 	else \
@@ -503,6 +503,10 @@ rtl-manifest-verification:
 	$(CAPI_VERIFICATION_DIR)/rtl/scripts/verify_manifests.py
 	$(CAPI_VERIFICATION_DIR)/rtl/scripts/verify_module_plan.py --repo-root .. --inventory 01_capi_integration/accelerator_verification/rtl/manifests/rtl-inventory.json --plan 01_capi_integration/accelerator_verification/rtl/manifests/coverage-plan.json --output 01_capi_integration/accelerator_verification/rtl/manifests/module-test-matrix.json
 	$(CAPI_VERIFICATION_DIR)/rtl/scripts/test_verify_module_plan.py
+
+.PHONY: rtl-unit-parity
+rtl-unit-parity:
+	$(CAPI_VERIFICATION_DIR)/rtl/unit/parity/run_parity.py
 
 .PHONY: rtl-verification-run
 rtl-verification-run: directories

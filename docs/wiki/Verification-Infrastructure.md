@@ -66,7 +66,14 @@ Current planning baseline:
 | Module/build context executions | 113 |
 | Test families | 23 |
 | Modules mapped to one family | 43/43 |
-| Executable family suites complete | 0/23 |
+| Executable family suites complete | 1/23 |
+
+Implemented P0 evidence:
+
+- `parity` / `dw_parity`: 1,544 deterministic vectors, 28/28 functional bins,
+  100% instrumented DUT toggle points, and 4/4 output/mode/lane mutations
+  detected. Continuous-assignment-only statement/branch/FSM metrics are
+  explicitly not applicable.
 
 Coverage closure requires 100% of reachable statements, branches, FSM
 states/transitions, functional bins, assertion goals, and reachable control

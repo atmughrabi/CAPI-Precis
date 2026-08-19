@@ -6,16 +6,16 @@
   ],
   "generated_by": "01_capi_integration/accelerator_verification/rtl/scripts/verify_manifests.py",
   "summary": {
-    "files": 81,
-    "declarations": 91,
+    "files": 82,
+    "declarations": 92,
     "status_counts": {
-      "active": 48,
+      "active": 49,
       "legacy-supported": 30,
       "quarantined": 3
     },
     "declaration_status_counts": {
       "active": {
-        "module": 45,
+        "module": 46,
         "package": 13
       },
       "legacy-supported": {
@@ -1749,6 +1749,26 @@
         }
       ],
       "evidence": "monitor-testbench"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/parity/parity_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "parity_tb"
+        }
+      ],
+      "sha256": "160f121ecb11cb6c81872100ea48732331571cb16c24bc0e95ab1e3db4ecfead",
+      "verification_unit": "unit-parity",
+      "build_membership": [
+        {
+          "manifest": "unit-parity",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: parity"
     }
   ]
 }

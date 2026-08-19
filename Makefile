@@ -329,6 +329,10 @@ rtl-manifest-update:
 rtl-real-elaboration: rtl-manifest-verification
 	./01_capi_integration/accelerator_verification/rtl/scripts/lint_cached_afu_bind.sh
 
+.PHONY: rtl-unit-parity
+rtl-unit-parity:
+	$(MAKE) rtl-unit-parity $(MAKE_ARGS)
+
 .PHONY: env-harness-test
 env-harness-test:
 	./tools/tests/test-capi-env.sh

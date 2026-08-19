@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "family": "parity",
+  "targets": {
+    "reachable_toggle_percent": 100,
+    "functional_bin_percent": 100,
+    "assertion_goal_percent": 100
+  },
+  "not_applicable": {
+    "statement": "The DUT is composed only of continuous assignments; Verilator emits no line points for it.",
+    "branch": "The DUT contains no procedural branch.",
+    "fsm_state": "The DUT contains no state machine.",
+    "fsm_transition": "The DUT contains no state machine."
+  },
+  "waivers": []
+}

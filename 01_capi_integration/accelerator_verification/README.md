@@ -36,8 +36,11 @@ make rtl-real-elaboration
 ```
 
 The module matrix currently maps all 43 active production modules across 32
-source hashes to 23 test families. A mapped test is not considered implemented
-until its executable target and coverage evidence exist.
+source hashes to 23 test families. The parity family is implemented with
+exhaustive/deterministic vectors, complete functional/toggle evidence, and
+mutation sensitivity; the other 22 families remain planned. A mapped test is
+not considered implemented until its executable target and coverage evidence
+exist.
 
 After an intentional RTL change, review the diff and refresh hashes with:
 

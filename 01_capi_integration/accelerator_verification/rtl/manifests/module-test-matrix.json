@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "plan_id": "capi-precis-rtl-coverage-v1",
-  "coverage_plan_sha256": "7ef5025bac834f7f3fe7852c90a353d0de0b49edae2e82de55af278eb1eadd46",
-  "rtl_inventory_sha256": "74d029a644d887778a57e313056491038dc9a372e684bb36d3b81152a7c18a65",
+  "coverage_plan_sha256": "6e1c499bce42f7b8305caf67ae2dc3c89351c4e992e6101e66ab8f0f006de8d7",
+  "rtl_inventory_sha256": "4d4c32deaec08d305ba875a8df6ed97239adda07821cef9deb6d83a89fa6061d",
   "inventory_schema_version": 2,
   "summary": {
     "module_declarations": 43,
@@ -12,10 +12,12 @@
     "non_module_suites": 1,
     "context_executions": 113,
     "status_counts": {
-      "planned": 43
+      "implemented": 2,
+      "planned": 41
     },
     "family_status_counts": {
-      "planned": 23
+      "implemented": 1,
+      "planned": 22
     },
     "family_module_counts": {
       "afu-arbiter-wrappers": 4,
@@ -59,7 +61,8 @@
       "priority": "P1",
       "strategy_profile": "integration",
       "oracle_id": "psl-wrapper-interface-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/afu_control.sv",
@@ -76,7 +79,8 @@
       "priority": "P0",
       "strategy_profile": "integration",
       "oracle_id": "capi-transaction-scoreboard-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/cached_afu.sv",
@@ -93,7 +97,8 @@
       "priority": "P0",
       "strategy_profile": "integration",
       "oracle_id": "cached-afu-lifecycle-scoreboard-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/command_control.sv",
@@ -110,7 +115,8 @@
       "priority": "P0",
       "strategy_profile": "protocol_control",
       "oracle_id": "capi-command-encoder-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/credit_control.sv",
@@ -127,7 +133,8 @@
       "priority": "P0",
       "strategy_profile": "protocol_control",
       "oracle_id": "credit-ledger-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/done_control.sv",
@@ -144,7 +151,8 @@
       "priority": "P0",
       "strategy_profile": "state_lifecycle",
       "oracle_id": "completion-error-lifecycle-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/error_control.sv",
@@ -161,7 +169,8 @@
       "priority": "P0",
       "strategy_profile": "state_lifecycle",
       "oracle_id": "completion-error-lifecycle-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/fifo.sv",
@@ -178,7 +187,8 @@
       "priority": "P0",
       "strategy_profile": "storage",
       "oracle_id": "storage-independent-queue-memory-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/fixed_priority_arbiter.sv",
@@ -195,7 +205,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-wrapper-routing-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/fixed_priority_arbiter.sv",
@@ -212,7 +223,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-wrapper-routing-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/job.sv",
@@ -229,7 +241,8 @@
       "priority": "P0",
       "strategy_profile": "protocol_control",
       "oracle_id": "job-command-state-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/mmio.sv",
@@ -246,7 +259,8 @@
       "priority": "P0",
       "strategy_profile": "register_control",
       "oracle_id": "mmio-register-map-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/parity.sv",
@@ -263,7 +277,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "parity-independent-bitcount-v1",
-      "implementation_status": "planned"
+      "implementation_status": "implemented",
+      "evidence_sha256": "774727480f1739e4a8403cc53addddf97e48d0ec85894da4b9c58dfddd1fa6db"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/parity.sv",
@@ -280,7 +295,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "parity-independent-bitcount-v1",
-      "implementation_status": "planned"
+      "implementation_status": "implemented",
+      "evidence_sha256": "774727480f1739e4a8403cc53addddf97e48d0ec85894da4b9c58dfddd1fa6db"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -297,7 +313,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -314,7 +331,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -331,7 +349,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -348,7 +367,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -365,7 +385,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -382,7 +403,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -399,7 +421,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
@@ -416,7 +439,8 @@
       "priority": "P0",
       "strategy_profile": "storage",
       "oracle_id": "storage-independent-queue-memory-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
@@ -433,7 +457,8 @@
       "priority": "P0",
       "strategy_profile": "storage",
       "oracle_id": "storage-independent-queue-memory-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
@@ -450,7 +475,8 @@
       "priority": "P0",
       "strategy_profile": "storage",
       "oracle_id": "storage-independent-queue-memory-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/read_data_control.sv",
@@ -467,7 +493,8 @@
       "priority": "P0",
       "strategy_profile": "protocol_data",
       "oracle_id": "read-half-association-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/reset_control.sv",
@@ -484,7 +511,8 @@
       "priority": "P0",
       "strategy_profile": "state_lifecycle",
       "oracle_id": "reset-cycle-model-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/reset_filter.sv",
@@ -501,7 +529,8 @@
       "priority": "P0",
       "strategy_profile": "state_lifecycle",
       "oracle_id": "reset-cycle-model-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/response_control.sv",
@@ -518,7 +547,8 @@
       "priority": "P0",
       "strategy_profile": "protocol_control",
       "oracle_id": "outstanding-tag-response-router-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/response_statistics_control.sv",
@@ -535,7 +565,8 @@
       "priority": "P1",
       "strategy_profile": "protocol_control",
       "oracle_id": "journal-derived-response-counters-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/restart_control.sv",
@@ -552,7 +583,8 @@
       "priority": "P0",
       "strategy_profile": "protocol_control",
       "oracle_id": "restart-replay-ledger-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/round_robin_priority_arbiter.sv",
@@ -569,7 +601,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-wrapper-routing-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/round_robin_priority_arbiter.sv",
@@ -586,7 +619,8 @@
       "priority": "P0",
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-wrapper-routing-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/tag_control.sv",
@@ -603,7 +637,8 @@
       "priority": "P0",
       "strategy_profile": "protocol_control",
       "oracle_id": "tag-metadata-ledger-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/wed_control.sv",
@@ -620,7 +655,8 @@
       "priority": "P0",
       "strategy_profile": "protocol_data",
       "oracle_id": "wed-byte-layout-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/write_data_control.sv",
@@ -637,7 +673,8 @@
       "priority": "P0",
       "strategy_profile": "protocol_data",
       "oracle_id": "write-address-mask-data-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_cu/cu_control.sv",
@@ -652,7 +689,8 @@
       "priority": "P1",
       "strategy_profile": "cu_engine",
       "oracle_id": "tutorial-parity-golden-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/read_engine.sv",
@@ -667,7 +705,8 @@
       "priority": "P1",
       "strategy_profile": "cu_engine",
       "oracle_id": "tutorial-parity-golden-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/write_engine.sv",
@@ -682,7 +721,8 @@
       "priority": "P1",
       "strategy_profile": "cu_engine",
       "oracle_id": "tutorial-parity-golden-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_cu/cu_control.sv",
@@ -697,7 +737,8 @@
       "priority": "P0",
       "strategy_profile": "cu_engine",
       "oracle_id": "byte-copy-golden-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv",
@@ -712,7 +753,8 @@
       "priority": "P0",
       "strategy_profile": "cu_engine",
       "oracle_id": "byte-copy-golden-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv",
@@ -727,7 +769,8 @@
       "priority": "P0",
       "strategy_profile": "cu_engine",
       "oracle_id": "byte-copy-golden-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_control.sv",
@@ -742,7 +785,8 @@
       "priority": "P0",
       "strategy_profile": "cu_engine",
       "oracle_id": "tiled-matrix-independent-golden-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
@@ -757,7 +801,8 @@
       "priority": "P0",
       "strategy_profile": "cu_engine",
       "oracle_id": "tiled-matrix-independent-golden-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     }
   ],
   "non_module_declarations": [
@@ -776,7 +821,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_pkgs/capi_pkg.sv",
@@ -793,7 +839,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_pkgs/credit_pkg.sv",
@@ -810,7 +857,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_pkgs/globals_afu_pkg.sv",
@@ -827,7 +875,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_pkg/cu_pkg.sv",
@@ -842,7 +891,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_pkg/wed_pkg.sv",
@@ -857,7 +907,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/pkg/globals_cu_pkg.sv",
@@ -872,7 +923,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/cu_pkg.sv",
@@ -887,7 +939,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/wed_pkg.sv",
@@ -902,7 +955,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/pkg/globals_cu_pkg.sv",
@@ -917,7 +971,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/cu_pkg.sv",
@@ -932,7 +987,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/wed_pkg.sv",
@@ -947,7 +1003,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/pkg/globals_cu_pkg.sv",
@@ -962,7 +1019,8 @@
       "priority": "P0",
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "evidence_sha256": null
     }
   ]
 }
