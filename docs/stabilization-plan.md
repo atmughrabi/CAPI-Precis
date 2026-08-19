@@ -21,6 +21,7 @@ produces matching output data.
 | Regression target | Build failures hidden by `grep` | Direct test status propagation | Deliberate compile or data mismatch fails `make test` |
 | Matrix verification | Output buffer started non-zero and one CPU path was a stub | Zeroed output and complete tiled-transposed reference | All CPU matrix checksums match |
 | Matrix completion | Host waited for tile area while RTL reports matrix size | Match `cu_stop` to `size_n` | Healthy matrix CU completion does not false-stall |
+| RTL protocol | Host evidence could not detect an internal publication/reset violation | Bind bounded monitor to `cached_afu` | Verilator pass/negative tests and ModelSim bind |
 
 ## Delivery stages
 
@@ -44,6 +45,7 @@ produces matching output data.
 | Host unit | Defaults, overrides, invalid values, progress, stall, timeout, completion, device error |
 | OpenMP | Existing memory-copy correctness test |
 | Simulator | Setup, configuration, progress, completion ACK/reset, output comparison |
+| RTL monitor | Configuration acceptance, monotonic progress, done publication, ACK stability, reset clear, error register |
 | FPGA | Same protocol checks plus image identity and device error register |
 | Repetition | Back-to-back launches without stale completion or status |
 

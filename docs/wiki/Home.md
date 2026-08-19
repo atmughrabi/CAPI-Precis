@@ -5,7 +5,8 @@
 </p>
 
 CAPI-Precis provides the AFU-control layer, host runtime, simulator integration,
-and FPGA build flow.
+and FPGA build flow. This wiki is the canonical source for the shared
+host/AFU protocol used by AccelGraph.
 
 - [Architecture](Architecture.md) maps the host, WED, AFU-control, CU-control,
   simulation, and synthesis boundaries.

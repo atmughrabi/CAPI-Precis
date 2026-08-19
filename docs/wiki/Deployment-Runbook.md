@@ -4,6 +4,8 @@
 
 ```console
 git submodule update --init --recursive
+sudo apt-get install verilator
+verilator --version  # must report version 5 or newer
 make verify
 ```
 

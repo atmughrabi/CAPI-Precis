@@ -30,7 +30,9 @@ AFU setup, configuration, execution, error handling, and completion reset are
 bounded by the host verification layer. Run `make verify` before simulator or
 FPGA deployment. The timeout contract and failure evidence
 are documented in the [accelerator verification guide](docs/wiki/Accelerator-Verification.md);
-the [documentation index](docs/README.md) is the source of truth.
+the [architecture guide](docs/wiki/Architecture.md) includes the supplied
+system figures, and the [documentation index](docs/README.md) is the source of
+truth.
 
 # Installation 
 
@@ -40,6 +42,10 @@ the [documentation index](docs/README.md) is the source of truth.
 1. OpenMP is already a feature of the compiler, so this step is not necessary.
 ```console
 CAPI@Precis:~$ sudo apt-get install libomp-dev
+```
+2. Verilator 5 or newer is required for the standalone RTL verification target.
+```console
+CAPI@Precis:~$ sudo apt-get install verilator
 ```
 
 ### CAPI

@@ -1,5 +1,5 @@
 sudo: required
-dist: xenial
+dist: jammy
 
 before_install:
   - sudo apt-get update -qq
@@ -12,7 +12,8 @@ compiler:
   - gcc
 
 script:
-  - make verify
+  # GitHub Actions owns the Verilator 5.x RTL gate.
+  - make accelerator-verification benchmark-verification integration-verification integration-compile test
 
 notifications:
 email:

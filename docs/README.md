@@ -11,10 +11,16 @@ This directory is the documentation source of truth.
 - [Deployment runbook](wiki/Deployment-Runbook.md)
 - [Stabilization plan](stabilization-plan.md)
 
-GitHub Wiki pages should be published from `docs/wiki` without maintaining a
-second copy.
+The enabled GitHub Wiki is published from `docs/wiki`. Edit this source and
+mirror it to the wiki repository; do not maintain independent page content.
 
 ## Brand assets
 
 - [SVG logo](../02_slides/logo/logo.svg) - preferred for documentation
 - [PNG logo](../02_slides/logo/logo.png) - raster fallback
+
+## Architecture assets
+
+- [CAPI-Precis architecture](fig/capi-precis-architecture.png)
+- [AFU-control detail](fig/capi-precis-afu-control.png)
+- [FPGA chip planner](fig/capi-precis-chip-planner.png)

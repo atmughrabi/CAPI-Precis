@@ -274,6 +274,12 @@ CAPI_LINKFLAGS = -lrt -lpthread
 ACCELERATOR_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_accelerator_verification
 MATRIX_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_matrix_verification
 CAPIENV_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_capienv_verification
+VERILATOR ?= verilator
+RTL_VERIFICATION_REQUIRED ?= 0
+RTL_VERIFICATION_DIR = $(APP_DIR)/$(OBJ_DIR)/rtl_verification
+RTL_VERIFICATION_SRC = ../$(CAPI_INTEG_DIR)/accelerator_rtl/verification/accelerator_verification.sv
+RTL_VERIFICATION_TB = ../$(CAPI_INTEG_DIR)/accelerator_rtl/verification/accelerator_verification_tb.sv
+RTL_VERIFICATION_REAL_BIND = ../$(CAPI_INTEG_DIR)/accelerator_rtl/verification/lint_cached_afu_bind.sh
 
 # CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 # CAPI_FLAGS = -DSIM -DVERBOSE
@@ -475,8 +481,31 @@ integration-compile:
 	$(CC) $(CFLAGS) -fsyntax-only -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -I../$(CAPI_INTEG_DIR)/libcxl $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/helloAFU.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/tutorial.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/mmtiled.c
 	$(CC) $(CFLAGS) -DSIM -fsyntax-only -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -I../$(CAPI_INTEG_DIR)/libcxl $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/helloAFU.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/tutorial.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/mmtiled.c
 
+.PHONY: rtl-verification
+rtl-verification:
+	@if command -v $(VERILATOR) >/dev/null 2>&1; then \
+		major=`$(VERILATOR) --version | sed -E 's/[^0-9]*([0-9]+).*/\1/'`; \
+	else \
+		major=0; \
+	fi; \
+	if [ "$$major" -ge 5 ]; then \
+		$(MAKE) --no-print-directory rtl-verification-run; \
+	elif [ "$(RTL_VERIFICATION_REQUIRED)" = "1" ]; then \
+		echo "Verilator 5 or newer is required"; \
+		exit 1; \
+	else \
+		echo "SKIP rtl-verification: install Verilator 5 or set RTL_VERIFICATION_REQUIRED=1 to enforce"; \
+	fi
+
+.PHONY: rtl-verification-run
+rtl-verification-run: directories
+	@rm -rf $(RTL_VERIFICATION_DIR)
+	VERILATOR=$(VERILATOR) $(RTL_VERIFICATION_REAL_BIND)
+	+$(VERILATOR) --binary --timing --assert -Wall -Wno-fatal -Wno-ASCRANGE -Wno-BLKSEQ --top-module accelerator_verification_tb --Mdir $(RTL_VERIFICATION_DIR) $(RTL_VERIFICATION_SRC) $(RTL_VERIFICATION_TB)
+	./$(RTL_VERIFICATION_DIR)/Vaccelerator_verification_tb
+
 .PHONY: verify
-verify: accelerator-verification benchmark-verification integration-verification integration-compile test
+verify: accelerator-verification benchmark-verification integration-verification integration-compile rtl-verification test
 
 .PHONY: run-test
 run-test: run-test-openmp

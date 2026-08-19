@@ -310,6 +310,10 @@ integration-verification:
 integration-compile:
 	$(MAKE) integration-compile $(MAKE_ARGS)
 
+.PHONY: rtl-verification
+rtl-verification:
+	$(MAKE) rtl-verification $(MAKE_ARGS)
+
 .PHONY: verify
 verify:
 	$(MAKE) verify $(MAKE_ARGS)

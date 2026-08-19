@@ -9,9 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OMP_NUM_THREADS: 4
+      RTL_VERIFICATION_REQUIRED: 1
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+      - name: Install verification tools
+        run: sudo apt-get update -qq && sudo apt-get install -y verilator
       - name: Repository verification
         run: make verify

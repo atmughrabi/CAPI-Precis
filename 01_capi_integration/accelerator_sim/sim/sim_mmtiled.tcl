@@ -61,6 +61,10 @@ proc r  {} {
   vlog -quiet ../../accelerator_rtl/afu_control/afu.sv
   vlog -quiet ../../accelerator_rtl/afu_control/cached_afu.sv
 
+  echo "Compiling RTL Verification"
+  vlog -quiet ../../accelerator_rtl/verification/accelerator_verification.sv
+  vlog -quiet +define+CAPI_PRECIS_VERIFY_ALL_CONFIG_WORDS ../../accelerator_rtl/verification/accelerator_verification_bind.sv
+
 
   # compile top level
   echo "Compiling top level"
@@ -83,6 +87,7 @@ proc c {} {
   do watch_command_interface.do
   do watch_buffer_interface.do
   do watch_response_interface.do
+  do watch_accelerator_verification.do
 
   view structure
   view signals

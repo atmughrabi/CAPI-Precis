@@ -30,7 +30,7 @@ module done_control (
 );
 
 	logic      rstn         ;
-	done_state current_state, next_state;
+	done_state current_state, next_state; // current_state is observed by the accelerator_verification bind
 	logic      done_flag    ;
 	logic      enabled      ;
 	cu_return_type             cu_return_done_latched            ;

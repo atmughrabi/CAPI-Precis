@@ -112,7 +112,7 @@ module cached_afu #(parameter NUM_EXTERNAL_RESETS = 3) (
 //DONE
 ////////////////////////////////////////////////////////////////////////////
 
-  done_control done_control_instant (
+  done_control done_control_instant ( // instance name is observed by the accelerator_verification bind
     .clock                     (clock                     ),
     .rstn_in                   (reset_afu_internal        ),
     .soft_rstn                 (reset_afu_soft_internal   ),

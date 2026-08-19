@@ -1,8 +1,11 @@
 # Accelerator verification
 
-`00_bench/src/capi_utils/accelerator_verification.c` is the host liveness source
-of truth. It bounds every AFU phase and distinguishes a device error, a stalled
-job, and an absolute runtime timeout.
+CAPI-Precis has two complementary verification layers:
+
+- `00_bench/src/capi_utils/accelerator_verification.c` bounds host/libcxl
+  execution.
+- `01_capi_integration/accelerator_rtl/verification/accelerator_verification.sv`
+  is bound to `cached_afu` during simulation and verifies the RTL protocol.
 
 ![CAPI-Precis accelerator verification](https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/accelerator-verification-f01-host-liveness.svg)
 
@@ -43,13 +46,41 @@ fail before a job is started.
 The first 100 polls spin without sleeping; later polls use the configured
 interval. Record a non-default interval with benchmark results.
 
+## RTL verification
+
+The RTL monitor checks:
+
+- AFU and CU configuration acceptance within bounded cycle counts;
+- unknown values on the active control/status path;
+- monotonic CU progress and bounded no-progress intervals;
+- `cu_done` causing reset and completion publication;
+- completion remaining stable until a valid acknowledgement;
+- completion and `CU_STATUS` clearing after acknowledgement;
+- any asserted RTL error register.
+
+The `memcpy`, `memcpy-tutorial`, and `mmtiled` ModelSim scripts compile and bind
+the monitor automatically. The older direct `helloAFU` and `tutorial` examples
+do not use the shared `cached_afu` architecture and are outside this bind. A
+violated RTL contract terminates simulation with `$fatal`. The verification
+wave group is defined in `watch_accelerator_verification.do`.
+
+For first-platform bring-up, add `+VERIF_FATAL=0` to the `vsim` command to
+record `$error`, `failure_count`, and wave evidence without terminating at the
+first violation.
+
+`cover_mask[6:0]` records AFU configuration, CU configuration, progress,
+`cu_done`, completion publication, acknowledgement, and reset-clear witnesses.
+
 ## Local verification
 
 ```console
+make rtl-verification
 make verify
 ```
 
-The target exercises configuration parsing, progress refresh, blocked-call
-watchdog expiry, stall detection, absolute timeout, mocked libcxl setup/MMIO and
-completion reset, CPU matrix equivalence, integration compilation, and the
-existing memory-copy test.
+`make rtl-verification` elaborates the real `cached_afu` and AFU-control RTL
+across the `memcpy`, `memcpy-tutorial`, and `mmtiled` WED variants, substituting
+only the legacy CU boundary, then runs positive and negative protocol tests
+with Verilator. `make verify` includes that RTL evidence alongside host and
+benchmark checks. Local verification skips the RTL stage when Verilator 5 is
+unavailable; GitHub Actions sets `RTL_VERIFICATION_REQUIRED=1`.
