@@ -175,7 +175,11 @@ def modelsim_sources(variant, script_relative):
 def validate_source_sets(manifests):
     for variant, script in VARIANTS.items():
         simulator = modelsim_sources(variant, script)
-        expected = manifests[variant] + manifests["monitor"]
+        expected = (
+            manifests[variant] +
+            manifests["monitor"] +
+            manifests["monitor-capi-bind"]
+        )
         if simulator != expected:
             for index, (actual, wanted) in enumerate(
                     zip(simulator, expected), 1):
@@ -407,7 +411,7 @@ def main():
 
     manifests = {
         name: read_manifest(name)
-        for name in (*VARIANTS, "monitor")
+        for name in (*VARIANTS, "monitor", "monitor-capi-bind")
     }
     for source in QUARANTINED:
         for manifest_name, sources in manifests.items():

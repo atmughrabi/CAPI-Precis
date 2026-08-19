@@ -8,7 +8,8 @@ source manifests.
 | `manifests/memcpy.f` | Complete modern memcpy design source order |
 | `manifests/memcpy-tutorial.f` | Complete modern tutorial design source order |
 | `manifests/mmtiled.f` | Complete modern tiled-matrix design source order |
-| `manifests/monitor.f` | Stable verification monitor API sources |
+| `manifests/monitor.f` | Stable consumer-facing monitor core |
+| `manifests/monitor-capi-bind.f` | Canonical CAPI-Precis bind |
 | `manifests/rtl-inventory.json` | Every RTL path, declaration, hash, status, membership, unit, and evidence |
 | `scripts/verify_manifests.py` | G0 source-set and inventory gate |
 

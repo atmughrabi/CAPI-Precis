@@ -1721,11 +1721,11 @@
       "verification_unit": "rtl-lifecycle",
       "build_membership": [
         {
-          "manifest": "monitor",
-          "order": 1
+          "manifest": "monitor-capi-bind",
+          "order": 0
         }
       ],
-      "evidence": "monitor"
+      "evidence": "monitor-capi-bind"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/verification/accelerator_verification_tb.sv",

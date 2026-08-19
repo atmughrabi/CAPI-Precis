@@ -51,6 +51,10 @@ lint_variant() {
     [[ -z "$source" || "$source" == \#* ]] && continue
     sources+=("$REPO_ROOT/$source")
   done <"$MANIFEST_ROOT/monitor.f"
+  while IFS= read -r source || [[ -n "$source" ]]; do
+    [[ -z "$source" || "$source" == \#* ]] && continue
+    sources+=("$REPO_ROOT/$source")
+  done <"$MANIFEST_ROOT/monitor-capi-bind.f"
 
   "$VERILATOR" --lint-only --timing "${WARNINGS[@]}" "$@" \
     --top-module cached_afu \
