@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc" fill="#3A414A">
   <title id="title">CAPI-Precis accelerator architecture</title>
-  <desc id="desc">Host software attaches a work element descriptor through libcxl. The Power Service Layer connects to AFU control, which manages coherent protocol services and arbitrates compute units zero through N minus one.</desc>
+  <desc id="desc">The host domain attaches a work element descriptor through libcxl. The FPGA domain contains the Power Service Layer, AFU control, bus arbitration, and compute units zero through N minus one.</desc>
   <defs>
     <marker id="arrow-blue" viewBox="0 0 13 11" markerWidth="13" markerHeight="11" refX="13" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L13 5.5 L0 11 Z" fill="#1071E5"/></marker>
     <marker id="arrow-green" viewBox="0 0 13 11" markerWidth="13" markerHeight="11" refX="13" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L13 5.5 L0 11 Z" fill="#008A0E"/></marker>
@@ -15,15 +15,21 @@
         [fill="#008A0E"],[fill="#008573"]{fill:#92C89A}[stroke="#008A0E"],[stroke="#008573"]{stroke:#92C89A}
         [fill="#CC4E00"]{fill:#D6A071}
       }
-      .sans{font-family:Inter,Helvetica,Arial,sans-serif}.mono{font-family:"SFMono-Regular",Consolas,monospace}
+      .sans{font-family:Arial,Helvetica,sans-serif}.mono{font-family:"SFMono-Regular",Consolas,monospace}
       .title{font-size:44px;font-weight:700}.subtitle{font-size:21px}.pane{font-size:28px;font-weight:700}
-      .block{font-size:21px;font-weight:700}.body{font-size:19px}.small{font-size:17px}
+      .domain{font-size:15px;font-weight:700;letter-spacing:1.2px}
+      .block{font-size:21px;font-weight:700}.body{font-size:19px}.small{font-size:16px}
     </style>
   </defs>
 
   <text x="55" y="68" class="sans title">CAPI-Precis accelerator architecture</text>
   <text x="55" y="104" class="sans subtitle">Coherent host access, shared AFU protocol services, and application compute units</text>
   <line x1="55" y1="130" x2="1545" y2="130" stroke="#3A414A" stroke-width="2"/>
+
+  <path d="M55 180 V155 H112 M232 155 H290 V180" fill="none" stroke="#979EA8" stroke-width="2"/>
+  <text x="172" y="160" text-anchor="middle" class="sans domain">HOST DOMAIN</text>
+  <path d="M355 180 V155 H865 M1035 155 H1545 V170" fill="none" stroke="#979EA8" stroke-width="2"/>
+  <text x="950" y="160" text-anchor="middle" class="sans domain">FPGA DOMAIN</text>
 
   <rect x="55" y="190" width="235" height="260" rx="8" fill="#EDF5FF" stroke="#000000" stroke-width="3"/>
   <text x="172" y="235" text-anchor="middle" class="sans pane">Host software</text>

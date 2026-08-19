@@ -8,7 +8,7 @@
 ## Overview 
 
 <p align="center">
-  <img src="./docs/fig/capi-precis-architecture.svg" width="900" alt="CAPI-Precis accelerator architecture">
+  <img src="./docs/fig/capi-precis-architecture.svg" width="900" alt="CAPI-Precis host and FPGA accelerator architecture">
 </p>
 
 CAPI-Precis is an AFU-control abstraction layer that simplifies communication

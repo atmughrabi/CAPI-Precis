@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980" role="img" aria-labelledby="title desc" fill="#3A414A">
   <title id="title">CAPI-Precis AFU-control block architecture</title>
-  <desc id="desc">Detailed AFU-control dataflow showing WED and MMIO control, command arbitration, credits and tags, response routing, restart, read and write data, errors, statistics, completion, and reset.</desc>
+  <desc id="desc">Detailed dataflow from the host-facing CAPI and PSL interface into the FPGA control and compute domains, including WED, MMIO, commands, credits, tags, responses, data, completion, and reset.</desc>
   <defs>
     <marker id="arrow-blue" viewBox="0 0 13 11" markerWidth="13" markerHeight="11" refX="13" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L13 5.5 L0 11 Z" fill="#1071E5"/></marker>
     <marker id="arrow-green" viewBox="0 0 13 11" markerWidth="13" markerHeight="11" refX="13" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L13 5.5 L0 11 Z" fill="#008A0E"/></marker>
@@ -14,8 +14,9 @@
         [fill="#1071E5"]{fill:#9CB8E8}[stroke="#1071E5"]{stroke:#9CB8E8}
         [fill="#008A0E"]{fill:#92C89A}[stroke="#008A0E"]{stroke:#92C89A}
       }
-      .sans{font-family:Inter,Helvetica,Arial,sans-serif}.mono{font-family:"SFMono-Regular",Consolas,monospace}
+      .sans{font-family:Arial,Helvetica,sans-serif}.mono{font-family:"SFMono-Regular",Consolas,monospace}
       .title{font-size:44px;font-weight:700}.subtitle{font-size:21px}.pane{font-size:28px;font-weight:700}
+      .pane-small{font-size:26px;font-weight:700}.domain{font-size:14px;font-weight:700;letter-spacing:1px}
       .block{font-size:20px;font-weight:700}.body{font-size:18px}.small{font-size:16px}
     </style>
   </defs>
@@ -25,14 +26,16 @@
   <line x1="50" y1="126" x2="1450" y2="126" stroke="#3A414A" stroke-width="2"/>
 
   <rect x="50" y="180" width="190" height="650" rx="8" fill="#C1E4F7" stroke="#000000" stroke-width="3"/>
-  <text x="145" y="240" text-anchor="middle" class="sans pane">PSL / PSLSE</text>
+  <text x="145" y="210" text-anchor="middle" class="sans domain">HOST-FACING CAPI</text>
+  <text x="145" y="245" text-anchor="middle" class="sans pane-small">PSL / PSLSE</text>
   <text x="145" y="292" text-anchor="middle" class="sans body">job + MMIO</text>
   <text x="145" y="324" text-anchor="middle" class="sans body">commands</text>
   <text x="145" y="356" text-anchor="middle" class="sans body">responses</text>
   <text x="145" y="388" text-anchor="middle" class="sans body">cache-line data</text>
 
   <rect x="300" y="160" width="870" height="690" rx="8" fill="#E3FAE3" stroke="#000000" stroke-width="4"/>
-  <text x="735" y="205" text-anchor="middle" class="sans pane">AFU control</text>
+  <text x="735" y="184" text-anchor="middle" class="sans domain">FPGA CONTROL DOMAIN</text>
+  <text x="735" y="218" text-anchor="middle" class="sans pane">AFU control</text>
 
   <g class="sans">
     <rect x="330" y="240" width="180" height="78" rx="8" fill="#DEDEFF" stroke="#000000" stroke-width="2"/>
@@ -67,34 +70,35 @@
   </g>
 
   <rect x="1230" y="180" width="220" height="650" rx="8" fill="#FFF3D9" stroke="#000000" stroke-width="3"/>
-  <text x="1340" y="235" text-anchor="middle" class="sans pane">Compute units</text>
-  <rect x="1260" y="285" width="160" height="82" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/>
+  <text x="1340" y="208" text-anchor="middle" class="sans domain">FPGA COMPUTE DOMAIN</text>
+  <text x="1340" y="245" text-anchor="middle" class="sans pane-small">Compute units</text>
+  <rect x="1250" y="285" width="180" height="82" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/>
   <text x="1340" y="333" text-anchor="middle" class="sans block">Read engines</text>
-  <rect x="1260" y="405" width="160" height="82" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/>
+  <rect x="1250" y="405" width="180" height="82" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/>
   <text x="1340" y="453" text-anchor="middle" class="sans block">Write engines</text>
-  <rect x="1260" y="525" width="160" height="82" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/>
+  <rect x="1250" y="525" width="180" height="82" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/>
   <text x="1340" y="573" text-anchor="middle" class="sans block">Compute kernel</text>
-  <rect x="1260" y="645" width="160" height="82" rx="8" fill="#A7A6FF" stroke="#000000" stroke-width="2"/>
+  <rect x="1250" y="645" width="180" height="82" rx="8" fill="#A7A6FF" stroke="#000000" stroke-width="2"/>
   <text x="1340" y="681" text-anchor="middle" class="sans block">Progress</text><text x="1340" y="706" text-anchor="middle" class="sans small">status + done</text>
 
   <g fill="none" stroke="#1071E5" stroke-width="3" marker-end="url(#arrow-blue)">
     <path d="M240 280 H330"/>
     <path d="M240 310 H270 V335 H630 V318"/>
-    <path d="M1260 390 H1170 V333 H840 V365"/>
+    <path d="M1250 390 H1170 V333 H840 V365"/>
     <path d="M750 406 H735 V350 H260 V405 H240"/>
-    <path d="M1260 446 H1170 V610 H735 V583"/>
+    <path d="M1250 446 H1170 V610 H735 V583"/>
     <path d="M610 560 H260 V580 H240"/>
-    <path d="M1070 682 H1180 V686 H1260"/>
+    <path d="M1070 682 H1180 V686 H1250"/>
   </g>
   <g fill="none" stroke="#008A0E" stroke-width="3" marker-end="url(#arrow-green)">
     <path d="M960 406 H930"/>
     <path d="M240 520 H330"/>
-    <path d="M580 520 H590 V620 H1170 V326 H1260"/>
+    <path d="M580 520 H590 V620 H1170 V326 H1250"/>
     <path d="M240 600 H1015 V583"/>
-    <path d="M1140 540 H1180 V566 H1260"/>
+    <path d="M1140 540 H1180 V566 H1250"/>
     <path d="M1015 495 V318"/>
     <path d="M1050 495 V447"/>
-    <path d="M1260 686 H1160 V780 H530 V731"/>
+    <path d="M1250 686 H1160 V780 H530 V731"/>
     <path d="M400 682 H240"/>
   </g>
 

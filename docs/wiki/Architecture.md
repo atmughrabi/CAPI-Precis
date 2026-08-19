@@ -1,8 +1,19 @@
 # Architecture
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-architecture.svg" width="900" alt="CAPI-Precis accelerator architecture">
+  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-architecture.svg" width="900" alt="CAPI-Precis host and FPGA accelerator architecture">
 </p>
+
+## Execution domains
+
+| Domain | Ownership |
+| --- | --- |
+| Host | Application/reference code, aligned buffers, WED construction, libcxl device attach, MMIO configuration, bounded completion wait, and result checking |
+| FPGA | Power Service Layer, AFU control, MMIO/WED decode, command/credit/tag/data/response handling, compute units, progress, completion, and reset |
+
+PSLSE emulates the host-facing CAPI transport during simulation. The AFU-control
+and compute-unit logic remains the FPGA-side design represented by the same
+interface boundary.
 
 ## Repository boundaries
 
@@ -52,7 +63,7 @@ The bounded host protocol is defined in
 ## AFU-control detail
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-afu-control.svg" width="760" alt="CAPI-Precis AFU-control architecture">
+  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-afu-control.svg" width="760" alt="CAPI-Precis host-facing interface and FPGA AFU-control architecture">
 </p>
 
 AFU control owns credit and tag management, command issue/restart, read and
