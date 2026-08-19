@@ -27,8 +27,9 @@ module-level infrastructure is built.
 The executable Phase 0 baseline lives in
 `01_capi_integration/accelerator_verification/rtl`:
 
-- three ordered modern design manifests contain 43 modules and 13 packages;
-- `rtl-inventory.json` classifies all 81 RTL files with declarations, SHA-256,
+- three ordered modern design manifests contain 44 modules and 13 packages;
+- `rtl-inventory.json` classifies every production and executable verification
+  RTL file with declarations, SHA-256,
   build membership, verification unit, and evidence;
 - 25 legacy modules and 5 legacy packages remain explicitly
   `legacy-supported`;
@@ -60,13 +61,14 @@ Current planning baseline:
 
 | Measure | Value |
 | --- | ---: |
-| Active production module declarations | 43 |
-| Distinct active source hashes | 32 |
+| Active production module declarations | 44 |
+| Distinct active source hashes | 33 |
 | Active package declarations | 13 |
-| Module/build context executions | 113 |
+| Module/build context executions | 114 |
 | Test families | 23 |
-| Modules mapped to one family | 43/43 |
-| Executable family suites complete | 1/23 |
+| Modules mapped to one family | 44/44 |
+| Executable family suites complete | 23/23 |
+| Package-contract suites complete | 1/1 |
 
 Implemented P0 evidence:
 
@@ -74,6 +76,31 @@ Implemented P0 evidence:
   100% instrumented DUT toggle points, and 4/4 output/mode/lane mutations
   detected. Continuous-assignment-only statement/branch/FSM metrics are
   explicitly not applicable.
+- package contracts: all 3 modern variants, 13 active packages, 128-byte C/SV
+  WED ABI, interface/type widths, endian functions through 1,024 bits, CABT,
+  descriptor/error maps, reachable function coverage, and 3/3 mutations.
+- protocol control: credit, command, response, response statistics, tag, and
+  restart DUTs; 708/708 functional bins, 100% of every reachable
+  line/branch/toggle denominator after exact structural exclusions, and 9/9
+  diagnostic mutations.
+- reset: 83 checks, 18/18 functional bins, 100% reachable line/branch/toggle,
+  PULSE_HOLD=1 and multi-stage release, and 9/9 mutations.
+- storage: 257 vectors, 1,280 checks, 33/33 bins, 100% reachable
+  line/branch/toggle, DEPTH=1/non-power-of-two wrap, and 15/15 mutations.
+- arbitration: all 11 primitive/wrapper modules, 4,443 vectors, 538/538 bins,
+  100% reachable line/branch/toggle, N=1 and non-power-of-two cases, aligned
+  payload/grants and reset behavior, and 21/21 mutations.
+- protocol data/lifecycle: read/write data, WED, MMIO, job, done, and error
+  DUTs across all 3 variants; 15,790 checks, 258/258 bins, 100% reachable
+  line/branch/toggle, beat-associated parity and fully initialized WED
+  metadata, and 32/32 mutations.
+- CU families: memcpy, tutorial, and 2×2 mmtiled; 50/50 RTL bins, 14/14
+  independent golden bins, 100% reachable coverage per mapped module, 13/13
+  mutations, edge tiles, repeated launch, reorder, and backpressure.
+- integration: AFU-control, cached-AFU, and physical wrapper across all three
+  manifests; 23/23 bins, 621 assertions, fixed/RR concurrency, exact
+  credit/tag/restart/NLOCK/error
+  lifecycles, 100% reachable coverage, and 3/3 mutations.
 
 Coverage closure requires 100% of reachable statements, branches, FSM
 states/transitions, functional bins, assertion goals, and reachable control

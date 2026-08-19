@@ -186,16 +186,24 @@ def active_packages(inventory, prefixes):
     return sorted(packages, key=lambda item: (item["path"], item["package"]))
 
 
-def validate_status(owner, repo_root):
+def validate_status(owner, repo_root, evidence_sets):
     status = owner["implementation_status"]
     if status not in VALID_STATUSES:
         fail(f"{owner['id']} has invalid status")
     if status in {"planned", "blocked"}:
         return None
     evidence = owner.get("evidence")
+    evidence_ref = owner.get("evidence_ref")
+    if evidence_ref:
+        if evidence is not None:
+            fail(f"{owner['id']} has both evidence and evidence_ref")
+        evidence = evidence_sets.get(evidence_ref)
+        if evidence is None:
+            fail(f"{owner['id']} references unknown evidence set {evidence_ref}")
     required = {
         "test_target",
         "runner",
+        "suite_registry",
         "test_sources",
         "scenario_manifest",
         "coverage_manifest",
@@ -205,11 +213,14 @@ def validate_status(owner, repo_root):
     if (
         not evidence["test_target"] or
         not evidence["runner"] or
+        not evidence["suite_registry"] or
         not evidence["test_sources"]
     ):
         fail(f"{owner['id']} evidence is incomplete")
     if evidence["runner"] not in evidence["test_sources"]:
         fail(f"{owner['id']} runner is not hashed as a test source")
+    if evidence["suite_registry"] not in evidence["test_sources"]:
+        fail(f"{owner['id']} suite registry is not hashed as a test source")
     target = subprocess.run(
         [
             "make",
@@ -241,7 +252,11 @@ def validate_status(owner, repo_root):
         capture_output=True,
         text=True,
     )
-    if verify.returncode or evidence["runner"] not in verify.stdout.replace("./", ""):
+    normalized_verify = verify.stdout.replace("./", "")
+    if (
+        verify.returncode or
+        evidence["suite_registry"] not in normalized_verify
+    ):
         fail(f"{owner['id']} is not reachable from make verify")
     for field in ("test_sources",):
         for source in evidence[field]:
@@ -265,7 +280,9 @@ def validate_status(owner, repo_root):
     return digest.hexdigest()
 
 
-def validate_non_module_suites(plan, packages, profiles, repo_root):
+def validate_non_module_suites(
+    plan, packages, profiles, repo_root, evidence_sets
+):
     suites = plan.get("non_module_suites", [])
     if len(suites) != plan["module_scope"].get("expected_non_module_suites"):
         fail("non-module suite count changed")
@@ -293,7 +310,9 @@ def validate_non_module_suites(plan, packages, profiles, repo_root):
             fail(f"{suite['id']} has invalid priority")
         if not suite["required_scenarios"] or not suite["oracle_id"]:
             fail(f"{suite['id']} lacks scenarios or oracle")
-        suite["_evidence_sha256"] = validate_status(suite, repo_root)
+        suite["_evidence_sha256"] = validate_status(
+            suite, repo_root, evidence_sets
+        )
         package_owners.append(suite)
     if len(package_owners) != 1 and packages:
         fail("active packages must have exactly one contract-suite owner")
@@ -319,6 +338,9 @@ def build_matrix(inventory, plan, repo_root, inventory_sha256, plan_sha256):
         fail("coverage plan does not support this inventory schema")
     validate_policy(plan)
     profiles = validate_profiles(plan)
+    evidence_sets = plan.get("evidence_sets", {})
+    if not isinstance(evidence_sets, dict):
+        fail("evidence_sets must be an object")
 
     scope = plan.get("module_scope", {})
     prefixes = scope.get("active_path_prefixes", [])
@@ -366,7 +388,9 @@ def build_matrix(inventory, plan, repo_root, inventory_sha256, plan_sha256):
                 fail(f"coverage family is missing {field}: {family}")
         if family["priority"] not in VALID_PRIORITIES:
             fail(f"family {family['id']} has invalid priority")
-        family_evidence[family["id"]] = validate_status(family, repo_root)
+        family_evidence[family["id"]] = validate_status(
+            family, repo_root, evidence_sets
+        )
         if family["profile"] not in profiles:
             fail(f"family {family['id']} references unknown profile")
         if not family["required_scenarios"] or not family["oracle_id"]:
@@ -429,7 +453,7 @@ def build_matrix(inventory, plan, repo_root, inventory_sha256, plan_sha256):
             fail(f"cross-family hash exception lacks reason/issue: {source_hash}")
 
     package_matrix = validate_non_module_suites(
-        plan, packages, profiles, repo_root
+        plan, packages, profiles, repo_root, evidence_sets
     )
     return {
         "schema_version": 1,

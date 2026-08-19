@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "suite": "capi-precis-cu",
+  "manifest_policy": "Compile each family from its ordered rtl/manifests/<family>.f file.",
+  "families": {
+    "memcpy": {
+      "dut": [
+        "cu_data_read_engine_control",
+        "cu_data_write_engine_control",
+        "cu_control"
+      ],
+      "required": [
+        "zero, single, cacheline-tail, and multiline lengths",
+        "read-only, write-only, and copy modes",
+        "cached and noncached commands",
+        "all legal CABT mappings",
+        "read and write prefetch",
+        "TLB request limiting",
+        "exact command, address, size, mask metadata, and counters",
+        "backpressure and repeated launch"
+      ]
+    },
+    "memcpy-tutorial": {
+      "dut": [
+        "read_engine",
+        "write_engine",
+        "cu_control"
+      ],
+      "required": [
+        "zero, single, cacheline-tail, and multiline lengths",
+        "byte-for-byte and per-doubleword parity preservation",
+        "exact command, address, size, metadata, and counters",
+        "read and write backpressure",
+        "repeated launch"
+      ]
+    },
+    "mmtiled": {
+      "dut": [
+        "cu_matrix_C_job_control",
+        "cu_matrix_multiply_control",
+        "cu_control"
+      ],
+      "required": [
+        "zero, single, full, and edge tiles",
+        "independent tiled matrix multiplication",
+        "transposed-B reference equivalence",
+        "exact Matrix-C command address and size",
+        "cacheline half extraction",
+        "read stalls and repeated launch"
+      ],
+      "local_extra_sources": [
+        "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/cu/cu_matrix_multiply_control.sv"
+      ],
+      "host_contract": "For each configured (i,j,k) tile, accumulate C[ii,jj] += A[ii,kk] * B_transposed[jj,kk] over clipped tile bounds.",
+      "topology_contract": "Instantiate NUM_X_CU*NUM_Y_CU engines. Lane (x,y) owns i_start+x modulo NUM_X_CU and j_start+y modulo NUM_Y_CU, with unique coordinate response IDs. Local fair pending arbiters feed the restored two-input read arbiter and singular write/data outputs; counters sum across lanes and completion is the AND reduction."
+    }
+  },
+  "requirement_probe_semantics": {
+    "pass": "The production RTL satisfies the probed requirement.",
+    "blocked": "The executable probe reached a production RTL mismatch; the family is not complete.",
+    "infrastructure_failure": "The probe could not compile or did not reach its expected self-check."
+  },
+  "closed_regressions": {
+    "tutorial_write_backpressure": {
+      "scenario": "hold write_command_buffer_status.alfull across the input pulse, then release",
+      "required_result": "no command while full; exactly one command with intact halves after release",
+      "mutation": "tutorial-drop-write-backpressure"
+    },
+    "memcpy_write_only_source": {
+      "scenario": "write-only mode, one element, no read command",
+      "required_result": "one zero-filled write and completion counter one",
+      "mutation": "memcpy-disable-write-only-source"
+    },
+    "memcpy_tlb_resume": {
+      "scenario": "read and write streams with max_tlb_cl_requests=1 and three bursts",
+      "required_result": "one outstanding command per burst and exact 65-element counters",
+      "mutations": [
+        "memcpy-read-tlb-oversubscribe",
+        "memcpy-write-tlb-oversubscribe"
+      ]
+    },
+    "mmtiled_matrix_c_iteration": {
+      "scenario": "zero, single, full, and edge tiles with exact row-major addresses",
+      "required_result": "no +4 first-row shift, no extra row, exact job count",
+      "mutations": [
+        "mmtiled-live-counter-address",
+        "mmtiled-hold-row-count"
+      ]
+    },
+    "mmtiled_matrix_product": {
+      "scenario": "zero, single, full, edge, and repeated transposed-B tile accumulation with read-data/response reorder and command stalls",
+      "required_result": "aligned full-line reads, exact scalar offsets, clipped bounds, exact partial C writes, write count, and multiply-term count",
+      "mutations": [
+        "mmtiled-nontransposed-b-address",
+        "mmtiled-drop-c-accumulation",
+        "mmtiled-disable-edge-clipping"
+      ],
+      "independent_golden": "partial_transposed_edge_accumulation"
+    },
+    "mmtiled_outer_arbiter_publication": {
+      "scenario": "hold a real legacy-loader request on outer input 0 while engine input 1 is pending and ready[1] is delayed",
+      "required_result": "engine submit and payload remain stable through the delayed arbiter publish edge; the recorded owner is granted exactly once and the external command is published exactly once",
+      "mutation": "mmtiled-early-read-retire"
+    },
+    "mmtiled_write_dispatch": {
+      "scenario": "hold write alfull across multiple cycles after a lane command is pending",
+      "required_result": "pending command/data remain stable, no external valid is emitted while blocked, accepted command/data pulse exactly once, all three pending valids clear together, and exactly one response is consumed per dispatch",
+      "mutations": [
+        "mmtiled-write-dispatch-ungated",
+        "mmtiled-write-data-not-cleared"
+      ]
+    }
+  }
+}

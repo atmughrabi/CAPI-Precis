@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "family": "storage",
+  "oracle_id": "registered-memory-and-pipelined-queue-model-v1",
+  "instances": {
+    "ram": [
+      {"width": 1, "depth": 1, "addr_bits": 1},
+      {"width": 8, "depth": 3, "addr_bits": 2}
+    ],
+    "ram_2xrd": [
+      {"width": 17, "depth": 5, "addr_bits": 3}
+    ],
+    "mixed_width_ram": [
+      {"words": 3, "read_width": 8, "write_width": 32, "ratio": 4},
+      {"words": 3, "read_width": 32, "write_width": 8, "ratio": 4},
+      {"words": 3, "read_width": 8, "write_width": 8, "ratio": 1}
+    ],
+    "fifo": [
+      {"width": 1, "depth": 1, "addr_bits": 1, "headroom": 0},
+      {"width": 8, "depth": 5, "addr_bits": 3, "headroom": 3},
+      {"width": 8, "depth": 8, "addr_bits": 3, "headroom": 3}
+    ]
+  },
+  "stimulus": {
+    "ram": ["all valid addresses", "read-during-write returns old data", "write disabled", "zero/one toggles"],
+    "ram_2xrd": ["all valid addresses on both ports", "same-address coherence", "read-during-write returns old data"],
+    "mixed_width_ram": ["all logical read and write addresses", "read-wide", "write-wide", "equal-width", "read-during-write"],
+    "fifo": ["DEPTH=1 default address width", "DEPTH=5 modulo wrap", "empty and full", "almost-full", "wrap twice", "simultaneous push/pop", "blocked underflow", "blocked overflow", "asynchronous reset"]
+  },
+  "required_bins": {
+    "ram": 6,
+    "ram_2xrd": 4,
+    "mixed_width_ram": 8,
+    "fifo": 15,
+    "total": 33
+  },
+  "required_vectors": 257,
+  "sensitivity": {
+    "mutations": [
+      "disable ram writes",
+      "read ram at the write address",
+      "connect both ram_2xrd ports to port one address",
+      "shift mixed-width narrow read lane selection",
+      "shift mixed-width narrow write lane selection",
+      "allow FIFO reads while empty",
+      "allow FIFO writes while full",
+      "decrement rather than increment FIFO count",
+      "decrement rather than increment FIFO read address",
+      "delay FIFO almost-full threshold",
+      "assert FIFO full one entry early",
+      "invert FIFO valid",
+      "widen the DEPTH=1 FIFO default address",
+      "disable FIFO write-pointer modulo wrap",
+      "disable FIFO read-pointer modulo wrap"
+    ],
+    "expected_result": "test process exits nonzero with a DUT-specific storage mismatch"
+  }
+}

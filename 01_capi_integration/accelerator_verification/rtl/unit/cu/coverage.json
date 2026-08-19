@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "suite": "capi-precis-cu",
+  "targets": {
+    "functional_bin_percent": 100,
+    "assertion_goal_percent": 100,
+    "reachable_statement_percent": 100,
+    "reachable_branch_percent": 100,
+    "reachable_control_toggle_percent": 100
+  },
+  "evidence": {
+    "functional": "Every testbench reports an exact hit/total bin denominator.",
+    "assertion": "Every command, address, size, metadata, data, counter, lifecycle, and no-leak check is fatal on mismatch.",
+    "code": "Raw Verilator line, branch, and bit-toggle records are preserved per source. Family closure separately maps one execution scope per module declaration and targets all reachable line/branch points plus protocol/control toggles.",
+    "sensitivity": "Requirement probes intentionally fail on behavior that violates the scenario manifest."
+  },
+  "closure": "A family remains blocked when a required probe fails or any reachable target lacks evidence.",
+  "structural_points": [
+    {
+      "id": "memcpy-read-size-total-order",
+      "source": "cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv",
+      "metric": "branch",
+      "line": 386,
+      "hierarchy": "TOP.memcpy_tb.*t",
+      "name": "else",
+      "reason": "Inside a nonzero-size command guard, size is exactly either greater than CACHELINE_ARRAY_NUM or less than/equal to it."
+    },
+    {
+      "id": "memcpy-read-prefetch-size-total-order",
+      "source": "cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv",
+      "metric": "branch",
+      "line": 458,
+      "hierarchy": "TOP.memcpy_tb.*t",
+      "name": "else",
+      "reason": "Inside a nonzero prefetch guard, size is exactly either greater than PAGE_ARRAY_NUM or less than/equal to it."
+    },
+    {
+      "id": "memcpy-write-prefetch-size-total-order",
+      "source": "cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv",
+      "metric": "branch",
+      "line": 452,
+      "hierarchy": "TOP.memcpy_tb.*t",
+      "name": "else",
+      "reason": "Inside a nonzero prefetch guard, size is exactly either greater than PAGE_ARRAY_NUM or less than/equal to it."
+    },
+    {
+      "id": "tutorial-read-size-total-order",
+      "source": "cu_memcpy-tutorial/memcpy-tutorial/cu/read_engine.sv",
+      "metric": "branch",
+      "line": 202,
+      "hierarchy": "TOP.tutorial_tb.read_dut",
+      "name": "else",
+      "reason": "Inside a nonzero-size command guard, size is exactly either greater than CACHELINE_ARRAY_NUM or less than/equal to it."
+    },
+    {
+      "id": "mmtiled-loader-counter-total-order",
+      "source": "cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
+      "metric": "branch",
+      "line": 403,
+      "hierarchy": "TOP.mmtiled_tb.*t",
+      "name": "else",
+      "reason": "The remaining column count is exactly either greater than CACHELINE_DATA_READ_NUM or less than/equal to it."
+    },
+    {
+      "id": "mmtiled-loader-size-total-order",
+      "source": "cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
+      "metric": "branch",
+      "line": 420,
+      "hierarchy": "TOP.mmtiled_tb.*t",
+      "name": "else",
+      "reason": "The generated row segment is exactly either greater than CACHELINE_DATA_READ_NUM or less than/equal to it."
+    },
+    {
+      "id": "mmtiled-engine-closed-state-default",
+      "source": "cu_mmtiled/mmtiled/cu/cu_matrix_multiply_control.sv",
+      "metric": "line",
+      "line": 480,
+      "hierarchy": "TOP.mmtiled_tb.full_dut.matrix_engine_x[0].matrix_engine_y[0].matrix_multiply_control_instant",
+      "name": "case",
+      "reason": "The state register is reset and assigned only declared enum literals; the default recovery arm requires an injected state upset."
+    },
+    {
+      "id": "memcpy-fixed-write-command-template",
+      "source": "cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.memcpy_tb.*t",
+      "name_regex": "cmd\\.(abt|array_struct|cmd_type|cu_id_x|cu_id_y|size)\\[[0-9]+\\]",
+      "reason": "These local template fields are compile-time command-class constants; variable ABT and size are applied to the published payload after the template copy."
+    },
+    {
+      "id": "tutorial-fixed-write-command-template",
+      "source": "cu_memcpy-tutorial/memcpy-tutorial/cu/write_engine.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.tutorial_tb.write_dut",
+      "name_regex": "cmd\\.(abt|array_struct|cmd_type|cu_id_x|cu_id_y|size)\\[[0-9]+\\]",
+      "reason": "These local template fields are compile-time command-class constants."
+    },
+    {
+      "id": "memcpy-read-status-aliases",
+      "source": "cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.memcpy_tb.*t",
+      "name_regex": "(read_data_out_buffer_status\\.(alfull|full)|prefetch_command_buffer_status\\.(alfull|empty|full|valid))",
+      "reason": "The full/empty/valid fields are unused compatibility fields; alfull behavior is covered by explicit stall/resume assertions, while the coalesced Verilator port alias has no independent storage."
+    },
+    {
+      "id": "memcpy-write-status-aliases",
+      "source": "cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.memcpy_tb.*t",
+      "name_regex": "(prefetch_command_buffer_status\\.(alfull|empty|full|valid)|write_data_in(_0)?_buffer_status\\.(alfull|full))",
+      "reason": "Unused status fields and continuous aliases have no independent state; prefetch stalls and FIFO alfull behavior are asserted functionally. FIFO full is prevented by the alfull producer contract."
+    },
+    {
+      "id": "memcpy-wrapper-status-aliases",
+      "source": "cu_memcpy/global_cu/cu_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.memcpy_tb.full_dut",
+      "name_regex": "(prefetch_(read|write)_buffer_status\\.(alfull|empty|full|valid)|write_data_in_buffer_status\\.(alfull|full))",
+      "reason": "These are wrapper-level aliases of submodule status ports and have no independent storage; the consuming submodule behavior is covered separately."
+    },
+    {
+      "id": "tutorial-unused-prefetch-status",
+      "source": "cu_memcpy-tutorial/global_cu/cu_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.tutorial_tb.full_dut",
+      "name_regex": "prefetch_(read|write)_buffer_status\\.(alfull|empty|full|valid)",
+      "reason": "The tutorial CU has no prefetch engines; these fields exist only to preserve the shared CU interface."
+    },
+    {
+      "id": "mmtiled-loader-bounded-fifo-flags",
+      "source": "cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.mmtiled_tb.*t",
+      "name_regex": "(matrix_C_buffer_status\\.full|read_buffer_status_internal\\.(alfull|full)|matrix_C_buffer_burst_status\\.(alfull|full))",
+      "reason": "Producers stop at downstream alfull and issue at most one bounded burst from an empty command FIFO, structurally preventing these full thresholds."
+    },
+    {
+      "id": "mmtiled-unused-prefetch-status",
+      "source": "cu_mmtiled/global_cu/cu_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.mmtiled_tb.full_dut",
+      "name_regex": "prefetch_(read|write)_buffer_status\\.(alfull|empty|full|valid)",
+      "reason": "The active tiled matrix engine does not implement prefetch commands; these fields exist only to preserve the shared CU interface."
+    },
+    {
+      "id": "mmtiled-coalesced-loader-aliases",
+      "source": "cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.mmtiled_tb.*t",
+      "name_regex": "(enabled_in|matrix_C_job_out\\.valid)",
+      "reason": "Verilator coalesces the active direct loader with the structurally disabled topology instance; executable loader bins prove both signals transition in the active context."
+    },
+    {
+      "id": "mmtiled-inactive-legacy-control",
+      "source": "cu_mmtiled/global_cu/cu_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.mmtiled_tb.full_dut",
+      "name_regex": "(enabled_matrix_C_job|matrix_C_unfiltered\\.valid|enabled_prefetch_read|enabled_prefetch_write|requests\\[0\\]|ready\\[0\\])",
+      "reason": "The native matrix engines subsume the legacy loader traffic and prefetch is not implemented; these preserved topology aliases are tied inactive."
+    },
+    {
+      "id": "mmtiled-pending-read-enabled-invariant",
+      "source": "cu_mmtiled/global_cu/cu_control.sv",
+      "metric": "branch",
+      "line": 251,
+      "hierarchy": "TOP.mmtiled_tb.full_dut",
+      "name": "else",
+      "reason": "A local read pending entry can only be created by engines after enabled_cmd is asserted."
+    },
+    {
+      "id": "mmtiled-prefetch-read-disabled",
+      "source": "cu_mmtiled/global_cu/cu_control.sv",
+      "metric": "branch",
+      "line": 569,
+      "hierarchy": "TOP.mmtiled_tb.full_dut",
+      "name": "if",
+      "reason": "enabled_prefetch_read is explicitly tied low in the restored topology."
+    },
+    {
+      "id": "mmtiled-prefetch-write-disabled",
+      "source": "cu_mmtiled/global_cu/cu_control.sv",
+      "metric": "branch",
+      "line": 590,
+      "hierarchy": "TOP.mmtiled_tb.full_dut",
+      "name": "if",
+      "reason": "enabled_prefetch_write is explicitly tied low in the restored topology."
+    }
+  ],
+  "waivers": []
+}

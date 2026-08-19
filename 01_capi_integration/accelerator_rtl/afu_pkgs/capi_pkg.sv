@@ -243,12 +243,12 @@ package CAPI_PKG;
       swap_endianness_word(in[  0: 31])};
   endfunction : swap_endianness_double_word
 
-  function logic [0:63] swap_endianness_quad_word(logic [0:127] in);
+  function logic [0:127] swap_endianness_quad_word(logic [0:127] in);
     return {swap_endianness_double_word(in[ 64:127]),
       swap_endianness_double_word(in[  0: 63])};
   endfunction : swap_endianness_quad_word
 
-  function logic [0:63] swap_endianness_octa_word(logic [0:255] in);
+  function logic [0:255] swap_endianness_octa_word(logic [0:255] in);
     return {swap_endianness_quad_word(in[ 128:255]),
       swap_endianness_quad_word(in[  0: 127])};
   endfunction : swap_endianness_octa_word

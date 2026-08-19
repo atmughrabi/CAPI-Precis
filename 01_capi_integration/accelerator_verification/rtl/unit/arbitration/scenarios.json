@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "family": "arbitration",
+  "owners": [
+    "primitive-arbiters",
+    "afu-arbiter-wrappers"
+  ],
+  "oracle_id": "arbiter-priority-rotation-payload-v1",
+  "oracle": "Independent circular first-match priority, post-grant rotation and payload routing model. It is derived from the arbitration contract and shares no structure with the kill chain, mask/priority encoder or wrapper output pipelines of the devices under test.",
+  "modules": {
+    "priority_arbiters.sv": [
+      "vc_FixedArbChain",
+      "vc_FixedArb",
+      "vc_VariableArbChain",
+      "vc_VariableArb",
+      "vc_RoundRobinArbChain",
+      "vc_RoundRobinArb",
+      "vc_RoundRobinArb_V2"
+    ],
+    "fixed_priority_arbiter.sv": [
+      "fixed_priority_arbiter_N_input_1_ouput",
+      "fixed_priority_arbiter_1_input_N_ouput"
+    ],
+    "round_robin_priority_arbiter.sv": [
+      "round_robin_priority_arbiter_N_input_1_ouput",
+      "round_robin_priority_arbiter_1_input_N_ouput"
+    ]
+  },
+  "instances": {
+    "combinational_num_reqs": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "round_robin_num_reqs": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "round_robin_chain_reset_priority": [
+      "index 0",
+      "index N-1"
+    ],
+    "wrapper_num_reqs_width": [
+      [
+        1,
+        8
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        3,
+        33
+      ]
+    ]
+  },
+  "stimulus": {
+    "exhaustive": [
+      "vc_FixedArbChain: every kill-in value crossed with every request vector for N in 1..5",
+      "vc_FixedArb: every request vector for N in 1..5",
+      "vc_VariableArbChain: every kill-in value crossed with every one-hot priority and every request vector for N in 1..5",
+      "vc_VariableArb: every one-hot priority crossed with every request vector for N in 1..5",
+      "vc_RoundRobinArbChain and vc_RoundRobinArb: every rotation state crossed with every request vector for N in 1..5, reached by a one-cycle steering grant",
+      "vc_RoundRobinArb_V2: every rotation pointer base crossed with every request vector for N in 1..5, reached by a two-cycle steering pair",
+      "wrappers: every non-empty request vector for N in 1..4"
+    ],
+    "request_classes": [
+      "no request",
+      "single request",
+      "all requests",
+      "held requests across cycles"
+    ],
+    "parameter_classes": [
+      "N=1 degenerate arbiter on every primitive and every wrapper",
+      "N=2 and N=4 power-of-two",
+      "N=3 and N=5 non-power-of-two",
+      "payload width 8 and non-byte width 33",
+      "round-robin chain reset priority index 0 and index N-1"
+    ],
+    "backpressure": [
+      "kill-in asserted before and after a grant on both arbiter chains",
+      "wrapper disabled while requests are held, then released",
+      "wrapper submit deasserted so the published payload is cleared",
+      "wrapper submit asserted by requesters that never win the arbitration",
+      "asynchronous reset asserted mid-cycle on every sequential module"
+    ],
+    "vectors_by_class": {
+      "fixed_chain": 124,
+      "fixed_arb": 62,
+      "var_chain": 516,
+      "var_arb": 258,
+      "rr_chain": 1202,
+      "rr_arb": 581,
+      "rr_v2": 1122,
+      "wrap_fanin": 394,
+      "wrap_fanout": 274,
+      "total": 4533
+    },
+    "handshake_timing": "Fan-in wrappers are driven with the pipeline the AFU actually uses: requests and the combinational grant in cycle t, ready in cycle t+1, and the granted requester's submit plus buffer data in cycle t+2. The model therefore gates publication with grant_latched, the delayed copy of the grant that caused the buffer pop, while ready keeps advertising the current winner."
+  },
+  "assertions": [
+    "grants equal the independent model every vector",
+    "grants are one-hot or zero",
+    "a grant implies a request on the same index",
+    "kout equals request-or-kill-in on both arbiter chains",
+    "round-robin rotation advances to winner+1 only when a grant is taken",
+    "bounded fairness: every requester wins inside N cycles (2N for vc_RoundRobinArb_V2 whose registered grant blacks out the winner for one cycle)",
+    "wrapper ready equals the registered grant and stays one-hot",
+    "wrapper payload equals the buffer of the requester that owned the delayed grant, including when several requesters submit in the same cycle",
+    "a requester that never owned the delayed grant publishes nothing",
+    "wrapper payload and ready clear asynchronously on reset"
+  ],
+  "required_bins": {
+    "fixed_priority": 55,
+    "variable_priority": 125,
+    "round_robin": 190,
+    "wrappers": 168,
+    "total": 538
+  },
+  "required_bin_detail": {
+    "fixed_priority": "chain winner index 15, chain no-request 5, chain kill-in 5, chain all-request 5, arb winner index 15, arb no-request 5, arb all-request 5",
+    "variable_priority": "chain priority x winner-offset cross 55, chain no-request 5, chain kill-in 5, arb priority x winner-offset cross 55, arb no-request 5",
+    "round_robin": "winner index 60, rotation state 60, fairness bound 20, idle hold 20, reset state 20, kill-in stall 10",
+    "wrappers": "fan-in source index 26, fan-in payload clear 10, fan-in stall 10, fan-in reset 10, fan-in multi-hot submit 8, fan-in grant-aligned multi-hot submit 8, fan-in losing submitter 10, fan-in stall release 10, fan-out destination index 26, fan-out non-selected zero 10, fan-out stall 10, fan-out reset 10, fan-out reset payload clear 10, fan-out stall release 10"
+  },
+  "characterized_behavior": [
+    "round_robin_priority_arbiter_N_input_1_ouput gates the output register with a registered copy of `enabled`, so enable changes take effect one cycle later than in the fixed wrapper. This is a deliberate pipeline stage, not a defect: ready and arbiter_out stay mutually consistent because both are gated by the same registered enable, and the existing default latency is preserved. The 10 fan-in stall and 10 stall-release bins pin the behaviour, and the rr-fanin-enable-delay-removed mutation fails if it is quietly changed.",
+    "vc_RoundRobinArb_V2 registers its grant and masks it with the previous grant, so a continuously requesting client is granted at most every other cycle. Fairness is therefore checked against a 2N cycle window instead of N.",
+    "Both fan-in wrappers keep `requests` and `submit` as separate ports; the arbiter rotates on `requests` even while the wrapper is disabled, so grants taken during a stall are not replayed after release. A requester owes its data exactly one cycle after it sees ready; the wrapper publishes nothing if it never delivers."
+  ],
+  "sensitivity": {
+    "mutation_count": 25,
+    "mutations": [
+      "vc_FixedArbChain priority order reversed",
+      "vc_FixedArbChain grant replaced by the raw request vector (one-hot violation)",
+      "vc_VariableArbChain priority input reversed",
+      "vc_VariableArbChain kill-in stall removed",
+      "vc_RoundRobinArbChain rotation held",
+      "vc_RoundRobinArb rotation held",
+      "vc_RoundRobinArb_V2 rotation pointer held",
+      "vc_RoundRobinArb_V2 grant blackout removed",
+      "fixed fan-in payload index reversed",
+      "fixed fan-in ready index reversed",
+      "fixed fan-in enable stall ignored",
+      "fixed fan-out grant/payload misaligned",
+      "round-robin fan-in payload index reversed",
+      "round-robin fan-in enable delay removed",
+      "round-robin fan-out grant/payload misaligned",
+      "vc_RoundRobinArbChain single-requester rotation broken",
+      "vc_RoundRobinArb single-requester rotation broken",
+      "fixed fan-in payload follows the highest submitter instead of the grant",
+      "round-robin fan-in payload follows the highest submitter instead of the grant",
+      "fixed fan-out payload register reset removed",
+      "round-robin fan-out payload register reset removed",
+      "fixed fan-in payload gated with the combinational grant instead of the delayed grant",
+      "round-robin fan-in payload gated with the combinational grant instead of the delayed grant",
+      "fixed fan-in payload gated with the undelayed ready (one pipeline stage short)",
+      "round-robin fan-in payload gated with the undelayed ready (one pipeline stage short)"
+    ],
+    "expected_result": "test process exits nonzero with the diagnostic class of the mutated behavior"
+  },
+  "production_fixes": [
+    {
+      "defect": "vc_RoundRobinArbChain, vc_RoundRobinArb and vc_RoundRobinArb_V2 could not elaborate at p_num_reqs = 1",
+      "detail": "priority_next used grants[p_num_reqs-2:0], which degenerates to grants[-1:0], and vc_RoundRobinArb_V2 assigned rotate_ptr[1] unconditionally.",
+      "fix": "The rotate expression and the rotate_ptr[1] register moved into generate branches, so the p_num_reqs = 1 elaboration contains no negative or out-of-range select. A single requester rotates onto itself, which keeps the one-hot priority invariant.",
+      "regression": "RR_N now includes 1: 60 winner, 60 state, 20 fairness, 20 idle, 20 reset and 10 kill-in bins cover N=1 through N=5, and the rr-chain-single-rotation-broken and rr-arb-single-rotation-broken mutations only perturb the N=1 branch."
+    },
+    {
+      "defect": "fan-in wrappers published the highest submitter instead of the arbitration winner",
+      "detail": "The payload loop assigned arbiter_out for every set submit bit, so with a multi-hot submit the last loop iteration won while ready still reported the grant.",
+      "fix": "publish = grant & submit gates the payload with the one-hot grant; a losing submitter publishes nothing and the output clears.",
+      "regression": "8 grant-aligned multi-hot bins, 10 losing-submitter bins, and the fixed/rr fanin-publish-highest-submitter mutations."
+    },
+    {
+      "defect": "arbiter_out in the fan-out wrappers had no reset and leaked a stale payload",
+      "detail": "The output register used always @(posedge clock) only, so a payload published before reset stayed visible on the destination port until a later clock edge.",
+      "fix": "The register now uses always_ff @(posedge clock or negedge rstn) and clears every destination asynchronously.",
+      "regression": "10 fan-out reset payload-clear bins plus the fixed/rr fanout-reset-removed mutations."
+    },
+    {
+      "defect": "round_robin_priority_arbiter_1_input_N_ouput declared a dead ready_latched signal",
+      "detail": "The signal was never driven and its only consumer was commented out, leaving 13 permanently unreachable toggle points.",
+      "fix": "Declaration removed; the unreachable-point list shrank accordingly."
+    },
+    {
+      "defect": "fan-in wrappers published against the new combinational grant instead of the grant that caused the buffer pop",
+      "detail": "The grant-aligned payload gate introduced with the multi-hot fix used the current cycle's grant. The AFU registers the arbiter's ready once more before it pops a command FIFO, and the FIFO drives data_out combinationally on that pop, so submit and buffer data arrive two cycles after the combinational grant. With round-robin the winner rotates every cycle, so the gate never matched and commands were dropped; run_integration.py failed the round-robin command count while fixed priority still passed because its winner is stable.",
+      "fix": "publish = grant_latched & submit, where grant_latched is the registered copy of ready. ready still advertises the current winner, so arbitration latency and fairness are unchanged, and a multi-hot submit still cannot override the delayed winner.",
+      "regression": "The unit testbench now drives submit and buffer data one cycle after ready. Four mutations pin the stage count: fixed/rr-fanin-publish-combinational-grant reproduce the integration failure exactly and fixed/rr-fanin-publish-undelayed-ready catch a one-stage error.",
+      "integration_evidence": "01_capi_integration/accelerator_verification/rtl/integration/run_integration.py probes fixed-concurrent-arbitration and round-robin-concurrent-arbitration both PASS (7 assertions each)."
+    }
+  ],
+  "blocked_scenarios": []
+}

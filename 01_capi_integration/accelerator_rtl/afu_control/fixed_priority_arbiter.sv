@@ -67,20 +67,31 @@ module fixed_priority_arbiter_N_input_1_ouput #(
 // ready the winner if any
   integer i;
 
+// ready advertises the current winner. That winner pops its buffer once it
+// sees ready, so its data and submit only arrive on the following cycle. The
+// payload is therefore published against grant_latched, the delayed copy of
+// the grant that caused the pop, and a multi-hot submit can never override
+// that delayed winner.
+
+  logic [NUM_REQUESTS-1:0] grant_latched;
+  logic [NUM_REQUESTS-1:0] publish      ;
+
+  assign publish = grant_latched & submit;
+
   always @(posedge clock or negedge rstn) begin
     if (~rstn) begin
-      arbiter_out <= 0;
-      ready       <= 0;
+      arbiter_out   <= 0;
+      ready         <= 0;
+      grant_latched <= 0;
     end else begin
       if (enabled) begin
+        arbiter_out   <= 0;
+        grant_latched <= ready;
         for ( i = 0; i < NUM_REQUESTS; i++) begin
-          if (submit[i]) begin
+          if (publish[i]) begin
             arbiter_out <= buffer_in[i];
           end
           ready[i] <= grant[i];
-        end
-        if (~(|submit)) begin
-          arbiter_out <= 0;
         end
       end
     end
@@ -140,6 +151,7 @@ module fixed_priority_arbiter_1_input_N_ouput #(
 // ready the winner if any
   integer i;
   integer j;
+  integer k;
 
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
@@ -160,8 +172,17 @@ module fixed_priority_arbiter_1_input_N_ouput #(
     end
   end
 
-  always @(posedge clock ) begin
-    arbiter_out <= arbiter_out_latch;
+// arbiter_out is reset with the rest of the pipeline so a stale payload
+// cannot survive on a destination port across a reset.
+
+  always_ff @(posedge clock or negedge rstn) begin
+    if(~rstn) begin
+      for (k = 0; k < NUM_REQUESTS; k++) begin
+        arbiter_out[k] <= 0;
+      end
+    end else begin
+      arbiter_out <= arbiter_out_latch;
+    end
   end
 
   always_comb begin

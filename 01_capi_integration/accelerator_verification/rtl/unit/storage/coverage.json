@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "family": "storage",
+  "targets": {
+    "functional_bin_percent": 100,
+    "assertion_goal_percent": 100,
+    "raw_line_percent": 100,
+    "raw_branch_percent": 98.48,
+    "raw_toggle_percent": 99.08,
+    "reachable_line_percent": 100,
+    "reachable_branch_percent": 100,
+    "reachable_toggle_percent": 100
+  },
+  "raw_dut_denominators": {
+    "line": 96,
+    "branch": 66,
+    "toggle": 872
+  },
+  "not_applicable": {
+    "fsm_state": "The RAM and FIFO RTL contains counters and pipelines but no encoded state machine.",
+    "fsm_transition": "The RAM and FIFO RTL contains counters and pipelines but no encoded state machine.",
+    "mixed_width_uninitialized_read": "mixed_width_ram has no initialization contract; functional comparisons begin only after every bit in the addressed backing word is written."
+  },
+  "unreachable": {
+    "line": [],
+    "branch": [
+      {
+        "record": "TOP.storage_tb.fifo_depth1:else",
+        "reason": "DEPTH=1 has only address zero, so the write-pointer non-wrap branch is unreachable for every legal transaction."
+      }
+    ],
+    "toggle": [
+      {
+        "record": "TOP.storage_tb.fifo_depth1:wr_addr[0]",
+        "reason": "DEPTH=1 has only legal address zero, so the FIFO write pointer is fixed."
+      },
+      {
+        "record": "TOP.storage_tb.fifo_depth1:rd_addr[0]",
+        "reason": "DEPTH=1 has only legal address zero, so the FIFO selected read address is fixed."
+      },
+      {
+        "record": "TOP.storage_tb.fifo_depth1:rd_addr_q[0]",
+        "reason": "DEPTH=1 has only legal address zero, so the FIFO registered read pointer is fixed."
+      },
+      {
+        "record": "TOP.storage_tb.fifo_depth1:rd_addr_c[0]",
+        "reason": "DEPTH=1 has only legal address zero, so the FIFO next read pointer is fixed."
+      },
+      {
+        "record": "TOP.storage_tb.fifo_depth1.ram_instant:wr_addr[0]",
+        "reason": "The DEPTH=1 FIFO RAM has only legal write address zero."
+      },
+      {
+        "record": "TOP.storage_tb.fifo_depth1.ram_instant:rd_addr[0]",
+        "reason": "The DEPTH=1 FIFO RAM has only legal read address zero."
+      },
+      {
+        "record": "TOP.storage_tb.ram_depth1:wr_addr[0]",
+        "reason": "DEPTH=1 has only legal address zero, so its explicit one-bit write address cannot toggle."
+      },
+      {
+        "record": "TOP.storage_tb.ram_depth1:rd_addr[0]",
+        "reason": "DEPTH=1 has only legal address zero, so its explicit one-bit read address cannot toggle."
+      }
+    ]
+  },
+  "waivers": []
+}

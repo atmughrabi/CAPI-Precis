@@ -96,9 +96,9 @@ module write_engine #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
 			write_job_counter_done  <= 0;
 		end else begin
 			if(enabled_in) begin
-				write_command_out.valid <= write_command_out_latched.valid;
-				write_data_0_out.valid  <= write_data_0_out_latched.valid;
-				write_data_1_out.valid  <= write_data_1_out_latched.valid ;
+				write_command_out.valid <= write_command_out_latched.valid && ~write_command_buffer_status_latched.alfull;
+				write_data_0_out.valid  <= write_data_0_out_latched.valid && ~write_command_buffer_status_latched.alfull;
+				write_data_1_out.valid  <= write_data_1_out_latched.valid && ~write_command_buffer_status_latched.alfull;
 				write_job_counter_done  <= write_job_counter_done_latched;
 			end
 		end
@@ -158,7 +158,7 @@ module write_engine #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
 				write_data_0_out_latched.valid  <= 1;
 				write_data_1_out_latched.valid  <= 1;
 				write_command_out_latched.valid <= 1;
-			end else begin
+			end else if(~write_command_buffer_status_latched.alfull) begin
 				write_data_0_out_latched.valid  <= 0;
 				write_data_1_out_latched.valid  <= 0;
 				write_command_out_latched.valid <= 0;
@@ -168,18 +168,20 @@ module write_engine #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
 
 
 	always_ff @(posedge clock) begin
-		write_command_out_latched.payload.command <= WRITE_NA;
-		write_command_out_latched.payload.size    <= cmd_size_calculate(read_data_0_in_latched_S2.payload.cmd.real_size);
-		write_command_out_latched.payload.abt     <= STRICT;
-		write_command_out_latched.payload.address <= wed_request_in_latched.payload.wed.array_receive + read_data_0_in_latched_S2.payload.cmd.address_offset;
+		if(read_data_0_in_latched_S2.valid && wed_request_in_latched.valid && enabled_in) begin
+			write_command_out_latched.payload.command <= WRITE_NA;
+			write_command_out_latched.payload.size    <= cmd_size_calculate(read_data_0_in_latched_S2.payload.cmd.real_size);
+			write_command_out_latched.payload.abt     <= STRICT;
+			write_command_out_latched.payload.address <= wed_request_in_latched.payload.wed.array_receive + read_data_0_in_latched_S2.payload.cmd.address_offset;
 
-		write_command_out_latched.payload.cmd <= cmd;
+			write_command_out_latched.payload.cmd <= cmd;
 
-		write_data_0_out_latched.payload.cmd <= cmd;
-		write_data_1_out_latched.payload.cmd <= cmd;
+			write_data_0_out_latched.payload.cmd <= cmd;
+			write_data_1_out_latched.payload.cmd <= cmd;
 
-		write_data_0_out_latched.payload.data <= read_data_0_in_latched_S2.payload.data;
-		write_data_1_out_latched.payload.data <= read_data_1_in_latched.payload.data;
+			write_data_0_out_latched.payload.data <= read_data_0_in_latched_S2.payload.data;
+			write_data_1_out_latched.payload.data <= read_data_1_in_latched.payload.data;
+		end
 	end
 
 

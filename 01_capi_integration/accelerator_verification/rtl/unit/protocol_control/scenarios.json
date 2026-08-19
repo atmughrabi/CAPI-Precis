@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "family": "protocol-control",
+  "deterministic": true,
+  "duts": {
+    "credit_control": {
+      "required_bins": 11,
+      "independent_model": "signed nine-bit return-credit ledger modulo 256",
+      "cases": [
+        "zero initial credit",
+        "zero-credit-starvation releases after 3 cycles",
+        "positive release",
+        "request only",
+        "request and return in one cycle",
+        "positive overflow",
+        "negative release",
+        "negative response credit and issue in the same cycle"
+      ]
+    },
+    "command_control": {
+      "required_bins": 315,
+      "independent_model": "field encoder with loop-derived odd parity",
+      "denominators": {
+        "legal_commands": 23,
+        "legal_sizes": 8,
+        "address_classes": 6,
+        "legal_abt_values": 5,
+        "tags": 256,
+        "parity_field_values": 6,
+        "bounded_command_room_stalls": 3,
+        "back_to_back_timing_parity": 8
+      },
+      "bounded_stalls": {
+        "command-room-single": 1,
+        "command-room-short": 3,
+        "command-room-long": 7
+      },
+      "interface_note": "command_control has no room input; named stalls are applied at command_arbiter_in, the production issue-gating boundary"
+    },
+    "response_control": {
+      "required_bins": 59,
+      "independent_model": "256-entry outstanding metadata router and response-error map",
+      "denominators": {
+        "response_by_route_cross": 54,
+        "good_bad_parity": 2,
+        "reverse_order": 1,
+        "unknown_tag": 1,
+        "nlock_error_mask": 1
+      }
+    },
+    "response_statistics_control": {
+      "required_bins": 21,
+      "independent_model": "response journal reduced independently into response and byte counters",
+      "denominators": {
+        "response_classes": 9,
+        "done_routes": 5,
+        "byte_counters": 4,
+        "rollovers": 3
+      }
+    },
+    "tag_control": {
+      "required_bins": 265,
+      "independent_model": "ordered free-tag ledger plus 256-entry metadata model",
+      "denominators": {
+        "initialized_allocatable_tags": 243,
+        "pointer_wrap_and_reuse_tags": 16,
+        "lifecycle": 6
+      },
+      "bounded_stalls": {
+        "tag-exhaustion": 4,
+        "return-release-bound": 24
+      },
+      "interface_note": "the production FIFO almost-full pipeline exposes tags 0 through 242 before initialization completes; tags 243 through 255 remain headroom"
+    },
+    "restart_control": {
+      "required_bins": 37,
+      "independent_model": "outstanding-command journal and unique restart/replay completion ledger",
+      "denominators": {
+        "error_by_abt_cross": 15,
+        "lifecycle": 6,
+        "counter_event_combinations": 8,
+        "fsm_transition_probes": 6,
+        "saturation_and_init_paths": 2
+      },
+      "bounded_stalls": {
+        "restart-credit-starvation": 6,
+        "restart-issue-release-bound": 48,
+        "flushed-replay-bound": 64
+      }
+    }
+  },
+  "mutations": {
+    "credit_control": [
+      "request-decrement",
+      "signed-simultaneous-issue"
+    ],
+    "command_control": [
+      "tag-encoder-source",
+      "mixed-output-driver"
+    ],
+    "response_control": [
+      "read-route-select",
+      "nlock-error-mask"
+    ],
+    "response_statistics_control": [
+      "done-counter-increment"
+    ],
+    "tag_control": [
+      "returned-tag-value"
+    ],
+    "restart_control": [
+      "restart-response-classification"
+    ]
+  }
+}

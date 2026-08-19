@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "suite": "protocol-data",
+  "targets": {
+    "functional_bin_percent": 100,
+    "reachable_line_percent": 100,
+    "reachable_branch_percent": 100,
+    "reachable_toggle_percent": 100,
+    "fsm_state_percent": 100,
+    "fsm_transition_percent": 100,
+    "mutation_detection_percent": 100,
+    "context_execution_percent": 100
+  },
+  "denominator_policy": "Every Verilator coverage point emitted for the seven device sources is counted as raw, without filtering. A point may only leave the reachable denominator through an entry in structurally_unreachable, and every such entry is matched against the observed miss count on each run.",
+  "dependency_exclusions": {
+    "01_capi_integration/accelerator_rtl/afu_control/parity.sv": "parity family denominator",
+    "01_capi_integration/accelerator_rtl/afu_control/ram.sv": "storage family denominator"
+  },
+  "duts": {
+    "read_data_control.sv": {
+      "line": 20,
+      "branch": 34,
+      "toggle": 332
+    },
+    "write_data_control.sv": {
+      "line": 12,
+      "branch": 30,
+      "toggle": 80
+    },
+    "wed_control.sv": {
+      "line": 15,
+      "branch": 14,
+      "toggle": 73
+    },
+    "mmio.sv": {
+      "line": 64,
+      "branch": 34,
+      "toggle": 2454
+    },
+    "job.sv": {
+      "line": 16,
+      "branch": 24,
+      "toggle": 506
+    },
+    "done_control.sv": {
+      "line": 16,
+      "branch": 16,
+      "toggle": 397
+    },
+    "error_control.sv": {
+      "line": 15,
+      "branch": 12,
+      "toggle": 136
+    }
+  },
+  "structurally_unreachable": [
+    {
+      "file": "read_data_control.sv",
+      "metric": "branch",
+      "line": 281,
+      "item": "else",
+      "points": 1,
+      "reason": "enable_errors is tied to 1'b1, so the error masking branch cannot be selected."
+    },
+    {
+      "file": "write_data_control.sv",
+      "metric": "branch",
+      "line": 248,
+      "item": "else",
+      "points": 1,
+      "reason": "enable_errors is tied to 1'b1, so the error masking branch cannot be selected."
+    },
+    {
+      "file": "write_data_control.sv",
+      "metric": "toggle",
+      "line": 38,
+      "item": "read_latency",
+      "points": 2,
+      "reason": "read_latency is tied to the constant 4'h3, so the constant bits never change value."
+    },
+    {
+      "file": "mmio.sv",
+      "metric": "branch",
+      "line": 480,
+      "item": "else",
+      "points": 1,
+      "reason": "enable_errors is tied to 1'b1, so the error masking branch cannot be selected."
+    },
+    {
+      "file": "mmio.sv",
+      "metric": "toggle",
+      "line": 78,
+      "item": "data_cfg",
+      "points": 45,
+      "reason": "data_cfg only ever holds one of the nine AFU descriptor constants or zero. The union of those constants is 0x4745454700018111, so the remaining 45 bits are zero for every readable descriptor word."
+    },
+    {
+      "file": "job.sv",
+      "metric": "branch",
+      "line": 214,
+      "item": "else",
+      "points": 1,
+      "reason": "enable_errors is tied to 1'b1, so the error masking branch cannot be selected."
+    },
+    {
+      "file": "job.sv",
+      "metric": "toggle",
+      "line": 23,
+      "item": "job_out.cack",
+      "points": 1,
+      "reason": "cack is tied to 1'b0 because the AFU is a dedicated process accelerator and does not support LLCMD."
+    },
+    {
+      "file": "job.sv",
+      "metric": "toggle",
+      "line": 23,
+      "item": "job_out.yield",
+      "points": 1,
+      "reason": "yield is tied to 1'b0 because job yield is not used."
+    },
+    {
+      "file": "job.sv",
+      "metric": "toggle",
+      "line": 24,
+      "item": "timebase_request",
+      "points": 1,
+      "reason": "timebase_request is tied to 1'b0 because the timebase request is not used."
+    }
+  ],
+  "unreachable_states": [
+    {
+      "package": "WED_PKG",
+      "type": "wed_state",
+      "state": "WED_READ_DATA",
+      "reason": "wed_control never assigns this enumeration value, the data halves are captured inside WED_WAITING_FOR_REQUEST."
+    },
+    {
+      "package": "AFU_PKG",
+      "type": "done_state",
+      "state": "DONE_WAIT_MMIO_REQ",
+      "reason": "done_control never assigns this enumeration value, the publication waits inside DONE_MMIO_REQ."
+    },
+    {
+      "package": "AFU_PKG",
+      "type": "error_state",
+      "state": "ERROR_WAIT_MMIO_REQ",
+      "reason": "error_control never assigns this enumeration value, the publication waits inside ERROR_MMIO_REQ."
+    }
+  ],
+  "not_applicable": {
+    "fsm_state": "Verilator emits no finite state machine coverage. State closure is measured by the functional state bins of the wed testbench (5 states) and of the completion and error testbench (5 states each), and every unreachable enumeration value is listed in unreachable_states.",
+    "fsm_transition": "Verilator emits no finite state machine coverage. Transition closure is measured by the functional transition bins of the wed testbench (7 transitions) and of the completion and error testbench (8 and 7 transitions), plus the asynchronous reset entry bins.",
+    "expression": "Verilator 5.020 does not emit expression coverage points; the equivalent obligations are carried by the parity fault, response class and address class functional bins.",
+    "wide_signal_toggle": "Verilator does not instrument nets wider than the default coverage width of 256 bits, so the cacheline payload, command metadata and statistics buses carry no toggle points. Their value space is instead covered by the byte level scoreboards and by the boundary patterns declared in scenarios.json.",
+    "reset_initialisation": "wed_control clears the descriptor command and request payloads in the reset state. Verilator initialises variables to zero, so the clear is not separately observable here; the testbench instead compares the whole payload image from the reset state onwards, which fails on any field that a four state simulator would leave unknown."
+  },
+  "verilator_message_waivers": [
+    {
+      "message": "MULTIDRIVEN",
+      "scope": "read_data_control.sv and write_data_control.sv latched structures",
+      "reason": "Production style drives disjoint fields of one structure from different clocked blocks."
+    },
+    {
+      "message": "CASEINCOMPLETE",
+      "scope": "write_data_control.sv buffer read address decode",
+      "reason": "The unmapped buffer read address deliberately holds the previous data, which the testbench checks."
+    },
+    {
+      "message": "SYNCASYNCNET",
+      "scope": "reset inputs sampled by the testbench monitors",
+      "reason": "The monitors sample the asynchronous reset input to model the reset release cycle."
+    }
+  ],
+  "waivers": []
+}

@@ -6,17 +6,17 @@
   ],
   "generated_by": "01_capi_integration/accelerator_verification/rtl/scripts/verify_manifests.py",
   "summary": {
-    "files": 82,
-    "declarations": 92,
+    "files": 107,
+    "declarations": 118,
     "status_counts": {
-      "active": 49,
+      "active": 74,
       "legacy-supported": 30,
       "quarantined": 3
     },
     "declaration_status_counts": {
       "active": {
-        "module": 46,
-        "package": 13
+        "module": 70,
+        "package": 15
       },
       "legacy-supported": {
         "module": 25,
@@ -27,7 +27,7 @@
       }
     },
     "modern_design_declarations": {
-      "module": 43,
+      "module": 44,
       "package": 13
     }
   },
@@ -55,7 +55,7 @@
         },
         {
           "manifest": "mmtiled",
-          "order": 31
+          "order": 32
         }
       ],
       "evidence": "memcpy, memcpy-tutorial, mmtiled"
@@ -70,7 +70,7 @@
           "name": "afu_control"
         }
       ],
-      "sha256": "1e4c26e5d7e07bf111856a3a5e11d3b5cf96008870afc2b01460149f8cb8b46b",
+      "sha256": "88deaf18455afba1b449d9170057840cfcc60e0a18710c5ecb3b9d4e36c97f09",
       "verification_unit": "afu_control",
       "build_membership": [
         {
@@ -111,7 +111,7 @@
         },
         {
           "manifest": "mmtiled",
-          "order": 32
+          "order": 33
         }
       ],
       "evidence": "memcpy, memcpy-tutorial, mmtiled"
@@ -126,7 +126,7 @@
           "name": "command_control"
         }
       ],
-      "sha256": "84da3b252eaeec8813c748831b2bea60c5da2539278c4f5df045fd64204e1045",
+      "sha256": "3395649032e56e2089f03fe94bbc630b0d8b1fd9fa523b3359f142d411067134",
       "verification_unit": "command_control",
       "build_membership": [
         {
@@ -154,7 +154,7 @@
           "name": "credit_control"
         }
       ],
-      "sha256": "8d83456ef231546f6bc3550402e8066adc8294e621742df8c0ea580806871b1a",
+      "sha256": "2cefd7c419dd0d486501b3a96b5bb3377ead5af62caf59571c5cd8e57abe4811",
       "verification_unit": "credit_control",
       "build_membership": [
         {
@@ -238,7 +238,7 @@
           "name": "fifo"
         }
       ],
-      "sha256": "668d2e99baa673d860e54408a2448dda1ac3b13cf21640bd1783b8a7894ec407",
+      "sha256": "3c7914cbf455bbfd37f57b9be6994442de4fc3b1c13e4bd2361b24136b5220c5",
       "verification_unit": "fifo",
       "build_membership": [
         {
@@ -270,7 +270,7 @@
           "name": "fixed_priority_arbiter_1_input_N_ouput"
         }
       ],
-      "sha256": "145c68697a9ec51ac8117fa00852dd6ce3de22fe54810569d1128c8aec49669f",
+      "sha256": "c59a5a280f214205a239dd31862e48a15ff997b1b15083f1504eb95f52a110c1",
       "verification_unit": "fixed_priority_arbiter",
       "build_membership": [
         {
@@ -298,7 +298,7 @@
           "name": "job"
         }
       ],
-      "sha256": "fa2c554c17b23744063ac24f0ba006b8edf1492e0e0e06249b6eaf590f49a906",
+      "sha256": "514268ad85c1134f613fec4964aece1558fe7c85e2ab1516d753bf252ef13598",
       "verification_unit": "job",
       "build_membership": [
         {
@@ -410,7 +410,7 @@
           "name": "vc_RoundRobinArb_V2"
         }
       ],
-      "sha256": "44887dfcb207dcdf73dfc758c550add93675b36942347d1f09d3f5272290d10e",
+      "sha256": "ef2423418ef94d9e96e6effd3fa12292a5a44824840c03c2cf77be4255077043",
       "verification_unit": "priority_arbiters",
       "build_membership": [
         {
@@ -446,7 +446,7 @@
           "name": "mixed_width_ram"
         }
       ],
-      "sha256": "103ac9e5f2f0d1703420956feca18d3a8c682986721b20b880d5a81987bab431",
+      "sha256": "cf8b7f1ba7f8169e64b6e5aad12a76fa197454e407e460b9e3123d14e7652876",
       "verification_unit": "ram",
       "build_membership": [
         {
@@ -474,7 +474,7 @@
           "name": "read_data_control"
         }
       ],
-      "sha256": "a1ac601b7bf4fe11513cd6bbbd0d75420b2dbce288609260bf6e6c9be90cac9a",
+      "sha256": "d7ef0a3e8c366b13fd78efdb8ce18b16cdb78d373366435426d94ff062afa89d",
       "verification_unit": "read_data_control",
       "build_membership": [
         {
@@ -530,7 +530,7 @@
           "name": "reset_filter"
         }
       ],
-      "sha256": "b900d51997664afb3de8b745cbf735f13839accc4f2d9572f2fc37d6b44b8fd3",
+      "sha256": "04762ee08fd2a77aa4e9924a17ddb06fe03ce9e6e0f3627be1dabd2740a33e1d",
       "verification_unit": "reset_filter",
       "build_membership": [
         {
@@ -646,7 +646,7 @@
           "name": "round_robin_priority_arbiter_1_input_N_ouput"
         }
       ],
-      "sha256": "7ee55dbd9422011fea9f0dda50098f826234beda23531f575db1186d4eb1a599",
+      "sha256": "d78af992ab552f61b9486c99194cc49427a2ae507f473838328c00fee44b17a2",
       "verification_unit": "round_robin_priority_arbiter",
       "build_membership": [
         {
@@ -702,7 +702,7 @@
           "name": "wed_control"
         }
       ],
-      "sha256": "e4e6d72f1d8cd491290781212ffc5c306c3075d6f076292fed2cec8861309ace",
+      "sha256": "5946af570ad50532d84eba3f8e4e0ffd35507bf627e42270ca63f4c683a5ac94",
       "verification_unit": "wed_control",
       "build_membership": [
         {
@@ -758,7 +758,7 @@
           "name": "AFU_PKG"
         }
       ],
-      "sha256": "d63c8c3bce7bd5af9aa6e8569add897000018b46880e9a3a65a8afa7b0d0dd6d",
+      "sha256": "00888ff1d65c3b83d6defe8d3d3e13a6fb6eae1579b01668f037cac246c28248",
       "verification_unit": "package-contracts",
       "build_membership": [
         {
@@ -786,7 +786,7 @@
           "name": "CAPI_PKG"
         }
       ],
-      "sha256": "d8293a7c827033e1d019ab6e1a0504d5c600a9a812bc3acedb109c6bf93d4630",
+      "sha256": "0d1c3586288d2378dd6c66411d0f0ef94552251a25d13a4f899622960d9403de",
       "verification_unit": "package-contracts",
       "build_membership": [
         {
@@ -1040,7 +1040,7 @@
           "name": "write_engine"
         }
       ],
-      "sha256": "e31617c67e28e16fc8c12155f65beeb6b39c49ce414f21c5cb31944484c8d694",
+      "sha256": "cc577ce718e1aae17e32aa05f9afeadd12ab23f7c1396550eccedc05fe0ebc39",
       "verification_unit": "memcpy-tutorial-cu",
       "build_membership": [
         {
@@ -1080,7 +1080,7 @@
           "name": "cu_control"
         }
       ],
-      "sha256": "a8803ee5a49db83952349afebcc14a6e465997d41ee2a363882e2a76ffedce79",
+      "sha256": "c303a11546b974dc2d12d61e6ecd0011a4c2540acba445cb1bd97f75bb12faf3",
       "verification_unit": "memcpy-cu",
       "build_membership": [
         {
@@ -1140,7 +1140,7 @@
           "name": "cu_data_read_engine_control"
         }
       ],
-      "sha256": "cb1e55d6430f88a10841f5c078c571862fae0c84ac07f975cee7209ec8218678",
+      "sha256": "953e6ec0fe18cfd1596cae3f0fe53cd86a68c21f5255dc183cbab6878aa0946d",
       "verification_unit": "memcpy-cu",
       "build_membership": [
         {
@@ -1160,7 +1160,7 @@
           "name": "cu_data_write_engine_control"
         }
       ],
-      "sha256": "4bcd3407dec482f2411172b369bbfb690a644e9d689b5596a95a559253ac1b0e",
+      "sha256": "da13f605d8b5ba37ec35f6302b6837a4b005af79e4c6f3ad22e8336f0bc39570",
       "verification_unit": "memcpy-cu",
       "build_membership": [
         {
@@ -1200,12 +1200,12 @@
           "name": "cu_control"
         }
       ],
-      "sha256": "88e1a9e71daf15ab0adefe2ec243793f5fff4a2f2d7811699c1454a41498451e",
+      "sha256": "55ea715f6c220e2cd865b227905660008d02e1823fdde155883e5defaf1717a0",
       "verification_unit": "mmtiled-cu",
       "build_membership": [
         {
           "manifest": "mmtiled",
-          "order": 30
+          "order": 31
         }
       ],
       "evidence": "mmtiled"
@@ -1220,7 +1220,7 @@
           "name": "cu_matrix_C_job_control"
         }
       ],
-      "sha256": "cf29b19e8ef33dad76f90bda09f54f3786a98a85b6be714a6a9141ceb5fa5d94",
+      "sha256": "652fc02a93bdb8879e418a8516d10687fb5d6ca4fa891409f222b0d92337f8a4",
       "verification_unit": "mmtiled-cu",
       "build_membership": [
         {
@@ -1314,6 +1314,26 @@
       "verification_unit": "mmtiled-cu",
       "build_membership": [],
       "evidence": "Not instantiated by the modern mmtiled CU; excluded from ModelSim."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/cu/cu_matrix_multiply_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_matrix_multiply_control"
+        }
+      ],
+      "sha256": "f53e62e8b39f9ee9033ab4178a590fa55272e894785f019f1fd4130ed8ef6212",
+      "verification_unit": "mmtiled-cu",
+      "build_membership": [
+        {
+          "manifest": "mmtiled",
+          "order": 30
+        }
+      ],
+      "evidence": "mmtiled"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/pkg/globals_cu_pkg.sv",
@@ -1751,6 +1771,170 @@
       "evidence": "monitor-testbench"
     },
     {
+      "path": "01_capi_integration/accelerator_verification/rtl/integration/afu_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "afu_control_tb"
+        }
+      ],
+      "sha256": "f2620fca13e55c9cbc0df8b4882f7ce1f0051311eaa7d1a2226d6030cf6a4d69",
+      "verification_unit": "integration-afu_control_tb.sv",
+      "build_membership": [
+        {
+          "manifest": "integration-capi",
+          "order": 0
+        }
+      ],
+      "evidence": "executable integration testbench: capi"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/integration/afu_wrapper_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "afu_wrapper_tb"
+        }
+      ],
+      "sha256": "d8195d7fa733f3b2ef7d08e9d88441c9ef0a482ebeb3e225b83c510df1cb920f",
+      "verification_unit": "integration-afu_wrapper_tb.sv",
+      "build_membership": [
+        {
+          "manifest": "integration-capi",
+          "order": 0
+        }
+      ],
+      "evidence": "executable integration testbench: capi"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/integration/cached_afu_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cached_afu_tb"
+        }
+      ],
+      "sha256": "62f39cebc13f9735230c92be22071f26cf96786d6b7b201ba23c3bbeda87ed07",
+      "verification_unit": "integration-cached_afu_tb.sv",
+      "build_membership": [
+        {
+          "manifest": "integration-capi",
+          "order": 0
+        }
+      ],
+      "evidence": "executable integration testbench: capi"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/arbitration/arbitration_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "arbitration_tb"
+        }
+      ],
+      "sha256": "18d0f9cbdc195aea62787256d03333affabc98480084b9ef60b05bd1e7377a0f",
+      "verification_unit": "unit-arbitration",
+      "build_membership": [
+        {
+          "manifest": "unit-arbitration",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: arbitration"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/cu/memcpy_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "memcpy_tb"
+        }
+      ],
+      "sha256": "71838e2ae62298a220830de869aca84837d150426bb3e8657dd1857dba4cf93d",
+      "verification_unit": "unit-cu",
+      "build_membership": [
+        {
+          "manifest": "unit-cu",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: cu"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/cu/mmtiled_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "mmtiled_tb"
+        }
+      ],
+      "sha256": "ed7bbf6517f68bf460f92bde9335dbde6a9279de9138303a179ba8ab1d84f9f2",
+      "verification_unit": "unit-cu",
+      "build_membership": [
+        {
+          "manifest": "unit-cu",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: cu"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/cu/tutorial_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "tutorial_tb"
+        }
+      ],
+      "sha256": "551a5c3a3dff80485ecf3d890cf989cf5d59ec90cde791388fb2ccc107cae1be",
+      "verification_unit": "unit-cu",
+      "build_membership": [
+        {
+          "manifest": "unit-cu",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: cu"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/package_contracts/package_contract_tb.sv",
+      "status": "active",
+      "kind": "multi-declaration",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "package_contract_tb"
+        },
+        {
+          "kind": "package",
+          "name": "contract"
+        }
+      ],
+      "sha256": "974e32b8e71a4347d6f39567c2a41b942c081fc93e6eac716bf3d7dc613df174",
+      "verification_unit": "unit-package_contracts",
+      "build_membership": [
+        {
+          "manifest": "unit-package_contracts",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: package_contracts"
+    },
+    {
       "path": "01_capi_integration/accelerator_verification/rtl/unit/parity/parity_tb.sv",
       "status": "active",
       "kind": "module",
@@ -1769,6 +1953,326 @@
         }
       ],
       "evidence": "executable unit testbench: parity"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_control/command_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "command_control_tb"
+        }
+      ],
+      "sha256": "14825700602d9b8c758f236125451531a86130350531f0506e16c619210ff9ce",
+      "verification_unit": "unit-protocol_control",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_control",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_control"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_control/credit_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "credit_control_tb"
+        }
+      ],
+      "sha256": "b9d83c00023f02d3fe07cdbc959d56fcc26653a73a8a0c0b32d6a461f3efb5d9",
+      "verification_unit": "unit-protocol_control",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_control",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_control"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_control/protocol_tb_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "PROTOCOL_TB_PKG"
+        }
+      ],
+      "sha256": "65c4249fcf991ed1bff66299795b403b85e9cb7bc4f05bac1ec2c6661dad9321",
+      "verification_unit": "unit-protocol_control",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_control",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_control"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_control/response_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "response_control_tb"
+        }
+      ],
+      "sha256": "aceb8fd57a4a6a9d1fe3d89af151745684ced12618f14aec633915603fb78cef",
+      "verification_unit": "unit-protocol_control",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_control",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_control"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_control/response_statistics_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "response_statistics_control_tb"
+        }
+      ],
+      "sha256": "1e8b0b8433db77e4ab904dd4f419aac31aec38a5e5facbbb0b3d6b43149d743a",
+      "verification_unit": "unit-protocol_control",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_control",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_control"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_control/restart_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "restart_control_tb"
+        }
+      ],
+      "sha256": "483779660ec675fc7c2d01e9305e3648828e00dfe067a11af2158b0e6559fe1c",
+      "verification_unit": "unit-protocol_control",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_control",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_control"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_control/tag_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "tag_control_tb"
+        }
+      ],
+      "sha256": "55902d23eb875b817599b4e3dfd29e37d4be855a5e0802dba488ce53311d648d",
+      "verification_unit": "unit-protocol_control",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_control",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_control"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_data/completion_error_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "completion_error_tb"
+        }
+      ],
+      "sha256": "68fd39efc8799af45872582370acdf35f08abe44e9a410f6881cf89c116336fa",
+      "verification_unit": "unit-protocol_data",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_data",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_data"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_data/job_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "job_tb"
+        }
+      ],
+      "sha256": "12b9cbeaef05d846bb3386ded5c2d4c54b08e883c6fa498c5f9a0b47f971fb8d",
+      "verification_unit": "unit-protocol_data",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_data",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_data"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_data/mmio_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "mmio_tb"
+        }
+      ],
+      "sha256": "9f0db767aae1bf258ae109f27654dacdc172f6cfc1e39856c7d6ed7880757d3a",
+      "verification_unit": "unit-protocol_data",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_data",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_data"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_data/protocol_data_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "protocol_data_tb"
+        }
+      ],
+      "sha256": "b8cbb11be30caf3457266bf226e2e4539e9c44cfd5b2450ded91b451e002b1da",
+      "verification_unit": "unit-protocol_data",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_data",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_data"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_data/read_data_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "read_data_control_tb"
+        }
+      ],
+      "sha256": "dc3cb86241d87b485f69faba3154061ad66d9f21641c8aaf395caef0c92eb505",
+      "verification_unit": "unit-protocol_data",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_data",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_data"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_data/wed_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "wed_control_tb"
+        }
+      ],
+      "sha256": "7a30379671c6ca4146c93555128bdd3fa9f6491de3ff4c0f1361c60a3d27c983",
+      "verification_unit": "unit-protocol_data",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_data",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_data"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/protocol_data/write_data_control_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "write_data_control_tb"
+        }
+      ],
+      "sha256": "8e52547902f3e7d240844d6bc91890a814f2961219843f3cba050c86a27116c7",
+      "verification_unit": "unit-protocol_data",
+      "build_membership": [
+        {
+          "manifest": "unit-protocol_data",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: protocol_data"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/reset/reset_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "reset_tb"
+        }
+      ],
+      "sha256": "5dc06d335835ff1980a60257b6e73960c5e7895c867289ea7fc8df4676cae19a",
+      "verification_unit": "unit-reset",
+      "build_membership": [
+        {
+          "manifest": "unit-reset",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: reset"
+    },
+    {
+      "path": "01_capi_integration/accelerator_verification/rtl/unit/storage/storage_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "storage_tb"
+        }
+      ],
+      "sha256": "05d9c30bc3f62d1e4dbd744c532101426c3cd6f09a79edb51eb037f47733b92e",
+      "verification_unit": "unit-storage",
+      "build_membership": [
+        {
+          "manifest": "unit-storage",
+          "order": 0
+        }
+      ],
+      "evidence": "executable unit testbench: storage"
     }
   ]
 }

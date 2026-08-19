@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "family": "reset",
+  "targets": {
+    "functional_bin_percent": 100,
+    "assertion_goal_percent": 100,
+    "raw_line_percent": 100,
+    "raw_branch_percent": 100,
+    "raw_toggle_percent": 100
+  },
+  "raw_dut_denominators": {
+    "line": 4,
+    "branch": 8,
+    "toggle": 41
+  },
+  "not_applicable": {
+    "fsm_state": "Neither reset_filter nor reset_control declares an encoded state machine.",
+    "fsm_transition": "Neither reset_filter nor reset_control declares an encoded state machine."
+  },
+  "unreachable": {
+    "toggle": []
+  },
+  "waivers": []
+}

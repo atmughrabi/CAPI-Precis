@@ -189,6 +189,7 @@ struct __attribute__((__packed__)) WEDStructMM
     void *A;                        // 8-Bytes
     void *B;                        // 8-Bytes
     void *C;                        // 8-Bytes
+    void *pointer2;                 // 8-Bytes
     void *pointer3;                 // 8-Bytes
     void *pointer4;                 // 8-Bytes
     //---------------------------------------------------//--// 64bytes

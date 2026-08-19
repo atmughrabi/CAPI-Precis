@@ -65,8 +65,11 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 	ReadWriteDataLine  read_data_1_in_latched     ;
 	ReadWriteDataLine  read_data_0_out            ;
 	ReadWriteDataLine  read_data_1_out            ;
+	ReadWriteDataLine  read_data_0_out_for_write  ;
 	ReadWriteDataLine  write_data_0_in            ;
 	ReadWriteDataLine  write_data_1_in            ;
+	ReadWriteDataLine  independent_write_data_0   ;
+	ReadWriteDataLine  independent_write_data_1   ;
 	BufferStatus       write_data_in_buffer_status;
 
 	logic [                 0:63] cu_return_latched     ;
@@ -85,6 +88,10 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 	logic enabled_prefetch_read ;
 	logic enabled_prefetch_write;
 	logic cu_ready              ;
+	logic independent_write_mode;
+	logic independent_write_started;
+	logic [0:(ARRAY_SIZE_BITS-1)] independent_write_remaining;
+	logic [0:63] independent_write_offset;
 
 	ResponseBufferLine prefetch_read_response_in_latched;
 	CommandBufferLine  prefetch_read_command_out_latched;
@@ -242,6 +249,66 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 //Independent write Engine
 ////////////////////////////////////////////////////////////////////////////
 
+	assign independent_write_mode = cu_configure_latched[21] && ~cu_configure_latched[22];
+
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			independent_write_data_0   <= 0;
+			independent_write_data_1   <= 0;
+			independent_write_started  <= 0;
+			independent_write_remaining <= 0;
+			independent_write_offset   <= 0;
+		end else begin
+			independent_write_data_0.valid <= 0;
+			independent_write_data_1.valid <= 0;
+
+			if(~independent_write_mode) begin
+				independent_write_started   <= 0;
+				independent_write_remaining <= 0;
+				independent_write_offset    <= 0;
+			end else if(enabled && ~independent_write_started && wed_request_in_latched.valid) begin
+				independent_write_started   <= 1;
+				independent_write_remaining <= wed_request_in_latched.payload.wed.size_recive;
+				independent_write_offset    <= 0;
+			end else if(
+				independent_write_started &&
+				(|independent_write_remaining) &&
+				~write_data_in_buffer_status.alfull
+			) begin
+				independent_write_data_0.valid <= 1;
+				independent_write_data_1.valid <= 1;
+				independent_write_data_0.payload.data <= 0;
+				independent_write_data_1.payload.data <= 0;
+				independent_write_data_0.payload.cmd.array_struct <= WRITE_DATA;
+				independent_write_data_1.payload.cmd.array_struct <= WRITE_DATA;
+				independent_write_data_0.payload.cmd.cmd_type <= CMD_WRITE;
+				independent_write_data_1.payload.cmd.cmd_type <= CMD_WRITE;
+				independent_write_data_0.payload.cmd.address_offset <= independent_write_offset;
+				independent_write_data_1.payload.cmd.address_offset <= independent_write_offset;
+				independent_write_data_0.payload.cmd.cacheline_offset <= 0;
+				independent_write_data_1.payload.cmd.cacheline_offset <= 0;
+				independent_write_data_0.payload.cmd.abt <= map_CABT(cu_configure_latched[5:7]);
+				independent_write_data_1.payload.cmd.abt <= map_CABT(cu_configure_latched[5:7]);
+
+				if(independent_write_remaining > CACHELINE_ARRAY_NUM) begin
+					independent_write_data_0.payload.cmd.real_size <= CACHELINE_ARRAY_NUM;
+					independent_write_data_1.payload.cmd.real_size <= CACHELINE_ARRAY_NUM;
+					independent_write_data_0.payload.cmd.real_size_bytes <= CACHELINE_SIZE;
+					independent_write_data_1.payload.cmd.real_size_bytes <= CACHELINE_SIZE;
+					independent_write_remaining <= independent_write_remaining - CACHELINE_ARRAY_NUM;
+				end else begin
+					independent_write_data_0.payload.cmd.real_size <= independent_write_remaining;
+					independent_write_data_1.payload.cmd.real_size <= independent_write_remaining;
+					independent_write_data_0.payload.cmd.real_size_bytes <= cmd_size_calculate(independent_write_remaining);
+					independent_write_data_1.payload.cmd.real_size_bytes <= cmd_size_calculate(independent_write_remaining);
+					independent_write_remaining <= 0;
+				end
+
+				independent_write_offset <= independent_write_offset + CACHELINE_SIZE;
+			end
+		end
+	end
+
 ////////////////////////////////////////////////////////////////////////////
 //READ Engine
 ////////////////////////////////////////////////////////////////////////////
@@ -273,11 +340,22 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 //WRITE Engine
 ////////////////////////////////////////////////////////////////////////////
 
-	always_ff @(posedge clock) begin
-		write_data_0_in <= read_data_0_out;
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn)
+			read_data_0_out_for_write <= 0;
+		else
+			read_data_0_out_for_write <= read_data_0_out;
 	end
 
-	assign write_data_1_in = read_data_1_out;
+	always_comb begin
+		if(independent_write_mode) begin
+			write_data_0_in = independent_write_data_0;
+			write_data_1_in = independent_write_data_1;
+		end else begin
+			write_data_0_in = read_data_0_out_for_write;
+			write_data_1_in = read_data_1_out;
+		end
+	end
 
 	cu_data_write_engine_control cu_data_write_engine_control_instant (
 		.clock                         (clock                             ),

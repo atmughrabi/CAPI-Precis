@@ -113,6 +113,8 @@ module afu_control #(
 
 	ResponseControlInterfaceOut response_control_out         ;
 	ResponseControlInterfaceOut response_control_out_internal;
+	logic [0:6]                response_control_error        ;
+	logic [0:5]                lifecycle_response_error      ;
 
 	DataControlInterfaceOut read_data_control_out_0;
 	DataControlInterfaceOut read_data_control_out_1;
@@ -164,6 +166,7 @@ module afu_control #(
 	CommandBufferLine         burst_command_buffer_out       ;
 	CommandBufferLine         command_buffer_out             ;
 	CommandBufferLine         command_buffer_out_bypass      ;
+	logic [0:7]               credit_issue_reservations      ;
 	logic                     command_write_valid_data0      ;
 	logic                     command_write_valid_data1      ;
 
@@ -675,9 +678,18 @@ module afu_control #(
 		.enabled_in          (enabled                       ),
 		.response            (response_filtered_done_latched),
 		.response_tag_id_in  (response_tag_id               ),
-		.response_error      (command_response_error        ),
+		.response_error      (response_control_error        ),
 		.response_control_out(response_control_out_internal )
 	);
+
+	always_comb begin
+		lifecycle_response_error = 0;
+		if(response_filtered_stats_latched.valid)
+			lifecycle_response_error =
+				cmd_response_error_type(response_filtered_stats_latched.response);
+		command_response_error =
+			response_control_error | {1'b0, lifecycle_response_error};
+	end
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
@@ -780,7 +792,26 @@ module afu_control #(
 		end
 	end
 
-	assign burst_command_buffer_pop = ~burst_command_buffer_states_afu.empty && tag_buffer_ready && (credits.credits > CREDIT_HEADROOM) && ~restart_pending;
+	always_ff @(posedge clock or negedge rstn) begin
+		if(~rstn) begin
+			credit_issue_reservations <= 0;
+		end else begin
+			case ({burst_command_buffer_pop, command_buffer_out.valid})
+				2'b10 : credit_issue_reservations <= credit_issue_reservations + 1;
+				2'b01 : begin
+					if(|credit_issue_reservations)
+						credit_issue_reservations <= credit_issue_reservations - 1;
+				end
+				default : credit_issue_reservations <= credit_issue_reservations;
+			endcase
+		end
+	end
+
+	assign burst_command_buffer_pop =
+		~burst_command_buffer_states_afu.empty &&
+		tag_buffer_ready &&
+		(credits.credits > (CREDIT_HEADROOM + credit_issue_reservations)) &&
+		~restart_pending;
 
 	fifo #(
 		.WIDTH($bits(CommandBufferLine)),
@@ -1243,8 +1274,6 @@ module afu_control #(
 	);
 
 endmodule
-
-
 
 
 

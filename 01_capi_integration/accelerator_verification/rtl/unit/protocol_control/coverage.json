@@ -1,0 +1,704 @@
+{
+  "schema_version": 2,
+  "family": "protocol-control",
+  "raw_dut_coverage": {
+    "metrics": [
+      "line",
+      "branch",
+      "toggle"
+    ],
+    "minimum_percent": {
+      "credit_control": {
+        "line": 100.0,
+        "branch": 100.0,
+        "toggle": 100.0
+      },
+      "command_control": {
+        "line": 100.0,
+        "branch": 100.0,
+        "toggle": 100.0
+      },
+      "response_control": {
+        "line": 100.0,
+        "branch": 100.0,
+        "toggle": 100.0
+      },
+      "response_statistics_control": {
+        "line": 100.0,
+        "branch": 100.0,
+        "toggle": 100.0
+      },
+      "tag_control": {
+        "line": 100.0,
+        "branch": 100.0,
+        "toggle": 100.0
+      },
+      "restart_control": {
+        "line": 100.0,
+        "branch": 100.0,
+        "toggle": 100.0
+      }
+    },
+    "expected_denominators": {
+      "credit_control": {
+        "line": {
+          "instrumented": 5,
+          "excluded": 0,
+          "reachable": 5
+        },
+        "branch": {
+          "instrumented": 16,
+          "excluded": 0,
+          "reachable": 16
+        },
+        "toggle": {
+          "instrumented": 41,
+          "excluded": 0,
+          "reachable": 41
+        }
+      },
+      "command_control": {
+        "line": {
+          "instrumented": 4,
+          "excluded": 0,
+          "reachable": 4
+        },
+        "branch": {
+          "instrumented": 8,
+          "excluded": 0,
+          "reachable": 8
+        },
+        "toggle": {
+          "instrumented": 257,
+          "excluded": 42,
+          "reachable": 215
+        }
+      },
+      "response_control": {
+        "line": {
+          "instrumented": 17,
+          "excluded": 0,
+          "reachable": 17
+        },
+        "branch": {
+          "instrumented": 30,
+          "excluded": 1,
+          "reachable": 29
+        },
+        "toggle": {
+          "instrumented": 369,
+          "excluded": 67,
+          "reachable": 302
+        }
+      },
+      "response_statistics_control": {
+        "line": {
+          "instrumented": 26,
+          "excluded": 0,
+          "reachable": 26
+        },
+        "branch": {
+          "instrumented": 28,
+          "excluded": 0,
+          "reachable": 28
+        },
+        "toggle": {
+          "instrumented": 938,
+          "excluded": 177,
+          "reachable": 761
+        }
+      },
+      "tag_control": {
+        "line": {
+          "instrumented": 18,
+          "excluded": 2,
+          "reachable": 16
+        },
+        "branch": {
+          "instrumented": 20,
+          "excluded": 4,
+          "reachable": 16
+        },
+        "toggle": {
+          "instrumented": 1340,
+          "excluded": 297,
+          "reachable": 1043
+        }
+      },
+      "restart_control": {
+        "line": {
+          "instrumented": 43,
+          "excluded": 1,
+          "reachable": 42
+        },
+        "branch": {
+          "instrumented": 54,
+          "excluded": 0,
+          "reachable": 54
+        },
+        "toggle": {
+          "instrumented": 434,
+          "excluded": 4,
+          "reachable": 430
+        }
+      }
+    }
+  },
+  "structurally_unreachable": [
+    {
+      "dut": "command_control",
+      "metric": "toggle",
+      "line": 26,
+      "column": 33,
+      "source_line": "output CommandInterfaceOutput command_out",
+      "scope": "TOP.command_control_tb.dut",
+      "signal": "command_out.command",
+      "bits": [
+        7
+      ],
+      "reason": "Bit 7 is zero in every legal afu_command_t encoding."
+    },
+    {
+      "dut": "command_control",
+      "metric": "toggle",
+      "line": 32,
+      "column": 26,
+      "source_line": "CommandInterfaceOutput command_out_latch;",
+      "scope": "TOP.command_control_tb.dut",
+      "signal": "command_out_latch.command",
+      "bits": [
+        7
+      ],
+      "reason": "Bit 7 is zero in every legal afu_command_t encoding."
+    },
+    {
+      "dut": "command_control",
+      "metric": "toggle",
+      "line": 26,
+      "column": 33,
+      "source_line": "output CommandInterfaceOutput command_out",
+      "scope": "TOP.command_control_tb.dut",
+      "signal": "command_out.context_handle",
+      "bit_range": [
+        0,
+        15
+      ],
+      "reason": "Dedicated mode ties command_out_latch.context_handle to 16'h0000."
+    },
+    {
+      "dut": "command_control",
+      "metric": "toggle",
+      "line": 32,
+      "column": 26,
+      "source_line": "CommandInterfaceOutput command_out_latch;",
+      "scope": "TOP.command_control_tb.dut",
+      "signal": "command_out_latch.context_handle",
+      "bit_range": [
+        0,
+        15
+      ],
+      "reason": "Dedicated mode ties command_out_latch.context_handle to 16'h0000."
+    },
+    {
+      "dut": "command_control",
+      "metric": "toggle",
+      "line": 26,
+      "column": 33,
+      "source_line": "output CommandInterfaceOutput command_out",
+      "scope": "TOP.command_control_tb.dut",
+      "signal": "command_out.size",
+      "bit_range": [
+        8,
+        11
+      ],
+      "reason": "Legal command sizes are powers of two from 1 through 128, so size bits 8 through 11 remain zero."
+    },
+    {
+      "dut": "command_control",
+      "metric": "toggle",
+      "line": 32,
+      "column": 26,
+      "source_line": "CommandInterfaceOutput command_out_latch;",
+      "scope": "TOP.command_control_tb.dut",
+      "signal": "command_out_latch.size",
+      "bit_range": [
+        8,
+        11
+      ],
+      "reason": "Legal command sizes are powers of two from 1 through 128, so size bits 8 through 11 remain zero."
+    },
+    {
+      "dut": "response_control",
+      "metric": "toggle",
+      "line": 25,
+      "column": 38,
+      "source_line": "input  ResponseInterface           response            ,",
+      "scope": "TOP.response_control_tb.dut",
+      "signal": "response.response",
+      "bit_range": [
+        4,
+        7
+      ],
+      "reason": "All legal psl_response_t encodings are in the range 8'h00 through 8'h0a."
+    },
+    {
+      "dut": "response_control",
+      "metric": "toggle",
+      "line": 35,
+      "column": 31,
+      "source_line": "ResponseInterface           response_in                 ;",
+      "scope": "TOP.response_control_tb.dut",
+      "signal": "response_in.response",
+      "bit_range": [
+        4,
+        7
+      ],
+      "reason": "All legal psl_response_t encodings are in the range 8'h00 through 8'h0a."
+    },
+    {
+      "dut": "response_control",
+      "metric": "toggle",
+      "line": 26,
+      "column": 38,
+      "source_line": "input  CommandTagLine              response_tag_id_in  ,",
+      "scope": "TOP.response_control_tb.dut",
+      "signal": "response_tag_id_in.array_struct",
+      "bit_range": [
+        2,
+        31
+      ],
+      "reason": "array_struct_type is an int-width enum whose legal values are 0 through 3."
+    },
+    {
+      "dut": "response_control",
+      "metric": "toggle",
+      "line": 26,
+      "column": 38,
+      "source_line": "input  CommandTagLine              response_tag_id_in  ,",
+      "scope": "TOP.response_control_tb.dut",
+      "signal": "response_tag_id_in.cmd_type",
+      "bit_range": [
+        3,
+        31
+      ],
+      "reason": "command_type is an int-width enum whose legal values are 0 through 6."
+    },
+    {
+      "dut": "response_control",
+      "metric": "branch",
+      "line": 275,
+      "column": 6,
+      "source_line": "if(enable_errors) begin",
+      "scope": "TOP.response_control_tb.dut",
+      "operation": "else",
+      "span": "277-278",
+      "reason": "enable_errors is tied to 1'b1 in response_control."
+    },
+    {
+      "dut": "response_statistics_control",
+      "metric": "toggle",
+      "line": 24,
+      "column": 37,
+      "source_line": "input  CommandTagLine             response_tag_id_in     ,",
+      "scope": "TOP.response_statistics_control_tb.dut",
+      "signal": "response_tag_id_in.array_struct",
+      "bit_range": [
+        2,
+        31
+      ],
+      "reason": "array_struct_type is an int-width enum whose legal values are 0 through 3."
+    },
+    {
+      "dut": "response_statistics_control",
+      "metric": "toggle",
+      "line": 24,
+      "column": 37,
+      "source_line": "input  CommandTagLine             response_tag_id_in     ,",
+      "scope": "TOP.response_statistics_control_tb.dut",
+      "signal": "response_tag_id_in.cmd_type",
+      "bit_range": [
+        3,
+        31
+      ],
+      "reason": "command_type is an int-width enum whose legal values are 0 through 6."
+    },
+    {
+      "dut": "response_statistics_control",
+      "metric": "toggle",
+      "line": 32,
+      "column": 30,
+      "source_line": "CommandTagLine             response_tag_id_latched        ;",
+      "scope": "TOP.response_statistics_control_tb.dut",
+      "signal": "response_tag_id_latched.array_struct",
+      "bit_range": [
+        2,
+        31
+      ],
+      "reason": "array_struct_type is an int-width enum whose legal values are 0 through 3."
+    },
+    {
+      "dut": "response_statistics_control",
+      "metric": "toggle",
+      "line": 32,
+      "column": 30,
+      "source_line": "CommandTagLine             response_tag_id_latched        ;",
+      "scope": "TOP.response_statistics_control_tb.dut",
+      "signal": "response_tag_id_latched.cmd_type",
+      "bit_range": [
+        3,
+        31
+      ],
+      "reason": "command_type is an int-width enum whose legal values are 0 through 6."
+    },
+    {
+      "dut": "response_statistics_control",
+      "metric": "toggle",
+      "line": 33,
+      "column": 30,
+      "source_line": "CommandTagLine             response_tag_id_latched_S2     ;",
+      "scope": "TOP.response_statistics_control_tb.dut",
+      "signal": "response_tag_id_latched_S2.array_struct",
+      "bit_range": [
+        2,
+        31
+      ],
+      "reason": "array_struct_type is an int-width enum whose legal values are 0 through 3."
+    },
+    {
+      "dut": "response_statistics_control",
+      "metric": "toggle",
+      "line": 33,
+      "column": 30,
+      "source_line": "CommandTagLine             response_tag_id_latched_S2     ;",
+      "scope": "TOP.response_statistics_control_tb.dut",
+      "signal": "response_tag_id_latched_S2.cmd_type",
+      "bit_range": [
+        3,
+        31
+      ],
+      "reason": "command_type is an int-width enum whose legal values are 0 through 6."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 25,
+      "column": 24,
+      "source_line": "output CommandTagLine response_tag_id_out ,",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "response_tag_id_out.array_struct",
+      "bit_range": [
+        2,
+        31
+      ],
+      "reason": "array_struct_type is an int-width enum whose legal values are 0 through 3."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 25,
+      "column": 24,
+      "source_line": "output CommandTagLine response_tag_id_out ,",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "response_tag_id_out.cmd_type",
+      "bit_range": [
+        3,
+        31
+      ],
+      "reason": "command_type is an int-width enum whose legal values are 0 through 6."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 27,
+      "column": 24,
+      "source_line": "output CommandTagLine data_read_tag_id_out,",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "data_read_tag_id_out.array_struct",
+      "bit_range": [
+        2,
+        31
+      ],
+      "reason": "array_struct_type is an int-width enum whose legal values are 0 through 3."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 27,
+      "column": 24,
+      "source_line": "output CommandTagLine data_read_tag_id_out,",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "data_read_tag_id_out.cmd_type",
+      "bit_range": [
+        3,
+        31
+      ],
+      "reason": "command_type is an int-width enum whose legal values are 0 through 6."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 29,
+      "column": 24,
+      "source_line": "input  CommandTagLine tag_command_id      ,",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "tag_command_id.array_struct",
+      "bit_range": [
+        2,
+        31
+      ],
+      "reason": "array_struct_type is an int-width enum whose legal values are 0 through 3."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 29,
+      "column": 24,
+      "source_line": "input  CommandTagLine tag_command_id      ,",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "tag_command_id.cmd_type",
+      "bit_range": [
+        3,
+        31
+      ],
+      "reason": "command_type is an int-width enum whose legal values are 0 through 6."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 40,
+      "column": 17,
+      "source_line": "CommandTagLine response_tag_id ;",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "response_tag_id.array_struct",
+      "bit_range": [
+        2,
+        31
+      ],
+      "reason": "array_struct_type is an int-width enum whose legal values are 0 through 3."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 40,
+      "column": 17,
+      "source_line": "CommandTagLine response_tag_id ;",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "response_tag_id.cmd_type",
+      "bit_range": [
+        3,
+        31
+      ],
+      "reason": "command_type is an int-width enum whose legal values are 0 through 6."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 41,
+      "column": 17,
+      "source_line": "CommandTagLine data_read_tag_id;",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "data_read_tag_id.array_struct",
+      "bit_range": [
+        2,
+        31
+      ],
+      "reason": "array_struct_type is an int-width enum whose legal values are 0 through 3."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 41,
+      "column": 17,
+      "source_line": "CommandTagLine data_read_tag_id;",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "data_read_tag_id.cmd_type",
+      "bit_range": [
+        3,
+        31
+      ],
+      "reason": "command_type is an int-width enum whose legal values are 0 through 6."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "line",
+      "line": 106,
+      "column": 19,
+      "source_line": "TAG_BUFFER_POP : begin",
+      "scope": "TOP.tag_control_tb.dut",
+      "operation": "case",
+      "span": "106",
+      "reason": "No tag_control next-state assignment targets TAG_BUFFER_POP."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "branch",
+      "line": 107,
+      "column": 5,
+      "source_line": "if(tag_buffer.empty)",
+      "scope": "TOP.tag_control_tb.dut",
+      "operation": "if",
+      "span": "107-108",
+      "reason": "No tag_control next-state assignment targets TAG_BUFFER_POP."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "branch",
+      "line": 107,
+      "column": 6,
+      "source_line": "if(tag_buffer.empty)",
+      "scope": "TOP.tag_control_tb.dut",
+      "operation": "else",
+      "span": "",
+      "reason": "No tag_control next-state assignment targets TAG_BUFFER_POP."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "line",
+      "line": 150,
+      "column": 19,
+      "source_line": "TAG_BUFFER_POP : begin",
+      "scope": "TOP.tag_control_tb.dut",
+      "operation": "case",
+      "span": "150-152",
+      "reason": "No tag_control next-state assignment targets TAG_BUFFER_POP."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "branch",
+      "line": 154,
+      "column": 5,
+      "source_line": "if(~tag_buffer.empty && tag_buffer.valid) begin",
+      "scope": "TOP.tag_control_tb.dut",
+      "operation": "if",
+      "span": "154-155",
+      "reason": "No tag_control next-state assignment targets TAG_BUFFER_POP."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "branch",
+      "line": 154,
+      "column": 6,
+      "source_line": "if(~tag_buffer.empty && tag_buffer.valid) begin",
+      "scope": "TOP.tag_control_tb.dut",
+      "operation": "else",
+      "span": "157-158",
+      "reason": "No tag_control next-state assignment targets TAG_BUFFER_POP."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 79,
+      "column": 14,
+      "source_line": "logic       tag_counter_pop  ;",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "tag_counter_pop",
+      "reason": "tag_counter_pop is asserted only in the unreachable TAG_BUFFER_POP state."
+    },
+    {
+      "dut": "tag_control",
+      "metric": "toggle",
+      "line": 82,
+      "column": 15,
+      "source_line": "BufferStatus tag_buffer;",
+      "scope": "TOP.tag_control_tb.dut",
+      "signal": "tag_buffer.full",
+      "reason": "Initialization exits at almost-full with 243 tags; only allocated tags can legally return, so the 256-entry free-tag FIFO cannot reach full."
+    },
+    {
+      "dut": "restart_control",
+      "metric": "line",
+      "line": 169,
+      "column": 5,
+      "source_line": "default : outstanding_restart_commands <= outstanding_restart_commands ;",
+      "scope": "TOP.restart_control_tb.dut",
+      "operation": "case",
+      "span": "169",
+      "reason": "The three-bit counter selector explicitly enumerates all eight values."
+    },
+    {
+      "dut": "restart_control",
+      "metric": "toggle",
+      "line": 31,
+      "column": 28,
+      "source_line": "input  logic [0:7]        credits_in               ,",
+      "scope": "TOP.restart_control_tb.dut",
+      "signal": "credits_in",
+      "bits": [
+        7
+      ],
+      "reason": "CREDITS_TOTAL is 64, so a legal credit count cannot set numeric bit 7."
+    },
+    {
+      "dut": "restart_control",
+      "metric": "toggle",
+      "line": 32,
+      "column": 28,
+      "source_line": "input  logic [0:7]        total_credits            ,",
+      "scope": "TOP.restart_control_tb.dut",
+      "signal": "total_credits",
+      "bits": [
+        7
+      ],
+      "reason": "CREDITS_TOTAL is 64, so a legal total-credit count cannot set numeric bit 7."
+    },
+    {
+      "dut": "restart_control",
+      "metric": "toggle",
+      "line": 41,
+      "column": 20,
+      "source_line": "logic [0:7]       total_credit_count          ;",
+      "scope": "TOP.restart_control_tb.dut",
+      "signal": "total_credit_count",
+      "bits": [
+        7
+      ],
+      "reason": "total_credit_count samples credits_in, whose legal maximum is CREDITS_TOTAL=64."
+    },
+    {
+      "dut": "restart_control",
+      "metric": "toggle",
+      "line": 42,
+      "column": 20,
+      "source_line": "logic [0:7]       outstanding_restart_commands;",
+      "scope": "TOP.restart_control_tb.dut",
+      "signal": "outstanding_restart_commands",
+      "bits": [
+        7
+      ],
+      "reason": "At most CREDITS_TOTAL=64 restart commands can be outstanding, so numeric bit 7 cannot assert."
+    }
+  ],
+  "production_blockers": [],
+  "not_applicable": [
+    {
+      "metric": "fsm_state",
+      "duts": [
+        "credit_control",
+        "command_control",
+        "response_control",
+        "response_statistics_control"
+      ],
+      "reason": "These DUTs contain no explicit state-machine type."
+    },
+    {
+      "metric": "fsm_state_transition",
+      "duts": [
+        "tag_control",
+        "restart_control"
+      ],
+      "reason": "Verilator 5.020 does not emit a distinct raw FSM transition metric."
+    },
+    {
+      "metric": "assertion_cover",
+      "duts": [
+        "credit_control",
+        "command_control",
+        "response_control",
+        "response_statistics_control",
+        "tag_control",
+        "restart_control"
+      ],
+      "reason": "Assertion sensitivity is enforced by diagnostic source mutations instead."
+    }
+  ]
+}

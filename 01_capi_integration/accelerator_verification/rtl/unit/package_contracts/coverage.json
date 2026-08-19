@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "suite": "package-contracts",
+  "targets": {
+    "functional_bin_percent": 100,
+    "reachable_line_percent": 100,
+    "mutation_detection_percent": 100,
+    "variant_execution_percent": 100
+  },
+  "not_applicable": {
+    "branch": "Verilator 5.020 represents package-function case/if control as line points and emits no package v_branch points.",
+    "toggle": "Packages contain types, constants, and automatic functions but no persistent DUT nets."
+  },
+  "structurally_unreachable": [
+    {
+      "function": "cmd_size_calculate",
+      "source_lines": [
+        "else if (num_size > 2)",
+        "else if (num_size > 1)",
+        "else if (num_size > 0)"
+      ],
+      "reason": "ARRAY_SIZE is 8 bytes in every active CAPI variant, so request sizes 1, 2, and 4 cannot be selected from an element count."
+    }
+  ],
+  "waivers": []
+}

@@ -116,12 +116,20 @@ module read_data_control (
     end
   end
 
-  always_ff @(posedge clock ) begin
-    buffer_in_latched.write_tag        <= buffer_in.write_tag;
-    buffer_in_latched.write_tag_parity <= buffer_in.write_tag_parity;
-    buffer_in_latched.write_address    <= buffer_in.write_address;
-    buffer_in_latched.write_data       <= buffer_in.write_data;
-    buffer_in_latched.write_parity     <= buffer_in.write_parity;
+  always_ff @(posedge clock or negedge rstn) begin
+    if(~rstn) begin
+      buffer_in_latched.write_tag        <= 0;
+      buffer_in_latched.write_tag_parity <= 0;
+      buffer_in_latched.write_address    <= 0;
+      buffer_in_latched.write_data       <= 0;
+      buffer_in_latched.write_parity     <= 0;
+    end else if(enabled) begin
+      buffer_in_latched.write_tag        <= buffer_in.write_tag;
+      buffer_in_latched.write_tag_parity <= buffer_in.write_tag_parity;
+      buffer_in_latched.write_address    <= buffer_in.write_address;
+      buffer_in_latched.write_data       <= buffer_in.write_data;
+      buffer_in_latched.write_parity     <= buffer_in.write_parity;
+    end
   end
 
 
@@ -257,7 +265,9 @@ module read_data_control (
 
       if(write_valid_latched) begin
         tag_parity_error  <= tag_parity_link ^ tag_parity;
-        data_parity_error <= |(data_write_parity_link ^ buffer_in.write_parity);
+        // the parity of a beat is compared against the parity that was accepted
+        // with that same beat, afu_control latches data and parity together
+        data_parity_error <= |(data_write_parity_link ^ data_write_parity_latched);
       end else begin
         data_parity_error <= 1'b0;
         tag_parity_error  <= 1'b0;

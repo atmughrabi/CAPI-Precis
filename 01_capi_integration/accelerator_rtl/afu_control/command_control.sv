@@ -31,14 +31,11 @@ module command_control (
   logic                  enabled          ;
   CommandInterfaceOutput command_out_latch;
   logic                  rstn             ;
+  logic                  tag_parity_next  ;
+  logic                  command_parity_next;
+  logic                  address_parity_next;
 
   assign odd_parity = 1'b1; // Odd parity
-  // command_out_latch.abt                  = STRICT;
-  // assign command_out_latch.abt            = ABORT;
-  // assign command_out_latch.abt            = PREF;
-  // assign command_out_latch.abt            = PAGE;
-  // assign command_out_latch.abt            = SPEC;
-  assign command_out_latch.context_handle = 16'h00; // dedicated mode cch always zero
 
 ////////////////////////////////////////////////////////////////////////////
 //enable logic
@@ -74,28 +71,28 @@ module command_control (
 
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
-      command_out_latch.valid <= 1'b0;
-    end
-    else begin
-      if(enabled) begin
-        command_out_latch.valid <= command_arbiter_in.valid;
-      end
-    end
-  end // always_ff @(posedge clock)
-
-  always_ff @(posedge clock or negedge rstn) begin
-    if(~rstn) begin
-      command_out_latch.command <= TOUCH_I;
-      command_out_latch.address <= 0;
-      command_out_latch.tag     <= 0;
-      command_out_latch.size    <= 0;
-      command_out_latch.abt     <= STRICT;
+      command_out_latch.valid          <= 1'b0;
+      command_out_latch.command        <= TOUCH_I;
+      command_out_latch.address        <= 0;
+      command_out_latch.tag            <= 0;
+      command_out_latch.size           <= 0;
+      command_out_latch.abt            <= STRICT;
+      command_out_latch.context_handle <= 16'h0000;
+      command_out_latch.tag_parity     <= 1'b1;
+      command_out_latch.command_parity <= ^{TOUCH_I, 1'b1};
+      command_out_latch.address_parity <= 1'b1;
     end else begin
-      command_out_latch.command <= command_arbiter_in.payload.command;
-      command_out_latch.address <= command_arbiter_in.payload.address;
-      command_out_latch.tag     <= command_tag_in;
-      command_out_latch.size    <= command_arbiter_in.payload.size;
-      command_out_latch.abt     <= command_arbiter_in.payload.abt;
+      if(enabled)
+        command_out_latch.valid <= command_arbiter_in.valid;
+      command_out_latch.command        <= command_arbiter_in.payload.command;
+      command_out_latch.address        <= command_arbiter_in.payload.address;
+      command_out_latch.tag            <= command_tag_in;
+      command_out_latch.size           <= command_arbiter_in.payload.size;
+      command_out_latch.abt            <= command_arbiter_in.payload.abt;
+      command_out_latch.context_handle <= 16'h0000;
+      command_out_latch.tag_parity     <= tag_parity_next;
+      command_out_latch.command_parity <= command_parity_next;
+      command_out_latch.address_parity <= address_parity_next;
     end
   end // always_ff @(posedge clock)
 
@@ -106,21 +103,21 @@ module command_control (
 
 //Generate parity for command tag, command code, and cea. Latch parity info.
   parity #(.BITS(8)) tag_parity_instant (
-    .data(command_out_latch.tag       ),
-    .odd (odd_parity                  ),
-    .par (command_out_latch.tag_parity)
+    .data(command_tag_in ),
+    .odd (odd_parity    ),
+    .par (tag_parity_next)
   );
 
   parity #(.BITS(13)) command_parity_instant (
-    .data(command_out_latch.command       ),
-    .odd (odd_parity                      ),
-    .par (command_out_latch.command_parity)
+    .data(command_arbiter_in.payload.command),
+    .odd (odd_parity                        ),
+    .par (command_parity_next                )
   );
 
   parity #(.BITS(64)) address_parity_instant (
-    .data(command_out_latch.address       ),
-    .odd (odd_parity                      ),
-    .par (command_out_latch.address_parity)
+    .data(command_arbiter_in.payload.address),
+    .odd (odd_parity                        ),
+    .par (address_parity_next                )
   );
 
 

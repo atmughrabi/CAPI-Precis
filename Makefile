@@ -333,6 +333,46 @@ rtl-real-elaboration: rtl-manifest-verification
 rtl-unit-parity:
 	$(MAKE) rtl-unit-parity $(MAKE_ARGS)
 
+.PHONY: rtl-unit-package-contracts
+rtl-unit-package-contracts:
+	$(MAKE) rtl-unit-package-contracts $(MAKE_ARGS)
+
+.PHONY: rtl-unit-protocol-control
+rtl-unit-protocol-control:
+	$(MAKE) rtl-unit-protocol-control $(MAKE_ARGS)
+
+.PHONY: rtl-unit-reset
+rtl-unit-reset:
+	$(MAKE) rtl-unit-reset $(MAKE_ARGS)
+
+.PHONY: rtl-unit-storage
+rtl-unit-storage:
+	$(MAKE) rtl-unit-storage $(MAKE_ARGS)
+
+.PHONY: rtl-unit-arbitration
+rtl-unit-arbitration:
+	$(MAKE) rtl-unit-arbitration $(MAKE_ARGS)
+
+.PHONY: rtl-unit-protocol-data
+rtl-unit-protocol-data:
+	$(MAKE) rtl-unit-protocol-data $(MAKE_ARGS)
+
+.PHONY: rtl-unit-cu
+rtl-unit-cu:
+	$(MAKE) rtl-unit-cu $(MAKE_ARGS)
+
+.PHONY: rtl-integration
+rtl-integration:
+	$(MAKE) rtl-integration $(MAKE_ARGS)
+
+.PHONY: rtl-unit-verification
+rtl-unit-verification:
+	./01_capi_integration/accelerator_verification/rtl/scripts/run_implemented_suites.py --repo-root . --plan 01_capi_integration/accelerator_verification/rtl/manifests/coverage-plan.json --require-complete
+
+.PHONY: rtl-coverage-closure
+rtl-coverage-closure: rtl-manifest-verification
+	./01_capi_integration/accelerator_verification/rtl/scripts/run_implemented_suites.py --repo-root . --plan 01_capi_integration/accelerator_verification/rtl/manifests/coverage-plan.json --require-complete
+
 .PHONY: env-harness-test
 env-harness-test:
 	./tools/tests/test-capi-env.sh

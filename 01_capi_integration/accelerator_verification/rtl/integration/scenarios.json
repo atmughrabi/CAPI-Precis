@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "suite": "capi-precis-integration",
+  "ordered_manifest": "01_capi_integration/accelerator_verification/rtl/manifests/memcpy.f",
+  "ordered_manifests": [
+    "01_capi_integration/accelerator_verification/rtl/manifests/memcpy.f",
+    "01_capi_integration/accelerator_verification/rtl/manifests/memcpy-tutorial.f",
+    "01_capi_integration/accelerator_verification/rtl/manifests/mmtiled.f"
+  ],
+  "dut": [
+    "afu_control",
+    "cached_afu",
+    "afu"
+  ],
+  "required": [
+    "concurrent WED, read, write, prefetch-read, and prefetch-write traffic",
+    "fixed-priority and round-robin arbitration",
+    "credit exhaustion and recovery",
+    "tag exhaustion, out-of-order release, and safe reuse",
+    "out-of-order response routing",
+    "PAGED, AERROR, and DERROR restart paths",
+    "command/data parity errors",
+    "completion publication, MMIO acknowledgement, and reset",
+    "repeated launch with no leaked commands, tags, credits, counters, or sticky state",
+    "physical AFU wrapper field, parity, timebase, and reset mapping"
+  ],
+  "portable_models": [
+    "PSL command-room and response source",
+    "PSL read/write data buffers",
+    "byte-addressable host memory"
+  ],
+  "forbidden_models": [
+    "AFU control replacement",
+    "cached_afu replacement",
+    "CU control replacement"
+  ],
+  "requirement_probe_semantics": {
+    "pass": "The production RTL satisfies the requirement.",
+    "blocked": "The probe reached a deterministic production mismatch; integration closure remains blocked."
+  },
+  "families": {
+    "afu-control": {
+      "functional_bins": [
+        "all five channels in fixed and round-robin order",
+        "two-credit exhaustion and one-credit recovery",
+        "tag exhaustion and safe reuse",
+        "response reorder",
+        "NLOCK error report, routed response, no restart, and forward progress",
+        "PAGED/AERROR/DERROR restart and replay",
+        "response, read-data, and write-data parity errors",
+        "command and write-data FIFO pressure",
+        "reset with no leaked state"
+      ],
+      "mutation": "afu-drop-credit-reservation"
+    },
+    "cached-afu": {
+      "functional_bins": [
+        "two complete copy launches",
+        "completion publication and MMIO ACK",
+        "soft/hard reset",
+        "aggregated job parity error and error ACK"
+      ],
+      "mutation": "cached-disable-job-enable"
+    },
+    "afu-wrapper": {
+      "functional_bins": [
+        "physical-port full copy lifecycle",
+        "command/MMIO/data parity mapping",
+        "completion ACK/reset",
+        "job parity error publication"
+      ],
+      "mutation": "wrapper-zero-job-address"
+    }
+  }
+}

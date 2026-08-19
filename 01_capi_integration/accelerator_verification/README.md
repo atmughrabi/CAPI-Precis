@@ -35,12 +35,14 @@ make rtl-manifest-verification
 make rtl-real-elaboration
 ```
 
-The module matrix currently maps all 43 active production modules across 32
-source hashes to 23 test families. The parity family is implemented with
+The module matrix currently maps all 44 active production modules across 33
+source hashes to 23 test families. All 23 families and the package-contract
+suite are implemented, including all CU variants. The parity family includes
 exhaustive/deterministic vectors, complete functional/toggle evidence, and
-mutation sensitivity; the other 22 families remain planned. A mapped test is
-not considered implemented until its executable target and coverage evidence
-exist.
+mutation sensitivity. The package-contract suite covers all 13 active packages
+across the three modern variants and the C/SV WED ABI. A mapped test is not
+considered implemented until its
+executable target and coverage evidence exist.
 
 After an intentional RTL change, review the diff and refresh hashes with:
 

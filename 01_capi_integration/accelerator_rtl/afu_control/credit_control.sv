@@ -80,7 +80,7 @@ module credit_control (
           end
           else begin
             if (credit_in.response_credits[0])
-              credits <= credits-(~credit_in.response_credits[1:8]);
+              credits <= credits-(~credit_in.response_credits[1:8]+8'h02);
             else
               credits <= credits+credit_in.response_credits[1:8]-8'h01;
           end

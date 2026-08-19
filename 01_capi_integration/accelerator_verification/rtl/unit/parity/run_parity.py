@@ -279,6 +279,7 @@ def main():
     (production_build / "summary.json").write_text(
         json.dumps(summary, indent=2) + "\n"
     )
+    print("OWNERS:parity")
     print(
         f"PASS parity_unit vectors={vectors} bins={bins}/"
         f"{scenarios['required_bins']['total']} "

@@ -216,10 +216,21 @@ module vc_RoundRobinArbChain #(
   logic priority_en;
   assign priority_en = |grants;
 
-  // Next priority is just the one-hot grant vector left rotated by one
+  // Next priority is just the one-hot grant vector left rotated by one. A
+  // lone requester rotates onto itself, so the generate keeps the descending
+  // slice (which would be grants[-1:0]) out of the p_num_reqs = 1 elaboration.
 
   logic [p_num_reqs-1:0] priority_next;
-  assign priority_next = { grants[p_num_reqs-2:0], grants[p_num_reqs-1] };
+  generate
+    if ( p_num_reqs == 1 )
+      begin : single_req_rotate
+        assign priority_next = grants;
+      end
+    else
+      begin : multi_req_rotate
+        assign priority_next = { grants[p_num_reqs-2:0], grants[p_num_reqs-1] };
+      end
+  endgenerate
 
   // State for the one-hot priority vector
 
@@ -274,10 +285,21 @@ module vc_RoundRobinArb #(parameter p_num_reqs = 2) (
   logic priority_en;
   assign priority_en = |grants;
 
-  // Next priority is just the one-hot grant vector left rotated by one
+  // Next priority is just the one-hot grant vector left rotated by one. A
+  // lone requester rotates onto itself, so the generate keeps the descending
+  // slice (which would be grants[-1:0]) out of the p_num_reqs = 1 elaboration.
 
   logic [p_num_reqs-1:0] priority_next;
-  assign priority_next = { grants[p_num_reqs-2:0], grants[p_num_reqs-1] };
+  generate
+    if ( p_num_reqs == 1 )
+      begin : single_req_rotate
+        assign priority_next = grants;
+      end
+    else
+      begin : multi_req_rotate
+        assign priority_next = { grants[p_num_reqs-2:0], grants[p_num_reqs-1] };
+      end
+  endgenerate
 
   // State for the one-hot priority vector
 
@@ -331,17 +353,26 @@ module vc_RoundRobinArb_V2 #(parameter p_num_reqs = 2) (
 // rotate pointer update logic
   assign update_ptr = |grants[p_num_reqs-1:0];
   always @ (posedge clock or negedge rstn) begin
-    if (~rstn) begin
+    if (~rstn)
       rotate_ptr[0] <= 1'b1;
-      rotate_ptr[1] <= 1'b1;
-    end
     else if (update_ptr)
-      begin
-        // note: p_num_reqs must be at least 2
-        rotate_ptr[0] <= grants[p_num_reqs-1];
-        rotate_ptr[1] <= grants[p_num_reqs-1] | grants[0];
-      end
+      rotate_ptr[0] <= grants[p_num_reqs-1];
   end
+
+  // Bit one only exists once there is more than one requester; keeping it in
+  // its own generate lets p_num_reqs = 1 elaborate without an out of range
+  // assignment.
+
+  generate
+    if (p_num_reqs > 1) begin : generate_rotate_ptr_one
+      always @ (posedge clock or negedge rstn) begin
+        if (~rstn)
+          rotate_ptr[1] <= 1'b1;
+        else if (update_ptr)
+          rotate_ptr[1] <= grants[p_num_reqs-1] | grants[0];
+      end
+    end
+  endgenerate
 
   generate
     for (i=2;i<p_num_reqs;i=i+1) begin : generate_rotate_ptr

@@ -56,14 +56,28 @@ module reset_filter #(parameter PULSE_HOLD = 2) (
 
 	logic [0:PULSE_HOLD-1] rstn_reg /* synthesis preserve */;
 
-	always_ff @(posedge clock or negedge rstn_raw) begin
-		if (!rstn_raw) begin
-			rstn_reg <= {PULSE_HOLD{1'b0}};
+	generate
+		if (PULSE_HOLD == 1) begin : g_single_stage
+			always_ff @(posedge clock or negedge rstn_raw) begin
+				if (!rstn_raw) begin
+					rstn_reg <= 1'b0;
+				end
+				else begin
+					rstn_reg <= enable;
+				end
+			end
 		end
-		else begin
-			rstn_reg <= {enable,rstn_reg[0:PULSE_HOLD-2]};
+		else begin : g_shift_register
+			always_ff @(posedge clock or negedge rstn_raw) begin
+				if (!rstn_raw) begin
+					rstn_reg <= {PULSE_HOLD{1'b0}};
+				end
+				else begin
+					rstn_reg <= {enable,rstn_reg[0:PULSE_HOLD-2]};
+				end
+			end
 		end
-	end
+	endgenerate
 
 	assign rstn_filtered = rstn_reg[PULSE_HOLD-1];
 

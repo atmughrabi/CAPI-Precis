@@ -332,7 +332,7 @@ module cu_matrix_C_job_control (
             end
             SEND_MATRIX_C_DATA_READ : begin
                 read_command_matrix_C_job_latched.valid                    <= 1'b1;
-                read_command_matrix_C_job_latched.payload.address          <= wed_request_in_latched.payload.wed.Matrix_C + (((matrix_C_num_counter_ii_inc * wed_request_in_latched.payload.wed.size_n) + matrix_C_num_counter_jj_inc) << $clog2(DATA_SIZE_READ));
+                read_command_matrix_C_job_latched.payload.address          <= wed_request_in_latched.payload.wed.Matrix_C + (((read_command_matrix_C_job_latched.payload.cmd.address_offset * wed_request_in_latched.payload.wed.size_n) + read_command_matrix_C_job_latched.payload.cmd.aux_data) << $clog2(DATA_SIZE_READ));
                 read_command_matrix_C_job_latched.payload.cmd.array_struct <= MATRIX_C_DATA_READ;
             end
             WAIT_MATRIX_C_DATA : begin
@@ -398,17 +398,14 @@ module cu_matrix_C_job_control (
             if (generate_read_command) begin
                 if(matrix_C_num_counter_jj_dec > CACHELINE_DATA_READ_NUM)begin
                     matrix_C_num_counter_jj_dec <= matrix_C_num_counter_jj_dec - CACHELINE_DATA_READ_NUM;
+                    matrix_C_num_counter_jj_inc <= matrix_C_num_counter_jj_inc + CACHELINE_DATA_READ_NUM;
                 end
                 else if (matrix_C_num_counter_jj_dec <= CACHELINE_DATA_READ_NUM) begin
                     matrix_C_num_counter_jj_dec <= (jj_reg_end - jj_reg_start);
-                    matrix_C_num_counter_ii_dec <= matrix_C_num_counter_ii_dec;
+                    matrix_C_num_counter_ii_dec <= matrix_C_num_counter_ii_dec - 1;
                     matrix_C_num_counter_ii_inc <= matrix_C_num_counter_ii_inc + 1;
                     matrix_C_num_counter_jj_inc <= jj_reg_start;
                 end
-            end
-
-            if (read_command_matrix_C_job_latched.valid ) begin
-                matrix_C_num_counter_jj_inc <= matrix_C_num_counter_jj_inc + CACHELINE_DATA_READ_NUM;
             end
         end
     end

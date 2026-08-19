@@ -1,0 +1,448 @@
+{
+  "schema_version": 1,
+  "suite": "protocol-data",
+  "description": "Executable unit coverage for the CAPI protocol data, register and lifecycle modules of the AFU control block.",
+  "variants": [
+    "memcpy",
+    "memcpy-tutorial",
+    "mmtiled"
+  ],
+  "top_module": "protocol_data_tb",
+  "dependency_modules": {
+    "01_capi_integration/accelerator_rtl/afu_control/parity.sv": "owned by the parity family, elaborated only as a DUT dependency",
+    "01_capi_integration/accelerator_rtl/afu_control/ram.sv": "owned by the storage family, elaborated only as a DUT dependency"
+  },
+  "sampling_contract": {
+    "cycle": "a cycle is the interval closed by the posedge that samples it, stimulus is applied on the preceding negedge",
+    "read_data_parity": "the doubleword data parity of a buffer write beat is accepted with that beat, afu_control latches valid, tag, tag parity, address, data and data parity of one beat with a single common delay",
+    "read_data_publication": "a stored half becomes visible to a response lookup at beat+3, a qualified response publishes half 0 at response+2 and half 1 at response+3, the parity report follows the beat at beat+4",
+    "write_data_publication": "a compute unit beat is visible to a buffer read at beat+2, a buffer read returns data and parity at request+3 which equals the published read latency, the tag parity report follows at request+4",
+    "mmio_publication": "the selected read data is formed at request+4 from the status inputs sampled at request+2, configuration and acknowledge pulses reach the outputs at request+5, acknowledge, data, data parity and the parity report reach the outputs at request+6",
+    "job_publication": "a job command is decoded at command+2, the parity report follows at command+5, the done pulse follows the internal reset release edge and publishes the reported error word in the same cycle",
+    "lifecycle_publication": "outputs published in a cycle are produced by the state and inputs of the previous cycle, state advances only while the block is enabled",
+    "read_data_enable": "a beat is accepted only while the block is enabled, so tag, address, data and parity of an accepted beat freeze together for the whole disabled window and the parity of that beat keeps being reported against its own parity byte"
+  },
+  "families": {
+    "read-data": {
+      "oracle_id": "read-half-association-v1",
+      "duts": [
+        "01_capi_integration/accelerator_rtl/afu_control/read_data_control.sv"
+      ],
+      "testbench": "read_data_control_tb.sv",
+      "independent_model": "tag indexed half-association scoreboard with byte level payload storage and a bit counting parity reference",
+      "required_checks": 1167,
+      "required_bins": 42,
+      "bin_groups": {
+        "half_order": 4,
+        "destination_routing_by_half": 6,
+        "response_class": 6,
+        "parity_fault_class": 4,
+        "buffer_address_class": 5,
+        "half_gap_class": 3,
+        "response_timing_class": 3,
+        "tag_boundary_class": 4,
+        "control_class": 3,
+        "parity_association_class": 2,
+        "enabled_window_class": 2
+      },
+      "scenarios": [
+        "lower half first and upper half first for the same tag",
+        "half gaps of zero, one and eight cycles",
+        "lower half only and upper half only",
+        "interleaved halves for four tags with reordered responses",
+        "command types outside read and descriptor are not stored",
+        "response classes read, descriptor, both, write only, NLOCK, flags without valid and an illegal response code",
+        "tag parity fault, data parity fault and both faults",
+        "response exactly at the commit boundary and one cycle before it",
+        "buffer beats while the block is disabled",
+        "asynchronous reset with a drained pipeline and a response that still reads the retained store",
+        "a clean beat followed by a corrupted parity byte and a beat that carries a corrupted parity, both only counted when the two parity bytes differ",
+        "the enable falls in the cycle after a beat is accepted while the bus keeps presenting a payload whose lane parity differs, for a clean beat and for a beat that carries a parity fault"
+      ],
+      "stall_profiles": [
+        {
+          "name": "half-gap-short",
+          "cycles": 1
+        },
+        {
+          "name": "half-gap-long",
+          "cycles": 8
+        },
+        {
+          "name": "response-delay",
+          "cycles": 16
+        },
+        {
+          "name": "enable-low",
+          "cycles": 4
+        },
+        {
+          "name": "reset-low",
+          "cycles": 6
+        }
+      ]
+    },
+    "write-data": {
+      "oracle_id": "write-address-mask-data-v1",
+      "duts": [
+        "01_capi_integration/accelerator_rtl/afu_control/write_data_control.sv"
+      ],
+      "testbench": "write_data_control_tb.sv",
+      "independent_model": "tag indexed half line memory with an address and lane mask model and a bit counting parity reference",
+      "required_checks": 1984,
+      "required_bins": 46,
+      "bin_groups": {
+        "lane_parity_class": 16,
+        "isolated_lane": 8,
+        "buffer_address_class": 4,
+        "request_timing_class": 3,
+        "tag_boundary_class": 4,
+        "half_valid_class": 3,
+        "parity_fault_class": 2,
+        "request_gap_class": 3,
+        "control_class": 3
+      },
+      "scenarios": [
+        "store both halves and return each half with its doubleword parity",
+        "buffer read at the commit boundary and one cycle before it",
+        "buffer read addresses outside the two halves hold the previous data",
+        "isolated doubleword lane sweep across all eight lanes",
+        "four tags stored and returned in reverse order",
+        "only the lower half or only the upper half valid",
+        "back to back buffer reads and reads separated by one and eight cycles",
+        "a compute unit store concurrent with a buffer read of another tag",
+        "tag parity fault and clean tag parity",
+        "buffer reads while the block is disabled",
+        "asynchronous reset publishes the reset data, parity and latency contract"
+      ],
+      "stall_profiles": [
+        {
+          "name": "request-gap-short",
+          "cycles": 1
+        },
+        {
+          "name": "request-gap-long",
+          "cycles": 8
+        },
+        {
+          "name": "store-delay",
+          "cycles": 12
+        },
+        {
+          "name": "enable-low",
+          "cycles": 4
+        },
+        {
+          "name": "reset-low",
+          "cycles": 6
+        }
+      ]
+    },
+    "wed": {
+      "oracle_id": "wed-byte-layout-v1",
+      "duts": [
+        "01_capi_integration/accelerator_rtl/afu_control/wed_control.sv"
+      ],
+      "testbench": "wed_control_tb.sv",
+      "independent_model": "byte level 128 byte descriptor decoder driven from a field group table plus a fetch-once lifecycle model",
+      "required_checks": 1040,
+      "required_bins": 37,
+      "bin_groups": {
+        "state": 5,
+        "transition": 7,
+        "reset_entry": 3,
+        "descriptor_pattern": 4,
+        "half_delivery": 4,
+        "request_block_reason": 3,
+        "response_filter": 4,
+        "fetch_once": 2,
+        "address_class": 3,
+        "foreign_identifier": 2
+      },
+      "scenarios": [
+        "one 128 byte fetch with a byte index pattern that proves the byte order of every field group",
+        "lower half first, upper half first, both halves in one cycle and lower half only",
+        "requests blocked by the almost full command buffer, by the disable and by both",
+        "responses with a foreign engine identifier or a non-done code do not complete the fetch",
+        "data halves with a foreign engine identifier are ignored",
+        "the descriptor is decoded once and no second command is issued while the request is valid",
+        "repeat jobs after an asynchronous reset with a new address and new descriptor bytes",
+        "asynchronous reset while idle, while waiting for the response and while publishing",
+        "every command payload field is compared as a whole image from the reset state onwards"
+      ],
+      "stall_profiles": [
+        {
+          "name": "almost-full-hold",
+          "cycles": 10
+        },
+        {
+          "name": "disabled-hold",
+          "cycles": 6
+        },
+        {
+          "name": "response-wait",
+          "cycles": 12
+        },
+        {
+          "name": "half-gap",
+          "cycles": 5
+        },
+        {
+          "name": "reset-low",
+          "cycles": 6
+        }
+      ]
+    },
+    "mmio": {
+      "oracle_id": "mmio-register-map-v1",
+      "duts": [
+        "01_capi_integration/accelerator_rtl/afu_control/mmio.sv"
+      ],
+      "testbench": "mmio_tb.sv",
+      "independent_model": "register and descriptor map written from the documented address map with pulse semantics for configuration and acknowledge registers",
+      "required_checks": 8271,
+      "required_bins": 63,
+      "bin_groups": {
+        "mapped_read_register": 26,
+        "mapped_write_register": 8,
+        "descriptor_word": 10,
+        "word_mode": 3,
+        "unmapped_access": 2,
+        "acknowledge_class": 4,
+        "parity_fault_class": 4,
+        "request_gap_class": 3,
+        "control_class": 3
+      },
+      "scenarios": [
+        "every mapped status and statistics register is read and compared against the sampled source",
+        "every AFU descriptor word plus an unmapped descriptor index, in doubleword, high word and low word modes",
+        "every mapped configuration register written with all ones, all zeros and a mixed pattern",
+        "acknowledge registers with a set and a zero payload",
+        "unmapped read and write accesses",
+        "address parity fault, data parity fault and both faults",
+        "back to back requests and requests separated by one and twelve cycles",
+        "status sources changing every cycle during a read transaction",
+        "configuration space write accesses",
+        "asynchronous reset publishes the reset register image"
+      ],
+      "stall_profiles": [
+        {
+          "name": "request-gap-short",
+          "cycles": 1
+        },
+        {
+          "name": "request-gap-long",
+          "cycles": 12
+        },
+        {
+          "name": "acknowledge-delay",
+          "cycles": 9
+        },
+        {
+          "name": "source-churn",
+          "cycles": 8
+        },
+        {
+          "name": "reset-low",
+          "cycles": 6
+        }
+      ]
+    },
+    "job": {
+      "oracle_id": "job-command-state-v1",
+      "duts": [
+        "01_capi_integration/accelerator_rtl/afu_control/job.sv"
+      ],
+      "testbench": "job_tb.sv",
+      "independent_model": "cycle accurate job command ledger with the reset release edge detector, the sticky reported error latch and a bit counting parity reference",
+      "required_checks": 1728,
+      "required_bins": 25,
+      "bin_groups": {
+        "command_class": 4,
+        "parity_fault_class": 4,
+        "done_source": 3,
+        "error_publication": 2,
+        "error_capture": 3,
+        "running": 3,
+        "command_gap_class": 3,
+        "reset_request": 2,
+        "constant_outputs": 1
+      },
+      "scenarios": [
+        "reset command followed by the job done handshake",
+        "start command raises and holds running",
+        "invalid commands at both command code boundaries",
+        "command parity fault, address parity fault and both faults",
+        "back to back commands and commands separated by one and ten cycles",
+        "error capture while idle and while running, with no overwrite of the first captured word",
+        "job done publishes a zero and a non zero error word",
+        "repeat jobs after an asynchronous reset",
+        "dedicated mode constant outputs on every cycle",
+        "a reset command that arrives while an external error is asserted clears the reported error word"
+      ],
+      "stall_profiles": [
+        {
+          "name": "command-gap-short",
+          "cycles": 1
+        },
+        {
+          "name": "command-gap-long",
+          "cycles": 10
+        },
+        {
+          "name": "reset-low",
+          "cycles": 6
+        },
+        {
+          "name": "error-hold",
+          "cycles": 8
+        },
+        {
+          "name": "done-wait",
+          "cycles": 12
+        }
+      ]
+    },
+    "completion-error": {
+      "oracle_id": "completion-error-lifecycle-v1",
+      "duts": [
+        "01_capi_integration/accelerator_rtl/afu_control/done_control.sv",
+        "01_capi_integration/accelerator_rtl/afu_control/error_control.sv"
+      ],
+      "testbench": "completion_error_tb.sv",
+      "independent_model": "two cycle accurate lifecycle models, a completion snapshot publish acknowledge reset model and a sticky error model",
+      "required_checks": 1600,
+      "required_bins": 45,
+      "bin_groups": {
+        "completion_state": 5,
+        "completion_transition": 8,
+        "completion_value": 2,
+        "completion_acknowledge": 3,
+        "completion_reset_entry": 3,
+        "completion_disabled_freeze": 1,
+        "error_state": 5,
+        "error_transition": 7,
+        "error_class": 3,
+        "error_acknowledge": 3,
+        "error_sticky": 1,
+        "error_reset_entry": 2,
+        "error_disabled_freeze": 1,
+        "overlap": 1
+      },
+      "scenarios": [
+        "zero and non zero completion snapshots with immediate acknowledge",
+        "delayed soft reset and delayed acknowledge",
+        "completion held without acknowledge for a bounded window",
+        "single bit, simultaneous and repeated errors",
+        "a new error during publication does not replace the published word",
+        "error acknowledge immediate, delayed and absent for a bounded window",
+        "a completion and an error raised in the same cycle",
+        "both blocks frozen while disabled",
+        "asynchronous reset while idle, while pending and while publishing"
+      ],
+      "stall_profiles": [
+        {
+          "name": "soft-reset-delay",
+          "cycles": 7
+        },
+        {
+          "name": "acknowledge-delay",
+          "cycles": 9
+        },
+        {
+          "name": "acknowledge-absent",
+          "cycles": 15
+        },
+        {
+          "name": "enable-low",
+          "cycles": 5
+        },
+        {
+          "name": "reset-low",
+          "cycles": 6
+        }
+      ]
+    }
+  },
+  "totals": {
+    "checks": 15790,
+    "bins": 258,
+    "stall_profiles": 30
+  },
+  "mutations": {
+    "expected_result": "the test process exits non zero with the diagnostic of the mutated behaviour class",
+    "behaviour_classes": {
+      "read-data": [
+        "half address decode",
+        "tag association",
+        "destination routing",
+        "parity report",
+        "response qualification",
+        "parity beat association",
+        "enabled window payload freeze"
+      ],
+      "write-data": [
+        "half selection",
+        "read latency contract",
+        "lane parity publication",
+        "tag parity report"
+      ],
+      "wed": [
+        "descriptor byte order",
+        "fetch once guard",
+        "command size",
+        "response identifier filter",
+        "command bus transfer behaviour",
+        "command tag metadata"
+      ],
+      "mmio": [
+        "read decode",
+        "descriptor constant",
+        "write decode",
+        "acknowledge publication",
+        "parity report"
+      ],
+      "job": [
+        "done edge detection",
+        "running latch",
+        "reported error clear",
+        "parity report",
+        "interface constants"
+      ],
+      "completion-error": [
+        "completion snapshot",
+        "completion acknowledge",
+        "completion reset pulse",
+        "error snapshot",
+        "error acknowledge"
+      ]
+    },
+    "total": 32
+  },
+  "closed_production_findings": [
+    {
+      "file": "01_capi_integration/accelerator_rtl/afu_control/job.sv",
+      "finding": "job_out was driven by continuous assignments on cack and yield and by sequential blocks on running, done and error, so one packed structure had mixed driver kinds.",
+      "fix": "The sequential state moved into job_running, job_done and job_error, and job_out is assembled by continuous assignments only. The five field cycle contract is unchanged.",
+      "evidence": "The suite compiles without the BLKANDNBLK waiver, the job testbench compares running, done, error, cack and yield on every cycle, and the job-interface-constants mutation proves the constant fields are still observed."
+    },
+    {
+      "file": "01_capi_integration/accelerator_rtl/afu_control/wed_control.sv",
+      "finding": "The descriptor command left payload.abt, payload.cmd.size and payload.cmd.aux_data undriven, and the whole command and request payloads were unknown before the first request. command_control consumes payload.abt as the PSL command transfer behaviour.",
+      "fix": "WED_REQ now drives payload.abt, payload.cmd.size and payload.cmd.aux_data with the existing descriptor semantics, a strictly ordered 128 byte read with no auxiliary metadata, and WED_RESET clears both payloads.",
+      "evidence": "The wed testbench compares the whole command payload image from the reset state onwards, and the wed-command-bus-transfer-behaviour and wed-command-tag-metadata mutations are detected."
+    },
+    {
+      "file": "01_capi_integration/accelerator_rtl/afu_control/read_data_control.sv",
+      "finding": "The doubleword data parity of a beat was compared against the live parity input of the following cycle while the tag parity of the same beat was compared against the value accepted with the beat, and the already latched data_write_parity_latched was dead.",
+      "fix": "The comparison now uses data_write_parity_latched, the parity accepted with the beat.",
+      "evidence": "afu_control latches write_valid, write_tag, write_tag_parity, write_address, write_data and write_parity of one beat into this interface in a single clocked block with one common delay, so the interface delivers every field of a beat in the same cycle. The parity-beat-association scenario counts a bin only when the accepted parity byte and the following parity byte differ, and the read-parity-beat-association mutation restores the previous expression and is detected."
+    },
+    {
+      "file": "01_capi_integration/accelerator_rtl/afu_control/read_data_control.sv",
+      "finding": "The beat payload registers were latched ungated while valid, tag parity and data parity were gated by the enable, so a beat accepted before an enable falling edge kept its frozen parity while the payload followed the bus, and the held valid repeated the parity compare against a fresh payload.",
+      "fix": "The payload latch now resets with the block and updates only while enabled, so every field of an accepted beat freezes together.",
+      "evidence": "The enabled-mid-beat-window scenarios only credit their bins when the payload presented during the window would parity differ from the frozen beat, and the read-enabled-window-payload-freeze mutation restores the ungated latch and is detected as a spurious data parity report."
+    }
+  ]
+}

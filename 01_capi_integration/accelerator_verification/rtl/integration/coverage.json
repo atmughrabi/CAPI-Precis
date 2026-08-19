@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "suite": "capi-precis-integration",
+  "targets": {
+    "functional_bin_percent": 100,
+    "assertion_goal_percent": 100,
+    "reachable_statement_percent": 100,
+    "reachable_branch_percent": 100,
+    "reachable_control_toggle_percent": 100
+  },
+  "crosses": [
+    "channel x arbitration mode",
+    "channel x credit state",
+    "response type x response order",
+    "restart type x ABT",
+    "completion x ACK/reset",
+    "launch index x residual-state class"
+  ],
+  "closure": "Any failed requirement probe or unaccounted reachable code point blocks closure.",
+  "evidence_policy": "Raw Verilator line, branch, and bit-toggle evidence is preserved per source. Family closure maps one DUT scope per declaration and requires every reachable line/branch point plus protocol/control toggle, with exact zero-count structural points expanded in the summary.",
+  "structural_not_applicable": [
+    {
+      "source": "01_capi_integration/accelerator_rtl/afu_control/cached_afu.sv",
+      "metric": "branch",
+      "evidence": "The module contains composition wiring and unconditional clocked pipelines, but no procedural conditional or case statement; Verilator emits zero branch points."
+    },
+    {
+      "source": "01_capi_integration/accelerator_rtl/afu_control/afu.sv",
+      "metric": "line",
+      "evidence": "The physical wrapper is exclusively a cached_afu instance with packed port mapping; it contains no procedural statement and Verilator emits zero line points."
+    },
+    {
+      "source": "01_capi_integration/accelerator_rtl/afu_control/afu.sv",
+      "metric": "branch",
+      "evidence": "The physical wrapper contains no procedural conditional or case statement; Verilator emits zero branch points."
+    }
+  ],
+  "structural_points": [
+    {
+      "id": "afu-burst-buffer-full-invariants",
+      "source": "afu_control/afu_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.afu_control_tb.dut",
+      "name_regex": "(burst_write_data_buffer_status\\.buffer_[01]\\.(alfull|full)|burst_command_buffer_states_afu\\.full)",
+      "reason": "Command and write-data producers stop at coupled upstream alfull thresholds, structurally preventing these downstream full points."
+    },
+    {
+      "id": "afu-unconnected-restart-status",
+      "source": "afu_control/afu_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.afu_control_tb.dut",
+      "name_regex": "command_buffer_status\\.restart_buffer\\.(alfull|empty|full|valid)",
+      "reason": "The public restart-buffer status field has no producer in afu_control; restart uses private restart_control FIFOs."
+    },
+    {
+      "id": "afu-precombine-response-error-alias",
+      "source": "afu_control/afu_control.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.afu_control_tb.dut",
+      "name_regex": "response_control_error\\[(0|1|3)\\]",
+      "reason": "The public command_response_error output is the owning lifecycle contract and covers all seven bits. These pre-combine internal records duplicate tag/NLOCK reporting or correspond to FAULT, which is diverted through restart filtering before response_control."
+    },
+    {
+      "id": "cached-composed-error-aliases",
+      "source": "afu_control/cached_afu.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.cached_afu_tb.dut",
+      "name_regex": "(job_out\\.error|external_errors|report_errors|command_response_error|mmio_errors|data_read_error|data_write_error|credit_overflow_error)\\[[0-9]+\\]|(data_write_error|credit_overflow_error)",
+      "reason": "These are composition aliases of job, MMIO, and afu_control error outputs. Job aggregation/ACK is covered in cached_afu; individual error bits are covered in their owning AFU-control scenario."
+    },
+    {
+      "id": "cached-composed-status-aliases",
+      "source": "afu_control/cached_afu.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.cached_afu_tb.dut",
+      "name_regex": "(command_buffer_status|response_buffer_status|read_data_buffer_status|wed_data_buffer_status|write_data_buffer_status)(\\.[A-Za-z0-9_]+)+\\.(alfull|empty|full|valid)",
+      "reason": "These packed signals are wiring aliases between instantiated controllers and have no independent state in cached_afu; owning FIFO behavior is covered by afu-control pressure scenarios."
+    },
+    {
+      "id": "cached-dedicated-mode-constants",
+      "source": "afu_control/cached_afu.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.cached_afu_tb.dut",
+      "name_regex": "(timebase_request|job_out\\.cack|job_out\\.yield)",
+      "reason": "Dedicated mode hardwires timebase request, LLCMD completion acknowledge, and yield low in job.sv."
+    },
+    {
+      "id": "wrapper-composed-error-alias",
+      "source": "afu_control/afu.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.afu_wrapper_tb.dut",
+      "name_regex": "ah_jerror\\[[0-9]+\\]",
+      "reason": "The physical wrapper is a pure packed-port alias. Job error publication is exercised through cached_afu and the wrapper parity-error scenario; remaining zero bits have no independent wrapper logic."
+    },
+    {
+      "id": "wrapper-dedicated-mode-constants",
+      "source": "afu_control/afu.sv",
+      "metric": "toggle",
+      "hierarchy": "TOP.afu_wrapper_tb.dut",
+      "name_regex": "(ah_jcack|ah_jyield|ah_tbreq)",
+      "reason": "These dedicated-mode outputs are hardwired low by job.sv and only mapped by the structural wrapper."
+    }
+  ],
+  "waivers": []
+}

@@ -337,7 +337,9 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				read_job_resp_done_latched    <= read_job_resp_done_latched + read_response_in_latched.valid;
 			end
 			READ_STREAM_DONE : begin
-
+				send_cmd_read     <= 0;
+				leave_cmd_read    <= 0;
+				done_read_pending <= 0;
 			end
 			READ_STREAM_FINAL : begin
 
@@ -361,7 +363,13 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 			if(cmd_setup)
 				wed_request_in_latched <= wed_request_in;
 
-			if (~read_command_buffer_status.alfull && send_to_write_engine && (|wed_request_in_latched.payload.wed.size_send) && send_cmd_read)begin
+			if (
+				~read_command_buffer_status.alfull &&
+				send_to_write_engine &&
+				(|wed_request_in_latched.payload.wed.size_send) &&
+				send_cmd_read &&
+				(read_job_send_done_latched < max_tlb_cl_requests_latched)
+			) begin
 
 				if(wed_request_in_latched.payload.wed.size_send > CACHELINE_ARRAY_NUM)begin
 					wed_request_in_latched.payload.wed.size_send         <= wed_request_in_latched.payload.wed.size_send - CACHELINE_ARRAY_NUM;
@@ -436,7 +444,13 @@ module cu_data_read_engine_control #(parameter CU_READ_CONTROL_ID = DATA_READ_CO
 				wed_prefetch_in_latched.payload.wed.array_send <= (wed_request_in.payload.wed.array_send & ADDRESS_PAGE_ALIGN_MASK);
 			end
 
-			if (~prefetch_command_buffer_status.alfull && (|wed_prefetch_in_latched.payload.wed.size_send) && send_cmd_prefetch && enabled_prefetch) begin
+			if (
+				~prefetch_command_buffer_status.alfull &&
+				(|wed_prefetch_in_latched.payload.wed.size_send) &&
+				send_cmd_prefetch &&
+				enabled_prefetch &&
+				(prefetch_counter_send_latched < tlb_size_latched)
+			) begin
 
 				if(wed_prefetch_in_latched.payload.wed.size_send > PAGE_ARRAY_NUM)begin
 					wed_prefetch_in_latched.payload.wed.size_send      <= wed_prefetch_in_latched.payload.wed.size_send - PAGE_ARRAY_NUM;

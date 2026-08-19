@@ -969,6 +969,7 @@ struct  WEDStruct *mapDataArraysToWED(struct DataArrays *dataArrays)
 
     struct WEDStruct *wed = my_malloc(sizeof(struct WEDStruct));
 
+    memset(wed, 0, sizeof(*wed));
     wed->size_send    = dataArrays->size;
     wed->size_recive  = dataArrays->size;
     wed->array_send     = dataArrays->array_send;
@@ -1004,6 +1005,7 @@ struct WEDStructMM *mapDataMatrixArraysToWED(struct MatrixArrays *dataArrays)
 
     struct WEDStructMM *wed = my_malloc(sizeof(struct WEDStructMM));
 
+    memset(wed, 0, sizeof(*wed));
     wed->size_n     = dataArrays->size_n;
     wed->size_tile  = dataArrays->size_tile;
     wed->A          = dataArrays->A;
@@ -1043,6 +1045,7 @@ struct WEDStructTut *mapDataArraysTutToWED(struct DataArraysTut *dataArraysTut){
 
     struct WEDStructTut *wed = my_malloc(sizeof(struct WEDStructTut));
 
+    memset(wed, 0, sizeof(*wed));
     wed->size_send    = dataArraysTut->size;
     wed->size_recive  = dataArraysTut->size;
     wed->array_send     = dataArraysTut->array_send;

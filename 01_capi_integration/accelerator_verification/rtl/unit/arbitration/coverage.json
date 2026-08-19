@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "family": "arbitration",
+  "owners": [
+    "primitive-arbiters",
+    "afu-arbiter-wrappers"
+  ],
+  "targets": {
+    "reachable_statement_percent": 100,
+    "reachable_branch_percent": 100,
+    "reachable_toggle_percent": 100,
+    "functional_bin_percent": 100,
+    "assertion_goal_percent": 100
+  },
+  "raw_dut_points": {
+    "priority_arbiters.sv": {
+      "line": 45,
+      "branch": 98,
+      "toggle": 768
+    },
+    "fixed_priority_arbiter.sv": {
+      "line": 47,
+      "branch": 74,
+      "toggle": 827
+    },
+    "round_robin_priority_arbiter.sv": {
+      "line": 52,
+      "branch": 84,
+      "toggle": 832
+    },
+    "total": {
+      "line": 144,
+      "branch": 256,
+      "toggle": 2427
+    }
+  },
+  "denominator_policy": "Percentages are reported against the raw Verilator point count for the three production sources. Reachable percentages divide by the raw count minus the enumerated unreachable points below; every unreachable point is listed with its file, line, signal and exact point count, and the runner fails if the observed unhit set differs from this list in any way.",
+  "structurally_unreachable": [
+    {
+      "file": "priority_arbiters.sv",
+      "line": 31,
+      "signal": "kin",
+      "points": 1,
+      "metric": "toggle",
+      "reason": "vc_FixedArb instantiates vc_FixedArbChain with .kin(1'b0), so that instance's kill-in input is a constant."
+    },
+    {
+      "file": "priority_arbiters.sv",
+      "line": 44,
+      "signal": "kills",
+      "points": 6,
+      "metric": "toggle",
+      "reason": "kills[0] is tied off by `assign kills[0] = 1'b0;` in every vc_FixedArbChain elaboration."
+    },
+    {
+      "file": "priority_arbiters.sv",
+      "line": 127,
+      "signal": "priority_int",
+      "points": 17,
+      "metric": "toggle",
+      "reason": "The upper half of the replicated priority vector is the constant zero pad of `{ {p_num_reqs{1'b0}}, priority_ }`."
+    }
+  ],
+  "tool_unreachable": [
+    {
+      "file": "fixed_priority_arbiter.sv",
+      "line": 28,
+      "signal": "buffer_in",
+      "points": 179,
+      "metric": "toggle",
+      "reason": "Verilator 5.020 declares toggle points for unpacked-array module input ports but never samples them. Verified with a two-signal probe where an identically driven packed input reached both polarities while the unpacked input stayed at zero.",
+      "compensating_coverage": "Payload transport through buffer_in is covered functionally by the 26 fan-in source-index bins, the 8 grant-aligned multi-hot submit bins and the fan-in payload-index-reversal and publish-highest-submitter mutations."
+    },
+    {
+      "file": "round_robin_priority_arbiter.sv",
+      "line": 27,
+      "signal": "buffer_in",
+      "points": 179,
+      "metric": "toggle",
+      "reason": "Verilator 5.020 declares toggle points for unpacked-array module input ports but never samples them. Verified with a two-signal probe where an identically driven packed input reached both polarities while the unpacked input stayed at zero.",
+      "compensating_coverage": "Payload transport through buffer_in is covered functionally by the 26 fan-in source-index bins, the 8 grant-aligned multi-hot submit bins and the fan-in payload-index-reversal and publish-highest-submitter mutations."
+    }
+  ],
+  "expected_reachable": {
+    "line": {
+      "hit": 144,
+      "total": 144
+    },
+    "branch": {
+      "hit": 256,
+      "total": 256
+    },
+    "toggle": {
+      "hit": 2045,
+      "total": 2045
+    }
+  },
+  "not_applicable": {
+    "fsm_state": "Verilator performs no FSM extraction and none of the eleven modules declares an encoded state machine. The only sequential arbitration state is the one-hot rotation pointer, covered explicitly by the 60 rr_state and 60 rr_winner functional bins.",
+    "fsm_transition": "See fsm_state. Rotation transitions are checked every cycle against the independent model and are covered by the 20 fairness-bound bins and the 10 kill-in stall bins that prove the pointer does not advance without a grant."
+  },
+  "waivers": []
+}

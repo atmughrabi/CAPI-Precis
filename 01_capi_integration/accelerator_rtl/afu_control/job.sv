@@ -45,17 +45,28 @@ module job (
   logic [ 0:1] detected_errors  ;
   logic [0:63] reported_errors  ;
 
+  logic        job_running;
+  logic        job_done   ;
+  logic [0:63] job_error  ;
+
   JobInterfaceInput job_in_latched;
 
   logic rstn;
 
   assign odd_parity       = 1'b1; // Odd parity
   assign parity_enabled   = 1'b1;
-  assign job_out.cack     = 1'b0; // Dedicated mode AFU, LLCMD not supported
-  assign job_out.yield    = 1'b0; // Job yield not used
   assign timebase_request = 1'b0; // Timebase request not used
 
   assign enable_errors = 1'b1;
+
+// Every field of the job interface is published from one driver type, the
+// sequential state lives in dedicated registers and the interface is assembled
+// by continuous assignments only.
+  assign job_out.running = job_running;
+  assign job_out.done    = job_done;
+  assign job_out.cack    = 1'b0; // Dedicated mode AFU, LLCMD not supported
+  assign job_out.error   = job_error;
+  assign job_out.yield   = 1'b0; // Job yield not used
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -114,18 +125,18 @@ module job (
 
   always_ff @(posedge clock or negedge rstn) begin
     if(~rstn) begin
-      job_out.running <= 1'b0;
+      job_running <= 1'b0;
     end else begin
-      if(start_job || job_out.running)
-        job_out.running <= 1'b1;
+      if(start_job || job_running)
+        job_running <= 1'b1;
     end
   end
 
   always_ff @(posedge clock) begin
     if(done_job) begin
-      job_out.done <= 1'b1;
+      job_done <= 1'b1;
     end else begin
-      job_out.done <= 1'b0;
+      job_done <= 1'b0;
     end
   end
 
@@ -209,9 +220,9 @@ module job (
 
   always_ff @(posedge clock) begin
     if(done_job) begin
-      job_out.error <= reported_errors;
+      job_error <= reported_errors;
     end else  begin
-      job_out.error <= 64'h0000_0000_0000_0000;
+      job_error <= 64'h0000_0000_0000_0000;
     end
   end
 

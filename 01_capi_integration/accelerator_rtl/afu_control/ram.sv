@@ -15,7 +15,7 @@
 module ram #(
   parameter WIDTH     = 64           ,
   parameter DEPTH     = 32           ,
-  parameter ADDR_BITS = $clog2(DEPTH)
+  parameter ADDR_BITS = (DEPTH > 1) ? $clog2(DEPTH) : 1
 ) (
   input  logic                 clock   ,
   input  logic                 we      ,
@@ -52,7 +52,7 @@ endmodule
 module ram_2xrd #(
   parameter WIDTH     = 64           ,
   parameter DEPTH     = 32           ,
-  parameter ADDR_BITS = $clog2(DEPTH)
+  parameter ADDR_BITS = (DEPTH > 1) ? $clog2(DEPTH) : 1
 ) (
   input  logic                 clock    ,
   input  logic                 we       ,
@@ -66,7 +66,8 @@ module ram_2xrd #(
 
   ram #(
     .WIDTH(WIDTH),
-    .DEPTH(DEPTH)
+    .DEPTH(DEPTH),
+    .ADDR_BITS(ADDR_BITS)
   ) ram1_instant (
     .clock   (clock    ),
     .we      (we       ),
@@ -80,7 +81,8 @@ module ram_2xrd #(
 
   ram #(
     .WIDTH(WIDTH),
-    .DEPTH(DEPTH)
+    .DEPTH(DEPTH),
+    .ADDR_BITS(ADDR_BITS)
   ) ram2_instant (
     .clock   (clock    ),
     .we      (we       ),

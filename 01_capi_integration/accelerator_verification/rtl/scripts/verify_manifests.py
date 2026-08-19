@@ -131,6 +131,10 @@ def verification_unit(source, found_declarations):
         return "package-contracts"
     if "/accelerator_verification/rtl/unit/" in source:
         return "unit-" + source.split("/rtl/unit/", 1)[1].split("/", 1)[0]
+    if "/accelerator_verification/rtl/integration/" in source:
+        return "integration-" + source.split(
+            "/rtl/integration/", 1
+        )[1].split("/", 1)[0]
     if "/accelerator_verification/" in source:
         return "rtl-lifecycle"
     if "/afu_control/" in source:
@@ -325,27 +329,37 @@ def build_inventory(manifests):
             evidence = ", ".join(
                 item["manifest"] for item in memberships[source]
             )
-        elif source.startswith(
-            "01_capi_integration/accelerator_verification/rtl/unit/"
-        ):
+        elif source.startswith((
+            "01_capi_integration/accelerator_verification/rtl/unit/",
+            "01_capi_integration/accelerator_verification/rtl/integration/",
+        )):
             status = "active"
-            suite = source.split("/rtl/unit/", 1)[1].split("/", 1)[0]
-            suite_root = VERIFICATION_RTL_ROOT / "unit" / suite
-            for required in (
-                suite_root / f"run_{suite}.py",
-                suite_root / "scenarios.json",
-                suite_root / "coverage.json",
-            ):
-                if not required.is_file():
-                    fail(
-                        "unit testbench lacks executable evidence: "
-                        f"{relative(required)}"
-                    )
+            if "/rtl/unit/" in source:
+                kind = "unit"
+                suite = source.split("/rtl/unit/", 1)[1].split("/", 1)[0]
+                suite_root = VERIFICATION_RTL_ROOT / kind / suite
+            else:
+                kind = "integration"
+                tail = source.split("/rtl/integration/", 1)[1]
+                if "/" in tail:
+                    suite = tail.split("/", 1)[0]
+                    suite_root = VERIFICATION_RTL_ROOT / kind / suite
+                else:
+                    suite = "capi"
+                    suite_root = VERIFICATION_RTL_ROOT / kind
+            runners = list(suite_root.glob("run_*.py"))
+            scenarios = list(suite_root.glob("*scenarios*.json"))
+            coverage = list(suite_root.glob("*coverage*.json"))
+            if len(runners) != 1 or not scenarios or not coverage:
+                fail(
+                    f"{kind} testbench lacks executable evidence: "
+                    f"{relative(suite_root)}"
+                )
             memberships[source].append({
-                "manifest": f"unit-{suite}",
+                "manifest": f"{kind}-{suite}",
                 "order": 0,
             })
-            evidence = f"executable unit testbench: {suite}"
+            evidence = f"executable {kind} testbench: {suite}"
         elif source.startswith(LEGACY_PREFIXES):
             status = "legacy-supported"
             evidence = "Classified legacy tree; excluded from modern manifests."
@@ -398,7 +412,7 @@ def build_inventory(manifests):
         if item["path"] in design_sources:
             for declaration in item["declarations"]:
                 modern_design_counts[declaration["kind"]] += 1
-    expected_design_counts = {"module": 43, "package": 13}
+    expected_design_counts = {"module": 44, "package": 13}
     if dict(sorted(modern_design_counts.items())) != expected_design_counts:
         fail(
             "modern declaration count changed: "

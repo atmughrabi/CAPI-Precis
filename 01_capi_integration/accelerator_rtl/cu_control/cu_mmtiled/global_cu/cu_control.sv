@@ -134,15 +134,183 @@ module cu_control #(
     logic write_command_bus_grant  ;
     logic write_command_bus_request;
 
+    localparam int MATRIX_ENGINE_COUNT = NUM_X_CU * NUM_Y_CU;
+
+    CommandBufferLine matrix_engine_read_command [0:MATRIX_ENGINE_COUNT-1];
+    CommandBufferLine matrix_engine_write_command[0:MATRIX_ENGINE_COUNT-1];
+    ReadWriteDataLine matrix_engine_write_data_0 [0:MATRIX_ENGINE_COUNT-1];
+    ReadWriteDataLine matrix_engine_write_data_1 [0:MATRIX_ENGINE_COUNT-1];
+    logic [MATRIX_ENGINE_COUNT-1:0] matrix_engine_read_valid;
+    logic [MATRIX_ENGINE_COUNT-1:0] matrix_engine_write_valid;
+    logic [MATRIX_ENGINE_COUNT-1:0] matrix_engine_read_grant;
+    logic [MATRIX_ENGINE_COUNT-1:0] matrix_engine_write_grant;
+    logic [MATRIX_ENGINE_COUNT-1:0] matrix_engine_read_armed;
+    logic [MATRIX_ENGINE_COUNT-1:0] matrix_engine_write_armed;
+    logic [0:1] matrix_engine_read_rearm_delay [0:MATRIX_ENGINE_COUNT-1];
+    logic [0:1] matrix_engine_write_rearm_delay[0:MATRIX_ENGINE_COUNT-1];
+    logic [MATRIX_ENGINE_COUNT-1:0] matrix_engine_done;
+    logic [0:63] matrix_engine_completed_writes[0:MATRIX_ENGINE_COUNT-1];
+    logic [0:63] matrix_engine_multiply_terms [0:MATRIX_ENGINE_COUNT-1];
+    logic [0:63] matrix_engine_completed_sum;
+    logic [0:63] matrix_engine_terms_sum;
+    logic matrix_engine_all_done;
+    CommandBufferLine matrix_engine_read_pending;
+    CommandBufferLine matrix_engine_write_pending;
+    ReadWriteDataLine matrix_engine_write_data_0_pending;
+    ReadWriteDataLine matrix_engine_write_data_1_pending;
+    integer matrix_read_rr;
+    integer matrix_write_rr;
+    integer matrix_read_selected;
+    integer matrix_write_selected;
+    integer matrix_read_pending_owner;
+    integer matrix_write_pending_owner;
+    logic matrix_read_cooldown;
+    logic matrix_write_cooldown;
+    logic matrix_read_ready_latched;
+    logic matrix_engine_write_dispatch;
+
+    function automatic integer select_matrix_engine(
+        input logic [MATRIX_ENGINE_COUNT-1:0] valids,
+        input integer start_index
+    );
+        integer offset;
+        integer candidate;
+        begin
+            select_matrix_engine = -1;
+            for(offset = 0; offset < MATRIX_ENGINE_COUNT; offset = offset + 1) begin
+                candidate = (start_index + offset) % MATRIX_ENGINE_COUNT;
+                if(select_matrix_engine < 0 && valids[candidate])
+                    select_matrix_engine = candidate;
+            end
+        end
+    endfunction
+
 ////////////////////////////////////////////////////////////////////////////
 // logic
 ////////////////////////////////////////////////////////////////////////////
 
-    assign write_command_out_matrix_A_B      = 0;
-    assign write_data_0_out_matrix_A_B       = 0;
-    assign write_data_1_out_matrix_A_B       = 0;
-    assign read_command_buffer_arbiter_in[1] = 0;
-    assign write_command_bus_request         = 0;
+    assign read_command_buffer_arbiter_in[1] = matrix_engine_read_pending;
+    assign write_command_bus_request         = matrix_engine_write_pending.valid;
+    assign matrix_engine_write_dispatch =
+        matrix_engine_write_pending.valid &&
+        ~write_buffer_status_latched.alfull;
+
+    always_comb begin
+        write_command_out_matrix_A_B = matrix_engine_write_pending;
+        write_data_0_out_matrix_A_B = matrix_engine_write_data_0_pending;
+        write_data_1_out_matrix_A_B = matrix_engine_write_data_1_pending;
+        write_command_out_matrix_A_B.valid = matrix_engine_write_dispatch;
+        write_data_0_out_matrix_A_B.valid =
+            matrix_engine_write_dispatch &&
+            matrix_engine_write_data_0_pending.valid;
+        write_data_1_out_matrix_A_B.valid =
+            matrix_engine_write_dispatch &&
+            matrix_engine_write_data_1_pending.valid;
+    end
+
+    always_comb begin
+        matrix_read_selected =
+            select_matrix_engine(matrix_engine_read_valid, matrix_read_rr);
+        matrix_write_selected =
+            select_matrix_engine(matrix_engine_write_valid, matrix_write_rr);
+        matrix_engine_completed_sum = 0;
+        matrix_engine_terms_sum = 0;
+        matrix_engine_all_done = 1;
+        for(int lane = 0; lane < MATRIX_ENGINE_COUNT; lane = lane + 1) begin
+            matrix_engine_completed_sum =
+                matrix_engine_completed_sum + matrix_engine_completed_writes[lane];
+            matrix_engine_terms_sum =
+                matrix_engine_terms_sum + matrix_engine_multiply_terms[lane];
+            matrix_engine_all_done =
+                matrix_engine_all_done && matrix_engine_done[lane];
+        end
+    end
+
+    always_ff @(posedge clock or negedge rstn) begin
+        if(~rstn) begin
+            matrix_engine_read_pending <= 0;
+            matrix_engine_write_pending <= 0;
+            matrix_engine_write_data_0_pending <= 0;
+            matrix_engine_write_data_1_pending <= 0;
+            matrix_engine_read_grant <= 0;
+            matrix_engine_write_grant <= 0;
+            matrix_engine_read_armed <= '1;
+            matrix_engine_write_armed <= '1;
+            for(int lane = 0; lane < MATRIX_ENGINE_COUNT; lane = lane + 1) begin
+                matrix_engine_read_rearm_delay[lane] <= 0;
+                matrix_engine_write_rearm_delay[lane] <= 0;
+            end
+            matrix_read_rr <= 0;
+            matrix_write_rr <= 0;
+            matrix_read_pending_owner <= 0;
+            matrix_write_pending_owner <= 0;
+            matrix_read_cooldown <= 0;
+            matrix_write_cooldown <= 0;
+            matrix_read_ready_latched <= 0;
+        end else begin
+            matrix_engine_read_grant <= 0;
+            matrix_engine_write_grant <= 0;
+            for(int lane = 0; lane < MATRIX_ENGINE_COUNT; lane = lane + 1) begin
+                if(|matrix_engine_read_rearm_delay[lane])
+                    matrix_engine_read_rearm_delay[lane] <=
+                        matrix_engine_read_rearm_delay[lane] - 1;
+                else if(~matrix_engine_read_command[lane].valid)
+                    matrix_engine_read_armed[lane] <= 1;
+                if(|matrix_engine_write_rearm_delay[lane])
+                    matrix_engine_write_rearm_delay[lane] <=
+                        matrix_engine_write_rearm_delay[lane] - 1;
+                else if(~matrix_engine_write_command[lane].valid)
+                    matrix_engine_write_armed[lane] <= 1;
+            end
+
+            if(matrix_engine_read_pending.valid) begin
+                if(matrix_read_ready_latched) begin
+                    matrix_engine_read_pending.valid <= 0;
+                    matrix_engine_read_grant[matrix_read_pending_owner] <= 1;
+                    matrix_engine_read_armed[matrix_read_pending_owner] <= 0;
+                    matrix_engine_read_rearm_delay[matrix_read_pending_owner] <= 2;
+                    matrix_read_cooldown <= 1;
+                    matrix_read_ready_latched <= 0;
+                end else
+                    matrix_read_ready_latched <= ready[1];
+            end else if(matrix_read_cooldown) begin
+                matrix_read_cooldown <= 0;
+                matrix_read_ready_latched <= 0;
+            end else if(matrix_read_selected >= 0) begin
+                matrix_engine_read_pending <=
+                    matrix_engine_read_command[matrix_read_selected];
+                matrix_read_pending_owner <= matrix_read_selected;
+                matrix_read_ready_latched <= 0;
+                matrix_read_rr <=
+                    (matrix_read_selected + 1) % MATRIX_ENGINE_COUNT;
+            end else
+                matrix_read_ready_latched <= 0;
+
+            if(matrix_engine_write_pending.valid) begin
+                if(matrix_engine_write_dispatch) begin
+                    matrix_engine_write_pending.valid <= 0;
+                    matrix_engine_write_data_0_pending.valid <= 0;
+                    matrix_engine_write_data_1_pending.valid <= 0;
+                    matrix_engine_write_grant[matrix_write_pending_owner] <= 1;
+                    matrix_engine_write_armed[matrix_write_pending_owner] <= 0;
+                    matrix_engine_write_rearm_delay[matrix_write_pending_owner] <= 2;
+                    matrix_write_cooldown <= 1;
+                end
+            end else if(matrix_write_cooldown) begin
+                matrix_write_cooldown <= 0;
+            end else if(matrix_write_selected >= 0) begin
+                matrix_engine_write_pending <=
+                    matrix_engine_write_command[matrix_write_selected];
+                matrix_engine_write_data_0_pending <=
+                    matrix_engine_write_data_0[matrix_write_selected];
+                matrix_engine_write_data_1_pending <=
+                    matrix_engine_write_data_1[matrix_write_selected];
+                matrix_write_pending_owner <= matrix_write_selected;
+                matrix_write_rr <=
+                    (matrix_write_selected + 1) % MATRIX_ENGINE_COUNT;
+            end
+        end
+    end
 
 
     always_ff @(posedge clock or negedge rstn_in) begin
@@ -215,10 +383,10 @@ module cu_control #(
             cu_return_latched <= 0;
             done_algorithm    <= 0;
         end else begin
-            if(enabled_matrix_C_job)begin
-                cu_return_latched.var1 <= matrix_C_job_counter_total_latched;
-                cu_return_latched.var2 <= matrix_A_B_job_counter_done_latched;
-                done_algorithm         <= (wed_request_in_latched.payload.wed.size_n == matrix_C_job_counter_total_latched) && (wed_request_in_latched.payload.wed.size_tile == matrix_A_B_job_counter_done_latched);
+            if(enabled_matrix_A_B)begin
+                cu_return_latched.var1 <= matrix_engine_completed_sum;
+                cu_return_latched.var2 <= matrix_engine_terms_sum;
+                done_algorithm         <= matrix_engine_all_done;
             end
         end
     end
@@ -234,9 +402,9 @@ module cu_control #(
             if(enabled)begin
                 cu_return                           <= cu_return_latched;
                 cu_done                             <= done_algorithm;
-                matrix_C_job_counter_done_latched   <= matrix_C_job_counter_done;
-                matrix_A_B_job_counter_done_latched <= matrix_A_B_job_counter_done;
-                matrix_C_job_counter_total_latched  <= matrix_C_job_counter_done_latched;
+                matrix_C_job_counter_done_latched   <= matrix_engine_completed_sum;
+                matrix_A_B_job_counter_done_latched <= matrix_engine_terms_sum;
+                matrix_C_job_counter_total_latched  <= matrix_engine_completed_sum;
             end
         end
     end
@@ -250,7 +418,7 @@ module cu_control #(
         end else begin
             if(cu_ready) begin
                 cu_status            <= cu_configure_latched;
-                enabled_matrix_C_job <= 1;
+                enabled_matrix_C_job <= 0;
                 enabled_matrix_A_B   <= 1;
                 enabled_cmd          <= 1;
             end
@@ -535,7 +703,7 @@ module cu_control #(
 
     assign submit[0]   = read_command_buffer_arbiter_in[0].valid;
     assign submit[1]   = read_command_buffer_arbiter_in[1].valid;
-    assign requests[1] = 0;
+    assign requests[1] = read_command_buffer_arbiter_in[1].valid;
 
     round_robin_priority_arbiter_N_input_1_ouput #(
         .NUM_REQUESTS(NUM_READ_REQUESTS       ),
@@ -543,7 +711,7 @@ module cu_control #(
     ) read_command_buffer_arbiter_instant (
         .clock      (clock                          ),
         .rstn       (rstn                           ),
-        .enabled    (enabled_matrix_C_job           ),
+        .enabled    (enabled_cmd                    ),
         .buffer_in  (read_command_buffer_arbiter_in ),
         .submit     (submit                         ),
         .requests   (requests                       ),
@@ -554,6 +722,55 @@ module cu_control #(
 ////////////////////////////////////////////////////////////////////////////
 //cu_matrix_C_control - matrix_C job queue generation
 ////////////////////////////////////////////////////////////////////////////
+
+    genvar engine_x;
+    genvar engine_y;
+    generate
+        for(engine_x = 0; engine_x < NUM_X_CU; engine_x = engine_x + 1) begin : matrix_engine_x
+            for(engine_y = 0; engine_y < NUM_Y_CU; engine_y = engine_y + 1) begin : matrix_engine_y
+                localparam int ENGINE_INDEX = engine_x * NUM_Y_CU + engine_y;
+
+                assign matrix_engine_read_valid[ENGINE_INDEX] =
+                    matrix_engine_read_command[ENGINE_INDEX].valid &&
+                    matrix_engine_read_armed[ENGINE_INDEX];
+                assign matrix_engine_write_valid[ENGINE_INDEX] =
+                    matrix_engine_write_command[ENGINE_INDEX].valid &&
+                    matrix_engine_write_armed[ENGINE_INDEX];
+
+                cu_matrix_multiply_control #(
+                    .ENGINE_X(engine_x),
+                    .ENGINE_Y(engine_y),
+                    .X_STRIDE(NUM_X_CU),
+                    .Y_STRIDE(NUM_Y_CU),
+                    .CU_ID_X(MATRIX_A_B_CONTROL_ID - engine_x),
+                    .CU_ID_Y(MATRIX_A_B_CONTROL_ID - engine_y)
+                ) matrix_multiply_control_instant (
+                    .clock               (clock                                      ),
+                    .rstn                (rstn                                       ),
+                    .enabled_in          (enabled_matrix_A_B                         ),
+                    .wed_request_in      (wed_request_in_latched                     ),
+                    .cu_configure_2      (cu_configure_2_latched                     ),
+                    .cu_configure_3      (cu_configure_3_latched                     ),
+                    .cu_configure_4      (cu_configure_4_latched                     ),
+                    .read_response_in    (read_response_in_matrix_A_B                ),
+                    .read_data_0_in      (read_data_0_in_matrix_A_B                  ),
+                    .read_data_1_in      (read_data_1_in_matrix_A_B                  ),
+                    .read_buffer_status  (read_buffer_status_latched                 ),
+                    .read_command_grant (matrix_engine_read_grant[ENGINE_INDEX]     ),
+                    .write_response_in   (write_response_in_matrix_A_B               ),
+                    .write_buffer_status (write_buffer_status_latched                ),
+                    .write_command_grant(matrix_engine_write_grant[ENGINE_INDEX]    ),
+                    .read_command_out    (matrix_engine_read_command[ENGINE_INDEX]   ),
+                    .write_command_out   (matrix_engine_write_command[ENGINE_INDEX]  ),
+                    .write_data_0_out    (matrix_engine_write_data_0[ENGINE_INDEX]   ),
+                    .write_data_1_out    (matrix_engine_write_data_1[ENGINE_INDEX]   ),
+                    .done_out            (matrix_engine_done[ENGINE_INDEX]           ),
+                    .completed_writes_out(matrix_engine_completed_writes[ENGINE_INDEX]),
+                    .multiply_terms_out  (matrix_engine_multiply_terms[ENGINE_INDEX] )
+                );
+            end
+        end
+    endgenerate
 
     assign matrix_C_request_unfiltered = 1'b1;
 
@@ -581,10 +798,8 @@ module cu_control #(
             matrix_A_B_job_counter_done <= 0;
             matrix_C_job_counter_done   <= 0;
         end else begin
-            if(matrix_C_unfiltered.valid) begin
-                matrix_A_B_job_counter_done <= matrix_A_B_job_counter_done + 1;
-                matrix_C_job_counter_done   <= matrix_C_job_counter_done + 1;
-            end
+            matrix_A_B_job_counter_done <= matrix_engine_terms_sum;
+            matrix_C_job_counter_done   <= matrix_engine_completed_sum;
         end
     end
 

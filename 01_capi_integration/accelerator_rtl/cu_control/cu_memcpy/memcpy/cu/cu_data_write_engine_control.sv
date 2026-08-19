@@ -347,7 +347,9 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				write_job_resp_done_latched   <= write_job_resp_done_latched + write_response_in_latched.valid;
 			end
 			WRITE_STREAM_DONE : begin
-
+				send_cmd_write     <= 0;
+				leave_cmd_write    <= 0;
+				done_write_pending <= 0;
 			end
 			WRITE_STREAM_FINAL : begin
 
@@ -371,7 +373,12 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 			if(cmd_setup)
 				wed_request_in_latched <= wed_request_in;
 
-			if (write_data_0_out_buffer.valid && write_data_1_out_buffer.valid && send_cmd_write)begin
+			if (
+				write_data_0_out_buffer.valid &&
+				write_data_1_out_buffer.valid &&
+				send_cmd_write &&
+				(write_job_send_done_latched < max_tlb_cl_requests_latched)
+			) begin
 
 				write_command_out_latched.valid <= write_data_0_out_buffer.valid;
 				write_job_send_done_latched     <= write_job_send_done_latched + 1;
@@ -431,7 +438,13 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 				wed_prefetch_in_latched.payload.wed.array_receive <= (wed_request_in.payload.wed.array_receive & ADDRESS_PAGE_ALIGN_MASK);
 			end
 
-			if (~prefetch_command_buffer_status.alfull && (|wed_prefetch_in_latched.payload.wed.size_recive) && send_cmd_prefetch && enabled_prefetch) begin
+			if (
+				~prefetch_command_buffer_status.alfull &&
+				(|wed_prefetch_in_latched.payload.wed.size_recive) &&
+				send_cmd_prefetch &&
+				enabled_prefetch &&
+				(prefetch_counter_send_latched < tlb_size_latched)
+			) begin
 
 				if(wed_prefetch_in_latched.payload.wed.size_recive > PAGE_ARRAY_NUM)begin
 					wed_prefetch_in_latched.payload.wed.size_recive    <= wed_prefetch_in_latched.payload.wed.size_recive - PAGE_ARRAY_NUM;
@@ -477,7 +490,12 @@ module cu_data_write_engine_control #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE
 //Buffers CU Write DATA
 ////////////////////////////////////////////////////////////////////////////
 
-	assign write_data_buffer_pop = ~write_command_buffer_status.alfull && ~write_data_in_1_buffer_status.empty && ~write_data_in_0_buffer_status.empty && send_cmd_write;
+	assign write_data_buffer_pop =
+		~write_command_buffer_status.alfull &&
+		~write_data_in_1_buffer_status.empty &&
+		~write_data_in_0_buffer_status.empty &&
+		send_cmd_write &&
+		(write_job_send_done_latched < max_tlb_cl_requests_latched);
 
 	fifo #(
 		.WIDTH   ($bits(ReadWriteDataLine)    ),

@@ -15,7 +15,7 @@
 module fifo #(
     parameter WIDTH     = 32,
     parameter DEPTH     = 32,
-    parameter ADDR_BITS = $clog2(DEPTH),
+    parameter ADDR_BITS = (DEPTH > 1) ? $clog2(DEPTH) : 1,
     parameter HEADROOM  = ((DEPTH > 16)?16:3)
 ) (
     input logic clock,
@@ -33,7 +33,8 @@ module fifo #(
 // =======================================================================
 // Declarations & Parameters
 
-    localparam CW       = ADDR_BITS + 1;
+    localparam CW       = (DEPTH > 1) ? $clog2(DEPTH + 1) : 1;
+    localparam logic [ ADDR_BITS - 1:0 ] LAST_ADDR = DEPTH - 1;
 
     logic [ CW - 1:0 ] count;
     logic [ WIDTH - 1:0 ] rd_data;
@@ -69,7 +70,8 @@ module fifo #(
 // the combinational version of the read address is used to immediately
 // change the address into memory on a pop since there's a one-cycle delay
 // to get the data out
-    assign rd_addr_c    = rd_addr_q + 'd1;
+    assign rd_addr_c    = (rd_addr_q == LAST_ADDR) ? 'd0 :
+        rd_addr_q + 'd1;
 
 // this is the signal into memory; the mux ensures that the next read
 // data is available on the next cycle
@@ -192,7 +194,10 @@ module fifo #(
             wr_addr     <= {ADDR_BITS{1'b0}};
 
         else if ( wen )
-            wr_addr     <= wr_addr + 'd1;
+            if ( wr_addr == LAST_ADDR )
+                wr_addr <= {ADDR_BITS{1'b0}};
+            else
+                wr_addr <= wr_addr + 'd1;
 
 // Register:  red_addr
 //

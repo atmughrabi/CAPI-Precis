@@ -29,6 +29,7 @@
 01_capi_integration/accelerator_rtl/afu_control/mmio.sv
 01_capi_integration/accelerator_rtl/afu_control/wed_control.sv
 01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_matrix_C_job_control.sv
+01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/cu/cu_matrix_multiply_control.sv
 01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_control.sv
 01_capi_integration/accelerator_rtl/afu_control/afu.sv
 01_capi_integration/accelerator_rtl/afu_control/cached_afu.sv

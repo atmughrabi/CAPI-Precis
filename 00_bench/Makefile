@@ -483,13 +483,14 @@ integration-compile:
 	$(CC) $(CFLAGS) -DSIM -fsyntax-only -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -I../$(CAPI_INTEG_DIR)/libcxl $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/helloAFU.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/tutorial.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/mmtiled.c
 
 .PHONY: rtl-verification
-rtl-verification: rtl-manifest-verification rtl-unit-parity
+rtl-verification: rtl-manifest-verification
 	@if command -v $(VERILATOR) >/dev/null 2>&1; then \
 		major=`$(VERILATOR) --version | sed -E 's/[^0-9]*([0-9]+).*/\1/'`; \
 	else \
 		major=0; \
 	fi; \
 	if [ "$$major" -ge 5 ]; then \
+		$(MAKE) --no-print-directory rtl-unit-verification && \
 		$(MAKE) --no-print-directory rtl-verification-run; \
 	elif [ "$(RTL_VERIFICATION_REQUIRED)" = "1" ]; then \
 		echo "Verilator 5 or newer is required"; \
@@ -507,6 +508,46 @@ rtl-manifest-verification:
 .PHONY: rtl-unit-parity
 rtl-unit-parity:
 	$(CAPI_VERIFICATION_DIR)/rtl/unit/parity/run_parity.py
+
+.PHONY: rtl-unit-package-contracts
+rtl-unit-package-contracts:
+	$(CAPI_VERIFICATION_DIR)/rtl/unit/package_contracts/run_package_contracts.py
+
+.PHONY: rtl-unit-protocol-control
+rtl-unit-protocol-control:
+	$(CAPI_VERIFICATION_DIR)/rtl/unit/protocol_control/run_protocol_control.py
+
+.PHONY: rtl-unit-reset
+rtl-unit-reset:
+	$(CAPI_VERIFICATION_DIR)/rtl/unit/reset/run_reset.py
+
+.PHONY: rtl-unit-storage
+rtl-unit-storage:
+	$(CAPI_VERIFICATION_DIR)/rtl/unit/storage/run_storage.py
+
+.PHONY: rtl-unit-arbitration
+rtl-unit-arbitration:
+	$(CAPI_VERIFICATION_DIR)/rtl/unit/arbitration/run_arbitration.py
+
+.PHONY: rtl-unit-protocol-data
+rtl-unit-protocol-data:
+	$(CAPI_VERIFICATION_DIR)/rtl/unit/protocol_data/run_protocol_data.py
+
+.PHONY: rtl-unit-cu
+rtl-unit-cu:
+	$(CAPI_VERIFICATION_DIR)/rtl/unit/cu/run_cu.py
+
+.PHONY: rtl-integration
+rtl-integration:
+	$(CAPI_VERIFICATION_DIR)/rtl/integration/run_integration.py
+
+.PHONY: rtl-unit-verification
+rtl-unit-verification:
+	$(CAPI_VERIFICATION_DIR)/rtl/scripts/run_implemented_suites.py --repo-root .. --plan 01_capi_integration/accelerator_verification/rtl/manifests/coverage-plan.json --require-complete
+
+.PHONY: rtl-coverage-closure
+rtl-coverage-closure: rtl-manifest-verification
+	$(CAPI_VERIFICATION_DIR)/rtl/scripts/run_implemented_suites.py --repo-root .. --plan 01_capi_integration/accelerator_verification/rtl/manifests/coverage-plan.json --require-complete
 
 .PHONY: rtl-verification-run
 rtl-verification-run: directories

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "suite": "package-contracts",
+  "oracle_id": "c-sv-abi-endian-descriptor-v1",
+  "variants": ["memcpy", "memcpy-tutorial", "mmtiled"],
+  "required_bins": {
+    "memcpy": 83,
+    "memcpy-tutorial": 80,
+    "mmtiled": 83
+  },
+  "expected_reachable_line_points": {
+    "memcpy": 29,
+    "memcpy-tutorial": 23,
+    "mmtiled": 29
+  },
+  "contracts": [
+    "global constants and interface widths",
+    "enum encodings",
+    "32/64/128/256/512/1024-bit endian functions",
+    "128-byte WED mapping",
+    "all CABT encodings and default",
+    "command-size boundaries",
+    "AFU descriptor addresses and default",
+    "response error mapping",
+    "C host WED sizes"
+  ],
+  "mutations": [
+    "restore the historical 64-bit quad-word return width",
+    "change CABT default away from STRICT",
+    "change one WED doubleword byte order"
+  ]
+}

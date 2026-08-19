@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "family": "reset",
+  "oracle_id": "reset-cycle-counter-model-v1",
+  "instances": {
+    "reset_filter_pulse_hold": [1, 2, 3, 5],
+    "reset_control_external_resets": [1, 3]
+  },
+  "stimulus": {
+    "asynchronous_assertion": ["clock low", "clock high", "clock stopped"],
+    "synchronous_release": ["PULSE_HOLD=1", "PULSE_HOLD=2", "PULSE_HOLD=3", "PULSE_HOLD=5", "two-stage reset_control"],
+    "control": ["enable blocks release", "overlapping reset sources", "repeated assertion", "simultaneous assertion"]
+  },
+  "required_bins": {
+    "filter_release_lengths": 4,
+    "filter_control": 5,
+    "reset_control_parameters": 2,
+    "reset_control_overlap_repeat": 2,
+    "reset_control_assertion_phases": 2,
+    "reset_control_release": 1,
+    "clock_stopped_assertion": 1,
+    "simultaneous_external_assertion": 1,
+    "total": 18
+  },
+  "required_checks": 83,
+  "sensitivity": {
+    "mutations": [
+      "replace the filter shift enable with a constant one",
+      "hold the PULSE_HOLD=1 stage low after release",
+      "make PULSE_HOLD=1 asynchronous assertion load one",
+      "select the first rather than final filter stage",
+      "make asynchronous assertion load ones",
+      "OR rather than AND external reset filters",
+      "increase only external reset filter latency",
+      "disconnect the system filter from the combined reset",
+      "increase only system reset filter latency"
+    ],
+    "expected_result": "test process exits nonzero with a reset mismatch"
+  }
+}

@@ -54,6 +54,7 @@ proc r  {} {
   echo "Compiling RTL CU control "
 
   vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/global_cu/cu_matrix_C_job_control.sv
+  vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/cu/cu_matrix_multiply_control.sv
   vlog -quiet ../../accelerator_rtl/cu_control/cu_$algorithm/global_cu/cu_control.sv
 
 
