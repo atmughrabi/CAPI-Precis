@@ -1,6 +1,6 @@
 [![verification](https://github.com/atmughrabi/CAPI-Precis/actions/workflows/verification.yml/badge.svg)](https://github.com/atmughrabi/CAPI-Precis/actions/workflows/verification.yml)
 <p align="center">
-  <img src="./02_slides/logo/logo.svg" width="280" alt="CAPI-Precis logo">
+  <img src="./02_slides/logo/logo.svg" width="180" alt="CAPI-Precis logo">
 </p>
 
 # CAPI-Precis: Coherent Accelerator Processor Interface (CAPI) Abstract Layer
