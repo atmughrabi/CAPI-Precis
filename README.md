@@ -1,13 +1,17 @@
 [![verification](https://github.com/atmughrabi/CAPI-Precis/actions/workflows/verification.yml/badge.svg)](https://github.com/atmughrabi/CAPI-Precis/actions/workflows/verification.yml)
-<p align="center"><img src="./02_slides/fig/logo3.png" width="650" ></p>
+<p align="center">
+  <img src="./02_slides/logo/logo.svg" width="280" alt="CAPI-Precis logo">
+</p>
 
-#  CAPIPrecis Coherent Accelerator Processor Interface (CAPI) Abstract Layer
+# CAPI-Precis: Coherent Accelerator Processor Interface (CAPI) Abstract Layer
 
 ## Overview 
 
-<p align="center"><img src="./02_slides/fig/theme.png" width="650" ></p>
-
-CAPIPrecis is an abstraction layer (AFU-Control) that simplifies communication and buffering with IBM CAPI Power Service Layer (PSL). Each control unit handling different aspects of communication with the PSL, it simplifies the interface for sending and receiving memory transactions, and preserves the fine-grain random or sequential memory access pattern. Furthermore our layer differentiate its self from other CAPI frameworks, by keeping the PSL cache support.
+CAPI-Precis is an AFU-control abstraction layer that simplifies communication
+and buffering with the IBM CAPI Power Service Layer (PSL). Its control units
+separate command, response, buffering, error, and data-path responsibilities
+while preserving fine-grained random and sequential memory access. Unlike
+streaming-only frameworks, CAPI-Precis retains PSL cache support.
 
 ### Key Features and Benefits
 
@@ -58,8 +62,8 @@ export PATH=$PATH:${ALTERAPATH}/nios2eds/bin
 #modelsim env-variables
 export PATH=$PATH:${ALTERAPATH}/modelsim_ase/bin
 
-#CAPIPrecis project folder
-export CAPI_PROJECT=00_CAPIPrecis
+# CAPI-Precis project folder
+export CAPI_PROJECT=CAPI-Precis
 
 #CAPI framework env variables
 export PSLSE_INSTALL_DIR="${HOME}/Documents/github_repos/${CAPI_PROJECT}/01_capi_integration/pslse"
@@ -82,40 +86,38 @@ export DEBUG_LOG_PATH="${PSLSE_SERVER_DIR}/debug.log"
 
 ## Setting up the source code 
 
-1. Clone CAPIPrecis.
+1. Clone CAPI-Precis.
 ```console
 CAPI@Precis:~$ git clone https://github.com/atmughrabi/CAPI-Precis.git
 ```
-2. From the home directory go to the CAPIPrecis directory:
+2. From the home directory go to the CAPI-Precis directory:
 ```console
-CAPI@Precis:~$ cd CAPIPrecis/
+CAPI@Precis:~$ cd CAPI-Precis/
 ```
 3. Setup the CAPI submodules.
 ```console
-CAPI@Precis:~CAPIPrecis$ git submodule update --init --recursive
+CAPI@Precis:~CAPI-Precis$ git submodule update --init --recursive
 ```
 
-# Running CAPIPrecis (Memory Copy engines)
-
-[<img src="./02_slides/fig/openmp_logo.png" height="45" align="right" >](https://www.openmp.org/)
+# Running CAPI-Precis (Memory Copy engines)
 
 ## Initial compilation for framework with OpenMP 
 
 1. (Optional) From the root directory go to benchmark directory:
 ```console
-CAPI@Precis:~CAPIPrecis$ cd 00_bench/
+CAPI@Precis:~CAPI-Precis$ cd 00_bench/
 ```
 2. The default compilation is `openmp` mode:
 ```console
-CAPI@Precis:~CAPIPrecis/00_bench$ make 
+CAPI@Precis:~CAPI-Precis/00_bench$ make
 ```
 3. From the root directory you can modify the Makefile with the directories you need for you custom project:
 ```console
-CAPI@Precis:~CAPIPrecis/00_bench$ make run
+CAPI@Precis:~CAPI-Precis/00_bench$ make run
 ```
 * OR
 ```console
-CAPI@Precis:~CAPIPrecis/00_bench$ make run-openmp
+CAPI@Precis:~CAPI-Precis/00_bench$ make run-openmp
 ```
 4. Example output:
 ```
@@ -143,8 +145,6 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-openmp
  -----------------------------------------------------
 ```
 
-[<img src="./02_slides/fig/capi_logo.png" height="45" align="right" >](https://openpowerfoundation.org/capi-drives-business-performance/)
-
 ## Initial compilation for framework with Coherent Accelerator Processor Interface (CAPI)  
 
 * NOTE: You need CAPI environment setup on your machine (tested on Power8 8247-22L).
@@ -158,11 +158,11 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-openmp
 
 1. (Optional) From the root directory go to benchmark directory:
 ```console
-CAPI@Precis:~CAPIPrecis$ cd 00_bench/
+CAPI@Precis:~CAPI-Precis$ cd 00_bench/
 ```
 2. On terminal 1. Run [ModelSim vsim] for `simulation` this step is not needed when running on real hardware, this just simulates the AFU that resides on your (CAPI supported) FPGA  :
 ```console
-CAPI@Precis:~CAPIPrecis/00_bench$ make run-vsim
+CAPI@Precis:~CAPI-Precis/00_bench$ make run-vsim
 ```
 3. The previous step will execute vsim.tcl script to compile the design, to start the running the simulation just execute the following command at the transcript terminal of ModelSim : `r #recompile design`,`c #run simulation`
 ```console
@@ -171,21 +171,21 @@ ModelSim> c
 ```
 4. On Terminal 2. Run [PSL Simulation Engine](https://github.com/ibm-capi/pslse) (PSLSE) for `simulation` this step is not needed when running on real hardware, this just emulates the PSL that resides on your (CAPI supported) IBM-PowerPC machine  :
 ```console
-CAPI@Precis:~CAPIPrecis/00_bench$ make run-pslse
+CAPI@Precis:~CAPI-Precis/00_bench$ make run-pslse
 ```
 
 ##### Option 1: Silent run with no stats output
 
 5. On Terminal 3. Run the algorithm that communicates with the PSLSE (simulation):
 ```console
-CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-sim
+CAPI@Precis:~CAPI-Precis/00_bench$ make run-capi-sim
 ```
 
 ##### Option 2: Verbose run with stats output
 
 5.  On Terminal 3. Run the algorithm that communicates with the PSLSE (simulation) printing out stats based on the responses received to the AFU-Control layer:
 ```console
-CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-sim-verbose
+CAPI@Precis:~CAPI-Precis/00_bench$ make run-capi-sim-verbose
 ```
 6. Example output: please check [(CAPI User's Manual)](http://www.nallatech.com/wp-content/uploads/IBM_CAPI_Users_Guide_1-2.pdf), for each response explanation. The stats are labeled `RESPONSE_COMMANADTYPE_count`.
 ```
@@ -311,62 +311,62 @@ These steps require ALTERA Quartus synthesis tool, starting from release 15.0 of
 ##### Using terminal
 1. From the root directory (using terminal)
 ```console
-CAPI@Precis:~CAPIPrecis$ make run-synth
+CAPI@Precis:~CAPI-Precis$ make run-synth
 ```
 or
 ```console
-CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_synth/
-CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make
+CAPI@Precis:~CAPI-Precis$ cd 01_capi_integration/accelerator_synth/
+CAPI@Precis:~CAPI-Precis/01_capi_integration/accelerator_synth$ make
 ```
 
-2. Check CAPIPrecis.sta.rpt for timing requirements violations
+2. Check `capi-precis.sta.rpt` for timing requirement violations.
 
 ##### Using Quartus GUI
 1. From the root directory (using terminal)
 ```console
-CAPI@Precis:~CAPIPrecis$ make run-synth-gui
+CAPI@Precis:~CAPI-Precis$ make run-synth-gui
 ```
 or
 ```console
-CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_synth/
-CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make gui
+CAPI@Precis:~CAPI-Precis$ cd 01_capi_integration/accelerator_synth/
+CAPI@Precis:~CAPI-Precis/01_capi_integration/accelerator_synth$ make gui
 ```
 2. Synthesize using Quartus GUI
 
 ##### Using terminal (sweep seeds)
 1. From the root directory (using terminal) runs a list of seeds synthesizing for each.
 ```console
-CAPI@Precis:~CAPIPrecis$ make run-synth-sweep
+CAPI@Precis:~CAPI-Precis$ make run-synth-sweep
 ```
 or
 ```console
-CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_synth/
-CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_synth$ make sweep
+CAPI@Precis:~CAPI-Precis$ cd 01_capi_integration/accelerator_synth/
+CAPI@Precis:~CAPI-Precis/01_capi_integration/accelerator_synth$ make sweep
 ```
 
 #### Flashing image
 
-1. From the root directory go to CAPI integration directory -> CAPIPrecis binary images:
+1. From the root directory go to CAPI integration directory -> CAPI-Precis binary images:
 ```console
-CAPI@Precis:~CAPIPrecis$ cd 01_capi_integration/accelerator_bin/
+CAPI@Precis:~CAPI-Precis$ cd 01_capi_integration/accelerator_bin/
 ```
 2. Flash the image to the corresponding `#define DEVICE` you can modify it according to your Power8 system from `00_bench/include/capi_utils/capienv.h`
 ```console
-CAPI@Precis:~CAPIPrecis/01_capi_integration/accelerator_bin$ sudo capi-flash-script capi-precis_GITCOMMIT#_DATETIME.rbf
+CAPI@Precis:~CAPI-Precis/01_capi_integration/accelerator_bin$ sudo capi-flash-script capi-precis_GITCOMMIT#_DATETIME.rbf
 ```
 
 #### Running
 
 1. (Optional) From the root directory go to benchmark directory:
 ```console
-CAPI@Precis:~CAPIPrecis$ cd 00_bench/
+CAPI@Precis:~CAPI-Precis$ cd 00_bench/
 ```
 
 ##### Silent run with no stats output
 
 2. Runs algorithm that communicates with the or PSL (real HW):
 ```console
-CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga
+CAPI@Precis:~CAPI-Precis/00_bench$ make run-capi-fpga
 ```
 
 ##### Verbose run with stats output
@@ -375,7 +375,7 @@ This run outputs different AFU-Control stats based on the responses received fro
 
 2. Runs algorithm that communicates with the or PSL (real HW):
 ```console
-CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
+CAPI@Precis:~CAPI-Precis/00_bench$ make run-capi-fpga-verbose
 ```
 
 # CAPI-Precis Options 
@@ -384,8 +384,8 @@ CAPI@Precis:~CAPIPrecis/00_bench$ make run-capi-fpga-verbose
 Usage: capi-precis-openmp [OPTION...]
             -s <size> -n [num threads] -a [afu config] -c [cu config]  
 
-CAPIPrecis is an open source CAPI enabled FPGA processing framework, it is
-designed to abstract the PSL layer for a faster development cycles
+CAPI-Precis is an open source CAPI enabled FPGA processing framework, it is
+designed to abstract the PSL layer for faster development cycles.
 
   -a, --afu-config=[DEFAULT:0x1]   
                              AFU-Control buffers(read/write/prefetcher)
@@ -419,39 +419,11 @@ for any corresponding short options.
 ```
 
 
-# CAPIPrecis Structure:
-<p align="center"><img src="./02_slides/fig/CAPIPrecis_chipplanner.png" width="600" ></p>
-<p align="center"><img src="./02_slides/fig/theme2.png" width="650" ></p>
+# Architecture
 
-## CU Control
-
-### Interface
-
-## AFU Control
-
-### MMIO
-
-### Command Issue
-
-### Command Restart Issue
-
-### Credit Managment
-
-### Tag Managment
-
-### Read Data
-
-### Write Data
-
-### Error Report
-
-### Work Element Descriptor (WED)
-
-### Prefetch Control
-
-### Async/Sync Reset
-
-### Response Control
+The maintained architecture description is in the
+[architecture guide](docs/wiki/Architecture.md). Historical chip-planner and
+presentation figures remain under `02_slides` for reference.
 
 # Organization 
 
@@ -474,13 +446,13 @@ for any corresponding short options.
       * `mt19937.c` - Random number generator.
       * `myMalloc.c` - Custom malloc wrapper for aligned allocations.
       * `timer.c` - simple time measurement library.
-  * *`Makefile`* - This makefile handles the compilation/and simulation of CAPIPrecis 
+  * *`Makefile`* - This makefile handles the compilation and simulation of CAPI-Precis
 * `01_capi_integration` - The SW side that runs on the Device(FPGA)/ModelSim
   * `accelerator_rtl` 
     * `cu_control` - CU Units reside in this folder (read/write engines)
     * `afu_pkgs` - global packages 
     * `afu_control` - AFU Control units in this folder
-  * `accelerator_bin` - Binary images of CAPIPrecis (passed time requirements)
+  * `accelerator_bin` - Binary images of CAPI-Precis (passed time requirements)
     * `capi-precis_GITCOMMIT#_DATETIME.rbf` - flash binary image 
     * `synthesis_reports_capi-precis_GITCOMMIT#_DATETIME` - synthesis reports for that binary image
   * `accelerator_sim`
@@ -504,4 +476,3 @@ for any corresponding short options.
 Report bugs to: 
 - <atmughrabi@gmail.com>
 - <atmughra@ncsu.edu>
-<p align="right"> <img src="./02_slides/fig/logo1.png" width="200" ></p>

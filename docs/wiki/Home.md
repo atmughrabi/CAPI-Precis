@@ -1,5 +1,9 @@
 # CAPI-Precis wiki
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/02_slides/logo/logo.svg" width="220" alt="CAPI-Precis logo">
+</p>
+
 CAPI-Precis provides the AFU-control layer, host runtime, simulator integration,
 and FPGA build flow.
 
