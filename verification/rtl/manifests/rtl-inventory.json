@@ -1,0 +1,1766 @@
+{
+  "schema_version": 1,
+  "rtl_root": "01_capi_integration/accelerator_rtl",
+  "generated_by": "verification/rtl/scripts/verify_manifests.py",
+  "summary": {
+    "files": 82,
+    "declarations": 92,
+    "status_counts": {
+      "active": 48,
+      "legacy-supported": 30,
+      "quarantined": 4
+    },
+    "declaration_status_counts": {
+      "active": {
+        "module": 45,
+        "package": 13
+      },
+      "legacy-supported": {
+        "module": 25,
+        "package": 5
+      },
+      "quarantined": {
+        "module": 4
+      }
+    },
+    "modern_design_declarations": {
+      "module": 43,
+      "package": 13
+    }
+  },
+  "files": [
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/afu.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "afu"
+        }
+      ],
+      "sha256": "a6fdf6c3ec1b7c99c81efcb6ba9f640d3736effd6fa681db19d1b06e943d197e",
+      "verification_unit": "afu",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 32
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 32
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 31
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/afu_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "afu_control"
+        }
+      ],
+      "sha256": "1e4c26e5d7e07bf111856a3a5e11d3b5cf96008870afc2b01460149f8cb8b46b",
+      "verification_unit": "afu_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 25
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 25
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 25
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/cached_afu.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cached_afu"
+        }
+      ],
+      "sha256": "8daf254fceabb239e85e8f2b9fe7a529babd2837a44477376621d3eaeb39967b",
+      "verification_unit": "cached_afu",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 33
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 33
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 32
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/command_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "command_control"
+        }
+      ],
+      "sha256": "84da3b252eaeec8813c748831b2bea60c5da2539278c4f5df045fd64204e1045",
+      "verification_unit": "command_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 21
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 21
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 21
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/credit_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "credit_control"
+        }
+      ],
+      "sha256": "8d83456ef231546f6bc3550402e8066adc8294e621742df8c0ea580806871b1a",
+      "verification_unit": "credit_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 17
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 17
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 17
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/done_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "done_control"
+        }
+      ],
+      "sha256": "3ee14c84d463f7233303f545eb5cd280349109b78cdb3eb829c0825d8675ee3c",
+      "verification_unit": "done_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 11
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 11
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 11
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/error_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "error_control"
+        }
+      ],
+      "sha256": "b9982894d5e546633118fca46b5dc92f9ddc4e64949ecfce0874a252e6c6fb7d",
+      "verification_unit": "error_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 10
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 10
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 10
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/fifo.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "fifo"
+        }
+      ],
+      "sha256": "668d2e99baa673d860e54408a2448dda1ac3b13cf21640bd1783b8a7894ec407",
+      "verification_unit": "fifo",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 13
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 13
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 13
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/fixed_priority_arbiter.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "fixed_priority_arbiter_N_input_1_ouput"
+        },
+        {
+          "kind": "module",
+          "name": "fixed_priority_arbiter_1_input_N_ouput"
+        }
+      ],
+      "sha256": "145c68697a9ec51ac8117fa00852dd6ce3de22fe54810569d1128c8aec49669f",
+      "verification_unit": "fixed_priority_arbiter",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 16
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 16
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 16
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/job.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "job"
+        }
+      ],
+      "sha256": "fa2c554c17b23744063ac24f0ba006b8edf1492e0e0e06249b6eaf590f49a906",
+      "verification_unit": "job",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 26
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 26
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 26
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/mmio.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "mmio"
+        }
+      ],
+      "sha256": "4f6739fec76dab3fb6f05f37b83a28c5f37678e69f6b6aeb3175afb2d7bb8b22",
+      "verification_unit": "mmio",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 27
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 27
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 27
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/parity.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "parity"
+        },
+        {
+          "kind": "module",
+          "name": "dw_parity"
+        }
+      ],
+      "sha256": "a7825e03c1299896fe0302be6781af04cbbb4c2a7c3ddb41e851720aec7002cc",
+      "verification_unit": "parity",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 7
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 7
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 7
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "vc_FixedArbChain"
+        },
+        {
+          "kind": "module",
+          "name": "vc_FixedArb"
+        },
+        {
+          "kind": "module",
+          "name": "vc_VariableArbChain"
+        },
+        {
+          "kind": "module",
+          "name": "vc_VariableArb"
+        },
+        {
+          "kind": "module",
+          "name": "vc_RoundRobinArbChain"
+        },
+        {
+          "kind": "module",
+          "name": "vc_RoundRobinArb"
+        },
+        {
+          "kind": "module",
+          "name": "vc_RoundRobinArb_V2"
+        }
+      ],
+      "sha256": "44887dfcb207dcdf73dfc758c550add93675b36942347d1f09d3f5272290d10e",
+      "verification_unit": "priority_arbiters",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 14
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 14
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 14
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "ram"
+        },
+        {
+          "kind": "module",
+          "name": "ram_2xrd"
+        },
+        {
+          "kind": "module",
+          "name": "mixed_width_ram"
+        }
+      ],
+      "sha256": "103ac9e5f2f0d1703420956feca18d3a8c682986721b20b880d5a81987bab431",
+      "verification_unit": "ram",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 12
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 12
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 12
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/read_data_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "read_data_control"
+        }
+      ],
+      "sha256": "a1ac601b7bf4fe11513cd6bbbd0d75420b2dbce288609260bf6e6c9be90cac9a",
+      "verification_unit": "read_data_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 23
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 23
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 23
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/reset_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "reset_control"
+        }
+      ],
+      "sha256": "f19a3092b6aa64dadfe2f5bc9a4fa1a47103a61e5382bec33de82f52530ac04d",
+      "verification_unit": "reset_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 9
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 9
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 9
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/reset_filter.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "reset_filter"
+        }
+      ],
+      "sha256": "b900d51997664afb3de8b745cbf735f13839accc4f2d9572f2fc37d6b44b8fd3",
+      "verification_unit": "reset_filter",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 8
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 8
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 8
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/response_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "response_control"
+        }
+      ],
+      "sha256": "8259dae491a015bac8e2e12dd3dc921c88cc2f2b6fcaa0b44ce579b5e5fd6bb0",
+      "verification_unit": "response_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 19
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 19
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 19
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/response_statistics_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "response_statistics_control"
+        }
+      ],
+      "sha256": "2001002b312d6b200d7b84b0ffcd0d6aca475d6b026cc55935bf575fa5019696",
+      "verification_unit": "response_statistics_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 18
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 18
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 18
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/restart_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "restart_control"
+        }
+      ],
+      "sha256": "dd73a0e6a08182c84f17b3e05586d7fe3faf2c1c447979159237ca7c7072c734",
+      "verification_unit": "restart_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 20
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 20
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 20
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/round_robin_priority_arbiter.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "round_robin_priority_arbiter_N_input_1_ouput"
+        },
+        {
+          "kind": "module",
+          "name": "round_robin_priority_arbiter_1_input_N_ouput"
+        }
+      ],
+      "sha256": "7ee55dbd9422011fea9f0dda50098f826234beda23531f575db1186d4eb1a599",
+      "verification_unit": "round_robin_priority_arbiter",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 15
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 15
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 15
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/tag_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "tag_control"
+        }
+      ],
+      "sha256": "2f92862bf404514319318b4a04c37a224c58b62cb225589df66afe78975e43da",
+      "verification_unit": "tag_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 22
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 22
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 22
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/wed_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "wed_control"
+        }
+      ],
+      "sha256": "e4e6d72f1d8cd491290781212ffc5c306c3075d6f076292fed2cec8861309ace",
+      "verification_unit": "wed_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 28
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 28
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 28
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_control/write_data_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "write_data_control"
+        }
+      ],
+      "sha256": "a7d113a1a4de2f7db459b472e3e4089c798e4c8aa1028cc8abfd5d13b47d1c87",
+      "verification_unit": "write_data_control",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 24
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 24
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 24
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_pkgs/afu_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "AFU_PKG"
+        }
+      ],
+      "sha256": "d63c8c3bce7bd5af9aa6e8569add897000018b46880e9a3a65a8afa7b0d0dd6d",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 6
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 6
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 6
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_pkgs/capi_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "CAPI_PKG"
+        }
+      ],
+      "sha256": "d8293a7c827033e1d019ab6e1a0504d5c600a9a812bc3acedb109c6bf93d4630",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 2
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 2
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 2
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_pkgs/credit_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "CREDIT_PKG"
+        }
+      ],
+      "sha256": "f911d9714c99953f87803d35a37491bca68dc6e88e7e0da36fafd4dafb3276ae",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 5
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 5
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 5
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/afu_pkgs/globals_afu_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "GLOBALS_AFU_PKG"
+        }
+      ],
+      "sha256": "ecefdf05b329b9bb4a3f3da066aff3df18e1e606f2464009f13419b3cc33ae92",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 0
+        },
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 0
+        },
+        {
+          "manifest": "mmtiled",
+          "order": 0
+        }
+      ],
+      "evidence": "memcpy, memcpy-tutorial, mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_helloAFU/afu.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "afu"
+        }
+      ],
+      "sha256": "51259dcac462acfca7f604972d8f39cc6f5b719cb04d45beb654cfb9a36b2e29",
+      "verification_unit": "legacy-cu_helloAFU",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_helloAFU/capi.sv",
+      "status": "legacy-supported",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "CAPI"
+        }
+      ],
+      "sha256": "ec75dbc1422d53cda4d68339df03e26fd8f0bdce2d34222bbd7f0a4b6637c511",
+      "verification_unit": "legacy-cu_helloAFU",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_helloAFU/mmio.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "mmio"
+        }
+      ],
+      "sha256": "9f551929478f89ee7dde9ab1879479fbc6263b92beb54d8f12f016d2417180f7",
+      "verification_unit": "legacy-cu_helloAFU",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_helloAFU/parity_afu.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "parity_afu"
+        }
+      ],
+      "sha256": "e9dca392d8040436120cd24ff737d97eaa8194b550c3d32394b81dc734651dd5",
+      "verification_unit": "legacy-cu_helloAFU",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_helloAFU/parity_workelement.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "parity_workelement"
+        }
+      ],
+      "sha256": "362cba2886a386ea6d51e929366cbe5d0e7f3a7331b58a6d056887a0b6a73924",
+      "verification_unit": "legacy-cu_helloAFU",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_helloAFU/shift_register.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "shift_register"
+        }
+      ],
+      "sha256": "e30764e8ce6c01bcba7013709e45c6c8f2a8abc35fe93ac4d2fc7a62b2934d5d",
+      "verification_unit": "legacy-cu_helloAFU",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_cu/cu_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_control"
+        }
+      ],
+      "sha256": "9fdfd4f573e22f27b81316e99270b9c4a946ed87148e3a22a75f706c2b872a65",
+      "verification_unit": "memcpy-tutorial-cu",
+      "build_membership": [
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 31
+        }
+      ],
+      "evidence": "memcpy-tutorial"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_pkg/cu_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "CU_PKG"
+        }
+      ],
+      "sha256": "05fc0beb852b07ff62c77dd552f2ec9ccb9cbe5ada6097d3e5e9825050f70a4e",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 4
+        }
+      ],
+      "evidence": "memcpy-tutorial"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_pkg/wed_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "WED_PKG"
+        }
+      ],
+      "sha256": "327d5eaa535629b8528eb8a9ec2afb35314cd8a16aeec02a074a4e979501716b",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 3
+        }
+      ],
+      "evidence": "memcpy-tutorial"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/read_engine.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "read_engine"
+        }
+      ],
+      "sha256": "cf548ab7b902d4009c0ce401b0c391879f4fb790f46159e9b29bdf120e2e6a8b",
+      "verification_unit": "memcpy-tutorial-cu",
+      "build_membership": [
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 29
+        }
+      ],
+      "evidence": "memcpy-tutorial"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/write_engine.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "write_engine"
+        }
+      ],
+      "sha256": "e31617c67e28e16fc8c12155f65beeb6b39c49ce414f21c5cb31944484c8d694",
+      "verification_unit": "memcpy-tutorial-cu",
+      "build_membership": [
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 30
+        }
+      ],
+      "evidence": "memcpy-tutorial"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/pkg/globals_cu_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "GLOBALS_CU_PKG"
+        }
+      ],
+      "sha256": "d5843fc94eb0bb535f8dca8de15ea2f6277924586cc92803a109ea641cf67029",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy-tutorial",
+          "order": 1
+        }
+      ],
+      "evidence": "memcpy-tutorial"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_cu/cu_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_control"
+        }
+      ],
+      "sha256": "a8803ee5a49db83952349afebcc14a6e465997d41ee2a363882e2a76ffedce79",
+      "verification_unit": "memcpy-cu",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 31
+        }
+      ],
+      "evidence": "memcpy"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/cu_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "CU_PKG"
+        }
+      ],
+      "sha256": "9ca48a82fe342b61154181d79e6c626f7557385094555afccd3e019b68f7bf4e",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 4
+        }
+      ],
+      "evidence": "memcpy"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/wed_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "WED_PKG"
+        }
+      ],
+      "sha256": "08c5bccf08dce6a48f44c593ca9a69b2608ba4ac656093df1b962187e91baa4d",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 3
+        }
+      ],
+      "evidence": "memcpy"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_data_read_engine_control"
+        }
+      ],
+      "sha256": "cb1e55d6430f88a10841f5c078c571862fae0c84ac07f975cee7209ec8218678",
+      "verification_unit": "memcpy-cu",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 29
+        }
+      ],
+      "evidence": "memcpy"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_data_write_engine_control"
+        }
+      ],
+      "sha256": "4bcd3407dec482f2411172b369bbfb690a644e9d689b5596a95a559253ac1b0e",
+      "verification_unit": "memcpy-cu",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 30
+        }
+      ],
+      "evidence": "memcpy"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/pkg/globals_cu_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "GLOBALS_CU_PKG"
+        }
+      ],
+      "sha256": "ac10c437255458f3f51238c1d70265eb6c0147b873f5d76546c518c01721ee10",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "memcpy",
+          "order": 1
+        }
+      ],
+      "evidence": "memcpy"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_control"
+        }
+      ],
+      "sha256": "88e1a9e71daf15ab0adefe2ec243793f5fff4a2f2d7811699c1454a41498451e",
+      "verification_unit": "mmtiled-cu",
+      "build_membership": [
+        {
+          "manifest": "mmtiled",
+          "order": 30
+        }
+      ],
+      "evidence": "mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_matrix_C_job_control"
+        }
+      ],
+      "sha256": "cf29b19e8ef33dad76f90bda09f54f3786a98a85b6be714a6a9141ceb5fa5d94",
+      "verification_unit": "mmtiled-cu",
+      "build_membership": [
+        {
+          "manifest": "mmtiled",
+          "order": 29
+        }
+      ],
+      "evidence": "mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/loop_index_generator.sv",
+      "status": "quarantined",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "loop_index_generator"
+        }
+      ],
+      "sha256": "e53518b0ea9a5609efa3b827d5418ed9935738f3eb94e789df3679eacfcab4d0",
+      "verification_unit": "mmtiled-cu",
+      "build_membership": [],
+      "evidence": "Incomplete legacy draft references undeclared matrix-job state."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/cu_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "CU_PKG"
+        }
+      ],
+      "sha256": "dc0668ba87797f92f6dbbf6c2dddec953646b252488ecf8b769f4d9d9dee2696",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "mmtiled",
+          "order": 4
+        }
+      ],
+      "evidence": "mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/wed_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "WED_PKG"
+        }
+      ],
+      "sha256": "2da43613ecae76f26ffed76367ba3433f6b9436445b9bc3fa2a21017cdae9b05",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "mmtiled",
+          "order": 3
+        }
+      ],
+      "evidence": "mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/cu/cu_data_read_engine_control.sv",
+      "status": "quarantined",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_data_read_engine_control"
+        }
+      ],
+      "sha256": "cb1e55d6430f88a10841f5c078c571862fae0c84ac07f975cee7209ec8218678",
+      "verification_unit": "mmtiled-cu",
+      "build_membership": [],
+      "evidence": "Not instantiated by the modern mmtiled CU; excluded from ModelSim."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/cu/cu_data_write_engine_control.sv",
+      "status": "quarantined",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_data_write_engine_control"
+        }
+      ],
+      "sha256": "4bcd3407dec482f2411172b369bbfb690a644e9d689b5596a95a559253ac1b0e",
+      "verification_unit": "mmtiled-cu",
+      "build_membership": [],
+      "evidence": "Not instantiated by the modern mmtiled CU; excluded from ModelSim."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/pkg/globals_cu_pkg.sv",
+      "status": "active",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "GLOBALS_CU_PKG"
+        }
+      ],
+      "sha256": "73a591bef82a82f9d287b48e09eaa693a8812740589b5ec6bfd5c5ef73c980fe",
+      "verification_unit": "package-contracts",
+      "build_membership": [
+        {
+          "manifest": "mmtiled",
+          "order": 1
+        }
+      ],
+      "evidence": "mmtiled"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/FixedPoint/cu/cu_sum_kernel_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_sum_kernel_control"
+        }
+      ],
+      "sha256": "8751d3e2cad1fcaa716f59006bca069876e596bf6f7b78379497caddd7eee5aa",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/FixedPoint/pkg/globals_cu_pkg.sv",
+      "status": "legacy-supported",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "GLOBALS_CU_PKG"
+        }
+      ],
+      "sha256": "d25f095296c33fe1193e419510fe74cdccd4b01bae0ee6640ff6949d3b97e38d",
+      "verification_unit": "package-contracts",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/array_struct_type_demux_bus.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "array_struct_type_demux_bus"
+        }
+      ],
+      "sha256": "3058b8f8b0595afaaad937faf86c094f646217fcc4ba2825fa5fd40674d7efe5",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_control"
+        }
+      ],
+      "sha256": "a7b9863f6e850975de9fb7a3caad3b148004440b6c6711c7414b61491d44e104",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_edge_data_read_command_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_edge_data_read_command_control"
+        }
+      ],
+      "sha256": "450c97af89da186f6ff5c2be2f3ef091d12816005ca37d883545d6ab0d3b5856",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_edge_data_read_extract_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_edge_data_read_extract_control"
+        }
+      ],
+      "sha256": "210b5101c16a5feef06c0877ab13655ae69ebe21302d2aec62aa803fbd21cdd8",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_edge_data_write_command_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_edge_data_write_command_control"
+        }
+      ],
+      "sha256": "0780b9fb89c6e83042d416b3c92130ebd6a4061410419b1cbef2c150bc061854",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_edge_job_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_edge_job_control"
+        }
+      ],
+      "sha256": "e3f7797bb79524153951a30d187b0b409b45105faf8afabee42a7278d330810b",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_graph_algorithm_arbiter_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_graph_algorithm_arbiter_control"
+        }
+      ],
+      "sha256": "1940ec412701d5bc51901f10e934a8111036a5abbd4ef8b269b2e039bea38e3b",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_graph_algorithm_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_graph_algorithm_control"
+        }
+      ],
+      "sha256": "a1be1ec7b21a647fda99dca195430f07b4f738db663588cbd23b304ce3659bb8",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_vertex_job_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_vertex_job_control"
+        }
+      ],
+      "sha256": "b905aec015e7685b49ebe0cb729901f19fcd4cf51d7c9df171fdcef4218fb930",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_vertex_job_filter.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_vertex_job_filter"
+        }
+      ],
+      "sha256": "8529c1747661b3038d5c390e2f1db950a9155c0a7758628eb5b39bfed97e22ab",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_vertex_pagerank.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_vertex_pagerank"
+        }
+      ],
+      "sha256": "be2f3584a99ffed255acef011134d1cee285bf179f7fac64c421d5a95debb352",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/cu_vertex_pagerank_arbiter_control.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_vertex_pagerank_arbiter_control"
+        }
+      ],
+      "sha256": "370880623553273d329f9588ff20ab370fcaf271a2432eeec1a276b302cb6125",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/demux_bus.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "demux_bus"
+        }
+      ],
+      "sha256": "8a97ac6232ebc932623d197c5ac06bc1739396ad891e6cb7f3d9d9dab4257fd0",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_cu/sum_reduce.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "sum_reduce"
+        }
+      ],
+      "sha256": "3e335da1e0dd7b0eeebfcbbf7eacff49641676476db3e045530a0b2a334f184d",
+      "verification_unit": "legacy-cu_mmtiled",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_pkg/cu_pkg.sv",
+      "status": "legacy-supported",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "CU_PKG"
+        }
+      ],
+      "sha256": "983791e0fcfea2407beded30d5d1853848fc081898a6870fd3694e0395721455",
+      "verification_unit": "package-contracts",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/port/global_pkg/wed_pkg.sv",
+      "status": "legacy-supported",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "WED_PKG"
+        }
+      ],
+      "sha256": "0d7837c46c10ff50a705fd08001d13ab280f30d107875ff2e301ee14f3680dc8",
+      "verification_unit": "package-contracts",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_tutorial/afu.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "afu"
+        }
+      ],
+      "sha256": "51259dcac462acfca7f604972d8f39cc6f5b719cb04d45beb654cfb9a36b2e29",
+      "verification_unit": "legacy-cu_tutorial",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_tutorial/capi.sv",
+      "status": "legacy-supported",
+      "kind": "package",
+      "declarations": [
+        {
+          "kind": "package",
+          "name": "CAPI"
+        }
+      ],
+      "sha256": "ec75dbc1422d53cda4d68339df03e26fd8f0bdce2d34222bbd7f0a4b6637c511",
+      "verification_unit": "legacy-cu_tutorial",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_tutorial/mmio.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "mmio"
+        }
+      ],
+      "sha256": "9f551929478f89ee7dde9ab1879479fbc6263b92beb54d8f12f016d2417180f7",
+      "verification_unit": "legacy-cu_tutorial",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_tutorial/parity_afu.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "parity_afu"
+        }
+      ],
+      "sha256": "98d0c0ccf37db7578abd26be0b413ad7b19c1dd0ac4aa290f9bab476c075de4f",
+      "verification_unit": "legacy-cu_tutorial",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_tutorial/parity_workelement.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "parity_workelement"
+        }
+      ],
+      "sha256": "362cba2886a386ea6d51e929366cbe5d0e7f3a7331b58a6d056887a0b6a73924",
+      "verification_unit": "legacy-cu_tutorial",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/cu_control/cu_tutorial/shift_register.sv",
+      "status": "legacy-supported",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "shift_register"
+        }
+      ],
+      "sha256": "f7b3b87640ae55438550009320082a1b4e26b2e0e547dccbf8af3c8f264f0a42",
+      "verification_unit": "legacy-cu_tutorial",
+      "build_membership": [],
+      "evidence": "Classified legacy tree; excluded from modern manifests."
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/verification/accelerator_verification.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "accelerator_verification"
+        }
+      ],
+      "sha256": "73bed05d105ebcb876708219e425803d75b713cea12b5dfabaeb9759118a1eee",
+      "verification_unit": "rtl-lifecycle",
+      "build_membership": [
+        {
+          "manifest": "monitor",
+          "order": 0
+        }
+      ],
+      "evidence": "monitor"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/verification/accelerator_verification_bind.sv",
+      "status": "active",
+      "kind": "bind",
+      "declarations": [],
+      "sha256": "25b89146dc621f62c818736828a6acd3a92608d39fe6c4f5cefa091ad128876e",
+      "verification_unit": "rtl-lifecycle",
+      "build_membership": [
+        {
+          "manifest": "monitor",
+          "order": 1
+        }
+      ],
+      "evidence": "monitor"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/verification/accelerator_verification_tb.sv",
+      "status": "active",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "accelerator_verification_tb"
+        }
+      ],
+      "sha256": "ced1501891aadd549964f2c20716abfad77e8964135b1f66c1f556877e5151f8",
+      "verification_unit": "rtl-lifecycle",
+      "build_membership": [
+        {
+          "manifest": "monitor-testbench",
+          "order": 0
+        }
+      ],
+      "evidence": "monitor-testbench"
+    },
+    {
+      "path": "01_capi_integration/accelerator_rtl/verification/cached_afu_bind_cu_stub.sv",
+      "status": "quarantined",
+      "kind": "module",
+      "declarations": [
+        {
+          "kind": "module",
+          "name": "cu_control"
+        }
+      ],
+      "sha256": "a51173bdebd547fff6111adaed92906555ceed0908efbea4cf29d143cc614fce",
+      "verification_unit": "rtl-lifecycle",
+      "build_membership": [],
+      "evidence": "Compatibility-only stub; forbidden as Phase 0 elaboration evidence."
+    }
+  ]
+}

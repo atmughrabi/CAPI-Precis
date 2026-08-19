@@ -40,6 +40,13 @@ explains the supplied system figures, and the
 [verification roadmap](https://github.com/atmughrabi/CAPI-Precis/wiki/Verification-Infrastructure)
 defines the planned module-level infrastructure.
 
+Phase 0 now gates every RTL path and the exact modern source order:
+
+```console
+make rtl-manifest-verification
+make rtl-real-elaboration
+```
+
 The editable documentation source is the
 [`docs` index](docs/README.md); the GitHub wiki is its published mirror.
 
@@ -54,7 +61,7 @@ CAPI@Precis:~$ sudo apt-get install libomp-dev
 ```
 2. Verilator 5 or newer is required for the standalone RTL verification target.
 ```console
-CAPI@Precis:~$ sudo apt-get install verilator
+CAPI@Precis:~$ sudo apt-get install tcl verilator
 ```
 
 ### CAPI

@@ -1,0 +1,3 @@
+# CAPI-Precis verification API v1
+01_capi_integration/accelerator_rtl/verification/accelerator_verification.sv
+01_capi_integration/accelerator_rtl/verification/accelerator_verification_bind.sv

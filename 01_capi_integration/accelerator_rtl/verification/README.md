@@ -11,11 +11,13 @@ be overridden on the bound instance. A violation terminates simulation with
 
 `accelerator_verification_tb.sv` provides positive and negative protocol
 regression cases. `lint_cached_afu_bind.sh` elaborates the real `cached_afu`,
-AFU-control RTL, and all modern WED variants. It substitutes only the CU module
-boundary because the legacy CU ports are not directly accepted by Verilator.
+AFU-control RTL, and each real modern `cu_control` variant from the ordered
+Phase 0 manifests. The compatibility CU stub is excluded from this evidence,
+and implicit nets or pin mismatches fail elaboration.
 
 Run from the repository root:
 
 ```console
 make rtl-verification
+make rtl-real-elaboration
 ```

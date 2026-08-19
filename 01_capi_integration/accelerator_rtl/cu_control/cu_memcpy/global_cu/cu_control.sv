@@ -31,6 +31,10 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 	input  ResponseBufferLine write_response_in           ,
 	input  ReadWriteDataLine  read_data_0_in              ,
 	input  ReadWriteDataLine  read_data_1_in              ,
+	input  BufferStatus       read_buffer_status          ,
+	input  BufferStatus       prefetch_read_buffer_status ,
+	input  BufferStatus       prefetch_write_buffer_status,
+	input  BufferStatus       write_buffer_status         ,
 	input  cu_configure_type  cu_configure                ,
 	output cu_return_type     cu_return                   ,
 	output logic              cu_done                     ,
@@ -130,7 +134,7 @@ module cu_control #(parameter NUM_READ_REQUESTS = 2) (
 
 ////////////////////////////////////////////////////////////////////////////
 //Done signal
-////////////////////////////////////////////////////////////////////////////a
+////////////////////////////////////////////////////////////////////////////
 	assign cu_ready = (|cu_configure_latched) && wed_request_in_latched.valid;
 
 	always_comb begin

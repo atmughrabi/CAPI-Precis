@@ -314,6 +314,18 @@ integration-compile:
 rtl-verification:
 	$(MAKE) rtl-verification $(MAKE_ARGS)
 
+.PHONY: rtl-manifest-verification
+rtl-manifest-verification:
+	./verification/rtl/scripts/verify_manifests.py
+
+.PHONY: rtl-manifest-update
+rtl-manifest-update:
+	./verification/rtl/scripts/verify_manifests.py --write
+
+.PHONY: rtl-real-elaboration
+rtl-real-elaboration: rtl-manifest-verification
+	./01_capi_integration/accelerator_rtl/verification/lint_cached_afu_bind.sh
+
 .PHONY: env-harness-test
 env-harness-test:
 	./tools/tests/test-capi-env.sh

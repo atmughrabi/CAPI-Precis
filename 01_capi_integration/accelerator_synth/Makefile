@@ -35,14 +35,13 @@ SYNTH_DIR ?= synthesize_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)
 
 VERSION_GIT ?= $(shell python3 ./capi/scripts/version.py)
 TIME_STAMP ?= $(shell date +%Y_%m_%d_%H_%M_%S)
-ACCEL_RTL_DIR ?= accelerator_rtl
 ACCEL_BIN_DIR ?= accelerator_bin
-SOURCE_FILES ?=  $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu_control/*.sv)   \
-				$(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/afu_pkgs/*.sv)   \
-				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_cu/*.sv)\
-				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/global_pkg/*.sv)\
-				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/cu/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/cu/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/cu/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/cu/*.sv)\
-				$(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/pkg/*.vhdl) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/pkg/*.vhd) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/pkg/*.v) $(wildcard ../$(ACCEL_RTL_DIR)/cu_control/cu_$(CU_ALGORITHM)/$(CU_ALGORITHM)/pkg/*.sv)
+ACCEL_MANIFEST ?= ../../verification/rtl/manifests/$(CU_ALGORITHM).f
+SOURCE_FILES ?= $(addprefix ../../,$(shell sed -e '/^[[:space:]]*\#/d' -e '/^[[:space:]]*$$/d' $(ACCEL_MANIFEST)))
+
+.PHONY: print-accelerator-sources
+print-accelerator-sources:
+	@printf '%s\n' $(SOURCE_FILES)
 
 
 export LM_LICENSE_FILE := $(LM_LICENSE_FILE):$(shell pwd)/psl_fpga/psl/psl_A000_license.dat
@@ -131,7 +130,7 @@ $(PROJECT).qxp: $(PROJECT).map.rpt
 # Project initialization
 ###################################################################
 
-$(ASSIGNMENT_FILES): $(PROJECT).tcl ./capi/fpga/*.tcl
+$(ASSIGNMENT_FILES): $(PROJECT).tcl ./capi/fpga/*.tcl $(ACCEL_MANIFEST)
 	quartus_sh -t  $(PROJECT).tcl $(PROJECT) $(CU_ALGORITHM) $(NUM_THREADS)
 	quartus_sh --prepare $(PROJECT)
 	#quartus_stp $(PROJECT) --enable --logic_analyzer_interface --lai_file=probes.lai

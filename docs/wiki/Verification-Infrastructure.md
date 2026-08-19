@@ -17,10 +17,36 @@ module-level infrastructure is built.
 | --- | --- | --- |
 | Host runtime | Timeout parsing, blocked-call watchdog, fake-libcxl setup/MMIO/error/completion/reset tests | Fault injection across every libcxl operation and structured test reports |
 | RTL lifecycle | Bound configuration/progress/error/done/ACK/reset monitor with positive and negative tests | Module-local assertions and coverage |
-| Real bind | `cached_afu` and AFU-control elaboration for `memcpy`, `memcpy-tutorial`, and `mmtiled` WED variants | Real CU elaboration without the compatibility CU stub |
+| Real bind | Real `cached_afu` elaboration for `memcpy`, `memcpy-tutorial`, and `mmtiled`, with implicit nets rejected and no CU stub | Licensed ModelSim and Quartus analysis/elaboration evidence |
 | Algorithms | CPU memory-copy and matrix references | Cycle-accurate CU scoreboards and memory-system integration tests |
 | Simulation | PSLSE/ModelSim scripts and wave groups | Reusable BFMs, deterministic channel backpressure, replayable seeds, and automatic scoreboards |
-| CI | Host, monitor, bind, and OpenMP checks | Per-module matrix, coverage thresholds, JUnit, and failure artifacts |
+| CI | Host, monitor, real-CU bind, exact source manifests/inventory, and OpenMP checks | Per-module matrix, coverage thresholds, JUnit, and failure artifacts |
+
+### Phase 0 manifest gate
+
+The executable Phase 0 baseline lives in `verification/rtl`:
+
+- three ordered modern design manifests contain 43 modules and 13 packages;
+- `rtl-inventory.json` classifies all 82 RTL files with declarations, SHA-256,
+  build membership, verification unit, and evidence;
+- 25 legacy modules and 5 legacy packages remain explicitly
+  `legacy-supported`;
+- the three incomplete mmtiled drafts and compatibility CU stub are
+  `quarantined` and cannot enter a modern manifest;
+- ModelSim source order must match each variant manifest exactly;
+- the Quartus Tcl loader is executed under `tclsh` and must preserve that exact
+  order without `glob`;
+- Verilator elaborates each real `cached_afu + cu_control` variant with
+  implicit nets promoted to errors.
+
+```console
+make rtl-manifest-verification
+make rtl-real-elaboration
+```
+
+G0 and portable G1 are active merge gates. Licensed ModelSim and Quartus
+analysis/elaboration remain required release evidence before Phase 0 is marked
+closed on supported hardware.
 
 ### Inventory
 
@@ -29,8 +55,7 @@ module-level infrastructure is built.
   `mmtiled`.
 - 13 package declarations with variant-local packages sharing names.
 - 43 active RTL declarations grouped into 30 verification units.
-- 3 stale `mmtiled` declarations that require an explicit repair, quarantine,
-  or removal decision before synthesis-source parity can be claimed.
+- 3 stale `mmtiled` declarations quarantined from all modern source manifests.
 - 25 legacy module declarations and 5 legacy packages across the direct
   `cu_helloAFU`, direct `cu_tutorial`, and `cu_mmtiled/port` trees. These are
   not active modern targets but remain in the G0 denominator until explicitly
@@ -466,7 +491,7 @@ verification/
   `01_capi_integration/accelerator_rtl/verification/accelerator_verification.sv`,
   the bind template, module name, ports, and parameters for one API-major
   version.
-- Publish `verification/manifests/monitor.f`; consumers use the manifest instead
+- Publish `verification/rtl/manifests/monitor.f`; consumers use the manifest instead
   of hardcoding the monitor source path.
 - A path/symbol change requires an API version bump, one-release compatibility
   shim, and passing downstream compatibility job.
@@ -493,6 +518,9 @@ verification/
 ## Phased delivery
 
 ### Phase 0 - exact manifests and compile closure
+
+**Status:** G0 and portable real-CU elaboration implemented; licensed ModelSim
+and Quartus closure pending.
 
 - Record the 35 shared modules, 8 active modern CU modules, 13 packages, and
   explicit exclusions in ordered manifests.

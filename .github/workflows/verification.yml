@@ -15,6 +15,6 @@ jobs:
         with:
           submodules: recursive
       - name: Install verification tools
-        run: sudo apt-get update -qq && sudo apt-get install -y verilator
+        run: sudo apt-get update -qq && sudo apt-get install -y tcl verilator
       - name: Repository verification
         run: make verify

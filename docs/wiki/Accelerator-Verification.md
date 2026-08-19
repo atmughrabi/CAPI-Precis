@@ -78,9 +78,11 @@ make rtl-verification
 make verify
 ```
 
-`make rtl-verification` elaborates the real `cached_afu` and AFU-control RTL
-across the `memcpy`, `memcpy-tutorial`, and `mmtiled` WED variants, substituting
-only the legacy CU boundary, then runs positive and negative protocol tests
-with Verilator. `make verify` includes that RTL evidence alongside host and
-benchmark checks. Local verification skips the RTL stage when Verilator 5 is
-unavailable; GitHub Actions sets `RTL_VERIFICATION_REQUIRED=1`.
+`make rtl-verification` validates the ordered Phase 0 manifests, elaborates the
+real `cached_afu`, AFU-control, and `cu_control` RTL across the `memcpy`,
+`memcpy-tutorial`, and `mmtiled` variants without the compatibility CU stub,
+then runs positive and negative protocol tests with Verilator. Implicit nets
+and pin mismatches fail the gate. `make verify` includes that RTL evidence
+alongside host and benchmark checks. Local verification skips the RTL stage
+when Verilator 5 is unavailable; GitHub Actions sets
+`RTL_VERIFICATION_REQUIRED=1`.

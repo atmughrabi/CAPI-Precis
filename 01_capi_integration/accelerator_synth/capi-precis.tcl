@@ -31,53 +31,7 @@ source $LIBCAPI/fpga/common.tcl
 source $LIBCAPI/fpga/ibm_sources.tcl
 source $LIBCAPI/fpga/pins.tcl
 source $LIBCAPI/fpga/build_version.tcl
+source $LIBCAPI/fpga/accelerator_sources.tcl
 
-
-# foreach filename [glob ../accelerator/rtl/*.vhd] {
-#     set_global_assignment -name VHDL_FILE $filename
-# }
-
-# foreach filename [glob ../accelerator/rtl/*.v] {
-#     set_global_assignment -name SYSTEMVERILOG_FILE $filename
-# }
-
-foreach filename [glob ../accelerator_rtl/afu_control/*.sv] {
-    set_global_assignment -name SYSTEMVERILOG_FILE $filename
-}
-
-# foreach filename [glob ../accelerator/pkg/*.vhd] {
-#     set_global_assignment -name VHDL_FILE $filename
-# }
-
-# foreach filename [glob ../accelerator/pkg/*.v] {
-#     set_global_assignment -name SYSTEMVERILOG_FILE $filename
-# }
-
-foreach filename [glob ../accelerator_rtl/afu_pkgs/*.sv] {
-    set_global_assignment -name SYSTEMVERILOG_FILE $filename
-}
-
-# foreach filename [glob ../accelerator/cu/*.vhd] {
-#     set_global_assignment -name VHDL_FILE $filename
-# }
-
-# foreach filename [glob ../accelerator/cu/*.v] {
-#     set_global_assignment -name SYSTEMVERILOG_FILE $filename
-# }
-
-
-foreach filename [glob ../accelerator_rtl/cu_control/cu_$algorithm/global_pkg/*.sv] {
-    set_global_assignment -name SYSTEMVERILOG_FILE $filename
-}
-
-foreach filename [glob ../accelerator_rtl/cu_control/cu_$algorithm/global_cu/*.sv] {
-    set_global_assignment -name SYSTEMVERILOG_FILE $filename
-}
-
-foreach filename [glob ../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/cu/*.sv] {
-    set_global_assignment -name SYSTEMVERILOG_FILE $filename
-}
-
-foreach filename [glob ../accelerator_rtl/cu_control/cu_$algorithm/$algorithm/pkg/*.sv] {
-    set_global_assignment -name SYSTEMVERILOG_FILE $filename
-}
+set repo_root [file normalize [file join [file dirname [info script]] ../..]]
+add_accelerator_manifest $repo_root $algorithm
