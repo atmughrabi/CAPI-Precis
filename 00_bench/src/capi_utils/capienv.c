@@ -322,6 +322,13 @@ static void waitAFUCompletionReset(
     while(1);
 }
 
+char *capiDevicePath(void)
+{
+    char *device = getenv("CAPI_DEVICE");
+
+    return (device && device[0]) ? device : DEVICE_1;
+}
+
 int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed)
 {
     int status;
@@ -342,7 +349,7 @@ int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed)
         setupAFUFailure(afu, "install MMIO fault handler", status);
 
     acceleratorCallStart("open AFU device");
-    (*afu) = cxl_afu_open_dev(DEVICE_1);
+    (*afu) = cxl_afu_open_dev(capiDevicePath());
     acceleratorCallStop();
     if(!(*afu))
         setupAFUFailure(afu, "open device", errno);
@@ -383,7 +390,7 @@ int setupAFUMM(struct cxl_afu_h **afu, struct WEDStructMM *wed)
         setupAFUFailure(afu, "install MMIO fault handler", status);
 
     acceleratorCallStart("open AFU device");
-    (*afu) = cxl_afu_open_dev(DEVICE_1);
+    (*afu) = cxl_afu_open_dev(capiDevicePath());
     acceleratorCallStop();
     if(!(*afu))
         setupAFUFailure(afu, "open device", errno);
@@ -424,7 +431,7 @@ int setupAFUTut(struct cxl_afu_h **afu, struct WEDStructTut *wed)
         setupAFUFailure(afu, "install MMIO fault handler", status);
 
     acceleratorCallStart("open AFU device");
-    (*afu) = cxl_afu_open_dev(DEVICE_1);
+    (*afu) = cxl_afu_open_dev(capiDevicePath());
     acceleratorCallStop();
     if(!(*afu))
         setupAFUFailure(afu, "open device", errno);

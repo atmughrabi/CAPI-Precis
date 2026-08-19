@@ -8,7 +8,7 @@
 ## Overview 
 
 <p align="center">
-  <img src="./docs/fig/capi-precis-architecture.png" width="900" alt="CAPI-Precis accelerator architecture">
+  <img src="./docs/fig/capi-precis-architecture.svg" width="900" alt="CAPI-Precis accelerator architecture">
 </p>
 
 CAPI-Precis is an AFU-control abstraction layer that simplifies communication
@@ -63,38 +63,30 @@ CAPI@Precis:~$ sudo apt-get install verilator
   * ModelSim is used for simulation and installed along side Quartus II 18.1.
   * Synthesis requires ALTERA Quartus, starting from release 15.0 of Quartus II should be fine.
   * Nallatech P385-A7 card with the Altera Stratix-V-GX-A7 FPGA is supported.
-  * Environment Variable setup, `HOME` and `ALTERAPATH` depend on where you clone the repository and install ModelSim.
+  * `tools/capi-env` scopes all project/tool variables to one command or a
+    temporary shell. No `.bashrc` changes are required.
+  * Initialize the recursive submodules in
+    [Setting up the source code](#setting-up-the-source-code) before running
+    host or simulation checks.
 
 ```bash
-#quartus 18.1 env-variables
-export ALTERAPATH="${HOME}/intelFPGA/18.1"
-export QUARTUS_INSTALL_DIR="${ALTERAPATH}/quartus"
-export LM_LICENSE_FILE="${ALTERAPATH}/licenses/psl_A000_license.dat:${ALTERAPATH}/licenses/common_license.dat"
-export QSYS_ROOTDIR="${ALTERAPATH}/quartus/sopc_builder/bin"
-export PATH=$PATH:${ALTERAPATH}/quartus/bin
-export PATH=$PATH:${ALTERAPATH}/nios2eds/bin
+# Host-only checks
+./tools/capi-env --mode host check
 
-#modelsim env-variables
-export PATH=$PATH:${ALTERAPATH}/modelsim_ase/bin
+# Validate a ModelSim/PSLSE installation
+./tools/capi-env --mode sim --intel-fpga "$HOME/intelFPGA/18.1" check
 
-# CAPI-Precis project folder
-export CAPI_PROJECT=CAPI-Precis
+# Run any command with a scoped environment
+./tools/capi-env --mode sim -- make run-vsim
+./tools/capi-env --mode sim -- make run-pslse
+./tools/capi-env --mode sim -- make run-capi-sim-verbose2
 
-#CAPI framework env variables
-export PSLSE_INSTALL_DIR="${HOME}/Documents/github_repos/${CAPI_PROJECT}/01_capi_integration/pslse"
-export VPI_USER_H_DIR="${ALTERAPATH}/modelsim_ase/include"
-export PSLVER=8
-export BIT32=n
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PSLSE_INSTALL_DIR/libcxl:$PSLSE_INSTALL_DIR/afu_driver/src"
-
-#PSLSE env variables
-export PSLSE_SERVER_DIR="${HOME}/Documents/github_repos/${CAPI_PROJECT}/01_capi_integration/accelerator_sim/server"
-export PSLSE_SERVER_DAT="${PSLSE_SERVER_DIR}/pslse_server.dat"
-export SHIM_HOST_DAT="${PSLSE_SERVER_DIR}/shim_host.dat"
-export PSLSE_PARMS="${PSLSE_SERVER_DIR}/pslse.parms"
-export DEBUG_LOG_PATH="${PSLSE_SERVER_DIR}/debug.log"
-
+# Open a temporary configured shell; exit discards the environment
+./tools/capi-env --mode synth shell
 ```
+
+The [environment harness guide](https://github.com/atmughrabi/CAPI-Precis/wiki/Environment-Harness)
+documents simulation, synthesis, FPGA, custom install paths, and export output.
 
 2. AFU Communication with PSL
   * please check [(CAPI User's Manual)](http://www.nallatech.com/wp-content/uploads/IBM_CAPI_Users_Guide_1-2.pdf).

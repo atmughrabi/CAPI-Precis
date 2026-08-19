@@ -10,6 +10,8 @@ host/AFU protocol used by AccelGraph.
 
 - [Architecture](https://github.com/atmughrabi/CAPI-Precis/wiki/Architecture) maps the host, WED, AFU-control, CU-control,
   simulation, and synthesis boundaries.
+- [Environment harness](https://github.com/atmughrabi/CAPI-Precis/wiki/Environment-Harness)
+  runs host, simulation, synthesis, or FPGA commands without shell-profile edits.
 - [Accelerator verification](https://github.com/atmughrabi/CAPI-Precis/wiki/Accelerator-Verification) defines the bounded
   host/accelerator contract.
 - [Deployment runbook](https://github.com/atmughrabi/CAPI-Precis/wiki/Deployment-Runbook) covers launch, failure triage,

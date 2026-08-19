@@ -54,7 +54,7 @@ int tutorial_main_call(int argc, char *argv[])
        acceleratorVerificationWatchdogArm("open tutorial AFU"))
         return 1;
 
-    afu = cxl_afu_open_dev("/dev/cxl/afu0.0d");
+    afu = cxl_afu_open_dev(capiDevicePath());
 
     if(acceleratorVerificationWatchdogDisarm())
         _exit(EXIT_FAILURE);

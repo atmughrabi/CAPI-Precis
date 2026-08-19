@@ -1,7 +1,7 @@
 # Architecture
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-architecture.png" width="900" alt="CAPI-Precis accelerator architecture">
+  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-architecture.svg" width="900" alt="CAPI-Precis accelerator architecture">
 </p>
 
 ## Repository boundaries
@@ -52,7 +52,7 @@ The bounded host protocol is defined in
 ## AFU-control detail
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-afu-control.png" width="520" alt="CAPI-Precis AFU-control architecture">
+  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-afu-control.svg" width="760" alt="CAPI-Precis AFU-control architecture">
 </p>
 
 AFU control owns credit and tag management, command issue/restart, read and

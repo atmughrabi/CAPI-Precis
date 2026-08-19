@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -25,6 +26,7 @@ static int fake_freeze_completion;
 static int fake_stuck_reset;
 static int fake_unmap_count;
 static int fake_free_count;
+static char fake_open_path[256];
 
 int cxl_mmio_install_sigbus_handler(void)
 {
@@ -33,7 +35,7 @@ int cxl_mmio_install_sigbus_handler(void)
 
 struct cxl_afu_h *cxl_afu_open_dev(char *path)
 {
-    (void)path;
+    snprintf(fake_open_path, sizeof(fake_open_path), "%s", path);
 
     if(fake_fail_open)
     {
@@ -247,7 +249,12 @@ int main(void)
         return EXIT_FAILURE;
 
     wed.size_send = fake_target;
+    if(setenv("CAPI_DEVICE", "/dev/cxl/test-afu", 1))
+        return EXIT_FAILURE;
     setupAFU(&afu, &wed);
+
+    if(strcmp(fake_open_path, "/dev/cxl/test-afu"))
+        return EXIT_FAILURE;
 
     afu_status.afu_config = 0x1111000000000001ULL;
     afu_status.cu_config = 1;

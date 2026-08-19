@@ -1,0 +1,407 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export PATH=${PATH:-/usr/local/bin:/usr/bin:/bin}
+
+usage() {
+    cat <<'EOF'
+Usage:
+  tools/capi-env [options] check
+  tools/capi-env [options] print
+  tools/capi-env [options] shell
+  tools/capi-env [options] run <command> [args...]
+  tools/capi-env [options] -- <command> [args...]
+
+Options:
+  --mode MODE          host, sim, synth, or fpga (default: sim)
+  --project-root PATH  Consumer repository root
+  --capi-root PATH     Repository containing 01_capi_integration
+  --sim-root PATH      Accelerator simulation root containing server/ and sim/
+  --intel-fpga PATH    Intel FPGA installation root (default: $ALTERAPATH or ~/intelFPGA/18.1)
+  --pslver VERSION     PSL version, 8 or 9 (default: 8)
+  --bit32 VALUE        y or n (default: n)
+  -h, --help           Show this help
+
+Examples:
+  ./tools/capi-env --mode host check
+  ./tools/capi-env --mode sim -- make run-vsim
+  ./tools/capi-env --mode sim run make run-pslse
+  ./tools/capi-env --mode synth shell
+  eval "$(./tools/capi-env --mode sim print)"
+EOF
+}
+
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+default_root=$(cd "$script_dir/.." && pwd -P)
+
+mode=${CAPI_ENV_MODE:-sim}
+project_root=${CAPI_ENV_PROJECT_ROOT:-$default_root}
+capi_root=${CAPI_ENV_CAPI_ROOT:-$default_root}
+sim_root=${CAPI_ENV_SIM_ROOT:-}
+intel_fpga=${CAPI_ENV_INTEL_FPGA:-${ALTERAPATH:-}}
+pslver=${PSLVER:-8}
+bit32=${BIT32:-n}
+action=
+declare -a command_args=()
+
+require_value() {
+    if (($# < 2)); then
+        echo "Missing value for $1" >&2
+        exit 2
+    fi
+}
+
+while (($#)); do
+    case "$1" in
+        --mode)
+            require_value "$@"
+            mode=$2
+            shift 2
+            ;;
+        --project-root)
+            require_value "$@"
+            project_root=$2
+            shift 2
+            ;;
+        --capi-root)
+            require_value "$@"
+            capi_root=$2
+            shift 2
+            ;;
+        --sim-root)
+            require_value "$@"
+            sim_root=$2
+            shift 2
+            ;;
+        --intel-fpga)
+            require_value "$@"
+            intel_fpga=$2
+            shift 2
+            ;;
+        --pslver)
+            require_value "$@"
+            pslver=$2
+            shift 2
+            ;;
+        --bit32)
+            require_value "$@"
+            bit32=$2
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        check|print|shell)
+            action=$1
+            shift
+            if (($#)); then
+                echo "Unexpected arguments after $action: $*" >&2
+                exit 2
+            fi
+            break
+            ;;
+        run)
+            action=run
+            shift
+            command_args=("$@")
+            break
+            ;;
+        --)
+            action=run
+            shift
+            command_args=("$@")
+            break
+            ;;
+        *)
+            echo "Unknown option or action: $1" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
+
+action=${action:-check}
+
+case "$mode" in
+    host|sim|synth|fpga) ;;
+    *)
+        echo "Invalid mode: $mode (expected host, sim, synth, or fpga)" >&2
+        exit 2
+        ;;
+esac
+
+case "$pslver" in
+    8|9) ;;
+    *)
+        echo "Invalid PSL version: $pslver (expected 8 or 9)" >&2
+        exit 2
+        ;;
+esac
+
+case "$bit32" in
+    y|n) ;;
+    *)
+        echo "Invalid BIT32 value: $bit32 (expected y or n)" >&2
+        exit 2
+        ;;
+esac
+
+normalize_existing_dir() {
+    local name=$1
+    local path=$2
+
+    if [[ ! -d "$path" ]]; then
+        echo "$name directory does not exist: $path" >&2
+        exit 2
+    fi
+
+    (cd "$path" && pwd -P)
+}
+
+normalize_path() {
+    local path=$1
+
+    if [[ -d "$path" ]]; then
+        (cd "$path" && pwd -P)
+    elif [[ "$path" = /* ]]; then
+        printf '%s\n' "${path%/}"
+    else
+        printf '%s/%s\n' "$PWD" "${path%/}"
+    fi
+}
+
+project_root=$(normalize_existing_dir "Project root" "$project_root")
+capi_root=$(normalize_existing_dir "CAPI root" "$capi_root")
+
+if [[ -z "$sim_root" ]]; then
+    sim_root="$project_root/01_capi_integration/accelerator_sim"
+    if [[ ! -d "$sim_root" &&
+          -d "$capi_root/01_capi_integration/accelerator_sim" ]]; then
+        sim_root="$capi_root/01_capi_integration/accelerator_sim"
+    fi
+fi
+sim_root=$(normalize_path "$sim_root")
+
+if [[ -z "$intel_fpga" && -n "${HOME:-}" ]]; then
+    intel_fpga="$HOME/intelFPGA/18.1"
+fi
+if [[ -n "$intel_fpga" ]]; then
+    intel_fpga=$(normalize_path "$intel_fpga")
+fi
+
+pslse_install_dir="$capi_root/01_capi_integration/pslse"
+pslse_server_dir="$sim_root/server"
+modelsim_root=
+quartus_install_dir=
+qsys_rootdir=
+if [[ -n "$intel_fpga" ]]; then
+    modelsim_root="$intel_fpga/modelsim_ase"
+    quartus_install_dir="$intel_fpga/quartus"
+    qsys_rootdir="$quartus_install_dir/sopc_builder/bin"
+fi
+
+path_prepend() {
+    local variable=$1
+    local value=$2
+    local current=${!variable-}
+    local component
+    local rebuilt=$value
+    local -a components=()
+
+    if [[ -n "$current" ]]; then
+        IFS=: read -r -a components <<<"$current"
+        for component in "${components[@]}"; do
+            if [[ "$component" != "$value" ]]; then
+                rebuilt="$rebuilt:$component"
+            fi
+        done
+    fi
+
+    printf -v "$variable" '%s' "$rebuilt"
+    export "$variable"
+}
+
+path_prepend_existing() {
+    local variable=$1
+    local value=$2
+
+    if [[ -d "$value" ]]; then
+        path_prepend "$variable" "$value"
+    fi
+}
+
+export CAPI_PROJECT_ROOT="$project_root"
+export CAPI_ROOT="$capi_root"
+export CAPI_PROJECT
+CAPI_PROJECT=$(basename "$project_root")
+export CAPI_SIM_ROOT="$sim_root"
+export ALTERAPATH="$intel_fpga"
+export QUARTUS_INSTALL_DIR="$quartus_install_dir"
+export QSYS_ROOTDIR="$qsys_rootdir"
+export MODELSIM_ROOT="$modelsim_root"
+export PSLSE_INSTALL_DIR="$pslse_install_dir"
+export VPI_USER_H_DIR="$modelsim_root/include"
+export PSLVER="$pslver"
+export BIT32="$bit32"
+export PSLSE_SERVER_DIR="$pslse_server_dir"
+export PSLSE_SERVER_DAT="$pslse_server_dir/pslse_server.dat"
+export SHIM_HOST_DAT="$pslse_server_dir/shim_host.dat"
+export PSLSE_PARMS="$pslse_server_dir/pslse.parms"
+export DEBUG_LOG_PATH="$pslse_server_dir/debug.log"
+export CAPI_DEVICE=${CAPI_DEVICE:-/dev/cxl/afu0.0d}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}
+
+if [[ -z "${LM_LICENSE_FILE:-}" && -n "$intel_fpga" ]]; then
+    export LM_LICENSE_FILE="$intel_fpga/licenses/psl_A000_license.dat:$intel_fpga/licenses/common_license.dat"
+else
+    export LM_LICENSE_FILE=${LM_LICENSE_FILE:-}
+fi
+
+case "$mode" in
+    sim)
+        path_prepend_existing PATH "$modelsim_root/bin"
+        path_prepend_existing LD_LIBRARY_PATH "$pslse_install_dir/afu_driver/src"
+        path_prepend_existing LD_LIBRARY_PATH "$pslse_install_dir/libcxl"
+        ;;
+    synth)
+        if [[ -d "$quartus_install_dir/bin64" ]]; then
+            path_prepend PATH "$quartus_install_dir/bin64"
+        else
+            path_prepend_existing PATH "$quartus_install_dir/bin"
+        fi
+        path_prepend_existing PATH "$intel_fpga/nios2eds/bin"
+        ;;
+    host|fpga)
+        ;;
+esac
+
+environment_variables=(
+    CAPI_PROJECT_ROOT
+    CAPI_ROOT
+    CAPI_PROJECT
+    CAPI_SIM_ROOT
+    ALTERAPATH
+    QUARTUS_INSTALL_DIR
+    QSYS_ROOTDIR
+    MODELSIM_ROOT
+    LM_LICENSE_FILE
+    PSLSE_INSTALL_DIR
+    VPI_USER_H_DIR
+    PSLVER
+    BIT32
+    PSLSE_SERVER_DIR
+    PSLSE_SERVER_DAT
+    SHIM_HOST_DAT
+    PSLSE_PARMS
+    DEBUG_LOG_PATH
+    CAPI_DEVICE
+    LD_LIBRARY_PATH
+    PATH
+)
+
+print_environment() {
+    local variable
+    for variable in "${environment_variables[@]}"; do
+        printf 'export %s=%q\n' "$variable" "${!variable}"
+    done
+}
+
+check_environment() {
+    local failures=0
+
+    check_dir() {
+        local label=$1
+        local path=$2
+        if [[ -d "$path" ]]; then
+            printf 'PASS %-26s %s\n' "$label" "$path"
+        else
+            printf 'FAIL %-26s %s\n' "$label" "$path"
+            failures=$((failures + 1))
+        fi
+    }
+
+    check_file() {
+        local label=$1
+        local path=$2
+        if [[ -f "$path" ]]; then
+            printf 'PASS %-26s %s\n' "$label" "$path"
+        else
+            printf 'FAIL %-26s %s\n' "$label" "$path"
+            failures=$((failures + 1))
+        fi
+    }
+
+    check_command() {
+        local command=$1
+        if command -v "$command" >/dev/null 2>&1; then
+            printf 'PASS %-26s %s\n' "$command" "$(command -v "$command")"
+        else
+            printf 'FAIL %-26s not found\n' "$command"
+            failures=$((failures + 1))
+        fi
+    }
+
+    printf 'Mode: %s\n' "$mode"
+    check_dir "project root" "$project_root"
+    check_dir "CAPI integration" "$capi_root/01_capi_integration"
+    check_command make
+    check_command gcc
+    check_command python3
+
+    case "$mode" in
+        host)
+            check_file "PSLSE checkout" "$pslse_install_dir/libcxl/libcxl.h"
+            ;;
+        sim)
+            check_file "PSLSE checkout" "$pslse_install_dir/libcxl/libcxl.h"
+            check_dir "simulation root" "$sim_root"
+            check_dir "simulation scripts" "$sim_root/sim"
+            check_file "PSLSE parameters" "$PSLSE_PARMS"
+            check_file "PSLSE server data" "$PSLSE_SERVER_DAT"
+            check_file "shim host data" "$SHIM_HOST_DAT"
+            check_dir "ModelSim include" "$VPI_USER_H_DIR"
+            check_command vsim
+            ;;
+        synth)
+            check_dir "Quartus install" "$QUARTUS_INSTALL_DIR"
+            check_command quartus_sh
+            check_command quartus_map
+            ;;
+        fpga)
+            if [[ -r "$CAPI_DEVICE" && -w "$CAPI_DEVICE" ]]; then
+                printf 'PASS %-26s %s\n' "CAPI device" "$CAPI_DEVICE"
+            else
+                printf 'FAIL %-26s %s (read/write access required)\n' \
+                    "CAPI device" "$CAPI_DEVICE"
+                failures=$((failures + 1))
+            fi
+            ;;
+    esac
+
+    if ((failures)); then
+        printf 'Environment check failed: %d issue(s)\n' "$failures" >&2
+        return 1
+    fi
+
+    echo "Environment check passed"
+}
+
+case "$action" in
+    check)
+        check_environment
+        ;;
+    print)
+        print_environment
+        ;;
+    shell)
+        echo "Starting temporary $mode shell; exit to discard the scoped environment."
+        exec "${BASH:-/bin/bash}" --noprofile --norc -i
+        ;;
+    run)
+        if ((${#command_args[@]} == 0)); then
+            echo "run requires a command" >&2
+            exit 2
+        fi
+        exec "${command_args[@]}"
+        ;;
+esac

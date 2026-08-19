@@ -1,5 +1,6 @@
 - [Home](https://github.com/atmughrabi/CAPI-Precis/wiki)
 - [Architecture](https://github.com/atmughrabi/CAPI-Precis/wiki/Architecture)
+- [Environment harness](https://github.com/atmughrabi/CAPI-Precis/wiki/Environment-Harness)
 - [Accelerator verification](https://github.com/atmughrabi/CAPI-Precis/wiki/Accelerator-Verification)
 - [Deployment runbook](https://github.com/atmughrabi/CAPI-Precis/wiki/Deployment-Runbook)
 - [Verification infrastructure](https://github.com/atmughrabi/CAPI-Precis/wiki/Verification-Infrastructure)

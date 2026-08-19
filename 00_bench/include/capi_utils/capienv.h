@@ -219,6 +219,7 @@ void printMMIO_error( uint64_t error );
 // ***************                  AFU General                                  **************
 // ********************************************************************************************
 
+char *capiDevicePath(void);
 int setupAFU(struct cxl_afu_h **afu, struct WEDStruct *wed);
 int setupAFUMM(struct cxl_afu_h **afu, struct WEDStructMM *wed);
 int setupAFUTut(struct cxl_afu_h **afu, struct WEDStructTut *wed);

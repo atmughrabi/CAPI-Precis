@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc" fill="#3A414A">
+  <title id="title">CAPI-Precis accelerator architecture</title>
+  <desc id="desc">Host software attaches a work element descriptor through libcxl. The Power Service Layer connects to AFU control, which manages coherent protocol services and arbitrates compute units zero through N minus one.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 13 11" markerWidth="13" markerHeight="11" refX="13" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L13 5.5 L0 11 Z" fill="#1071E5"/></marker>
+    <marker id="arrow-green" viewBox="0 0 13 11" markerWidth="13" markerHeight="11" refX="13" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L13 5.5 L0 11 Z" fill="#008A0E"/></marker>
+    <style>
+      :root{color-scheme:light dark}
+      @media(prefers-color-scheme:dark){
+        [fill="#3A414A"]{fill:#E7E2D9}[stroke="#3A414A"]{stroke:#E7E2D9}
+        [fill="#F7F4E4"]{fill:#24282B}[fill="#EDF5FF"],[fill="#C1E4F7"]{fill:#29363B}
+        [fill="#D7FAF5"],[fill="#E3FAE3"]{fill:#28392C}[fill="#FFDDA6"],[fill="#FFF3D9"]{fill:#3D3526}
+        [fill="#FFBBB1"],[fill="#FFD9D9"]{fill:#402B2D}[fill="#A7A6FF"],[fill="#DEDEFF"]{fill:#332F39}
+        [stroke="#000000"]{stroke:#E7E2D9}[fill="#1071E5"]{fill:#9CB8E8}[stroke="#1071E5"]{stroke:#9CB8E8}
+        [fill="#008A0E"],[fill="#008573"]{fill:#92C89A}[stroke="#008A0E"],[stroke="#008573"]{stroke:#92C89A}
+        [fill="#CC4E00"]{fill:#D6A071}
+      }
+      .sans{font-family:Inter,Helvetica,Arial,sans-serif}.mono{font-family:"SFMono-Regular",Consolas,monospace}
+      .title{font-size:44px;font-weight:700}.subtitle{font-size:21px}.pane{font-size:28px;font-weight:700}
+      .block{font-size:21px;font-weight:700}.body{font-size:19px}.small{font-size:17px}
+    </style>
+  </defs>
+
+  <text x="55" y="68" class="sans title">CAPI-Precis accelerator architecture</text>
+  <text x="55" y="104" class="sans subtitle">Coherent host access, shared AFU protocol services, and application compute units</text>
+  <line x1="55" y1="130" x2="1545" y2="130" stroke="#3A414A" stroke-width="2"/>
+
+  <rect x="55" y="190" width="235" height="260" rx="8" fill="#EDF5FF" stroke="#000000" stroke-width="3"/>
+  <text x="172" y="235" text-anchor="middle" class="sans pane">Host software</text>
+  <rect x="82" y="265" width="181" height="62" rx="8" fill="#C1E4F7" stroke="#000000" stroke-width="2"/>
+  <text x="172" y="302" text-anchor="middle" class="sans block">Application</text>
+  <rect x="82" y="345" width="181" height="62" rx="8" fill="#F7F4E4" stroke="#000000" stroke-width="2"/>
+  <text x="172" y="382" text-anchor="middle" class="sans block">libcxl + WED</text>
+  <text x="172" y="430" text-anchor="middle" class="mono small">00_bench</text>
+
+  <rect x="355" y="190" width="220" height="260" rx="8" fill="#C1E4F7" stroke="#000000" stroke-width="3"/>
+  <text x="465" y="250" text-anchor="middle" class="sans pane">Power Service</text>
+  <text x="465" y="286" text-anchor="middle" class="sans pane">Layer</text>
+  <text x="465" y="330" text-anchor="middle" class="sans block">(PSL / PSLSE)</text>
+  <text x="465" y="378" text-anchor="middle" class="sans body">job + MMIO</text>
+  <text x="465" y="406" text-anchor="middle" class="sans body">command + response</text>
+  <text x="465" y="434" text-anchor="middle" class="sans body">cache-line data</text>
+
+  <rect x="640" y="170" width="285" height="300" rx="8" fill="#E3FAE3" stroke="#000000" stroke-width="4"/>
+  <text x="782" y="215" text-anchor="middle" class="sans pane">AFU control</text>
+  <g class="sans small">
+    <rect x="670" y="245" width="105" height="48" rx="8" fill="#DEDEFF" stroke="#000000" stroke-width="2"/><text x="722" y="275" text-anchor="middle">WED</text>
+    <rect x="790" y="245" width="105" height="48" rx="8" fill="#DEDEFF" stroke="#000000" stroke-width="2"/><text x="842" y="275" text-anchor="middle">MMIO</text>
+    <rect x="670" y="310" width="105" height="48" rx="8" fill="#FFD9D9" stroke="#000000" stroke-width="2"/><text x="722" y="340" text-anchor="middle">errors</text>
+    <rect x="790" y="310" width="105" height="48" rx="8" fill="#D7FAF5" stroke="#000000" stroke-width="2"/><text x="842" y="340" text-anchor="middle">stats</text>
+    <rect x="670" y="375" width="225" height="60" rx="8" fill="#F7F4E4" stroke="#000000" stroke-width="2"/>
+    <text x="782" y="401" text-anchor="middle">credits / tags / restart</text>
+    <text x="782" y="424" text-anchor="middle">command / data / response</text>
+  </g>
+
+  <rect x="990" y="170" width="555" height="520" rx="8" fill="#FFF3D9" stroke="#000000" stroke-width="4"/>
+  <text x="1267" y="215" text-anchor="middle" class="sans pane">Compute-unit fabric</text>
+  <rect x="1020" y="250" width="125" height="395" rx="8" fill="#D7FAF5" stroke="#000000" stroke-width="2"/>
+  <text x="1082" y="322" text-anchor="middle" class="sans block">Bus</text>
+  <text x="1082" y="350" text-anchor="middle" class="sans block">arbiter</text>
+  <text x="1082" y="405" text-anchor="middle" class="sans small">request</text>
+  <text x="1082" y="430" text-anchor="middle" class="sans small">response</text>
+  <text x="1082" y="455" text-anchor="middle" class="sans small">data</text>
+
+  <g class="sans block">
+    <g transform="translate(1190 245)"><rect width="300" height="72" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/><text x="150" y="44" text-anchor="middle">CU 0</text></g>
+    <g transform="translate(1190 345)"><rect width="300" height="72" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/><text x="150" y="44" text-anchor="middle">CU 1</text></g>
+    <g transform="translate(1190 445)"><rect width="300" height="72" rx="8" fill="#F7F4E4" stroke="#000000" stroke-width="2"/><text x="150" y="44" text-anchor="middle">...</text></g>
+    <g transform="translate(1190 545)"><rect width="300" height="72" rx="8" fill="#FFBBB1" stroke="#000000" stroke-width="2"/><text x="150" y="44" text-anchor="middle">CU N-1</text></g>
+  </g>
+
+  <g fill="none" stroke="#1071E5" stroke-width="3" marker-end="url(#arrow-blue)">
+    <path d="M290 300 H355"/>
+    <path d="M575 300 H640"/>
+    <path d="M925 300 H1020"/>
+    <path d="M1145 269 H1190"/>
+    <path d="M1145 369 H1190"/>
+    <path d="M1145 469 H1190"/>
+    <path d="M1145 569 H1190"/>
+  </g>
+  <g fill="none" stroke="#008A0E" stroke-width="3" marker-end="url(#arrow-green)">
+    <path d="M640 340 H575"/>
+    <path d="M355 340 H290"/>
+    <path d="M1020 340 H925"/>
+    <path d="M1190 293 H1145"/>
+    <path d="M1190 393 H1145"/>
+    <path d="M1190 493 H1145"/>
+    <path d="M1190 593 H1145"/>
+  </g>
+
+  <rect x="55" y="535" width="870" height="245" rx="8" fill="#F7F4E4" stroke="#000000" stroke-width="3"/>
+  <text x="82" y="577" class="sans pane">AFU-control responsibilities</text>
+  <g class="sans body">
+    <rect x="82" y="610" width="185" height="62" rx="8" fill="#FFDDA6" stroke="#000000" stroke-width="2"/><text x="174" y="647" text-anchor="middle">command issue</text>
+    <rect x="285" y="610" width="185" height="62" rx="8" fill="#A7A6FF" stroke="#000000" stroke-width="2"/><text x="377" y="647" text-anchor="middle">tag + metadata</text>
+    <rect x="488" y="610" width="185" height="62" rx="8" fill="#D7FAF5" stroke="#000000" stroke-width="2"/><text x="580" y="647" text-anchor="middle">credit control</text>
+    <rect x="691" y="610" width="205" height="62" rx="8" fill="#C1E4F7" stroke="#000000" stroke-width="2"/><text x="793" y="647" text-anchor="middle">read/write data</text>
+    <rect x="82" y="694" width="185" height="62" rx="8" fill="#FFD9D9" stroke="#000000" stroke-width="2"/><text x="174" y="731" text-anchor="middle">error report</text>
+    <rect x="285" y="694" width="185" height="62" rx="8" fill="#FFDDA6" stroke="#000000" stroke-width="2"/><text x="377" y="731" text-anchor="middle">command restart</text>
+    <rect x="488" y="694" width="185" height="62" rx="8" fill="#A7A6FF" stroke="#000000" stroke-width="2"/><text x="580" y="731" text-anchor="middle">done + reset</text>
+    <rect x="691" y="694" width="205" height="62" rx="8" fill="#D7FAF5" stroke="#000000" stroke-width="2"/><text x="793" y="731" text-anchor="middle">response statistics</text>
+  </g>
+
+  <line x1="55" y1="825" x2="1545" y2="825" stroke="#979EA8" stroke-width="1"/>
+  <circle cx="78" cy="856" r="8" fill="#1071E5"/><text x="96" y="863" class="sans small">request / command path</text>
+  <circle cx="330" cy="856" r="8" fill="#008A0E"/><text x="348" y="863" class="sans small">response / completion path</text>
+  <text x="1545" y="863" text-anchor="end" class="mono small">host -&gt; PSL -&gt; AFU control -&gt; CU fabric</text>
+</svg>

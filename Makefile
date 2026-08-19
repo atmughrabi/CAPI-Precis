@@ -314,8 +314,12 @@ integration-compile:
 rtl-verification:
 	$(MAKE) rtl-verification $(MAKE_ARGS)
 
+.PHONY: env-harness-test
+env-harness-test:
+	./tools/tests/test-capi-env.sh
+
 .PHONY: verify
-verify:
+verify: env-harness-test
 	$(MAKE) verify $(MAKE_ARGS)
 
 .PHONY: run-test
