@@ -36,7 +36,7 @@ SYNTH_DIR ?= synthesize_cu_$(CU_ALGORITHM)_CU$(NUM_THREADS)
 VERSION_GIT ?= $(shell python3 ./capi/scripts/version.py)
 TIME_STAMP ?= $(shell date +%Y_%m_%d_%H_%M_%S)
 ACCEL_BIN_DIR ?= accelerator_bin
-ACCEL_MANIFEST ?= ../../verification/rtl/manifests/$(CU_ALGORITHM).f
+ACCEL_MANIFEST ?= ../accelerator_verification/rtl/manifests/$(CU_ALGORITHM).f
 SOURCE_FILES ?= $(addprefix ../../,$(shell sed -e '/^[[:space:]]*\#/d' -e '/^[[:space:]]*$$/d' $(ACCEL_MANIFEST)))
 
 .PHONY: print-accelerator-sources

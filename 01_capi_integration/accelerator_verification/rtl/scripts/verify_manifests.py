@@ -13,9 +13,15 @@ from pathlib import Path
 
 
 SCRIPT = Path(__file__).resolve()
-REPO_ROOT = SCRIPT.parents[3]
+REPO_ROOT = SCRIPT.parents[4]
 RTL_ROOT = REPO_ROOT / "01_capi_integration/accelerator_rtl"
-MANIFEST_ROOT = REPO_ROOT / "verification/rtl/manifests"
+VERIFICATION_RTL_ROOT = (
+    REPO_ROOT / "01_capi_integration/accelerator_verification/rtl"
+)
+MANIFEST_ROOT = (
+    REPO_ROOT /
+    "01_capi_integration/accelerator_verification/rtl/manifests"
+)
 INVENTORY_PATH = MANIFEST_ROOT / "rtl-inventory.json"
 
 VARIANTS = {
@@ -35,9 +41,6 @@ QUARANTINED = {
     "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/"
     "mmtiled/cu/cu_data_write_engine_control.sv":
         "Not instantiated by the modern mmtiled CU; excluded from ModelSim.",
-    "01_capi_integration/accelerator_rtl/verification/"
-    "cached_afu_bind_cu_stub.sv":
-        "Compatibility-only stub; forbidden as Phase 0 elaboration evidence.",
 }
 
 LEGACY_PREFIXES = (
@@ -47,7 +50,7 @@ LEGACY_PREFIXES = (
 )
 
 MONITOR_TB = (
-    "01_capi_integration/accelerator_rtl/verification/"
+    "01_capi_integration/accelerator_verification/rtl/"
     "accelerator_verification_tb.sv"
 )
 
@@ -126,7 +129,7 @@ def sha256(path):
 def verification_unit(source, found_declarations):
     if "/afu_pkgs/" in source or "/global_pkg/" in source or "/pkg/" in source:
         return "package-contracts"
-    if "/verification/" in source:
+    if "/accelerator_verification/" in source:
         return "rtl-lifecycle"
     if "/afu_control/" in source:
         names = [item["name"] for item in found_declarations]
@@ -161,7 +164,10 @@ def modelsim_sources(variant, script_relative):
                     f"{relative(script)} compiles a source outside the "
                     f"repository: {token}"
                 )
-            if source_path.is_relative_to(RTL_ROOT):
+            if (
+                source_path.is_relative_to(RTL_ROOT) or
+                source_path.is_relative_to(VERIFICATION_RTL_ROOT)
+            ):
                 sources.append(source)
             elif source != (
                 "01_capi_integration/pslse/afu_driver/verilog/top.v"
@@ -209,7 +215,13 @@ def validate_source_sets(manifests):
             continue
         for line_number, raw_line in enumerate(path.read_text().splitlines(), 1):
             line = raw_line.strip()
-            if line.startswith("#") or "accelerator_rtl" not in line:
+            if (
+                line.startswith("#") or
+                not any(
+                    root in line
+                    for root in ("accelerator_rtl", "accelerator_verification")
+                )
+            ):
                 continue
             if "glob" in line or re.search(
                 r"set_global_assignment\s+-name\s+"
@@ -293,11 +305,12 @@ def build_inventory(manifests):
         "order": 0,
     })
 
-    discovered = sorted(
+    discovered = sorted({
         relative(path)
-        for path in RTL_ROOT.rglob("*")
+        for root in (RTL_ROOT, VERIFICATION_RTL_ROOT)
+        for path in root.rglob("*")
         if path.is_file() and path.suffix.lower() in RTL_SUFFIXES
-    )
+    })
     files = []
     unexpected = []
     for source in discovered:
@@ -381,8 +394,11 @@ def build_inventory(manifests):
         )
 
     return {
-        "schema_version": 1,
-        "rtl_root": relative(RTL_ROOT),
+        "schema_version": 2,
+        "rtl_roots": [
+            relative(RTL_ROOT),
+            relative(VERIFICATION_RTL_ROOT),
+        ],
         "generated_by": relative(SCRIPT),
         "summary": {
             "files": len(files),
@@ -430,7 +446,8 @@ def main():
     elif INVENTORY_PATH.read_text() != serialized:
         fail(
             "RTL inventory is stale; review changes and run "
-            "verification/rtl/scripts/verify_manifests.py --write"
+            "01_capi_integration/accelerator_verification/rtl/"
+            "scripts/verify_manifests.py --write"
         )
 
     summary = inventory["summary"]

@@ -1,9 +1,9 @@
-# CAPI-Precis RTL manifest v1: mmtiled
+# CAPI-Precis RTL manifest v2: memcpy
 01_capi_integration/accelerator_rtl/afu_pkgs/globals_afu_pkg.sv
-01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/pkg/globals_cu_pkg.sv
+01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/pkg/globals_cu_pkg.sv
 01_capi_integration/accelerator_rtl/afu_pkgs/capi_pkg.sv
-01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/wed_pkg.sv
-01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/cu_pkg.sv
+01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/wed_pkg.sv
+01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/cu_pkg.sv
 01_capi_integration/accelerator_rtl/afu_pkgs/credit_pkg.sv
 01_capi_integration/accelerator_rtl/afu_pkgs/afu_pkg.sv
 01_capi_integration/accelerator_rtl/afu_control/parity.sv
@@ -28,7 +28,8 @@
 01_capi_integration/accelerator_rtl/afu_control/job.sv
 01_capi_integration/accelerator_rtl/afu_control/mmio.sv
 01_capi_integration/accelerator_rtl/afu_control/wed_control.sv
-01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_matrix_C_job_control.sv
-01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_control.sv
+01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv
+01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv
+01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_cu/cu_control.sv
 01_capi_integration/accelerator_rtl/afu_control/afu.sv
 01_capi_integration/accelerator_rtl/afu_control/cached_afu.sv

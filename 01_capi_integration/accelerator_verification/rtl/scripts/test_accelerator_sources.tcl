@@ -21,7 +21,7 @@ foreach algorithm {memcpy memcpy-tutorial mmtiled} {
     set collected_sources {}
     add_accelerator_manifest $repo_root $algorithm
 
-    set manifest [file join $repo_root verification rtl manifests "$algorithm.f"]
+    set manifest [file join $repo_root 01_capi_integration accelerator_verification rtl manifests "$algorithm.f"]
     set handle [open $manifest r]
     set contents [read $handle]
     close $handle

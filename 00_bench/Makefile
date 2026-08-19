@@ -277,9 +277,10 @@ CAPIENV_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_capienv_verification
 VERILATOR ?= verilator
 RTL_VERIFICATION_REQUIRED ?= 0
 RTL_VERIFICATION_DIR = $(APP_DIR)/$(OBJ_DIR)/rtl_verification
-RTL_VERIFICATION_SRC = ../$(CAPI_INTEG_DIR)/accelerator_rtl/verification/accelerator_verification.sv
-RTL_VERIFICATION_TB = ../$(CAPI_INTEG_DIR)/accelerator_rtl/verification/accelerator_verification_tb.sv
-RTL_VERIFICATION_REAL_BIND = ../$(CAPI_INTEG_DIR)/accelerator_rtl/verification/lint_cached_afu_bind.sh
+CAPI_VERIFICATION_DIR = ../$(CAPI_INTEG_DIR)/accelerator_verification
+RTL_VERIFICATION_SRC = $(CAPI_VERIFICATION_DIR)/rtl/accelerator_verification.sv
+RTL_VERIFICATION_TB = $(CAPI_VERIFICATION_DIR)/rtl/accelerator_verification_tb.sv
+RTL_VERIFICATION_REAL_BIND = $(CAPI_VERIFICATION_DIR)/rtl/scripts/lint_cached_afu_bind.sh
 
 # CAPI_INC   = -I$(PSLSE_COMMON_DIR) -I$(PSLSE_LIBCXL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)
 # CAPI_FLAGS = -DSIM -DVERBOSE
@@ -459,7 +460,7 @@ test:
 accelerator-verification: $(ACCELERATOR_VERIFICATION_TEST)
 	./$(ACCELERATOR_VERIFICATION_TEST)
 
-$(ACCELERATOR_VERIFICATION_TEST): $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/test_accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.h | directories
+$(ACCELERATOR_VERIFICATION_TEST): $(CAPI_VERIFICATION_DIR)/host/test_accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.h | directories
 	$(CC) $(CFLAGS) -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -o $@ $(word 1,$^) $(word 2,$^) -lrt
 
 .PHONY: benchmark-verification
@@ -473,8 +474,8 @@ $(MATRIX_VERIFICATION_TEST): $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/test_matrix_verif
 integration-verification: $(CAPIENV_VERIFICATION_TEST)
 	./$(CAPIENV_VERIFICATION_TEST)
 
-$(CAPIENV_VERIFICATION_TEST): $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/test_capienv_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/myMalloc.c | directories
-	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections -I$(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/fake -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -o $@ $^ -Wl,--gc-sections -lrt
+$(CAPIENV_VERIFICATION_TEST): $(CAPI_VERIFICATION_DIR)/host/test_capienv_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/myMalloc.c | directories
+	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections -I$(CAPI_VERIFICATION_DIR)/host/fake -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -o $@ $^ -Wl,--gc-sections -lrt
 
 .PHONY: integration-compile
 integration-compile:
@@ -499,7 +500,7 @@ rtl-verification: rtl-manifest-verification
 
 .PHONY: rtl-manifest-verification
 rtl-manifest-verification:
-	../verification/rtl/scripts/verify_manifests.py
+	$(CAPI_VERIFICATION_DIR)/rtl/scripts/verify_manifests.py
 
 .PHONY: rtl-verification-run
 rtl-verification-run: directories

@@ -3,8 +3,8 @@ set -euo pipefail
 
 VERILATOR=${VERILATOR:-verilator}
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-REPO_ROOT=$(cd "$SCRIPT_DIR/../../.." && pwd)
-MANIFEST_ROOT="$REPO_ROOT/verification/rtl/manifests"
+REPO_ROOT=$(cd "$SCRIPT_DIR/../../../.." && pwd)
+MANIFEST_ROOT="$SCRIPT_DIR/../manifests"
 
 WARNINGS=(
   -Wall

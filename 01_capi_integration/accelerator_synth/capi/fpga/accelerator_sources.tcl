@@ -1,5 +1,5 @@
 proc add_accelerator_manifest {repo_root algorithm} {
-    set manifest [file join $repo_root verification rtl manifests "$algorithm.f"]
+    set manifest [file join $repo_root 01_capi_integration accelerator_verification rtl manifests "$algorithm.f"]
     if {![file isfile $manifest]} {
         error "Missing accelerator RTL manifest: $manifest"
     }

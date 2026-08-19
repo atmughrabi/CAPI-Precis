@@ -22,7 +22,7 @@ interface boundary.
 | `00_bench` | Host applications, OpenMP references, CAPI launch code, tests |
 | `01_capi_integration/accelerator_rtl/afu_control` | PSL command, response, credit, tag, data, error, and completion control |
 | `01_capi_integration/accelerator_rtl/cu_control` | Application compute units and their read/write engines |
-| `01_capi_integration/accelerator_rtl/verification` | Bound RTL protocol and liveness monitor |
+| `01_capi_integration/accelerator_verification` | Host contract tests, bound RTL monitor/tests, manifests, models, scripts, and simulation wave evidence |
 | `01_capi_integration/accelerator_sim` | ModelSim design and PSLSE endpoint configuration |
 | `01_capi_integration/accelerator_synth` | Quartus project generation and implementation |
 | `01_capi_integration/accelerator_bin` | Platform images and implementation reports |

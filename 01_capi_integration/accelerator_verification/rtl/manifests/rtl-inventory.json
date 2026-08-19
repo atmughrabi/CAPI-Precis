@@ -1,14 +1,17 @@
 {
-  "schema_version": 1,
-  "rtl_root": "01_capi_integration/accelerator_rtl",
-  "generated_by": "verification/rtl/scripts/verify_manifests.py",
+  "schema_version": 2,
+  "rtl_roots": [
+    "01_capi_integration/accelerator_rtl",
+    "01_capi_integration/accelerator_verification/rtl"
+  ],
+  "generated_by": "01_capi_integration/accelerator_verification/rtl/scripts/verify_manifests.py",
   "summary": {
-    "files": 82,
-    "declarations": 92,
+    "files": 81,
+    "declarations": 91,
     "status_counts": {
       "active": 48,
       "legacy-supported": 30,
-      "quarantined": 4
+      "quarantined": 3
     },
     "declaration_status_counts": {
       "active": {
@@ -20,7 +23,7 @@
         "package": 5
       },
       "quarantined": {
-        "module": 4
+        "module": 3
       }
     },
     "modern_design_declarations": {
@@ -1693,7 +1696,7 @@
       "evidence": "Classified legacy tree; excluded from modern manifests."
     },
     {
-      "path": "01_capi_integration/accelerator_rtl/verification/accelerator_verification.sv",
+      "path": "01_capi_integration/accelerator_verification/rtl/accelerator_verification.sv",
       "status": "active",
       "kind": "module",
       "declarations": [
@@ -1713,7 +1716,7 @@
       "evidence": "monitor"
     },
     {
-      "path": "01_capi_integration/accelerator_rtl/verification/accelerator_verification_bind.sv",
+      "path": "01_capi_integration/accelerator_verification/rtl/accelerator_verification_bind.sv",
       "status": "active",
       "kind": "bind",
       "declarations": [],
@@ -1728,7 +1731,7 @@
       "evidence": "monitor-capi-bind"
     },
     {
-      "path": "01_capi_integration/accelerator_rtl/verification/accelerator_verification_tb.sv",
+      "path": "01_capi_integration/accelerator_verification/rtl/accelerator_verification_tb.sv",
       "status": "active",
       "kind": "module",
       "declarations": [
@@ -1746,21 +1749,6 @@
         }
       ],
       "evidence": "monitor-testbench"
-    },
-    {
-      "path": "01_capi_integration/accelerator_rtl/verification/cached_afu_bind_cu_stub.sv",
-      "status": "quarantined",
-      "kind": "module",
-      "declarations": [
-        {
-          "kind": "module",
-          "name": "cu_control"
-        }
-      ],
-      "sha256": "a51173bdebd547fff6111adaed92906555ceed0908efbea4cf29d143cc614fce",
-      "verification_unit": "rtl-lifecycle",
-      "build_membership": [],
-      "evidence": "Compatibility-only stub; forbidden as Phase 0 elaboration evidence."
     }
   ]
 }

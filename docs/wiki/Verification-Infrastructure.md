@@ -24,15 +24,16 @@ module-level infrastructure is built.
 
 ### Phase 0 manifest gate
 
-The executable Phase 0 baseline lives in `verification/rtl`:
+The executable Phase 0 baseline lives in
+`01_capi_integration/accelerator_verification/rtl`:
 
 - three ordered modern design manifests contain 43 modules and 13 packages;
-- `rtl-inventory.json` classifies all 82 RTL files with declarations, SHA-256,
+- `rtl-inventory.json` classifies all 81 RTL files with declarations, SHA-256,
   build membership, verification unit, and evidence;
 - 25 legacy modules and 5 legacy packages remain explicitly
   `legacy-supported`;
-- the three incomplete mmtiled drafts and compatibility CU stub are
-  `quarantined` and cannot enter a modern manifest;
+- the three incomplete mmtiled drafts are `quarantined` and cannot enter a
+  modern manifest;
 - ModelSim source order must match each variant manifest exactly;
 - the Quartus Tcl loader is executed under `tclsh` and must preserve that exact
   order without `glob`;
@@ -371,12 +372,14 @@ Initial budget model:
 
 ## Replay, manifest, and artifact schemas
 
-All schemas are versioned and stored under `verification/schema`.
+All schemas are versioned and stored under
+`01_capi_integration/accelerator_verification/schema`.
 
 ### Consumer API
 
-`verification/schema/api_version.json` publishes semantic version, compatible
-schema versions, minimum consumer version, and deprecation policy.
+`01_capi_integration/accelerator_verification/schema/api_version.json` will
+publish semantic version, compatible schema versions, minimum consumer
+version, and deprecation policy when Phase 1 introduces the shared schema.
 
 Consumer repositories register channel namespaces in a version-controlled
 registry assigning stable channel IDs and channel-order indices. `graph.*` is a
@@ -448,36 +451,37 @@ Production RTL remains in its current location until verification proves path
 equivalence. The target structure is:
 
 ```text
+01_capi_integration/
+  accelerator_rtl/              synthesizable design only
+  accelerator_sim/              simulator execution flow
+  accelerator_synth/            Quartus execution flow
+  accelerator_verification/
+    host/                        libcxl/watchdog contract tests
+    sim/                         verification wave configuration
+    rtl/
+      manifests/
+      models/
+      scripts/
+      unit/
+      integration/
+      fixtures/
+      golden/
+      common/
+        pkg/
+        interfaces/
+        bfm/
+        scoreboards/
+        assertions/
+        coverage/
+
 docs/
   assets/
   archive/slides/
-  verification/
   wiki/
-
-verification/
-  host/
-    common/
-    unit/
-    integration/
-    fixtures/
-    golden/
-  rtl/
-    common/
-      pkg/
-      interfaces/
-      bfm/
-      models/
-      scoreboards/
-      assertions/
-      coverage/
-    unit/
-    integration/
-    fixtures/
-    golden/
-    manifests/
-    scripts/
-    artifacts/
 ```
+
+Planned subdirectories are created when their first executable test lands; no
+empty scaffolding is committed.
 
 ### Compatibility rules
 
@@ -487,14 +491,16 @@ verification/
   runner passes from repository root and legacy working directories.
 - Compile each CU variant in an isolated work directory because package names
   collide.
-- Freeze consumer-facing paths and symbols for
-  `01_capi_integration/accelerator_rtl/verification/accelerator_verification.sv`,
+- Freeze consumer-facing paths and symbols for verification API v2 at
+  `01_capi_integration/accelerator_verification/rtl/accelerator_verification.sv`,
   the bind template, module name, ports, and parameters for one API-major
   version.
-- Publish `verification/rtl/manifests/monitor.f`; consumers use the manifest instead
-  of hardcoding the monitor source path.
-- A path/symbol change requires an API version bump, one-release compatibility
-  shim, and passing downstream compatibility job.
+- Publish
+  `01_capi_integration/accelerator_verification/rtl/manifests/monitor.f`;
+  consumers use the manifest instead of hardcoding the monitor source path.
+- A path/symbol change requires an API-major bump and a coordinated downstream
+  compatibility job. A one-release shim is required only when a supported
+  external consumer cannot migrate in the same release.
 - Add ordered manifests before replacing any wildcard or explicit source list.
 - Switch Quartus source assignment only after manifest/source-set equivalence.
 - Move active logos and diagrams to `docs/assets`; retain compatibility links

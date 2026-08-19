@@ -316,15 +316,15 @@ rtl-verification:
 
 .PHONY: rtl-manifest-verification
 rtl-manifest-verification:
-	./verification/rtl/scripts/verify_manifests.py
+	./01_capi_integration/accelerator_verification/rtl/scripts/verify_manifests.py
 
 .PHONY: rtl-manifest-update
 rtl-manifest-update:
-	./verification/rtl/scripts/verify_manifests.py --write
+	./01_capi_integration/accelerator_verification/rtl/scripts/verify_manifests.py --write
 
 .PHONY: rtl-real-elaboration
 rtl-real-elaboration: rtl-manifest-verification
-	./01_capi_integration/accelerator_rtl/verification/lint_cached_afu_bind.sh
+	./01_capi_integration/accelerator_verification/rtl/scripts/lint_cached_afu_bind.sh
 
 .PHONY: env-harness-test
 env-harness-test:

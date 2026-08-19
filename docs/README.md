@@ -13,6 +13,7 @@ is a published mirror; wiki-side edits are overwritten by the publisher.
 - [Deployment runbook](wiki/Deployment-Runbook.md)
 - [Verification infrastructure roadmap](wiki/Verification-Infrastructure.md)
 - [Stabilization plan](wiki/Stabilization-Plan.md)
+- [Accelerator verification files](../01_capi_integration/accelerator_verification/README.md)
 
 The enabled GitHub Wiki is published from `docs/wiki`. Edit this source and
 mirror it to the wiki repository; do not maintain independent page content.

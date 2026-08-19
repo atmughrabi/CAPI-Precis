@@ -4,7 +4,7 @@ CAPI-Precis has two complementary verification layers:
 
 - `00_bench/src/capi_utils/accelerator_verification.c` bounds host/libcxl
   execution.
-- `01_capi_integration/accelerator_rtl/verification/accelerator_verification.sv`
+- `01_capi_integration/accelerator_verification/rtl/accelerator_verification.sv`
   is bound to `cached_afu` during simulation and verifies the RTL protocol.
 
 ![CAPI-Precis accelerator verification](https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/accelerator-verification-f01-host-liveness.svg)
@@ -62,7 +62,8 @@ The `memcpy`, `memcpy-tutorial`, and `mmtiled` ModelSim scripts compile and bind
 the monitor automatically. The older direct `helloAFU` and `tutorial` examples
 do not use the shared `cached_afu` architecture and are outside this bind. A
 violated RTL contract terminates simulation with `$fatal`. The verification
-wave group is defined in `watch_accelerator_verification.do`.
+wave group is defined in
+`01_capi_integration/accelerator_verification/sim/watch_accelerator_verification.do`.
 
 For first-platform bring-up, add `+VERIF_FATAL=0` to the `vsim` command to
 record `$error`, `failure_count`, and wave evidence without terminating at the
@@ -80,7 +81,7 @@ make verify
 
 `make rtl-verification` validates the ordered Phase 0 manifests, elaborates the
 real `cached_afu`, AFU-control, and `cu_control` RTL across the `memcpy`,
-`memcpy-tutorial`, and `mmtiled` variants without the compatibility CU stub,
+`memcpy-tutorial`, and `mmtiled` variants without a CU stub,
 then runs positive and negative protocol tests with Verilator. Implicit nets
 and pin mismatches fail the gate. `make verify` includes that RTL evidence
 alongside host and benchmark checks. Local verification skips the RTL stage
