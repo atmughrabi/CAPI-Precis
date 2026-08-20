@@ -50,7 +50,6 @@
     rtl/
       manifests/                 inventory, source, coverage, module matrix
       scripts/                   validators and real-CU gates
-      models/                    only executable verification models
       unit/
         parity/                  parity functions
         package_contracts/       C/SystemVerilog ABI and package contracts

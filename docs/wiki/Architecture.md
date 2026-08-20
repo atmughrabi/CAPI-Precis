@@ -63,7 +63,7 @@ The bounded host protocol is defined in
 ## AFU-control detail
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-afu-control.svg" width="760" alt="CAPI-Precis host-facing interface and FPGA AFU-control architecture">
+  <img src="https://raw.githubusercontent.com/atmughrabi/CAPI-Precis/master/docs/fig/capi-precis-afu-control.svg" width="960" alt="CAPI-Precis host-facing interface and FPGA AFU-control architecture">
 </p>
 
 AFU control owns credit and tag management, command issue/restart, read and

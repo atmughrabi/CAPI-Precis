@@ -62,7 +62,6 @@ release evidence; they are not represented as portable passes.
   sim/                         verification wave configuration
   rtl/
     manifests/                 ordered sources, inventory, plan, module matrix
-    models/                    executable verification models only
     scripts/                   manifest, ownership, and real-RTL gates
     unit/
       parity/
