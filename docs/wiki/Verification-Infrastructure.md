@@ -1,4 +1,4 @@
-# Verification infrastructure roadmap
+# Verification infrastructure
 
 ## Purpose
 
@@ -7,20 +7,19 @@ host-to-accelerator and AFU-control contract. AccelGraph consumes this
 infrastructure through its pinned CAPI-Precis submodule and owns only
 graph-specific adapters, scoreboards, fixtures, and algorithm tests.
 
-This page is a delivery plan. The existing host watchdog and bound
-`accelerator_verification` monitor remain the current merge gate while the
-module-level infrastructure is built.
+This page records the portable merge evidence and the remaining
+licensed-tool/hardware release evidence.
 
 ## Current baseline
 
-| Area | Current evidence | Missing evidence |
+| Area | Current evidence | Remaining release evidence |
 | --- | --- | --- |
 | Host runtime | Timeout parsing, blocked-call watchdog, fake-libcxl setup/MMIO/error/completion/reset tests | Fault injection across every libcxl operation and structured test reports |
-| RTL lifecycle | Bound configuration/progress/error/done/ACK/reset monitor with positive and negative tests | Module-local assertions and coverage |
+| RTL lifecycle | Bound configuration/progress/error/done/ACK/reset monitor plus complete module-family assertions, coverage, and mutations | Licensed ModelSim execution and hardware traces |
 | Real bind | Real `cached_afu` elaboration for `memcpy`, `memcpy-tutorial`, and `mmtiled`, with implicit nets rejected and no CU stub | Licensed ModelSim and Quartus analysis/elaboration evidence |
-| Algorithms | CPU memory-copy and matrix references | Cycle-accurate CU scoreboards and memory-system integration tests |
-| Simulation | PSLSE/ModelSim scripts and wave groups | Reusable BFMs, deterministic channel backpressure, replayable seeds, and automatic scoreboards |
-| CI | Host, monitor, real-CU bind, exact source/inventory/module-plan gates, and OpenMP checks | Executable family suites, measured coverage, JUnit, and failure artifacts |
+| Algorithms | Independent memcpy, tutorial, and 2×2 mmtiled goldens with cycle-accurate CU scoreboards | Licensed simulator and hardware equivalence runs |
+| Simulation | Portable Verilator suites with deterministic backpressure, scoreboards, exact structural census, and replayable evidence | ModelSim parity and automated cross-backend comparison |
+| CI | Host, monitor, real-CU bind, exact source/inventory/module-plan gates, executable family suites, and measured closure | Licensed-tool jobs and retained hardware failure artifacts |
 
 ### Phase 0 manifest gate
 
@@ -94,9 +93,10 @@ Implemented P0 evidence:
   DUTs across all 3 variants; 15,790 checks, 258/258 bins, 100% reachable
   line/branch/toggle, beat-associated parity and fully initialized WED
   metadata, and 32/32 mutations.
-- CU families: memcpy, tutorial, and 2×2 mmtiled; 50/50 RTL bins, 14/14
-  independent golden bins, 100% reachable coverage per mapped module, 13/13
-  mutations, edge tiles, repeated launch, reorder, and backpressure.
+- CU families: memcpy, tutorial, and 2×2 mmtiled; 54/54 RTL bins, 14/14
+  independent golden bins, 100% reachable coverage per mapped module, 17/17
+  mutations, AFU-accurate cacheline-half timing, edge tiles, repeated launch,
+  reorder, and backpressure.
 - integration: AFU-control, cached-AFU, and physical wrapper across all three
   manifests; 23/23 bins, 621 assertions, fixed/RR concurrency, exact
   credit/tag/restart/NLOCK/error

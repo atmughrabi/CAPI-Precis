@@ -48,9 +48,6 @@
         "cacheline half extraction",
         "read stalls and repeated launch"
       ],
-      "local_extra_sources": [
-        "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/cu/cu_matrix_multiply_control.sv"
-      ],
       "host_contract": "For each configured (i,j,k) tile, accumulate C[ii,jj] += A[ii,kk] * B_transposed[jj,kk] over clipped tile bounds.",
       "topology_contract": "Instantiate NUM_X_CU*NUM_Y_CU engines. Lane (x,y) owns i_start+x modulo NUM_X_CU and j_start+y modulo NUM_Y_CU, with unique coordinate response IDs. Local fair pending arbiters feed the restored two-input read arbiter and singular write/data outputs; counters sum across lanes and completion is the AND reduction."
     }
@@ -62,9 +59,13 @@
   },
   "closed_regressions": {
     "tutorial_write_backpressure": {
-      "scenario": "hold write_command_buffer_status.alfull across the input pulse, then release",
-      "required_result": "no command while full; exactly one command with intact halves after release",
-      "mutation": "tutorial-drop-write-backpressure"
+      "scenario": "inject three distinct consecutive read completions with the AFU lower-half/upper-half one-cycle skew while write_command_buffer_status.alfull is held across multiple cycles, then release",
+      "required_result": "no command while full; all three command/data tuples release once in order and receive exactly one counted response",
+      "mutations": [
+        "tutorial-drop-write-backpressure",
+        "tutorial-overwrite-pending-write",
+        "tutorial-upper-half-sample-stage"
+      ]
     },
     "memcpy_write_only_source": {
       "scenario": "write-only mode, one element, no read command",
@@ -96,6 +97,14 @@
         "mmtiled-disable-edge-clipping"
       ],
       "independent_golden": "partial_transposed_edge_accumulation"
+    },
+    "mmtiled_half_local_word_offset": {
+      "scenario": "read, accumulate, and write distinct nonzero scalar values at cacheline word offsets 15, 16, and 31",
+      "required_result": "offset 15 selects lower-half word 15; offsets 16 and 31 select upper-half words 0 and 15 with exact values",
+      "mutations": [
+        "mmtiled-global-read-half-index",
+        "mmtiled-global-write-half-index"
+      ]
     },
     "mmtiled_outer_arbiter_publication": {
       "scenario": "hold a real legacy-loader request on outer input 0 while engine input 1 is pending and ready[1] is delayed",

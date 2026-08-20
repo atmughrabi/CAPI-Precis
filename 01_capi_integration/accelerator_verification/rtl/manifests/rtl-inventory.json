@@ -1040,7 +1040,7 @@
           "name": "write_engine"
         }
       ],
-      "sha256": "cc577ce718e1aae17e32aa05f9afeadd12ab23f7c1396550eccedc05fe0ebc39",
+      "sha256": "45abef01a56721aed19c202adc2570d7af134eb84973fbf037da41b1d81540f5",
       "verification_unit": "memcpy-tutorial-cu",
       "build_membership": [
         {
@@ -1325,7 +1325,7 @@
           "name": "cu_matrix_multiply_control"
         }
       ],
-      "sha256": "f53e62e8b39f9ee9033ab4178a590fa55272e894785f019f1fd4130ed8ef6212",
+      "sha256": "6e892d2077d8d7bf556217f9e183dd864e185891d80d892c846a86bd67bbf826",
       "verification_unit": "mmtiled-cu",
       "build_membership": [
         {
@@ -1880,7 +1880,7 @@
           "name": "mmtiled_tb"
         }
       ],
-      "sha256": "ed7bbf6517f68bf460f92bde9335dbde6a9279de9138303a179ba8ab1d84f9f2",
+      "sha256": "c5fb9532fb50cb1a5a675259d1e575a7d46315d2da32fd7d6e9fa770fd262695",
       "verification_unit": "unit-cu",
       "build_membership": [
         {
@@ -1900,7 +1900,7 @@
           "name": "tutorial_tb"
         }
       ],
-      "sha256": "551a5c3a3dff80485ecf3d890cf989cf5d59ec90cde791388fb2ccc107cae1be",
+      "sha256": "e69674a4647b90a3ebb67e8ceb5692698b5e2a887674bc73d0f9dbc856bacc34",
       "verification_unit": "unit-cu",
       "build_membership": [
         {

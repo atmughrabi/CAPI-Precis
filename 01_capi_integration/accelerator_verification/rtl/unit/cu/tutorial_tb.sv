@@ -143,6 +143,24 @@ module tutorial_tb;
     tick(5);
   endtask
 
+  task automatic drive_direct_read_completion(
+      input CommandTagLine completion_cmd,
+      input logic [0:511] lower,
+      input logic [0:511] upper
+  );
+    read_data_0.payload.cmd = completion_cmd;
+    read_data_1.payload.cmd = completion_cmd;
+    read_data_0.payload.data = lower;
+    read_data_1.payload.data = upper;
+    read_data_0.valid = 1;
+    read_data_1.valid = 0;
+    tick();
+    read_data_0.valid = 0;
+    read_data_1.valid = 1;
+    tick();
+    read_data_1.valid = 0;
+  endtask
+
   task automatic read_case(
       input string name,
       input int unsigned elements,
@@ -206,6 +224,7 @@ module tutorial_tb;
   );
     logic [0:511] lower;
     logic [0:511] upper;
+    CommandTagLine completion_cmd;
     int unsigned seen;
 
     reset_direct(0, 1);
@@ -215,19 +234,11 @@ module tutorial_tb;
     wed.payload.wed.array_receive = 64'h0000_0000_2000_0000;
     lower = {8{64'h0123_4567_89ab_cdef}};
     upper = {8{64'hfedc_ba98_7654_3210}};
-    read_data_0.valid = 1;
-    read_data_1.valid = 1;
-    read_data_0.payload.cmd.real_size = elements;
-    read_data_1.payload.cmd.real_size = elements;
-    read_data_0.payload.cmd.real_size_bytes = cmd_size_calculate(elements);
-    read_data_1.payload.cmd.real_size_bytes = cmd_size_calculate(elements);
-    read_data_0.payload.cmd.address_offset = offset;
-    read_data_1.payload.cmd.address_offset = offset;
-    read_data_0.payload.data = lower;
-    read_data_1.payload.data = upper;
-    tick();
-    read_data_0.valid = 0;
-    read_data_1.valid = 0;
+    completion_cmd = 0;
+    completion_cmd.real_size = elements;
+    completion_cmd.real_size_bytes = cmd_size_calculate(elements);
+    completion_cmd.address_offset = offset;
+    drive_direct_read_completion(completion_cmd, lower, upper);
 
     seen = 0;
     repeat(40) begin
@@ -339,9 +350,11 @@ module tutorial_tb;
   task automatic full_copy_case(input string name, input int unsigned elements);
     logic [0:511] lower;
     logic [0:511] upper;
+    ReadWriteDataLine delayed_upper;
     bit read_seen;
     bit write_seen;
     bit done_seen;
+    bit upper_pending;
 
     full_rstn = 0;
     clear_full_inputs();
@@ -360,6 +373,8 @@ module tutorial_tb;
     read_seen = 0;
     write_seen = 0;
     done_seen = 0;
+    upper_pending = 0;
+    delayed_upper = 0;
 
     repeat(180) begin
       tick();
@@ -367,14 +382,19 @@ module tutorial_tb;
       full_write_response.valid = 0;
       full_read_data_0.valid = 0;
       full_read_data_1.valid = 0;
+      if(upper_pending) begin
+        full_read_data_1 = delayed_upper;
+        upper_pending = 0;
+      end
       if(full_read_command.valid && !read_seen) begin
         read_seen = 1;
         full_read_data_0.valid = 1;
-        full_read_data_1.valid = 1;
         full_read_data_0.payload.cmd = full_read_command.payload.cmd;
-        full_read_data_1.payload.cmd = full_read_command.payload.cmd;
         full_read_data_0.payload.data = lower;
-        full_read_data_1.payload.data = upper;
+        delayed_upper.valid = 1;
+        delayed_upper.payload.cmd = full_read_command.payload.cmd;
+        delayed_upper.payload.data = upper;
+        upper_pending = 1;
         full_read_response.valid = 1;
         full_read_response.payload.cmd = full_read_command.payload.cmd;
         full_read_response.payload.response = DONE;
@@ -408,22 +428,55 @@ module tutorial_tb;
   endtask
 
   task automatic probe_write_backpressure;
+    logic [0:63] offsets [0:2];
+    logic [0:511] lower [0:2];
+    logic [0:511] upper [0:2];
+    int unsigned sizes [0:2];
     int unsigned commands_seen;
+    int unsigned responses_sent;
 
     reset_direct(0, 1);
     wed.valid = 1;
-    wed.payload.wed.size_send = 1;
-    wed.payload.wed.size_recive = 1;
+    wed.payload.wed.size_send = 6;
+    wed.payload.wed.size_recive = 6;
     wed.payload.wed.array_receive = 64'h5000_0000;
+    offsets[0] = 0;
+    offsets[1] = CACHELINE_SIZE;
+    offsets[2] = 2 * CACHELINE_SIZE;
+    sizes[0] = 1;
+    sizes[1] = 2;
+    sizes[2] = 3;
+    lower[0] = {8{64'h1111_1111_1111_1111}};
+    lower[1] = {8{64'h2222_2222_2222_2222}};
+    lower[2] = {8{64'h3333_3333_3333_3333}};
+    upper[0] = {8{64'haaaa_aaaa_aaaa_aaaa}};
+    upper[1] = {8{64'hbbbb_bbbb_bbbb_bbbb}};
+    upper[2] = {8{64'hcccc_cccc_cccc_cccc}};
     write_status.alfull = 1;
-    read_data_0.valid = 1;
-    read_data_1.valid = 1;
-    read_data_0.payload.cmd.real_size = 1;
-    read_data_1.payload.cmd.real_size = 1;
-    read_data_0.payload.data = '1;
-    read_data_1.payload.data = '0;
-    tick();
+    for(int tuple = 0; tuple < 3; tuple++) begin
+      read_data_0.valid = 1;
+      read_data_1.valid = tuple != 0;
+      read_data_0.payload.cmd.real_size = sizes[tuple];
+      read_data_0.payload.cmd.real_size_bytes =
+          cmd_size_calculate(sizes[tuple]);
+      read_data_0.payload.cmd.address_offset = offsets[tuple];
+      read_data_0.payload.data = lower[tuple];
+      if(tuple != 0) begin
+        read_data_1.payload.cmd.real_size = sizes[tuple - 1];
+        read_data_1.payload.cmd.real_size_bytes =
+            cmd_size_calculate(sizes[tuple - 1]);
+        read_data_1.payload.cmd.address_offset = offsets[tuple - 1];
+        read_data_1.payload.data = upper[tuple - 1];
+      end
+      tick();
+    end
     read_data_0.valid = 0;
+    read_data_1.valid = 1;
+    read_data_1.payload.cmd.real_size = sizes[2];
+    read_data_1.payload.cmd.real_size_bytes = cmd_size_calculate(sizes[2]);
+    read_data_1.payload.cmd.address_offset = offsets[2];
+    read_data_1.payload.data = upper[2];
+    tick();
     read_data_1.valid = 0;
     repeat(20) begin
       tick();
@@ -432,24 +485,59 @@ module tutorial_tb;
     end
     write_status.alfull = 0;
     commands_seen = 0;
-    repeat(40) begin
+    responses_sent = 0;
+    repeat(60) begin
       tick();
+      write_response.valid = 0;
       if(write_command.valid) begin
-        commands_seen++;
+        require(commands_seen < 3, "queued write command count overflow");
         require(write_data_0.valid && write_data_1.valid,
                 "released write command lost data valids");
-        require(write_data_0.payload.data == '1,
-                "released write command corrupted lower data");
-        require(write_data_1.payload.data == '0,
-                "released write command corrupted upper data");
+        require(
+          write_command.payload.address ==
+              64'h5000_0000 + offsets[commands_seen],
+          "queued write address order"
+        );
+        require(
+          write_command.payload.cmd.address_offset == offsets[commands_seen],
+          "queued write metadata order"
+        );
+        require(
+          write_command.payload.cmd.real_size == sizes[commands_seen],
+          "queued write size order"
+        );
+        require(
+          write_data_0.payload.data == lower[commands_seen],
+          "queued lower write data order"
+        );
+        require(
+          write_data_1.payload.data == upper[commands_seen],
+          "queued upper write data order"
+        );
+        write_response.valid = 1;
+        write_response.payload.cmd = write_command.payload.cmd;
+        write_response.payload.response = DONE;
+        commands_seen++;
+        responses_sent++;
       end
     end
-    require(commands_seen == 1,
-            "backpressured write was not released exactly once");
-    $display("PASS tutorial_probe_write_backpressure assertions=%0d", assertions_checked);
+    write_response.valid = 0;
+    tick(5);
+    require(commands_seen == 3,
+            "backpressured writes were not released exactly once");
+    require(responses_sent == 3,
+            "backpressured writes did not receive exactly one response each");
+    require(write_count == 6,
+            "backpressured write responses were not counted exactly once");
+    bins_hit++;
+    $display(
+      "PASS tutorial_probe_write_backpressure commands=3 responses=3 assertions=%0d",
+      assertions_checked
+    );
   endtask
 
   task automatic metadata_and_status_coverage_case;
+    CommandTagLine completion_cmd;
     int unsigned commands_seen;
 
     reset_direct(1, 1);
@@ -464,21 +552,12 @@ module tutorial_tb;
     wed.payload.wed.size_send = 8'hff;
     wed.payload.wed.size_recive = 8'hff;
     wed.payload.wed.array_receive = 64'h6a00_0000;
-    read_data_0.valid = 1;
-    read_data_1.valid = 1;
-    read_data_0.payload.cmd.cacheline_offset = 8'hff;
-    read_data_1.payload.cmd.cacheline_offset = 8'hff;
-    read_data_0.payload.cmd.address_offset = 64'hffff_ffff_ffff_ff00;
-    read_data_1.payload.cmd.address_offset = 64'hffff_ffff_ffff_ff00;
-    read_data_0.payload.cmd.real_size = 8'hff;
-    read_data_1.payload.cmd.real_size = 8'hff;
-    read_data_0.payload.cmd.real_size_bytes = 8'hff;
-    read_data_1.payload.cmd.real_size_bytes = 8'hff;
-    read_data_0.payload.data = '1;
-    read_data_1.payload.data = '1;
-    tick();
-    read_data_0.valid = 0;
-    read_data_1.valid = 0;
+    completion_cmd = 0;
+    completion_cmd.cacheline_offset = 8'hff;
+    completion_cmd.address_offset = 64'hffff_ffff_ffff_ff00;
+    completion_cmd.real_size = 8'hff;
+    completion_cmd.real_size_bytes = 8'hff;
+    drive_direct_read_completion(completion_cmd, '1, '1);
     commands_seen = 0;
     repeat(50) begin
       tick();
@@ -514,9 +593,9 @@ module tutorial_tb;
     probe_write_backpressure();
     metadata_and_status_coverage_case();
 
-    require(bins_hit == 10, "functional bin denominator");
+    require(bins_hit == 11, "functional bin denominator");
     $display(
-      "PASS tutorial_cu bins=%0d/10 assertions=%0d",
+      "PASS tutorial_cu bins=%0d/11 assertions=%0d",
       bins_hit,
       assertions_checked
     );

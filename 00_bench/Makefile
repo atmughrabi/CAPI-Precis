@@ -274,6 +274,7 @@ CAPI_LINKFLAGS = -lrt -lpthread
 ACCELERATOR_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_accelerator_verification
 MATRIX_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_matrix_verification
 CAPIENV_VERIFICATION_TEST = $(APP_DIR)/$(BIN_DIR)/test_capienv_verification
+MMTILED_COMPLETION_TEST = $(APP_DIR)/$(BIN_DIR)/test_mmtiled_completion
 VERILATOR ?= verilator
 RTL_VERIFICATION_REQUIRED ?= 0
 RTL_VERIFICATION_DIR = $(APP_DIR)/$(OBJ_DIR)/rtl_verification
@@ -471,10 +472,14 @@ $(MATRIX_VERIFICATION_TEST): $(APP_DIR)/$(SRC_DIR)/$(TEST_DIR)/test_matrix_verif
 	$(CC) $(CFLAGS) $(OPENMP_INC) -o $@ $^ -lm
 
 .PHONY: integration-verification
-integration-verification: $(CAPIENV_VERIFICATION_TEST)
+integration-verification: $(CAPIENV_VERIFICATION_TEST) $(MMTILED_COMPLETION_TEST)
 	./$(CAPIENV_VERIFICATION_TEST)
+	./$(MMTILED_COMPLETION_TEST)
 
 $(CAPIENV_VERIFICATION_TEST): $(CAPI_VERIFICATION_DIR)/host/test_capienv_verification.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/myMalloc.c | directories
+	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections -I$(CAPI_VERIFICATION_DIR)/host/fake -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -o $@ $^ -Wl,--gc-sections -lrt
+
+$(MMTILED_COMPLETION_TEST): $(CAPI_VERIFICATION_DIR)/host/test_mmtiled_completion.c $(APP_DIR)/$(SRC_DIR)/$(ALGO_DIR)/capi/mmtiled.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/capienv.c $(APP_DIR)/$(SRC_DIR)/$(CAPI_UTIL_DIR)/accelerator_verification.c $(APP_DIR)/$(SRC_DIR)/$(UTIL_DIR)/myMalloc.c | directories
 	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections -I$(CAPI_VERIFICATION_DIR)/host/fake -I$(APP_DIR)/$(INC_DIR)/$(CAPI_UTIL_DIR) -I$(APP_DIR)/$(INC_DIR)/$(ALGO_DIR)/capi -I$(APP_DIR)/$(INC_DIR)/$(UTIL_DIR) -o $@ $^ -Wl,--gc-sections -lrt
 
 .PHONY: integration-compile

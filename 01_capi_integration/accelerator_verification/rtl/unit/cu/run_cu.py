@@ -59,10 +59,6 @@ SUITES = {
         "tb": SUITE_ROOT / "mmtiled_tb.sv",
         "top": "mmtiled_tb",
         "pass_re": r"PASS mmtiled_cu bins=(\d+)/(\d+) assertions=(\d+)",
-        "extra_sources": [
-            "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/"
-            "mmtiled/cu/cu_matrix_multiply_control.sv",
-        ],
         "sources": [
             "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
             "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/cu/cu_matrix_multiply_control.sv",
@@ -84,9 +80,12 @@ PROBES = [
         "diagnostic": "write command escaped write_command_buffer_status.alfull",
         "source": (
             "01_capi_integration/accelerator_rtl/cu_control/"
-            "cu_memcpy-tutorial/memcpy-tutorial/cu/write_engine.sv:157"
+            "cu_memcpy-tutorial/memcpy-tutorial/cu/write_engine.sv:177-185"
         ),
-        "requirement": "write engine must honor write command buffer backpressure",
+        "requirement": (
+            "write engine must preserve at least three ordered command/data "
+            "tuples across multi-cycle write backpressure"
+        ),
     },
     {
         "id": "memcpy-write-only",
@@ -136,6 +135,20 @@ PROBES = [
         "requirement": (
             "a clipped tile must accumulate transposed-B products into C "
             "and publish exact write/term counters"
+        ),
+    },
+    {
+        "id": "mmtiled-word-offsets",
+        "suite": "mmtiled",
+        "argument": "+PROBE_MATRIX_WORD_OFFSETS",
+        "diagnostic": "matrix write golden mismatch",
+        "source": (
+            "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/"
+            "mmtiled/cu/cu_matrix_multiply_control.sv"
+        ),
+        "requirement": (
+            "cacheline word offsets 15, 16, and 31 must use half-local "
+            "indices and preserve distinct nonzero read/write values"
         ),
     },
 ]
@@ -569,13 +582,36 @@ def run_repair_mutations(verilator):
             "tutorial-drop-write-backpressure",
             "tutorial",
             tutorial_write,
-            (
-                "write_command_out.valid <= write_command_out_latched.valid && "
-                "~write_command_buffer_status_latched.alfull;"
-            ),
-            "write_command_out.valid <= write_command_out_latched.valid;",
+            "~write_command_buffer_status_latched.alfull;",
+            "1'b1;",
             ["+PROBE_WRITE_BACKPRESSURE"],
             "write command escaped write_command_buffer_status.alfull",
+        ),
+        run_source_mutation(
+            verilator,
+            "tutorial-overwrite-pending-write",
+            "tutorial",
+            tutorial_write,
+            (
+                "write_tuple_queue[tuple_write_pointer] <= "
+                "incoming_write_tuple;"
+            ),
+            (
+                "write_tuple_queue[tuple_read_pointer] <= "
+                "incoming_write_tuple;"
+            ),
+            ["+PROBE_WRITE_BACKPRESSURE"],
+            "queued write address order",
+        ),
+        run_source_mutation(
+            verilator,
+            "tutorial-upper-half-sample-stage",
+            "tutorial",
+            tutorial_write,
+            "read_data_1_in_latched.payload.data;",
+            "read_data_1_in.payload.data;",
+            ["+PROBE_WRITE_BACKPRESSURE"],
+            "queued upper write data order",
         ),
         run_source_mutation(
             verilator,
@@ -678,6 +714,26 @@ def run_repair_mutations(verilator):
             "return candidate;",
             ["+PROBE_MATRIX_PRODUCT"],
             "matrix write golden mismatch",
+        ),
+        run_source_mutation(
+            verilator,
+            "mmtiled-global-write-half-index",
+            "mmtiled",
+            mmtiled_engine,
+            "{1'b0, word_offset[4:7]}",
+            "word_offset[3:7]",
+            ["+PROBE_MATRIX_WORD_OFFSETS"],
+            "matrix write golden mismatch",
+        ),
+        run_source_mutation(
+            verilator,
+            "mmtiled-global-read-half-index",
+            "mmtiled",
+            mmtiled_engine,
+            "{1'b0, incoming_word_offset[4:7]}",
+            "incoming_word_offset[3:7]",
+            ["+PROBE_MATRIX_WORD_OFFSETS"],
+            "matrix completion missing",
         ),
         run_source_mutation(
             verilator,

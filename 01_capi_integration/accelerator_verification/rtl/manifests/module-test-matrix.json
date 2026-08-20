@@ -2,7 +2,7 @@
   "schema_version": 1,
   "plan_id": "capi-precis-rtl-coverage-v1",
   "coverage_plan_sha256": "da4964d162acaaaac7448adbbdd9815cc83859d777630d191ece39f29489cff6",
-  "rtl_inventory_sha256": "5f5ad62dd75e3ca69de8a9d63f450abde96fccb28fd975f678d6710579be9d7e",
+  "rtl_inventory_sha256": "d9dd1b5e6311b2fbd4126ea92a4b24097cf4b18453f4c04e86b1355caf81c54b",
   "inventory_schema_version": 2,
   "summary": {
     "module_declarations": 44,
@@ -60,7 +60,7 @@
       "strategy_profile": "integration",
       "oracle_id": "psl-wrapper-interface-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "df0fb60d9a5e47cc37a549f340ba815f931438f93161d9f9ea7f0df99cbad801"
+      "evidence_sha256": "c34af6d0f74c85549230e7ce79a013d3e7d430fb7125259f81898fe609f9c706"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/afu_control.sv",
@@ -78,7 +78,7 @@
       "strategy_profile": "integration",
       "oracle_id": "capi-transaction-scoreboard-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "df0fb60d9a5e47cc37a549f340ba815f931438f93161d9f9ea7f0df99cbad801"
+      "evidence_sha256": "c34af6d0f74c85549230e7ce79a013d3e7d430fb7125259f81898fe609f9c706"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/cached_afu.sv",
@@ -96,7 +96,7 @@
       "strategy_profile": "integration",
       "oracle_id": "cached-afu-lifecycle-scoreboard-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "df0fb60d9a5e47cc37a549f340ba815f931438f93161d9f9ea7f0df99cbad801"
+      "evidence_sha256": "c34af6d0f74c85549230e7ce79a013d3e7d430fb7125259f81898fe609f9c706"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/command_control.sv",
@@ -114,7 +114,7 @@
       "strategy_profile": "protocol_control",
       "oracle_id": "capi-command-encoder-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b2702feb959b58e4a9ca0fff64f53a5d3939e55f5ef4d3fe38723eb3da39c9c7"
+      "evidence_sha256": "91efee3c6af19c631eadedfae9cdb4c4b8f6ff443f79a122f2f2ca640cf8a2dc"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/credit_control.sv",
@@ -132,7 +132,7 @@
       "strategy_profile": "protocol_control",
       "oracle_id": "credit-ledger-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b2702feb959b58e4a9ca0fff64f53a5d3939e55f5ef4d3fe38723eb3da39c9c7"
+      "evidence_sha256": "91efee3c6af19c631eadedfae9cdb4c4b8f6ff443f79a122f2f2ca640cf8a2dc"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/done_control.sv",
@@ -150,7 +150,7 @@
       "strategy_profile": "state_lifecycle",
       "oracle_id": "completion-error-lifecycle-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "e6fbcbff058fa9620f2fcbf92dbb12a528f2769a633271ba323460b6649c14c0"
+      "evidence_sha256": "dead11abff2c5a1142d0d2f07538869e0d64f92cf4776fa53d212e37afc7323b"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/error_control.sv",
@@ -168,7 +168,7 @@
       "strategy_profile": "state_lifecycle",
       "oracle_id": "completion-error-lifecycle-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "e6fbcbff058fa9620f2fcbf92dbb12a528f2769a633271ba323460b6649c14c0"
+      "evidence_sha256": "dead11abff2c5a1142d0d2f07538869e0d64f92cf4776fa53d212e37afc7323b"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/fifo.sv",
@@ -186,7 +186,7 @@
       "strategy_profile": "storage",
       "oracle_id": "storage-independent-queue-memory-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "26453f19f4ac72e5c041118b2353265cb04dcc285a802d4ec9498aedd27f8c2d"
+      "evidence_sha256": "29e61c53df7a526c3f05aa2e5f5c64ecbe8983d83ce3630192ebb58bc28fd984"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/fixed_priority_arbiter.sv",
@@ -204,7 +204,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-wrapper-routing-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/fixed_priority_arbiter.sv",
@@ -222,7 +222,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-wrapper-routing-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/job.sv",
@@ -240,7 +240,7 @@
       "strategy_profile": "protocol_control",
       "oracle_id": "job-command-state-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "e6fbcbff058fa9620f2fcbf92dbb12a528f2769a633271ba323460b6649c14c0"
+      "evidence_sha256": "dead11abff2c5a1142d0d2f07538869e0d64f92cf4776fa53d212e37afc7323b"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/mmio.sv",
@@ -258,7 +258,7 @@
       "strategy_profile": "register_control",
       "oracle_id": "mmio-register-map-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "e6fbcbff058fa9620f2fcbf92dbb12a528f2769a633271ba323460b6649c14c0"
+      "evidence_sha256": "dead11abff2c5a1142d0d2f07538869e0d64f92cf4776fa53d212e37afc7323b"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/parity.sv",
@@ -276,7 +276,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "parity-independent-bitcount-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c21fec88522d1aff952cdc1be16bf9250e37bae58c4cac5032acf921ffb63e6b"
+      "evidence_sha256": "8d72e90a31a934556d53801943e48c81d0d23c778a92f16649f75e0a8d47bd67"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/parity.sv",
@@ -294,7 +294,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "parity-independent-bitcount-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c21fec88522d1aff952cdc1be16bf9250e37bae58c4cac5032acf921ffb63e6b"
+      "evidence_sha256": "8d72e90a31a934556d53801943e48c81d0d23c778a92f16649f75e0a8d47bd67"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -312,7 +312,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -330,7 +330,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -348,7 +348,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -366,7 +366,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -384,7 +384,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -402,7 +402,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/priority_arbiters.sv",
@@ -420,7 +420,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-priority-rotation-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
@@ -438,7 +438,7 @@
       "strategy_profile": "storage",
       "oracle_id": "storage-independent-queue-memory-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "26453f19f4ac72e5c041118b2353265cb04dcc285a802d4ec9498aedd27f8c2d"
+      "evidence_sha256": "29e61c53df7a526c3f05aa2e5f5c64ecbe8983d83ce3630192ebb58bc28fd984"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
@@ -456,7 +456,7 @@
       "strategy_profile": "storage",
       "oracle_id": "storage-independent-queue-memory-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "26453f19f4ac72e5c041118b2353265cb04dcc285a802d4ec9498aedd27f8c2d"
+      "evidence_sha256": "29e61c53df7a526c3f05aa2e5f5c64ecbe8983d83ce3630192ebb58bc28fd984"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/ram.sv",
@@ -474,7 +474,7 @@
       "strategy_profile": "storage",
       "oracle_id": "storage-independent-queue-memory-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "26453f19f4ac72e5c041118b2353265cb04dcc285a802d4ec9498aedd27f8c2d"
+      "evidence_sha256": "29e61c53df7a526c3f05aa2e5f5c64ecbe8983d83ce3630192ebb58bc28fd984"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/read_data_control.sv",
@@ -492,7 +492,7 @@
       "strategy_profile": "protocol_data",
       "oracle_id": "read-half-association-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "e6fbcbff058fa9620f2fcbf92dbb12a528f2769a633271ba323460b6649c14c0"
+      "evidence_sha256": "dead11abff2c5a1142d0d2f07538869e0d64f92cf4776fa53d212e37afc7323b"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/reset_control.sv",
@@ -510,7 +510,7 @@
       "strategy_profile": "state_lifecycle",
       "oracle_id": "reset-cycle-model-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "ed46c732e4e37d5cd11a1c1abf608ae8af6c5cc8ac3934c81b9a7ecf48e4fbc3"
+      "evidence_sha256": "5940848da0a8e05dddeb4459b57b9663b38c5343c71ae20bae3643f3fb402c58"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/reset_filter.sv",
@@ -528,7 +528,7 @@
       "strategy_profile": "state_lifecycle",
       "oracle_id": "reset-cycle-model-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "ed46c732e4e37d5cd11a1c1abf608ae8af6c5cc8ac3934c81b9a7ecf48e4fbc3"
+      "evidence_sha256": "5940848da0a8e05dddeb4459b57b9663b38c5343c71ae20bae3643f3fb402c58"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/response_control.sv",
@@ -546,7 +546,7 @@
       "strategy_profile": "protocol_control",
       "oracle_id": "outstanding-tag-response-router-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b2702feb959b58e4a9ca0fff64f53a5d3939e55f5ef4d3fe38723eb3da39c9c7"
+      "evidence_sha256": "91efee3c6af19c631eadedfae9cdb4c4b8f6ff443f79a122f2f2ca640cf8a2dc"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/response_statistics_control.sv",
@@ -564,7 +564,7 @@
       "strategy_profile": "protocol_control",
       "oracle_id": "journal-derived-response-counters-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b2702feb959b58e4a9ca0fff64f53a5d3939e55f5ef4d3fe38723eb3da39c9c7"
+      "evidence_sha256": "91efee3c6af19c631eadedfae9cdb4c4b8f6ff443f79a122f2f2ca640cf8a2dc"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/restart_control.sv",
@@ -582,7 +582,7 @@
       "strategy_profile": "protocol_control",
       "oracle_id": "restart-replay-ledger-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b2702feb959b58e4a9ca0fff64f53a5d3939e55f5ef4d3fe38723eb3da39c9c7"
+      "evidence_sha256": "91efee3c6af19c631eadedfae9cdb4c4b8f6ff443f79a122f2f2ca640cf8a2dc"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/round_robin_priority_arbiter.sv",
@@ -600,7 +600,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-wrapper-routing-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/round_robin_priority_arbiter.sv",
@@ -618,7 +618,7 @@
       "strategy_profile": "arbitration",
       "oracle_id": "arbiter-wrapper-routing-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "c62f22518be07d135491818ccb2fd2642be5599814e65844d1a254caa7c5ff33"
+      "evidence_sha256": "9f1a16861e92cf71d7c278d8d1df533a7e4760d819da12f5963a09172bb752fb"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/tag_control.sv",
@@ -636,7 +636,7 @@
       "strategy_profile": "protocol_control",
       "oracle_id": "tag-metadata-ledger-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b2702feb959b58e4a9ca0fff64f53a5d3939e55f5ef4d3fe38723eb3da39c9c7"
+      "evidence_sha256": "91efee3c6af19c631eadedfae9cdb4c4b8f6ff443f79a122f2f2ca640cf8a2dc"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/wed_control.sv",
@@ -654,7 +654,7 @@
       "strategy_profile": "protocol_data",
       "oracle_id": "wed-byte-layout-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "e6fbcbff058fa9620f2fcbf92dbb12a528f2769a633271ba323460b6649c14c0"
+      "evidence_sha256": "dead11abff2c5a1142d0d2f07538869e0d64f92cf4776fa53d212e37afc7323b"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_control/write_data_control.sv",
@@ -672,7 +672,7 @@
       "strategy_profile": "protocol_data",
       "oracle_id": "write-address-mask-data-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "e6fbcbff058fa9620f2fcbf92dbb12a528f2769a633271ba323460b6649c14c0"
+      "evidence_sha256": "dead11abff2c5a1142d0d2f07538869e0d64f92cf4776fa53d212e37afc7323b"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_cu/cu_control.sv",
@@ -688,7 +688,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tutorial-parity-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "23f2571cd2368439daac1dd2b14e8ae4d1caeae17563002cac59bf6a06e82908"
+      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/read_engine.sv",
@@ -704,12 +704,12 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tutorial-parity-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "23f2571cd2368439daac1dd2b14e8ae4d1caeae17563002cac59bf6a06e82908"
+      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/write_engine.sv",
       "module": "write_engine",
-      "sha256": "cc577ce718e1aae17e32aa05f9afeadd12ab23f7c1396550eccedc05fe0ebc39",
+      "sha256": "45abef01a56721aed19c202adc2570d7af134eb84973fbf037da41b1d81540f5",
       "verification_unit": "memcpy-tutorial-cu",
       "contexts": [
         "memcpy-tutorial"
@@ -720,7 +720,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tutorial-parity-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "23f2571cd2368439daac1dd2b14e8ae4d1caeae17563002cac59bf6a06e82908"
+      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_cu/cu_control.sv",
@@ -736,7 +736,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "byte-copy-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "23f2571cd2368439daac1dd2b14e8ae4d1caeae17563002cac59bf6a06e82908"
+      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv",
@@ -752,7 +752,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "byte-copy-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "23f2571cd2368439daac1dd2b14e8ae4d1caeae17563002cac59bf6a06e82908"
+      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv",
@@ -768,7 +768,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "byte-copy-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "23f2571cd2368439daac1dd2b14e8ae4d1caeae17563002cac59bf6a06e82908"
+      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_control.sv",
@@ -784,7 +784,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tiled-matrix-independent-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "23f2571cd2368439daac1dd2b14e8ae4d1caeae17563002cac59bf6a06e82908"
+      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
@@ -800,12 +800,12 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tiled-matrix-independent-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "23f2571cd2368439daac1dd2b14e8ae4d1caeae17563002cac59bf6a06e82908"
+      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/cu/cu_matrix_multiply_control.sv",
       "module": "cu_matrix_multiply_control",
-      "sha256": "f53e62e8b39f9ee9033ab4178a590fa55272e894785f019f1fd4130ed8ef6212",
+      "sha256": "6e892d2077d8d7bf556217f9e183dd864e185891d80d892c846a86bd67bbf826",
       "verification_unit": "mmtiled-cu",
       "contexts": [
         "mmtiled"
@@ -816,7 +816,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tiled-matrix-independent-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "23f2571cd2368439daac1dd2b14e8ae4d1caeae17563002cac59bf6a06e82908"
+      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
     }
   ],
   "non_module_declarations": [
@@ -836,7 +836,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_pkgs/capi_pkg.sv",
@@ -854,7 +854,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_pkgs/credit_pkg.sv",
@@ -872,7 +872,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/afu_pkgs/globals_afu_pkg.sv",
@@ -890,7 +890,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_pkg/cu_pkg.sv",
@@ -906,7 +906,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/global_pkg/wed_pkg.sv",
@@ -922,7 +922,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/pkg/globals_cu_pkg.sv",
@@ -938,7 +938,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/cu_pkg.sv",
@@ -954,7 +954,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_pkg/wed_pkg.sv",
@@ -970,7 +970,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/pkg/globals_cu_pkg.sv",
@@ -986,7 +986,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/cu_pkg.sv",
@@ -1002,7 +1002,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_pkg/wed_pkg.sv",
@@ -1018,7 +1018,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/pkg/globals_cu_pkg.sv",
@@ -1034,7 +1034,7 @@
       "strategy_profile": "combinational",
       "oracle_id": "c-sv-abi-endian-descriptor-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "bd1bccce35d4e709989f259a34912279ca718c8dbeffcc837ea440ae3e502ee0"
+      "evidence_sha256": "4e2e9e03fb0c7f2c74a0d81f72c07c9d3a7090869178a9416ade61430e4325c9"
     }
   ]
 }

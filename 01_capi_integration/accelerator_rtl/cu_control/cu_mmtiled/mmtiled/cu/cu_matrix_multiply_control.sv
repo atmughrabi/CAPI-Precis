@@ -78,6 +78,7 @@ module cu_matrix_multiply_control #(
     array_struct_type      expected_read_type;
     logic [0:63]           current_scalar_address;
     logic [0:7]            incoming_word_offset;
+    logic [0:4]            incoming_half_offset;
 
     function automatic logic [0:63] clipped_end(
         input logic [0:63] start_index,
@@ -161,8 +162,11 @@ module cu_matrix_multiply_control #(
         line.payload.cmd = make_write_command(address).payload.cmd;
         word_offset =
             (address & ADDRESS_DATA_WRITE_MOD_MASK) >> $clog2(DATA_SIZE_WRITE);
-        half_offset = word_offset[3:7];
-        if(upper_half == word_offset[3])
+        half_offset = {1'b0, word_offset[4:7]};
+        if(
+            half_offset < CACHELINE_DATA_WRITE_NUM_HF &&
+            upper_half == word_offset[3]
+        )
             line.payload.data[half_offset * DATA_SIZE_WRITE_BITS +: DATA_SIZE_WRITE_BITS] =
                 swap_endianness_data_write(value);
         return line;
@@ -196,6 +200,7 @@ module cu_matrix_multiply_control #(
         incoming_word_offset =
             (current_scalar_address & ADDRESS_DATA_READ_MOD_MASK) >>
             $clog2(DATA_SIZE_READ);
+        incoming_half_offset = {1'b0, incoming_word_offset[4:7]};
         incoming_data_valid = 0;
         incoming_data = 0;
         if(
@@ -203,12 +208,13 @@ module cu_matrix_multiply_control #(
             read_data_0_in.payload.cmd.cu_id_x == CU_ID_X &&
             read_data_0_in.payload.cmd.cu_id_y == CU_ID_Y &&
             read_data_0_in.payload.cmd.array_struct == expected_read_type &&
+            incoming_half_offset < CACHELINE_DATA_READ_NUM_HF &&
             ~incoming_word_offset[3]
         ) begin
             incoming_data_valid = 1;
             incoming_data = swap_endianness_data_read(
                 read_data_0_in.payload.data[
-                    incoming_word_offset[3:7] * DATA_SIZE_READ_BITS +:
+                    incoming_half_offset * DATA_SIZE_READ_BITS +:
                     DATA_SIZE_READ_BITS
                 ]
             );
@@ -217,12 +223,13 @@ module cu_matrix_multiply_control #(
             read_data_1_in.payload.cmd.cu_id_x == CU_ID_X &&
             read_data_1_in.payload.cmd.cu_id_y == CU_ID_Y &&
             read_data_1_in.payload.cmd.array_struct == expected_read_type &&
+            incoming_half_offset < CACHELINE_DATA_READ_NUM_HF &&
             incoming_word_offset[3]
         ) begin
             incoming_data_valid = 1;
             incoming_data = swap_endianness_data_read(
                 read_data_1_in.payload.data[
-                    incoming_word_offset[3:7] * DATA_SIZE_READ_BITS +:
+                    incoming_half_offset * DATA_SIZE_READ_BITS +:
                     DATA_SIZE_READ_BITS
                 ]
             );

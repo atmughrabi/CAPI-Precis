@@ -27,17 +27,29 @@ module write_engine #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
 	ReadWriteDataLine  read_data_0_in_latched_S2;
 	ReadWriteDataLine  read_data_1_in_latched   ;
 
-	ReadWriteDataLine             write_data_0_out_latched           ;
-	ReadWriteDataLine             write_data_1_out_latched           ;
 	BufferStatus                  write_command_buffer_status_latched;
-	CommandBufferLine             write_command_out_latched          ;
 	logic [0:(ARRAY_SIZE_BITS-1)] write_job_counter_done_latched     ;
 	CommandTagLine                cmd                                ;
 	logic                         enabled_in                         ;
 
-	// assign write_data_0_out_latched  = 0;
-	// assign write_data_1_out_latched  = 0;
-	// assign write_command_out_latched = 0;
+	typedef struct packed {
+		CommandBufferLine command;
+		ReadWriteDataLine data_0 ;
+		ReadWriteDataLine data_1 ;
+	} WriteTuple;
+
+	localparam int WRITE_TUPLE_DEPTH      = WRITE_ENGINE_BUFFER_SIZE;
+	localparam int WRITE_TUPLE_ADDR_BITS  = $clog2(WRITE_TUPLE_DEPTH);
+	localparam int WRITE_TUPLE_COUNT_BITS = $clog2(WRITE_TUPLE_DEPTH + 1);
+
+	WriteTuple write_tuple_queue [0:(WRITE_TUPLE_DEPTH-1)];
+	WriteTuple incoming_write_tuple                         ;
+	logic [0:(WRITE_TUPLE_ADDR_BITS-1)]  tuple_write_pointer;
+	logic [0:(WRITE_TUPLE_ADDR_BITS-1)]  tuple_read_pointer ;
+	logic [0:(WRITE_TUPLE_COUNT_BITS-1)] tuple_count        ;
+	logic                                  enqueue_write      ;
+	logic                                  dequeue_write      ;
+
 	////////////////////////////////////////////////////////////////////////////
 	//drive input logic
 	////////////////////////////////////////////////////////////////////////////
@@ -85,8 +97,6 @@ module write_engine #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
 	////////////////////////////////////////////////////////////////////////////
 	//drive out logic
 	////////////////////////////////////////////////////////////////////////////
-	// assign write_command_out_latched      = 0;
-	// assign write_job_counter_done_latched = 0;
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
@@ -96,18 +106,17 @@ module write_engine #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
 			write_job_counter_done  <= 0;
 		end else begin
 			if(enabled_in) begin
-				write_command_out.valid <= write_command_out_latched.valid && ~write_command_buffer_status_latched.alfull;
-				write_data_0_out.valid  <= write_data_0_out_latched.valid && ~write_command_buffer_status_latched.alfull;
-				write_data_1_out.valid  <= write_data_1_out_latched.valid && ~write_command_buffer_status_latched.alfull;
+				write_command_out.valid <= dequeue_write;
+				write_data_0_out.valid  <= dequeue_write;
+				write_data_1_out.valid  <= dequeue_write;
 				write_job_counter_done  <= write_job_counter_done_latched;
+				if(dequeue_write) begin
+					write_command_out.payload <= write_tuple_queue[tuple_read_pointer].command.payload;
+					write_data_0_out.payload  <= write_tuple_queue[tuple_read_pointer].data_0.payload;
+					write_data_1_out.payload  <= write_tuple_queue[tuple_read_pointer].data_1.payload;
+				end
 			end
 		end
-	end
-
-	always_ff @(posedge clock) begin
-		write_command_out.payload <= write_command_out_latched.payload;
-		write_data_0_out.payload  <= write_data_0_out_latched.payload;
-		write_data_1_out.payload  <= write_data_1_out_latched.payload ;
 	end
 
 	////////////////////////////////////////////////////////////////////////////
@@ -127,12 +136,6 @@ module write_engine #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
 	////////////////////////////////////////////////////////////////////////////
 	//write state machine
 	////////////////////////////////////////////////////////////////////////////
-	// read_data_0_in_latched_S2
-	// 	read_data_1_in_latched
-
-	// write_command_out_latched
-	// write_data_0_out_latched
-	// write_data_1_out_latched
 
 	always_comb begin
 		cmd                  = 0;
@@ -147,40 +150,58 @@ module write_engine #(parameter CU_WRITE_CONTROL_ID = DATA_WRITE_CONTROL_ID) (
 		cmd.abt              = STRICT;
 	end
 
+	always_comb begin
+		incoming_write_tuple = 0;
+
+		incoming_write_tuple.command.valid           = 1;
+		incoming_write_tuple.command.payload.command = WRITE_NA;
+		incoming_write_tuple.command.payload.size    =
+			cmd_size_calculate(read_data_0_in_latched_S2.payload.cmd.real_size);
+		incoming_write_tuple.command.payload.abt     = STRICT;
+		incoming_write_tuple.command.payload.address =
+			wed_request_in_latched.payload.wed.array_receive +
+			read_data_0_in_latched_S2.payload.cmd.address_offset;
+		incoming_write_tuple.command.payload.cmd     = cmd;
+
+		incoming_write_tuple.data_0.valid        = 1;
+		incoming_write_tuple.data_0.payload.cmd  = cmd;
+		incoming_write_tuple.data_0.payload.data =
+			read_data_0_in_latched_S2.payload.data;
+
+		incoming_write_tuple.data_1.valid        = 1;
+		incoming_write_tuple.data_1.payload.cmd  = cmd;
+		incoming_write_tuple.data_1.payload.data =
+			read_data_1_in_latched.payload.data;
+	end
+
+	assign enqueue_write =
+		read_data_0_in_latched_S2.valid &&
+		read_data_1_in_latched.valid &&
+		wed_request_in_latched.valid &&
+		enabled_in;
+	assign dequeue_write =
+		enabled_in &&
+		(|tuple_count) &&
+		~write_command_buffer_status_latched.alfull;
 
 	always_ff @(posedge clock or negedge rstn) begin
 		if(~rstn) begin
-			write_data_0_out_latched.valid  <= 0;
-			write_data_1_out_latched.valid  <= 0;
-			write_command_out_latched.valid <= 0;
+			tuple_write_pointer <= 0;
+			tuple_read_pointer  <= 0;
+			tuple_count         <= 0;
 		end else begin
-			if(read_data_0_in_latched_S2.valid && wed_request_in_latched.valid && enabled_in) begin
-				write_data_0_out_latched.valid  <= 1;
-				write_data_1_out_latched.valid  <= 1;
-				write_command_out_latched.valid <= 1;
-			end else if(~write_command_buffer_status_latched.alfull) begin
-				write_data_0_out_latched.valid  <= 0;
-				write_data_1_out_latched.valid  <= 0;
-				write_command_out_latched.valid <= 0;
+			if(enqueue_write) begin
+				write_tuple_queue[tuple_write_pointer] <= incoming_write_tuple;
+				tuple_write_pointer <= tuple_write_pointer + 1'b1;
 			end
-		end
-	end
+			if(dequeue_write)
+				tuple_read_pointer <= tuple_read_pointer + 1'b1;
 
-
-	always_ff @(posedge clock) begin
-		if(read_data_0_in_latched_S2.valid && wed_request_in_latched.valid && enabled_in) begin
-			write_command_out_latched.payload.command <= WRITE_NA;
-			write_command_out_latched.payload.size    <= cmd_size_calculate(read_data_0_in_latched_S2.payload.cmd.real_size);
-			write_command_out_latched.payload.abt     <= STRICT;
-			write_command_out_latched.payload.address <= wed_request_in_latched.payload.wed.array_receive + read_data_0_in_latched_S2.payload.cmd.address_offset;
-
-			write_command_out_latched.payload.cmd <= cmd;
-
-			write_data_0_out_latched.payload.cmd <= cmd;
-			write_data_1_out_latched.payload.cmd <= cmd;
-
-			write_data_0_out_latched.payload.data <= read_data_0_in_latched_S2.payload.data;
-			write_data_1_out_latched.payload.data <= read_data_1_in_latched.payload.data;
+			case({enqueue_write, dequeue_write})
+				2'b10: tuple_count <= tuple_count + 1'b1;
+				2'b01: tuple_count <= tuple_count - 1'b1;
+				default: tuple_count <= tuple_count;
+			endcase
 		end
 	end
 

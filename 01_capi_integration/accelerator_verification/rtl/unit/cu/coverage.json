@@ -74,7 +74,7 @@
       "id": "mmtiled-engine-closed-state-default",
       "source": "cu_mmtiled/mmtiled/cu/cu_matrix_multiply_control.sv",
       "metric": "line",
-      "line": 480,
+      "line": 487,
       "hierarchy": "TOP.mmtiled_tb.full_dut.matrix_engine_x[0].matrix_engine_y[0].matrix_multiply_control_instant",
       "name": "case",
       "reason": "The state register is reset and assigned only declared enum literals; the default recovery arm requires an injected state upset."

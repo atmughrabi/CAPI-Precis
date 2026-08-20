@@ -602,7 +602,8 @@ module mmtiled_tb;
       input int unsigned start_j,
       input int unsigned start_k,
       input int unsigned salt,
-      input int unsigned profile
+      input int unsigned profile,
+      input int unsigned address_word_offset
   );
     int unsigned i_limit;
     int unsigned j_limit;
@@ -651,9 +652,12 @@ module mmtiled_tb;
     full_wed.valid = 1;
     full_wed.payload.wed.size_n = n;
     full_wed.payload.wed.size_tile = tile;
-    full_wed.payload.wed.Matrix_A = 64'h8100_0040;
-    full_wed.payload.wed.Matrix_B = 64'h8200_0080;
-    full_wed.payload.wed.Matrix_C = 64'h8300_00c0;
+    full_wed.payload.wed.Matrix_A =
+        64'h8100_0000 + address_word_offset * DATA_SIZE_READ;
+    full_wed.payload.wed.Matrix_B =
+        64'h8200_0000 + address_word_offset * DATA_SIZE_READ;
+    full_wed.payload.wed.Matrix_C =
+        64'h8300_0000 + address_word_offset * DATA_SIZE_READ;
     c_reads = 0;
     a_reads = 0;
     b_reads = 0;
@@ -942,8 +946,18 @@ module mmtiled_tb;
   endtask
 
   task automatic probe_matrix_product;
-    full_matrix_case("product-probe", 3, 2, 2, 1, 1, 7, 2);
+    full_matrix_case("product-probe", 3, 2, 2, 1, 1, 7, 2, 16);
     $display("PASS mmtiled_probe_matrix_product assertions=%0d", assertions_checked);
+  endtask
+
+  task automatic probe_matrix_word_offsets;
+    full_matrix_case("word-offset-15", 1, 1, 0, 0, 0, 31, 0, 15);
+    full_matrix_case("word-offset-16", 1, 1, 0, 0, 0, 47, 1, 16);
+    full_matrix_case("word-offset-31", 1, 1, 0, 0, 0, 63, 2, 31);
+    $display(
+      "PASS mmtiled_probe_word_offsets offsets=15,16,31 assertions=%0d",
+      assertions_checked
+    );
   endtask
 
   initial begin
@@ -964,6 +978,10 @@ module mmtiled_tb;
       $display("PASS mmtiled_probe_matrix_address assertions=%0d", assertions_checked);
       $finish;
     end
+    if($test$plusargs("PROBE_MATRIX_WORD_OFFSETS")) begin
+      probe_matrix_word_offsets();
+      $finish;
+    end
 
     matrix_load_case("zero", 0, 1, 0, 0, 0);
     held_stall_case();
@@ -973,18 +991,19 @@ module mmtiled_tb;
     matrix_load_case("upper-half-17", 17, 17, 16, 0, 0);
     matrix_load_case("multiline-40", 40, 40, 39, 0, 0);
     matrix_buffer_pressure_case();
-    full_matrix_case("product-zero", 0, 1, 0, 0, 0, 1, 0);
-    full_matrix_case("product-single", 1, 1, 0, 0, 0, 7, 1);
-    full_matrix_case("product-full-tile", 2, 2, 0, 0, 0, 11, 0);
-    full_matrix_case("product-parallel-4x4", 4, 4, 0, 0, 0, 17, 0);
-    full_matrix_case("product-edge-tile", 3, 2, 2, 1, 1, 13, 0);
-    full_matrix_case("product-repeat", 1, 1, 0, 0, 0, 255, 4);
+    full_matrix_case("product-zero", 0, 1, 0, 0, 0, 1, 0, 16);
+    full_matrix_case("product-single", 1, 1, 0, 0, 0, 7, 1, 16);
+    full_matrix_case("product-full-tile", 2, 2, 0, 0, 0, 11, 0, 16);
+    full_matrix_case("product-parallel-4x4", 4, 4, 0, 0, 0, 17, 0, 16);
+    full_matrix_case("product-edge-tile", 3, 2, 2, 1, 1, 13, 0, 16);
+    full_matrix_case("product-repeat", 1, 1, 0, 0, 0, 255, 4, 16);
+    probe_matrix_word_offsets();
     full_legacy_routing_case();
     outer_arbiter_delayed_ready_case();
 
-    require(bins_hit == 16, "functional bin denominator");
+    require(bins_hit == 19, "functional bin denominator");
     $display(
-      "PASS mmtiled_cu bins=%0d/16 assertions=%0d",
+      "PASS mmtiled_cu bins=%0d/19 assertions=%0d",
       bins_hit,
       assertions_checked
     );

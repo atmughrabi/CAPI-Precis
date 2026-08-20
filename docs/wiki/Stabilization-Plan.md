@@ -20,7 +20,7 @@ produces matching output data.
 | Completion reuse | Next CU started before reset drain | ACK plus completion/status clear verification | Repeated-job simulation or hardware trace |
 | Regression target | Build failures hidden by `grep` | Direct test status propagation | Deliberate compile or data mismatch fails `make test` |
 | Matrix verification | Output buffer started non-zero and one CPU path was a stub | Zeroed output and complete tiled-transposed reference | All CPU matrix checksums match |
-| Matrix completion | Host waited for tile area while RTL reports matrix size | Match `cu_stop` to `size_n` | Healthy matrix CU completion does not false-stall |
+| Matrix completion | Host used one matrix-wide target for every clipped tile | Derive `cu_stop` from the launched tile's clipped row and column counts | Full, thin-row, thin-column, and corner tiles complete without false stalls |
 | RTL protocol | Host evidence could not detect an internal publication/reset violation | Bind bounded monitor to `cached_afu` | Verilator pass/negative tests and ModelSim bind |
 
 ## Delivery stages

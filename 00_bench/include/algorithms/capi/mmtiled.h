@@ -30,6 +30,12 @@ void matrixTranspose(struct MatrixArrays *matrixArrays);
 void matrixMultiplyStandard(struct MatrixArrays *matrixArrays);
 void matrixMultiplyStandardTransposed(struct MatrixArrays *matrixArrays);
 void matrixMultiplyTiled(struct MatrixArrays *matrixArrays);
+int matrixTileCompletionTarget(
+    uint64_t size_n,
+    uint64_t size_tile,
+    uint64_t start_i,
+    uint64_t start_j,
+    uint64_t *completion_target);
 void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays, struct Arguments *arguments);
 
 #endif

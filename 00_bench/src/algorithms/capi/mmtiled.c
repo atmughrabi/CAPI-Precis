@@ -247,12 +247,35 @@ void matrixMultiplyTiled(struct MatrixArrays *matrixArrays)
 
 }
 
+int matrixTileCompletionTarget(
+    uint64_t size_n,
+    uint64_t size_tile,
+    uint64_t start_i,
+    uint64_t start_j,
+    uint64_t *completion_target)
+{
+    uint64_t rows;
+    uint64_t columns;
+
+    if(!completion_target || !size_tile ||
+       start_i >= size_n || start_j >= size_n)
+        return -1;
+
+    rows = MIN(size_tile, size_n - start_i);
+    columns = MIN(size_tile, size_n - start_j);
+    if(rows && columns > UINT64_MAX / rows)
+        return -1;
+
+    *completion_target = rows * columns;
+    return 0;
+}
+
 void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays, struct Arguments *arguments)
 {
 
-    uint32_t i;
-    uint32_t j;
-    uint32_t k;
+    uint64_t i;
+    uint64_t j;
+    uint64_t k;
 
     struct cxl_afu_h *afu;
 
@@ -274,7 +297,6 @@ void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays, struct Arg
     afu_status.cu_config = 0; // non zero CU triggers the AFU to work
     afu_status.cu_config = ((afu_status.cu_config << 32) | (arguments->numThreads));
     afu_status.cu_config_2 = 0;
-    afu_status.cu_stop = wed->size_n;
 
     // ********************************************************************************************
     // ***************                 START AFU                                     **************
@@ -300,6 +322,22 @@ void matrixMultiplyTiledTransposed(struct MatrixArrays *matrixArrays, struct Arg
                 afu_status.cu_config_2 = ((i << 1) | 1);
                 afu_status.cu_config_3 = ((j << 1) | 1);
                 afu_status.cu_config_4 = ((k << 1) | 1);
+                if(matrixTileCompletionTarget(
+                    matrixArrays->size_n,
+                    matrixArrays->size_tile,
+                    i,
+                    j,
+                    &afu_status.cu_stop))
+                {
+                    fprintf(
+                        stderr,
+                        "Invalid or overflowing mmtiled completion target at tile (%lu, %lu)\n",
+                        i,
+                        j);
+                    releaseAFU(&afu);
+                    free(wed);
+                    exit(EXIT_FAILURE);
+                }
                 startCU(&afu, &afu_status);
 
                 // ********************************************************************************************
