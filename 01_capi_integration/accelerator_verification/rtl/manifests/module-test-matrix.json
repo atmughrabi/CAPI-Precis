@@ -688,7 +688,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tutorial-parity-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
+      "evidence_sha256": "b53af5e3a2bcbc4fa2469dd7a8b51e122b5ef422344ed10fc2ad441c5f4c0179"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/read_engine.sv",
@@ -704,7 +704,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tutorial-parity-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
+      "evidence_sha256": "b53af5e3a2bcbc4fa2469dd7a8b51e122b5ef422344ed10fc2ad441c5f4c0179"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy-tutorial/memcpy-tutorial/cu/write_engine.sv",
@@ -720,7 +720,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tutorial-parity-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
+      "evidence_sha256": "b53af5e3a2bcbc4fa2469dd7a8b51e122b5ef422344ed10fc2ad441c5f4c0179"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/global_cu/cu_control.sv",
@@ -736,7 +736,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "byte-copy-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
+      "evidence_sha256": "b53af5e3a2bcbc4fa2469dd7a8b51e122b5ef422344ed10fc2ad441c5f4c0179"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_read_engine_control.sv",
@@ -752,7 +752,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "byte-copy-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
+      "evidence_sha256": "b53af5e3a2bcbc4fa2469dd7a8b51e122b5ef422344ed10fc2ad441c5f4c0179"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_memcpy/memcpy/cu/cu_data_write_engine_control.sv",
@@ -768,7 +768,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "byte-copy-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
+      "evidence_sha256": "b53af5e3a2bcbc4fa2469dd7a8b51e122b5ef422344ed10fc2ad441c5f4c0179"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_control.sv",
@@ -784,7 +784,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tiled-matrix-independent-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
+      "evidence_sha256": "b53af5e3a2bcbc4fa2469dd7a8b51e122b5ef422344ed10fc2ad441c5f4c0179"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/global_cu/cu_matrix_C_job_control.sv",
@@ -800,7 +800,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tiled-matrix-independent-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
+      "evidence_sha256": "b53af5e3a2bcbc4fa2469dd7a8b51e122b5ef422344ed10fc2ad441c5f4c0179"
     },
     {
       "path": "01_capi_integration/accelerator_rtl/cu_control/cu_mmtiled/mmtiled/cu/cu_matrix_multiply_control.sv",
@@ -816,7 +816,7 @@
       "strategy_profile": "cu_engine",
       "oracle_id": "tiled-matrix-independent-golden-v1",
       "implementation_status": "implemented",
-      "evidence_sha256": "b943eb3693819a6d46e6e84aed95d9042a87ccd9a324aecb1f330407660e3488"
+      "evidence_sha256": "b53af5e3a2bcbc4fa2469dd7a8b51e122b5ef422344ed10fc2ad441c5f4c0179"
     }
   ],
   "non_module_declarations": [
