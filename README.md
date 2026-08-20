@@ -1,493 +1,127 @@
 [![verification](https://github.com/atmughrabi/CAPI-Precis/actions/workflows/verification.yml/badge.svg)](https://github.com/atmughrabi/CAPI-Precis/actions/workflows/verification.yml)
+
 <p align="center">
   <img src="./02_slides/logo/logo.svg" width="180" alt="CAPI-Precis logo">
 </p>
 
-# CAPI-Precis: Coherent Accelerator Processor Interface (CAPI) Abstract Layer
+# CAPI-Precis
 
-## Overview 
+CAPI-Precis is a reusable AFU-control layer for IBM's Coherent Accelerator
+Processor Interface (CAPI). It separates application compute units from PSL
+command, response, credit, tag, data, MMIO, error, completion, and reset
+handling while retaining coherent cache access.
 
 <p align="center">
   <img src="./docs/fig/capi-precis-architecture.svg" width="900" alt="CAPI-Precis host and FPGA accelerator architecture">
 </p>
 
-CAPI-Precis is an AFU-control abstraction layer that simplifies communication
-and buffering with the IBM CAPI Power Service Layer (PSL). Its control units
-separate command, response, buffering, error, and data-path responsibilities
-while preserving fine-grained random and sequential memory access. Unlike
-streaming-only frameworks, CAPI-Precis retains PSL cache support.
+## Scope
 
-### Key Features and Benefits
+CAPI-Precis owns the shared host/AFU protocol used by downstream accelerators:
 
-* Design your Compute Units (CUs) without the need to interface with the PSL directly (CU-centric).
-* Supports PSL cache access.
-* Supports fine grain random, or streaming access, for it keeps the command-buffer exposed and flexible for any CAPI-PSL supported commands.
-* You will only be concerned with sending PSL supported commands, for example you can send reads/writes without the need to check parity, error reporting, and latency requirements. Just push commands to their corresponding buffers, and wait for the response.
-* Each sent command can be coupled with meta-data (for example CU_ID, request_size, etc.), and then receive data or responses coupled with those elements for an easier multi-CU design.
-* Open-source and minimalistic design.
+- bounded libcxl setup, MMIO, execution, completion, and reset handling;
+- ordered PSL command/data buffers with fixed or round-robin arbitration;
+- credit, tag, restart, response, parity, error, and statistics control;
+- reusable memcpy, tutorial, and tiled-matrix compute-unit examples;
+- exact RTL manifests, module ownership, portable elaboration, and coverage
+  evidence.
 
-## Deployment stability
+[AccelGraph](https://github.com/atmughrabi/AccelGraph) consumes an exact
+CAPI-Precis pin and owns graph-specific WEDs, engines, kernels, and scoreboards.
+Those responsibilities are intentionally not duplicated here.
 
-<p align="center"><img src="./docs/fig/accelerator-verification-f01-host-liveness.svg" width="760"></p>
+## Quick start
 
-AFU setup, configuration, execution, error handling, and completion reset are
-bounded by the host verification layer. Run `make verify` before simulator or
-FPGA deployment. The timeout contract and failure evidence
-are documented in the
-[accelerator verification guide](https://github.com/atmughrabi/CAPI-Precis/wiki/Accelerator-Verification);
-the [architecture guide](https://github.com/atmughrabi/CAPI-Precis/wiki/Architecture)
-explains the supplied system figures, and the
-[verification roadmap](https://github.com/atmughrabi/CAPI-Precis/wiki/Verification-Infrastructure)
-defines the planned module-level infrastructure.
-
-Phase 0 now gates every RTL path and the exact modern source order:
+### Host and portable verification
 
 ```console
-make rtl-manifest-verification
-make rtl-real-elaboration
+git clone https://github.com/atmughrabi/CAPI-Precis.git
+cd CAPI-Precis
+git submodule sync --recursive
+git submodule update --init --recursive
+sudo apt-get install build-essential tcl verilator
+make verify
 ```
 
-The editable documentation source is the
-[`docs` index](docs/README.md); the GitHub wiki is its published mirror.
+Verilator 5 or newer is required for RTL verification. ModelSim and Quartus are
+needed only for the licensed simulation and implementation flows.
 
-# Installation 
+Run the OpenMP reference workload:
 
-## Dependencies
-
-### OpenMP
-1. OpenMP is already a feature of the compiler, so this step is not necessary.
 ```console
-CAPI@Precis:~$ sudo apt-get install libomp-dev
+make run-openmp
 ```
-2. Verilator 5 or newer is required for the standalone RTL verification target.
+
+### Scoped CAPI environment
+
+`tools/capi-env` configures one command or a temporary shell; it never requires
+editing `.bashrc`.
+
 ```console
-CAPI@Precis:~$ sudo apt-get install tcl verilator
-```
-
-### CAPI
-1. Simulation and Synthesis
-  * This framework was developed on Ubuntu 18.04 LTS.
-  * ModelSim is used for simulation and installed along side Quartus II 18.1.
-  * Synthesis requires ALTERA Quartus, starting from release 15.0 of Quartus II should be fine.
-  * Nallatech P385-A7 card with the Altera Stratix-V-GX-A7 FPGA is supported.
-  * `tools/capi-env` scopes all project/tool variables to one command or a
-    temporary shell. No `.bashrc` changes are required.
-  * Initialize the recursive submodules in
-    [Setting up the source code](#setting-up-the-source-code) before running
-    host or simulation checks.
-
-```bash
-# Host-only checks
 ./tools/capi-env --mode host check
-
-# Validate a ModelSim/PSLSE installation
 ./tools/capi-env --mode sim --intel-fpga "$HOME/intelFPGA/18.1" check
-
-# Run any command with a scoped environment
 ./tools/capi-env --mode sim -- make run-vsim
 ./tools/capi-env --mode sim -- make run-pslse
 ./tools/capi-env --mode sim -- make run-capi-sim-verbose2
-
-# Open a temporary configured shell; exit discards the environment
-./tools/capi-env --mode synth shell
+./tools/capi-env --mode fpga -- make run-capi-fpga-verbose2
 ```
 
-The [environment harness guide](https://github.com/atmughrabi/CAPI-Precis/wiki/Environment-Harness)
-documents simulation, synthesis, FPGA, custom install paths, and export output.
+Use `./tools/capi-env --mode sim shell` for a disposable configured shell. See
+the [environment harness](https://github.com/atmughrabi/CAPI-Precis/wiki/Environment-Harness)
+for custom install paths and the
+[deployment runbook](https://github.com/atmughrabi/CAPI-Precis/wiki/Deployment-Runbook)
+for simulator and FPGA sequencing.
 
-2. AFU Communication with PSL
-  * please check [(CAPI User's Manual)](http://www.nallatech.com/wp-content/uploads/IBM_CAPI_Users_Guide_1-2.pdf).
+## Verification
 
-## Setting up the source code 
+| Command | Evidence |
+| --- | --- |
+| `make verify` | Host, benchmark, environment, manifest, real-RTL, and module-family gates |
+| `make rtl-manifest-verification` | Exact ModelSim/Quartus source order, inventory, and module ownership |
+| `make rtl-real-elaboration` | Real `cached_afu` plus memcpy, tutorial, and mmtiled compute units |
+| `make rtl-coverage-closure` | Complete executable ownership for all active RTL families |
+| `make accelerator-verification` | Host timeout, MMIO, error, completion, and reset behavior |
 
-1. Clone CAPI-Precis.
-```console
-CAPI@Precis:~$ git clone https://github.com/atmughrabi/CAPI-Precis.git
-```
-2. From the home directory go to the CAPI-Precis directory:
-```console
-CAPI@Precis:~$ cd CAPI-Precis/
-```
-3. Setup the CAPI submodules.
-```console
-CAPI@Precis:~CAPI-Precis$ git submodule update --init --recursive
-```
+The portable RTL denominator is 44 production modules, 13 active packages, 23
+module families, and 114 build contexts. Licensed ModelSim/Quartus results and
+hardware traces remain separate release evidence.
 
-# Running CAPI-Precis (Memory Copy engines)
+## Repository layout
 
-## Initial compilation for framework with OpenMP 
+| Path | Responsibility |
+| --- | --- |
+| `00_bench` | Host applications, OpenMP references, CAPI launch code, and tests |
+| `01_capi_integration/accelerator_rtl` | Synthesizable AFU and compute-unit RTL |
+| `01_capi_integration/accelerator_verification` | Host, RTL unit, integration, manifest, and simulation evidence |
+| `01_capi_integration/accelerator_sim` | PSLSE and ModelSim flow |
+| `01_capi_integration/accelerator_synth` | Quartus flow |
+| `docs` | Maintained documentation and wiki source |
+| `tools` | Scoped environment harness and tests |
 
-1. (Optional) From the root directory go to benchmark directory:
-```console
-CAPI@Precis:~CAPI-Precis$ cd 00_bench/
-```
-2. The default compilation is `openmp` mode:
-```console
-CAPI@Precis:~CAPI-Precis/00_bench$ make
-```
-3. From the root directory you can modify the Makefile with the directories you need for you custom project:
-```console
-CAPI@Precis:~CAPI-Precis/00_bench$ make run
-```
-* OR
-```console
-CAPI@Precis:~CAPI-Precis/00_bench$ make run-openmp
-```
-4. Example output:
-```
-*-----------------------------------------------------*
-| Number of Threads :  8                              | 
- -----------------------------------------------------
-*-----------------------------------------------------*
-| Allocating Data Arrays (SIZE)  131072               | 
- -----------------------------------------------------
-*-----------------------------------------------------*
-| Populating Data Arrays (Seed)  27491095             | 
- -----------------------------------------------------
-*-----------------------------------------------------*
-| Copy data (SIZE)               131072               | 
- -----------------------------------------------------
-| Time (Seconds)         | 0.00000900000000000000     | 
-| BandWidth MB/s         | 55555.55555555555474711582 | 
-| BandWidth GB/s         | 54.25347222222222143273    | 
-*-----------------------------------------------------*
-| Data Missmatched (#)           | 0                  | 
- -----------------------------------------------------
-| PASS                                                |
-*-----------------------------------------------------*
-| Freeing Data Arrays (SIZE)     131072               | 
- -----------------------------------------------------
-```
+The complete naming and ownership contract is maintained in
+[Repository structure](https://github.com/atmughrabi/CAPI-Precis/wiki/Repository-Structure).
+Historical presentations and chip-planner images remain under `02_slides`.
 
-## Initial compilation for framework with Coherent Accelerator Processor Interface (CAPI)  
+## Documentation
 
-* NOTE: You need CAPI environment setup on your machine (tested on Power8 8247-22L).
-* [CAPI Education Videos](https://developer.ibm.com/linuxonpower/capi/education/)
-* We are not supporting CAPI-SNAP since our processing suite supports accelerator-cache. SNAP does not support this feature yet. So if you are interested in streaming applications or do not benefit from caches SNAP is also good candidate.
-* To check the SNAP framework: https://github.com/open-power/snap.
+| Topic | Canonical page |
+| --- | --- |
+| Host/FPGA boundaries and block semantics | [Architecture](https://github.com/atmughrabi/CAPI-Precis/wiki/Architecture) |
+| Timeout and RTL lifecycle contract | [Accelerator verification](https://github.com/atmughrabi/CAPI-Precis/wiki/Accelerator-Verification) |
+| Simulation, synthesis, FPGA launch, and triage | [Deployment runbook](https://github.com/atmughrabi/CAPI-Precis/wiki/Deployment-Runbook) |
+| Module tests, scoreboards, mutations, and coverage | [Verification infrastructure](https://github.com/atmughrabi/CAPI-Precis/wiki/Verification-Infrastructure) |
+| Acceptance and rollout | [Stabilization plan](https://github.com/atmughrabi/CAPI-Precis/wiki/Stabilization-Plan) |
 
-### Simulation
+`docs/wiki` is the editable source of truth; the GitHub wiki is its published
+mirror. Start at [`docs/README.md`](docs/README.md) when editing documentation.
 
-* NOTE: You need three open terminals, for running vsim, pslse, and the application.
+## Platform
 
-1. (Optional) From the root directory go to benchmark directory:
-```console
-CAPI@Precis:~CAPI-Precis$ cd 00_bench/
-```
-2. On terminal 1. Run [ModelSim vsim] for `simulation` this step is not needed when running on real hardware, this just simulates the AFU that resides on your (CAPI supported) FPGA  :
-```console
-CAPI@Precis:~CAPI-Precis/00_bench$ make run-vsim
-```
-3. The previous step will execute vsim.tcl script to compile the design, to start the running the simulation just execute the following command at the transcript terminal of ModelSim : `r #recompile design`,`c #run simulation`
-```console
-ModelSim> r 
-ModelSim> c 
-```
-4. On Terminal 2. Run [PSL Simulation Engine](https://github.com/ibm-capi/pslse) (PSLSE) for `simulation` this step is not needed when running on real hardware, this just emulates the PSL that resides on your (CAPI supported) IBM-PowerPC machine  :
-```console
-CAPI@Precis:~CAPI-Precis/00_bench$ make run-pslse
-```
+The original hardware target is the Nallatech P385-A7 with an Altera
+Stratix-V-GX-A7 FPGA. The retained implementation flow uses Quartus II 18.1 and
+ModelSim; portable host and Verilator checks run independently of those tools.
+CAPI-SNAP is outside this cache-oriented design.
 
-##### Option 1: Silent run with no stats output
+## Contact
 
-5. On Terminal 3. Run the algorithm that communicates with the PSLSE (simulation):
-```console
-CAPI@Precis:~CAPI-Precis/00_bench$ make run-capi-sim
-```
-
-##### Option 2: Verbose run with stats output
-
-5.  On Terminal 3. Run the algorithm that communicates with the PSLSE (simulation) printing out stats based on the responses received to the AFU-Control layer:
-```console
-CAPI@Precis:~CAPI-Precis/00_bench$ make run-capi-sim-verbose
-```
-6. Example output: please check [(CAPI User's Manual)](http://www.nallatech.com/wp-content/uploads/IBM_CAPI_Users_Guide_1-2.pdf), for each response explanation. The stats are labeled `RESPONSE_COMMANADTYPE_count`.
-```
-*-----------------------------------------------------*
-|                 WEDStruct structure                 | 
- -----------------------------------------------------
-| wed                    | 0x557ba26c1600             | 
-| wed->size_send         | 131072                     | 
-| wed->size_recive       | 131072                     | 
-| wed->array_send        | 0x7fc19b290080             | 
-| wed->array_receive     | 0x7fc19b20f080             | 
- -----------------------------------------------------
-*-----------------------------------------------------*
-|               AFU configuration START               | 
- -----------------------------------------------------
-| status                 | 0                          | 
-*-----------------------------------------------------*
-|               AFU configuration DONE                | 
- -----------------------------------------------------
-| status                 | 1111000000000001           | 
-*-----------------------------------------------------*
-*-----------------------------------------------------*
-|               CU configuration START                | 
- -----------------------------------------------------
-| status                 | 0                          | 
-*-----------------------------------------------------*
-|               CU configuration DONE                 | 
- -----------------------------------------------------
-| status                 | 333b1000008                | 
-*-----------------------------------------------------*
-*-----------------------------------------------------*
-|                 AFU Stats                           | 
- -----------------------------------------------------
-| CYCLE_count            | 55060                      | 
-| Time (Seconds)         | 0.00022023999999999999     | 
- -----------------------------------------------------
-*-----------------------------------------------------*
-|                 Total BW                            | 
- -----------------------------------------------------
-| Data MB                | 1.00000000000000000000     | 
-| Data GB                | 0.00097656250000000000     | 
- -----------------------------------------------------
-| BandWidth MB/s         | 4540.50127134035574272275  | 
-| BandWidth GB/s         | 4.43408327279331615500     | 
-*-----------------------------------------------------*
-|                 Total Read BW                       | 
- -----------------------------------------------------
-| Data MB                | 0.50000000000000000000     | 
-| Data GB                | 0.00048828125000000000     | 
- -----------------------------------------------------
-| BandWidth MB/s         | 2270.25063567017787136137  | 
-| BandWidth GB/s         | 2.21704163639665807750     | 
-*-----------------------------------------------------*
-|                 Total Write BW                      | 
- -----------------------------------------------------
-| Data MB                | 0.50000000000000000000     | 
-| Data GB                | 0.00048828125000000000     | 
- -----------------------------------------------------
-| BandWidth MB/s         | 2270.25063567017787136137  | 
-| BandWidth GB/s         | 2.21704163639665807750     | 
-*-----------------------------------------------------*
-|                 Effective total BW                  | 
- -----------------------------------------------------
-| Data MB                | 1.00000000000000000000     | 
-| Data GB                | 0.00097656250000000000     | 
- -----------------------------------------------------
-| BandWidth MB/s         | 4540.50127134035574272275  | 
-| BandWidth GB/s         | 4.43408327279331615500     | 
-*-----------------------------------------------------*
-|                 Effective Read BW                   | 
- -----------------------------------------------------
-| Data MB                | 0.50000000000000000000     | 
-| Data GB                | 0.00048828125000000000     | 
- -----------------------------------------------------
-| BandWidth MB/s         | 2270.25063567017787136137  | 
-| BandWidth GB/s         | 2.21704163639665807750     | 
-*-----------------------------------------------------*
-|                 Effective Write BW                  | 
- -----------------------------------------------------
-| Data MB                | 0.50000000000000000000     | 
-| Data GB                | 0.00048828125000000000     | 
- -----------------------------------------------------
-| BandWidth MB/s         | 2270.25063567017787136137  | 
-| BandWidth GB/s         | 2.21704163639665807750     | 
-*-----------------------------------------------------*
-|              Byte Transfer Stats                    | 
- -----------------------------------------------------
-| READ_BYTE_count        | 524288                     | 
-| WRITE_BYTE_count       | 524288                     | 
- -----------------------------------------------------
-| PREFETCH_READ_BYTE_count   | 0                      | 
-| PREFETCH_WRITE_BYTE_count  | 0                      | 
-*-----------------------------------------------------*
-|                 Responses Stats                     | 
- -----------------------------------------------------
-| DONE_count             | 8415                       | 
- -----------------------------------------------------
-| DONE_READ_count        | 4096                       | 
-| DONE_WRITE_count       | 4096                       | 
- -----------------------------------------------------
-| DONE_RESTART_count     | 206                        | 
- -----------------------------------------------------
-| DONE_PREFETCH_READ_count   | 8                      | 
-| DONE_PREFETCH_WRITE_count  | 8                      | 
- -----------------------------------------------------
-| PAGED_count            | 206                        | 
-| FLUSHED_count          | 0                          | 
-| AERROR_count           | 0                          | 
-| DERROR_count           | 0                          | 
-| FAILED_count           | 0                          | 
-| NRES_count             | 0                          | 
-| NLOCK_count            | 0                          | 
-*-----------------------------------------------------*
-
-```
-
-### FPGA
-
-#### Synthesize
-
-These steps require ALTERA Quartus synthesis tool, starting from release 15.0 of Quartus II should be fine.
-
-##### Using terminal
-1. From the root directory (using terminal)
-```console
-CAPI@Precis:~CAPI-Precis$ make run-synth
-```
-or
-```console
-CAPI@Precis:~CAPI-Precis$ cd 01_capi_integration/accelerator_synth/
-CAPI@Precis:~CAPI-Precis/01_capi_integration/accelerator_synth$ make
-```
-
-2. Check `capi-precis.sta.rpt` for timing requirement violations.
-
-##### Using Quartus GUI
-1. From the root directory (using terminal)
-```console
-CAPI@Precis:~CAPI-Precis$ make run-synth-gui
-```
-or
-```console
-CAPI@Precis:~CAPI-Precis$ cd 01_capi_integration/accelerator_synth/
-CAPI@Precis:~CAPI-Precis/01_capi_integration/accelerator_synth$ make gui
-```
-2. Synthesize using Quartus GUI
-
-##### Using terminal (sweep seeds)
-1. From the root directory (using terminal) runs a list of seeds synthesizing for each.
-```console
-CAPI@Precis:~CAPI-Precis$ make run-synth-sweep
-```
-or
-```console
-CAPI@Precis:~CAPI-Precis$ cd 01_capi_integration/accelerator_synth/
-CAPI@Precis:~CAPI-Precis/01_capi_integration/accelerator_synth$ make sweep
-```
-
-#### Flashing image
-
-1. From the root directory go to CAPI integration directory -> CAPI-Precis binary images:
-```console
-CAPI@Precis:~CAPI-Precis$ cd 01_capi_integration/accelerator_bin/
-```
-2. Flash the image to the corresponding `#define DEVICE` you can modify it according to your Power8 system from `00_bench/include/capi_utils/capienv.h`
-```console
-CAPI@Precis:~CAPI-Precis/01_capi_integration/accelerator_bin$ sudo capi-flash-script capi-precis_GITCOMMIT#_DATETIME.rbf
-```
-
-#### Running
-
-1. (Optional) From the root directory go to benchmark directory:
-```console
-CAPI@Precis:~CAPI-Precis$ cd 00_bench/
-```
-
-##### Silent run with no stats output
-
-2. Runs algorithm that communicates with the or PSL (real HW):
-```console
-CAPI@Precis:~CAPI-Precis/00_bench$ make run-capi-fpga
-```
-
-##### Verbose run with stats output
-
-This run outputs different AFU-Control stats based on the responses received from the PSL
-
-2. Runs algorithm that communicates with the or PSL (real HW):
-```console
-CAPI@Precis:~CAPI-Precis/00_bench$ make run-capi-fpga-verbose
-```
-
-# CAPI-Precis Options 
-
-```
-Usage: capi-precis-openmp [OPTION...]
-            -s <size> -n [num threads] -a [afu config] -c [cu config]  
-
-CAPI-Precis is an open source CAPI enabled FPGA processing framework, it is
-designed to abstract the PSL layer for faster development cycles.
-
-  -a, --afu-config=[DEFAULT:0x1]   
-                             AFU-Control buffers(read/write/prefetcher)
-                             arbitration 0x01 round robin 0x10 fixed priority
-  -b, --afu-config2=[DEFAULT:0x0]
-                             
-                             AFU-Control MMIO register for extensible features
-  -c, --cu-config=[DEFAULT:0x01]   
-                             CU configurations for requests cached/non
-                             cached/prefetcher active or not check Makefile for
-                             more examples
-  -d, --cu-config2=[DEFAULT:0x00]
-                             
-                             CU-Control MMIO register for extensible features
-  -m, --cu-mode=[DEFAULT:0x03]   
-                             CU configurations for read/write engines.
-                             disable-both-engines-[0] write-engine-[1]
-                             read-engine-[2] enable-both-engines-[3]
-  -n, --num-threads=[DEFAULT:MAX]
-                             
-                             Default: MAX number of threads the system has
-  -s, --size=SIZE:512        
-                             Size of array to be sent and copied back 
-  -?, --help                 Give this help list
-      --usage                Give a short usage message
-  -V, --version              Print program version
-
-Mandatory or optional arguments to long options are also mandatory or optional
-for any corresponding short options.
-
-```
-
-
-# Architecture
-
-The maintained architecture description is in the
-[architecture guide](https://github.com/atmughrabi/CAPI-Precis/wiki/Architecture).
-Historical chip-planner and presentation figures remain under `02_slides` for
-reference.
-
-# Organization 
-
-* `00_bench` - The SW side that runs on the host(CPU)
-  * `include` 
-  * `src` 
-    * `algorithms` 
-      * `openmp`  
-        * `algorithm.c` - Contains a version of the code that runs on CPU.
-      * `capi`
-        * `algorithm.c` - Contains a version of the code that runs on FPGA.
-    * `capi-utils` 
-      * `capienv.c` - Has the functions for setting up CAPI with our application (setup/start/wait/error).
-    * `main`
-      * `capi-precis.c` - Our main program execution starts from here.
-    * `tests`
-      * `test_afu.c` - test file to try things before integration.
-      * `test_capi-precis.c` - another test bed to try some functionalities.
-    * `utils`
-      * `mt19937.c` - Random number generator.
-      * `myMalloc.c` - Custom malloc wrapper for aligned allocations.
-      * `timer.c` - simple time measurement library.
-  * *`Makefile`* - This makefile handles the compilation and simulation of CAPI-Precis
-* `01_capi_integration` - The SW side that runs on the Device(FPGA)/ModelSim
-  * `accelerator_rtl` 
-    * `cu_control` - CU Units reside in this folder (read/write engines)
-    * `afu_pkgs` - global packages 
-    * `afu_control` - AFU Control units in this folder
-  * `accelerator_bin` - Binary images of CAPI-Precis (passed time requirements)
-    * `capi-precis_GITCOMMIT#_DATETIME.rbf` - flash binary image 
-    * `synthesis_reports_capi-precis_GITCOMMIT#_DATETIME` - synthesis reports for that binary image
-  * `accelerator_sim`
-    * `server` - files for PSLSE layer
-      * `pslse.parms`
-      * `pslse_server.dat`
-      * `shim_host.dat`
-    * `sim` - ModelSim file and tcl scripts
-      * `vsim.tcl` - when adding files to you RTL project you need to update this script
-      * `inerface.do` - Wave files for ModelSim simulation
-  * `accelerator_synth` - synthesis scripts
-    * `capi` - This folder contains helper scripts that generated the files necessary for synthesizing the project.
-    * `psl_fpga` - This folder contains the RTL for the PSL layer, IPs, and the AFU top
-    * `capi-precis.tcl`
-    * *`Makefile`* - Synthesis Makefile that invokes Quartus.
-  * `pslse`
-  * `libcxl`
-  * `capi-utils`
-* *`Makefile`* - Global makefile
-
-Report bugs to: 
-- <atmughrabi@gmail.com>
-- <atmughra@ncsu.edu>
+Report defects to <atmughrabi@gmail.com> or <atmughra@ncsu.edu>.

@@ -3,8 +3,9 @@
 ## Before launch
 
 ```console
+git submodule sync --recursive
 git submodule update --init --recursive
-sudo apt-get install verilator
+sudo apt-get install tcl verilator
 verilator --version  # must report version 5 or newer
 make verify
 ```
@@ -40,3 +41,17 @@ line, and simulator `debug.log` when applicable.
 
 Do not restart an accelerator job until the previous completion acknowledgement
 has drained and `CU_STATUS` is clear.
+
+## Workload options
+
+| Option | Purpose |
+| --- | --- |
+| `-a`, `--afu-config` | AFU arbitration and buffer configuration |
+| `-b`, `--afu-config2` | Extensible secondary AFU configuration |
+| `-c`, `--cu-config` | Compute-unit cache/prefetch configuration |
+| `-d`, `--cu-config2` | Workload-specific secondary CU configuration |
+| `-m`, `--cu-mode` | Read/write engine mask: 0 disabled, 1 write, 2 read, 3 both |
+| `-n`, `--num-threads` | Host thread count |
+| `-s`, `--size` | Workload element count |
+
+Use the selected binary's `--help` output as the exact parser reference.

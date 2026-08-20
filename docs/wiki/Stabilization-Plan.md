@@ -14,7 +14,7 @@ produces matching output data.
 | Device open | Null handle passed onward | Correct handle validation | Missing device fails immediately |
 | WED attach/MMIO map | Return values ignored | Checked calls and cleanup | Injected setup failure returns non-zero |
 | libcxl call | PSLSE or detach could block inside one synchronous call | Monotonic process watchdog | Deliberately blocked call terminates |
-| AFU/CU configuration | Infinite repeated writes | Single write plus bounded status poll | Timeout test and successful status transition |
+| AFU/CU configuration | Unbounded repeated writes | Idempotent writes plus bounded status poll | Timeout test and successful status transition |
 | CU execution | Infinite busy poll | Progress-aware stall and absolute deadlines | Counter-progress and frozen-counter tests |
 | Error register | Error printed but run continued | Error acknowledgement and failed process | Non-zero exit with register snapshot |
 | Completion reuse | Next CU started before reset drain | ACK plus completion/status clear verification | Repeated-job simulation or hardware trace |

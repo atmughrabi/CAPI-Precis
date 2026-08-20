@@ -19,6 +19,7 @@ host/AFU protocol used by AccelGraph.
 - [Repository structure](https://github.com/atmughrabi/CAPI-Precis/wiki/Repository-Structure)
   defines directory ownership, migration order, and compatibility gates.
 - [Verification infrastructure](https://github.com/atmughrabi/CAPI-Precis/wiki/Verification-Infrastructure)
-  defines the module, BFM, scoreboard, backpressure, and coverage roadmap.
+  records the executable module, scoreboard, backpressure, mutation, and
+  coverage contract.
 - [Stabilization plan](https://github.com/atmughrabi/CAPI-Precis/wiki/Stabilization-Plan)
   records acceptance criteria and rollout stages.

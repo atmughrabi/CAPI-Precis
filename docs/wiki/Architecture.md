@@ -68,6 +68,9 @@ The bounded host protocol is defined in
 
 AFU control owns credit and tag management, command issue/restart, read and
 write data, WED loading, MMIO, error reporting, reset, and response statistics.
+Boundary-local arrows show interface direction without implying a direct wire
+between every internal block; the blocks are grouped by protocol
+responsibility.
 
 ## Implementation example
 

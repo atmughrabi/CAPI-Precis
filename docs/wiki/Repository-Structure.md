@@ -14,6 +14,17 @@
 7. A move lands only after Make, ModelSim, Quartus-source, CI, documentation,
    and downstream pin checks pass.
 
+## Naming convention
+
+- Numbered repository roots use two digits and snake case.
+- Integration roles use `accelerator_<role>`:
+  `accelerator_rtl`, `accelerator_sim`, `accelerator_synth`,
+  `accelerator_bin`, and `accelerator_verification`.
+- Product names remain `CAPI-Precis` in prose and repository links; source
+  paths are written exactly as they appear on disk.
+- Legacy external paths such as `capi-utils` remain unchanged when renaming
+  would break a submodule or public flow.
+
 ## Owned roots
 
 | Path | Responsibility |
@@ -40,22 +51,29 @@
       manifests/                 inventory, source, coverage, module matrix
       scripts/                   validators and real-CU gates
       models/                    only executable verification models
-      unit/                      module-family testbenches
+      unit/
+        parity/                  parity functions
+        package_contracts/       C/SystemVerilog ABI and package contracts
+        reset/                   reset primitives
+        storage/                 RAM and FIFO
+        arbitration/             primitive and wrapper arbiters
+        protocol_control/        command, credit, response, restart, tag
+        protocol_data/           data, WED, MMIO, job, completion, error
+        cu/                      memcpy, tutorial, and mmtiled compute units
       integration/               AFU/CU cross-module suites
-      common/                    shared BFMs, scoreboards, assertions, coverage
 ```
 
-Directories below `unit`, `integration`, and `common` are added with their
-first executable test; empty scaffolding is not committed.
+Directories below `unit` and `integration` are added with their first
+executable test; empty scaffolding is not committed.
 
 ## Migration order
 
 | Stage | Work | Gate |
 | --- | --- | --- |
 | S0 | Consolidate existing verification | Complete: public Make targets and all current tests pass |
-| S1 | Implement P0 utility/arbitration unit families | Exact module matrix remains 43/43; reachable coverage closes |
-| S2 | Implement AFU protocol families | Credit/tag/command/data scoreboards pass named stalls |
-| S3 | Implement CU and full-system suites | Real CU goldens, repeat launch, reset, no leaked state |
+| S1 | Implement P0 utility/arbitration unit families | Complete: exact module matrix remains 44/44 |
+| S2 | Implement AFU protocol families | Complete: protocol scoreboards and mutations close |
+| S3 | Implement CU and full-system suites | Complete: real CU goldens, repeat launch, reset, and integration close |
 | S4 | Delegate ModelSim/Quartus flows to canonical runner | Old entry points produce identical ordered sources |
 | S5 | Archive unreferenced slides/assets | Link audit, release notes, clean worktree |
 

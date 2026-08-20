@@ -12,12 +12,13 @@ is a published mirror; wiki-side edits are overwritten by the publisher.
 - [Environment harness](wiki/Environment-Harness.md)
 - [Deployment runbook](wiki/Deployment-Runbook.md)
 - [Repository structure](wiki/Repository-Structure.md)
-- [Verification infrastructure roadmap](wiki/Verification-Infrastructure.md)
+- [Verification infrastructure](wiki/Verification-Infrastructure.md)
 - [Stabilization plan](wiki/Stabilization-Plan.md)
 - [Accelerator verification files](../01_capi_integration/accelerator_verification/README.md)
 
 The enabled GitHub Wiki is published from `docs/wiki`. Edit this source and
-mirror it to the wiki repository; do not maintain independent page content.
+mirror it to the wiki repository; do not maintain independent page content or
+compatibility copies elsewhere under `docs`.
 
 ## Brand assets
 
